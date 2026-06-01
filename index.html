@@ -476,37 +476,55 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
   font-size:11.5px;padding:6px 4px;
 }
 /* ── 서식 툴바 ── */
+:root{--ft-h:26px;} /* 서식 툴바 요소 공통 높이 */
 .format-toolbar{
   position:fixed;top:0;left:0;right:0;z-index:8900;
   background:#1e293b;border-bottom:1px solid #334155;
-  display:flex;align-items:center;flex-wrap:wrap;gap:3px;
-  padding:5px 12px;box-shadow:0 2px 8px rgba(0,0,0,.3);
+  display:flex;align-items:center;flex-wrap:nowrap;gap:3px;
+  padding:0 12px;height:42px; /* 고정 높이로 일관성 확보 */
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
 }
-.format-toolbar select,.format-toolbar input[type=color]{
+/* 모든 인터랙티브 요소 높이 통일 — !important 강제 */
+.format-toolbar select,
+.format-toolbar button,
+.format-toolbar .ft-size-wrap,
+.format-toolbar .ft-color-wrap,
+.format-toolbar .ft-color-arrow,
+.format-toolbar .ft-size-arrow,
+.format-toolbar .ft-size-wrap input[type=number]{
+  height:var(--ft-h)!important;
+  min-height:unset!important;
+  max-height:var(--ft-h)!important;
+  box-sizing:border-box;
+  vertical-align:middle;
+}
+.format-toolbar select{
   background:#334155;color:#e2e8f0;border:1px solid #475569;
-  border-radius:4px;padding:2px 4px;font-size:11px;cursor:pointer;
-  height:24px;
+  border-radius:4px;padding:0 4px;font-size:11px;cursor:pointer;
+  -webkit-appearance:none;appearance:none; /* 브라우저 기본 높이 제거 */
+  line-height:var(--ft-h);
 }
 .format-toolbar button{
   background:#334155;color:#e2e8f0;border:1px solid #475569;
   border-radius:4px;padding:0 8px;font-size:12px;cursor:pointer;
-  height:24px;line-height:24px;white-space:nowrap;
+  line-height:var(--ft-h);white-space:nowrap;
+  display:inline-flex;align-items:center;justify-content:center;
 }
 .format-toolbar button:hover{background:#475569;}
 .format-toolbar button.ft-active{background:#1e40af;border-color:#3b82f6;}
-.format-toolbar .ft-sep{width:1px;height:20px;background:#475569;margin:0 3px;}
+.format-toolbar .ft-sep{width:1px;height:18px;background:#475569;margin:0 2px;flex-shrink:0;}
 .format-toolbar label{color:#94a3b8;font-size:10px;display:flex;align-items:center;gap:3px;}
 /* 색상 Split-button */
-.ft-color-wrap{display:inline-flex;align-items:stretch;height:24px;position:relative;}
+.ft-color-wrap{display:inline-flex;align-items:stretch;position:relative;}
 .ft-color-wrap>button{
   background:#334155;color:#e2e8f0;border:1px solid #475569;
   cursor:pointer;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:2px 5px;height:24px;
+  justify-content:center;padding:2px 5px;
 }
 .ft-color-wrap>button:hover{background:#475569;}
 .ft-color-arrow{
   position:relative;display:inline-flex;align-items:center;justify-content:center;
-  min-width:16px;height:24px;padding:0 3px;overflow:hidden;
+  min-width:16px;padding:0 3px;overflow:hidden;
   background:#334155;color:#94a3b8;border:1px solid #475569;border-left:none;
   border-radius:0 4px 4px 0;cursor:pointer;font-size:9px;user-select:none;
 }
@@ -516,12 +534,12 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
   cursor:pointer;border:none;padding:0;
 }
 /* 글꼴 크기 입력 */
-.ft-size-wrap{display:inline-flex;align-items:center;height:24px;position:relative;}
+.ft-size-wrap{display:inline-flex;align-items:stretch;position:relative;}
 .ft-size-wrap input[type=number]{
-  width:46px;height:24px;background:#334155;color:#e2e8f0;
+  width:46px;background:#334155;color:#e2e8f0;
   border:1px solid #475569;border-right:none;border-radius:4px 0 0 4px;
-  padding:2px 4px;font-size:11px;text-align:center;
-  -moz-appearance:textfield;
+  padding:0 4px;font-size:11px;text-align:center;
+  -moz-appearance:textfield;box-sizing:border-box;
 }
 .ft-size-wrap input[type=number]::-webkit-inner-spin-button,
 .ft-size-wrap input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
@@ -532,7 +550,7 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
 .ft-size-arrow{
   background:#334155;color:#94a3b8;border:1px solid #475569;
   border-left:none;border-radius:0 4px 4px 0;
-  cursor:pointer;height:24px;padding:0 5px;font-size:9px;
+  cursor:pointer;padding:0 5px;font-size:9px;
   display:inline-flex;align-items:center;
 }
 .ft-size-arrow:hover{background:#475569;}
@@ -1060,7 +1078,7 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
     <div style="display:none"><textarea id="mainIssue" oninput="saveData()"></textarea></div>
     <div class="card" style="height:100%;display:flex;flex-direction:column;margin-bottom:0;overflow:hidden">
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
-        <span>■ 투자현황</span>
+        <span>■ 투자 현황</span>
         <span id="arcBadgeHeader" style="font-size:9px;color:#94a3b8;font-weight:normal"></span>
       </div>
       <div class="card-body" style="padding:10px 14px;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden">
@@ -1129,15 +1147,15 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
       <div style="display:flex;flex-direction:column;gap:12px">
         <div>
           <div class="section-label">📈 시황 분석</div>
-          <div id="marketAnalysis" class="rich-editor" contenteditable="true" style="height:220px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
+          <div id="marketAnalysis" class="rich-editor" contenteditable="true" style="height:292px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
         </div>
         <div>
           <div class="section-label">🎯 My Trading Strategy</div>
-          <div id="tradingStrategy" class="rich-editor" contenteditable="true" style="height:180px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
+          <div id="tradingStrategy" class="rich-editor" contenteditable="true" style="height:144px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
         </div>
         <div>
           <div class="section-label">💬 The Whispers of Warren Kim</div>
-          <div id="warrenKim" class="rich-editor" contenteditable="true" style="height:180px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
+          <div id="warrenKim" class="rich-editor" contenteditable="true" style="height:144px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
         </div>
       </div>
       <!-- 우 컬럼: 산업/테마별 분석 (좌 전체 높이에 맞춰 늘어남) -->
@@ -1159,11 +1177,11 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
       <span id="pfBackupTs" style="font-size:9px;color:#94a3b8;font-weight:400;white-space:nowrap"></span>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button class="btn sm" id="pfUpdateBtn" style="flex:1;min-width:0;height:28px;font-size:10px;text-align:center;overflow:hidden;padding:0 2px" onclick="togglePfUpdate()">업데이트</button>
-      <button class="btn sm" style="flex:1;min-width:0;height:28px;font-size:10px;text-align:center;overflow:hidden;padding:0 2px;background:#6b7280" onclick="addHoldingRow()">+ 종목 추가</button>
-      <button class="btn sm" style="flex:1;min-width:0;height:28px;font-size:10px;text-align:center;overflow:hidden;padding:0 2px;background:#6b7280" onclick="sortByWeight()">비중순 정렬</button>
-      <button class="btn sm" style="flex:1;min-width:0;height:28px;font-size:10px;text-align:center;overflow:hidden;padding:0 2px;background:#0891b2" onclick="downloadHoldingsTemplate()">양식 Download</button>
-      <label for="pfUploadFile" class="btn sm" style="flex:1;min-width:0;height:28px;font-size:10px;overflow:hidden;padding:0 2px;background:#7c3aed;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">Upload</label>
+      <button class="btn sm" id="pfUpdateBtn" style="flex:1;min-width:56px;height:30px;font-size:10.5px;text-align:center;padding:0 6px" onclick="togglePfUpdate()">업데이트</button>
+      <button class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;text-align:center;padding:0 6px;background:#6b7280" onclick="addHoldingRow()">+ 종목 추가</button>
+      <button class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;text-align:center;padding:0 6px;background:#6b7280" onclick="sortByWeight()">비중순 정렬</button>
+      <button class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;text-align:center;padding:0 6px;background:#0891b2" onclick="downloadHoldingsData()">Download</button>
+      <label for="pfUploadFile" class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;padding:0 6px;background:#7c3aed;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">Upload</label>
       <input type="file" id="pfUploadFile" accept=".xlsx,.xls" style="display:none" onchange="handleHoldingsUpload(event)"/>
     </div>
   </div>
@@ -1212,9 +1230,14 @@ table.pf-table .chart-cell canvas{max-width:80px;max-height:32px}
 
 <!-- ═══════════════ TRADE JOURNAL ═══════════════ -->
 <div class="card">
-  <div class="card-header" style="background:#374151;color:#fff">
-    ■ 매매 일지
-    <button class="btn" style="font-size:10px;padding:3px 8px" onclick="addTradeRow()">+ 추가</button>
+  <div class="card-header" style="background:#374151;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+    <span>■ 매매 일지</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;text-align:center;padding:0 6px;background:rgba(255,255,255,.2)" onclick="addTradeRow()">+ 추가</button>
+      <button class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;text-align:center;padding:0 6px;background:#0891b2" onclick="downloadTradesData()">Download</button>
+      <label for="tradeUploadFile" class="btn sm" style="flex:1;min-width:56px;height:30px;font-size:10.5px;padding:0 6px;background:#7c3aed;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">Upload</label>
+      <input type="file" id="tradeUploadFile" accept=".xlsx,.xls" style="display:none" onchange="handleTradesUpload(event)"/>
+    </div>
   </div>
   <div class="card-body" style="padding:8px">
     <div class="table-wrap">
@@ -1435,9 +1458,13 @@ const CP_SWATCHES=[
   '#cc0000','#e69138','#f1c232','#6aa84f','#45818e','#3c78d8','#3d85c8','#674ea7',
   '#990000','#b45309','#bf9000','#38761d','#134f5c','#1155cc','#0b5394','#351c75',
 ];
-let _cpMode=null, _cpVal='#000000';
+let _cpMode=null, _cpVal='#000000', _cpSavedEditor=null, _cpSavedRange=null;
 
 function openColorPicker(mode){
+  /* ★ 팝업 오픈 시점에 editor 참조와 selection 범위를 백업
+     (ftBlur 50ms 타이머가 _ftEditor를 null로 초기화하기 전에 저장) */
+  _cpSavedEditor = _ftEditor;
+  _cpSavedRange  = _savedRange ? _savedRange.cloneRange() : null;
   _cpMode=mode;
   _cpVal=mode==='fore'?_ftForeColor:_ftBgColor;
   g('colorPickerTitle').textContent=mode==='fore'?'글자 색상 선택':'배경 색상 선택';
@@ -1481,19 +1508,33 @@ function cpHexInput(val){
 }
 function cpSelectSwatch(c){
   _cpVal=c;
-  g('colorPickerNative').value=c;
-  g('colorPickerHex').value=c;
-  g('colorPickerPreview').style.background=c;
-  document.querySelectorAll('#colorSwatches span').forEach(s=>s.classList.toggle('cp-sel',s.title===c));
-  /* 스와치 클릭 = 선택만 (적용은 ✔ 확인 버튼에서 DD + selection 동시 처리) */
+  /* 스와치 클릭 → 즉시 색상 적용 + 팝업 닫힘 + 텍스트 선택 유지 */
+  confirmColorPicker();
 }
 function confirmColorPicker(){
   const popup=g('colorPickerPopup');
   if(popup) popup.style.display='none';
   document.removeEventListener('mousedown',_cpOutside,true);
+
+  /* ★ ftBlur 타이머가 _ftEditor를 null 처리했을 수 있으므로 백업값으로 복원 */
+  if(!_ftEditor && _cpSavedEditor) _ftEditor = _cpSavedEditor;
+  if(_cpSavedRange)                _savedRange = _cpSavedRange;
+
+  /* 색상 적용 — _ensureEditorFocus()가 editor 포커스 + selection 복원 */
   if(_cpMode==='fore') setFtForeColor(_cpVal);
   else if(_cpMode==='bg') setFtBgColor(_cpVal);
-  _cpMode=null;
+
+  /* 색상 적용 후 selection 다시 유지 (execCommand가 해제할 수 있으므로 재설정) */
+  if(_cpSavedRange && _ftEditor){
+    try{
+      _ftEditor.focus();
+      const sel=window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(_cpSavedRange.cloneRange());
+    }catch(e){}
+  }
+
+  _cpMode=null; _cpSavedEditor=null; _cpSavedRange=null;
 }
 function cancelColorPicker(){
   const popup=g('colorPickerPopup');
@@ -1641,7 +1682,7 @@ function drawIdxSpark(key, closes, isUp){
 async function _fetchAndApplyIdx(key){
   const idx = INDICES.find(i=>i.key===key);
   if(!idx) return false;
-  const data = await fetchYahoo(idx.ticker);
+  const data = await fetchYahooFast(idx.ticker); /* 포트폴리오와 동일한 고속 병렬 조회 */
   if(!data.ok || !data.currentPrice) return false;
   const dec = idx.dec??2;
   const closes = data.closes||[];
@@ -1794,46 +1835,54 @@ async function fetchAllIndices(){
   _setBtnStop(btn,'rgba(255,255,255,.2)');
   status.textContent='';
 
+  /* 섹션 스피너 표시 (경제일정과 동일 방식) */
+  const idxGrid=g('indicesGrid');
+  if(idxGrid){ idxGrid.classList.add('update-dim'); _showUpdateSpinner(idxGrid); }
+
   /* 전체 카드 비활성 dim */
   INDICES.forEach(idx=>{ const c=g(`idx-card-${idx.key}`); if(c) c.classList.add('update-dim'); });
 
-  let done=0, total=INDICES.length;
+  const total=INDICES.length;
   const failed=[];
+  const BATCH=4; /* 4개 동시 조회 — 포트폴리오 방식과 동일 */
 
-  for(const idx of INDICES){
-    if(_stopIdx) break;
-    status.textContent=`(${++done}/${total}) ${idx.name}`;
-    const rfbtn = g(`idx-rfbtn-${idx.key}`);
-    if(rfbtn){ rfbtn.disabled=true; rfbtn.textContent='⌛'; }
-    _showUpdateSpinner(g(`idx-card-${idx.key}`));
-    let ok=false;
-    try{ ok=await _fetchAndApplyIdx(idx.key); }catch(e){}
-    _hideUpdateSpinner();
-    if(!ok) failed.push(idx);
-    if(ok){ const card=g(`idx-card-${idx.key}`); if(card) card.classList.remove('update-dim'); }
-    if(rfbtn){ rfbtn.disabled=false; rfbtn.innerHTML='↻'; }
-    await new Promise(r=>setTimeout(r,250));
+  /* ── 병렬 배치 조회 ── */
+  for(let b=0; b<INDICES.length&&!_stopIdx; b+=BATCH){
+    const batch=INDICES.slice(b,b+BATCH);
+    status.textContent=`(${b+1}~${Math.min(b+BATCH,total)}/${total}) 조회 중...`;
+    const results=await Promise.allSettled(
+      batch.map(idx=>_fetchAndApplyIdx(idx.key).then(ok=>({key:idx.key,name:idx.name,ok})))
+    );
+    results.forEach(res=>{
+      if(res.status!=='fulfilled') return;
+      const {key,name,ok}=res.value;
+      const rfbtn=g(`idx-rfbtn-${key}`);
+      if(ok){ const card=g(`idx-card-${key}`); if(card) card.classList.remove('update-dim'); }
+      else   failed.push(INDICES.find(i=>i.key===key));
+      if(rfbtn) rfbtn.innerHTML='↻';
+    });
   }
 
-  /* 실패 항목 재시도 (중단 시 건너뜀) */
-  if(!_stopIdx){
-    for(const idx of failed){
-      if(_stopIdx) break;
-      status.textContent=`재시도: ${idx.name}`;
-      await new Promise(r=>setTimeout(r,600));
-      const rfbtn = g(`idx-rfbtn-${idx.key}`);
-      if(rfbtn){ rfbtn.disabled=true; rfbtn.textContent='⌛'; }
-      _showUpdateSpinner(g(`idx-card-${idx.key}`));
-      let retryOk=false;
-      try{ retryOk=await _fetchAndApplyIdx(idx.key); }catch(e){}
-      _hideUpdateSpinner();
-      if(retryOk){ const card=g(`idx-card-${idx.key}`); if(card) card.classList.remove('update-dim'); }
-      if(rfbtn){ rfbtn.disabled=false; rfbtn.innerHTML='↻'; }
-    }
+  /* ── 실패 항목 재시도 (5초 대기 후 전부 동시) ── */
+  if(!_stopIdx&&failed.length){
+    status.textContent=`재시도 (5초 대기)...`;
+    await new Promise(r=>setTimeout(r,5000));
+    const retries=await Promise.allSettled(
+      failed.map(idx=>_fetchAndApplyIdx(idx.key).then(ok=>({key:idx.key,ok})))
+    );
+    retries.forEach(res=>{
+      if(res.status!=='fulfilled') return;
+      const {key,ok}=res.value;
+      if(ok){ const card=g(`idx-card-${key}`); if(card) card.classList.remove('update-dim'); }
+    });
   }
 
   /* 중단 시 미처리 카드 dim 해제 */
   if(_stopIdx) INDICES.forEach(idx=>{ const c=g(`idx-card-${idx.key}`); if(c) c.classList.remove('update-dim'); });
+
+  /* 섹션 스피너 종료 */
+  if(idxGrid) idxGrid.classList.remove('update-dim');
+  _hideUpdateSpinner();
 
   saveNow();
   _isUpdatingIdx=false;
@@ -1934,26 +1983,55 @@ function tsToDateStr(ts){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-async function fetchEarningsDate(ticker){
-  const baseUrl=`https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=calendarEvents`;
-  const proxies=[
-    u=>u,  // 직접 시도
-    u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-    u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
-  ];
+/* ── 기업 일정 고속 조회 (실적발표일 + 배당락일) ──
+   포트폴리오 업데이트와 동일한 병렬 레이스 프록시 방식 */
+async function fetchCompanyScheduleFast(ticker){
+  const enc=encodeURIComponent(ticker);
+  const url=`https://query1.finance.yahoo.com/v10/finance/quoteSummary/${enc}?modules=calendarEvents,summaryDetail`;
+  const url2=url.replace('query1','query2');
   const today=new Date(); today.setHours(0,0,0,0);
-  for(const p of proxies){
+
+  const tryUrl=async(u,ms)=>{
+    const ctrl=new AbortController();
+    const tid=setTimeout(()=>ctrl.abort(),ms);
     try{
-      const res=await fetch(p(baseUrl));
-      if(!res.ok) continue;
+      const res=await fetch(u,{signal:ctrl.signal});
+      clearTimeout(tid);
+      if(!res.ok) throw new Error(`${res.status}`);
       const txt=await res.text();
-      let j; try{j=JSON.parse(txt);}catch(e){continue;}
-      const dates=(j?.quoteSummary?.result?.[0]?.calendarEvents?.earnings?.earningsDate)||[];
-      const future=dates.map(d=>tsToDateStr(d.raw||d)).filter(s=>new Date(s)>=today);
-      if(future.length) return future[0];
-    }catch(e){continue;}
-  }
-  return null;
+      let j; try{j=JSON.parse(txt);}catch(e){throw new Error('parse');}
+      const cal=j?.quoteSummary?.result?.[0]?.calendarEvents;
+      const sum=j?.quoteSummary?.result?.[0]?.summaryDetail;
+
+      /* 실적발표일 */
+      const earningsDates=(cal?.earnings?.earningsDate||[])
+        .map(d=>tsToDateStr(d.raw||d))
+        .filter(s=>new Date(s)>=today);
+
+      /* 배당락일 */
+      const exDivRaw=sum?.exDividendDate?.raw||cal?.exDividendDate?.raw;
+      const exDivDate=exDivRaw?tsToDateStr(exDivRaw):null;
+      const isExDivFuture=exDivDate&&new Date(exDivDate)>=today;
+
+      if(!earningsDates.length && !isExDivFuture) throw new Error('no_data');
+      return { earningsDate: earningsDates[0]||null, exDivDate: isExDivFuture?exDivDate:null };
+    }catch(e){clearTimeout(tid);throw e;}
+  };
+
+  try{
+    return await Promise.any([
+      tryUrl(url ,5000),
+      tryUrl(url2,5000),
+      tryUrl(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,8000),
+      tryUrl(`https://corsproxy.io/?${encodeURIComponent(url)}`,8000),
+    ]);
+  }catch(e){return null;}
+}
+
+/* 구버전 호환 (하위 참조용) */
+async function fetchEarningsDate(ticker){
+  const r=await fetchCompanyScheduleFast(ticker);
+  return r?.earningsDate||null;
 }
 
 async function autoUpdateEco(){
@@ -1986,18 +2064,31 @@ async function autoUpdateEco(){
   ];
 
   const earningEvents=[];
-  let fetched=0;
   const total=allTargets.length;
+  const BATCH=6; /* 6개씩 병렬 조회 */
 
-  for(const target of allTargets){
-    if(_stopEco) break;
-    status.textContent=`(${++fetched}/${total}) ${target.ticker}${target.isPf?' ★':''}`;
-    const dt=await fetchEarningsDate(target.ticker);
-    if(dt){
-      const name = target.name || TICKER_NAME_MAP[target.ticker] || target.ticker;
-      const label = target.isPf ? `★ ${name}(${target.ticker}) 실적발표` : `${name}(${target.ticker}) 실적발표`;
-      earningEvents.push({date:dt, type:'미국', content:label});
-    }
+  for(let b=0; b<total && !_stopEco; b+=BATCH){
+    const batch=allTargets.slice(b,b+BATCH);
+    status.textContent=`(${b+1}~${Math.min(b+BATCH,total)}/${total}) 기업 일정 조회 중...`;
+
+    const results=await Promise.allSettled(
+      batch.map(target=>fetchCompanyScheduleFast(_normalizeTicker(target.ticker)).then(r=>({target,r})))
+    );
+
+    results.forEach(res=>{
+      if(res.status!=='fulfilled'||!res.value.r) return;
+      const {target,r}=res.value;
+      const name=target.name||TICKER_NAME_MAP[target.ticker]||target.ticker;
+      /* 실적발표일 */
+      if(r.earningsDate){
+        const label=target.isPf?`★ ${name}(${target.ticker}) 실적발표`:`${name}(${target.ticker}) 실적발표`;
+        earningEvents.push({date:r.earningsDate, type:'미국', content:label});
+      }
+      /* 배당락일 */
+      if(r.exDivDate){
+        earningEvents.push({date:r.exDivDate, type:'미국', content:`${name}(${target.ticker}) 배당락일`});
+      }
+    });
   }
 
   /* ③ 2개월 상한 날짜 계산 */
@@ -2206,6 +2297,81 @@ const PF_EXCEL_COLS = [
   {header:'수량',    field:'qty'},
   {header:'현재가',  field:'curPrice'},
 ];
+
+/* ── 포트폴리오 전체 데이터 Excel 다운로드 ── */
+function downloadHoldingsData(){
+  if(typeof XLSX==='undefined'){alert('라이브러리 로딩 중. 잠시 후 다시 시도하세요.');return;}
+  try{
+    const headers=['분류','종목명','티커','매입단가','수량','현재가','평가금액','손익금','수익률(%)','등락률'];
+    const rows=holdings.filter(h=>h.name||h.ticker).map((h,idx)=>{
+      const bp=parseFloat(h.buyPrice)||0, qty=parseFloat(h.qty)||0, cp=parseFloat(h.curPrice)||0;
+      const evalV=cp*qty, cost=bp*qty, pnl=evalV-cost, ret=cost>0?(pnl/cost*100):0;
+      return [h.cat||'',h.name||'',h.ticker||'',h.buyPrice||'',h.qty||'',h.curPrice||'',
+              evalV?Math.round(evalV):'',pnl?Math.round(pnl):'',ret?ret.toFixed(2):'',h.changeStr||''];
+    });
+    const wb=XLSX.utils.book_new();
+    const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
+    ws['!cols']=[{wch:16},{wch:14},{wch:10},{wch:10},{wch:8},{wch:10},{wch:14},{wch:14},{wch:10},{wch:10}];
+    XLSX.utils.book_append_sheet(wb,ws,'포트폴리오');
+    const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    const blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`portfolio_${todayStr()}.xlsx`;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+  }catch(e){alert('다운로드 오류: '+e.message);}
+}
+
+/* ── 매매일지 Excel 다운로드 ── */
+function downloadTradesData(){
+  if(typeof XLSX==='undefined'){alert('라이브러리 로딩 중.');return;}
+  try{
+    const headers=['날짜','매수/매도','종목명','수량','분석 및 근거'];
+    const rows=trades.map(t=>[t.date||'',t.type||'',t.name||t.stocks||'',t.qty||'',t.memo||'']);
+    const wb=XLSX.utils.book_new();
+    const ws=XLSX.utils.aoa_to_sheet([headers,...rows]);
+    ws['!cols']=[{wch:12},{wch:10},{wch:20},{wch:8},{wch:50}];
+    XLSX.utils.book_append_sheet(wb,ws,'매매일지');
+    const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    const blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`trades_${todayStr()}.xlsx`;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+  }catch(e){alert('다운로드 오류: '+e.message);}
+}
+
+/* ── 매매일지 Excel 업로드 ── */
+function handleTradesUpload(event){
+  const files=event?.target?.files;
+  if(!files||files.length===0) return;
+  const file=files[0]; if(!file) return;
+  if(typeof XLSX==='undefined'){alert('라이브러리 로딩 중.');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      if(!rows||rows.length<2){alert('데이터가 없습니다.');return;}
+      const hdr=(rows[0]||[]).map(h=>String(h||'').trim());
+      const get=(row,h)=>{const i=hdr.indexOf(h);return i>=0?String(row[i]||'').trim():'';};
+      const newTrades=rows.slice(1)
+        .filter(r=>r.some(c=>String(c||'').trim()))
+        .map(r=>({date:get(r,'날짜'),type:get(r,'매수/매도')||'매수',
+                  name:get(r,'종목명'),qty:get(r,'수량'),memo:get(r,'분석 및 근거'),stocks:''}));
+      if(!newTrades.length){alert('유효한 데이터가 없습니다.');return;}
+      const replace=confirm(`📊 ${newTrades.length}건 인식\n\n확인 → 기존 데이터 교체\n취소 → 기존 유지하며 추가`);
+      if(replace) trades=newTrades; else trades=[...newTrades,...trades];
+      buildTradeTable(); saveData();
+      alert(`✅ ${newTrades.length}건 ${replace?'교체':'추가'} 완료`);
+    }catch(err){alert('파일 오류: '+err.message);}
+    event.target.value='';
+  };
+  reader.readAsArrayBuffer(file);
+}
 
 function downloadHoldingsTemplate(){
   if(typeof XLSX==='undefined'){alert('라이브러리 로딩 중. 잠시 후 다시 시도하세요.');return;}
@@ -2607,6 +2773,10 @@ async function fetchAllPrices(){
     setStatus(i,'loading');
   });
 
+  /* 섹션 스피너 표시 — holdingsBody 전체에 (경제일정과 동일 방식) */
+  const pfBody=g('holdingsBody');
+  if(pfBody){ pfBody.classList.add('update-dim'); _showUpdateSpinner(pfBody); }
+
   /* ── Phase 1: 배치 현재가 (전체 종목 한 번에) ── */
   const allTickers=targets.map(({h})=>_normalizeTicker(h.ticker));
   const CHUNK=25; /* 한 번에 최대 25종목 (URL 안전 길이) */
@@ -2657,8 +2827,10 @@ async function fetchAllPrices(){
     }
   }
 
-  /* 잔여 dim 전부 해제 */
+  /* 잔여 dim 전부 해제 + 섹션 스피너 종료 */
   targets.forEach(({i})=>{ const row=g(`holding-row-${i}`); if(row) row.classList.remove('update-dim'); });
+  if(pfBody){ pfBody.classList.remove('update-dim'); }
+  _hideUpdateSpinner();
 
   saveNow();
   sortByWeight();
@@ -2670,18 +2842,29 @@ async function fetchAllPrices(){
 /* ─────────── 매매 일지 ─────────── */
 function _tradeSelChange(sel,i){
   const inp=g(`tinp-${i}`);
+  const backBtn=g(`tbk-${i}`);
   if(sel.value==='__custom__'){
-    /* 직접입력 선택 → 드롭다운 좁히고 입력창 표시 */
-    sel.style.flex='0 0 90px';
-    if(inp){inp.style.display='';inp.value='';inp.focus();}
+    /* 직접입력 선택 → 드롭다운 완전 숨김, 입력창+복귀버튼만 표시 */
+    sel.style.display='none';
+    if(backBtn) backBtn.style.display='inline-flex';
+    if(inp){inp.style.display='';inp.style.flex='1';inp.value='';inp.focus();}
     trades[i].name='';
   } else {
     /* 포트폴리오 종목 선택 → 입력창 숨김 */
-    sel.style.flex='1';
+    sel.style.display=''; sel.style.flex='1';
+    if(backBtn) backBtn.style.display='none';
     if(inp){inp.style.display='none';inp.value='';}
     trades[i].name=sel.value;
     saveData();
   }
+}
+function _tradeBackToSel(i){
+  /* 복귀 버튼 → 드롭다운으로 돌아감 */
+  const sel=g(`tsel-${i}`), inp=g(`tinp-${i}`), backBtn=g(`tbk-${i}`);
+  if(sel){ sel.style.display=''; sel.style.flex='1'; sel.value=''; }
+  if(backBtn) backBtn.style.display='none';
+  if(inp){ inp.style.display='none'; inp.value=''; }
+  trades[i].name=''; saveData();
 }
 let trades=[];
 function buildTradeTable(){
@@ -2704,7 +2887,14 @@ function buildTradeTable(){
             holdings.filter(h=>h.name||h.ticker).map(h=>`<option value="${h.name||h.ticker}" ${inHoldings&&nm===(h.name||h.ticker)?'selected':''}>${h.name||h.ticker}</option>`).join('')+
             `<option value="__custom__" ${showInp?'selected':''}>✏️ 직접 입력</option>`;
           return `<div style="display:flex;gap:2px;align-items:center">`+
-            `<select id="tsel-${i}" onchange="_tradeSelChange(this,${i})" style="font-size:11px;flex:${showInp?'0 0 90px':'1'}">${opts}</select>`+
+            /* 드롭다운: 직접입력 상태면 숨김 */
+            `<select id="tsel-${i}" onchange="_tradeSelChange(this,${i})" style="font-size:11px;flex:1;display:${showInp?'none':''}">${opts}</select>`+
+            /* 직접입력 복귀 버튼 */
+            `<button id="tbk-${i}" onclick="_tradeBackToSel(${i})" title="목록으로 돌아가기"
+              style="display:${showInp?'inline-flex':'none'};align-items:center;justify-content:center;
+                     width:20px;height:20px;flex-shrink:0;border:1px solid var(--border);border-radius:3px;
+                     background:#f1f5f9;color:#475569;font-size:10px;cursor:pointer;">←</button>`+
+            /* 직접입력 텍스트창 */
             `<input id="tinp-${i}" placeholder="종목명 직접 입력" value="${showInp?nm:''}" style="font-size:11px;flex:1;border:1px solid var(--border);border-radius:3px;padding:2px 4px;display:${showInp?'':'none'}" oninput="trades[${i}].name=this.value;saveData()"/>`+
             `</div>`;
         })()}
@@ -3897,7 +4087,7 @@ function renderArchiveDetail(rec){
   </div>
 
   <!-- ── 투자 현황 요약 ── -->
-  ${CH('💰','투자현황')}
+  ${CH('💰','투자 현황')}
   ${CB(`
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:${s.fearGreed>0?'8':'0'}px">
       <div style="background:#f8fafc;border-radius:5px;padding:6px 8px">
