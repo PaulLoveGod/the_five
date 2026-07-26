@@ -318,8 +318,10 @@ select{
 .iscore-col:first-child{border-right:1px solid #e2e8f0;padding-right:8px}
 .iscore-col:last-child{padding-left:8px}
 .iscore-item{display:flex;align-items:center;gap:5px;min-height:0;flex:1}
-#isAddRow{display:flex;gap:8px;flex-shrink:0;margin-top:4px}
-#investorStatusNote{min-height:48px;height:48px;resize:vertical}
+#isAddRow{display:none}
+#investorStatusNote{min-height:38px;height:38px;resize:vertical}
+.iscore-add-hdr{width:15px;height:15px;padding:0;font-size:12px;line-height:1;border:1px dashed #cbd5e1;border-radius:3px;background:none;color:#94a3b8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.iscore-add-hdr:hover{border-color:#6366f1;color:#6366f1}
 .iscore-label-edit{font-size:9.5px;color:#64748b;white-space:nowrap;width:46px;flex-shrink:0;outline:none;cursor:text;border-bottom:1px solid transparent;overflow:hidden;text-overflow:ellipsis}
 .iscore-label-edit:focus{border-bottom:1px solid #6366f1;color:#334155;white-space:normal}
 .iscore-bar-wrap{flex:1;height:9px;background:#e2e8f0;border-radius:5px;cursor:ew-resize;position:relative;overflow:hidden;user-select:none;touch-action:none}
@@ -8648,19 +8650,22 @@ function _initInvestorStatus(){
     });
 
   });
-  /* 추가 버튼 — iscore-cols 바깥 #isAddRow 에 렌더링 */
+  /* 추가 버튼 — charlie 헤더 타이틀 옆에 소형 아이콘으로 렌더링 */
   const addRow = g('isAddRow');
-  if(addRow){
-    addRow.innerHTML = '';
-    ['L','R'].forEach(side=>{
-      const addBtn = document.createElement('button');
-      addBtn.className = 'iscore-add mobile-keep';
-      addBtn.textContent = '+ 추가';
-      addBtn.style.flex = '1';
-      addBtn.addEventListener('click', ()=>_isAddItem(side));
-      addRow.appendChild(addBtn);
-    });
-  }
+  if(addRow) addRow.innerHTML = '';
+  [['L','charlieStatusLeft'],['R','charlieBatteryRight']].forEach(([side, cid])=>{
+    const container = g(cid);
+    if(!container) return;
+    container.querySelectorAll('.iscore-add-hdr').forEach(b=>b.remove());
+    const addBtn = document.createElement('button');
+    addBtn.className = 'iscore-add-hdr mobile-keep';
+    addBtn.textContent = '+';
+    addBtn.title = '항목 추가';
+    addBtn.addEventListener('click', ()=>_isAddItem(side));
+    const title = container.querySelector('.charlie-title');
+    if(title) title.after(addBtn);
+    else container.insertBefore(addBtn, container.firstChild);
+  });
   _updateBattery();
 }
 
