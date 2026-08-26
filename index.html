@@ -9172,9 +9172,7 @@ function _aiBooksSelectAll(title){
   const entries=_bbtGetEntries(title);
   if(!entries.length) return;
   const text=`📗 ${title}\n${'─'.repeat(40)}\n\n`+_bbtComposeText(entries);
-  const lc=g('aiLeftContent');
-  if(lc){_setLeftMode('text'); lc.textContent=text;}
-  _closeAiBooksDropdown();
+  _aiBooksInsertOrChoose(text);
 }
 
 /* Step 3: 시간별 선택 → 시간+제목 리스트 */
@@ -9207,9 +9205,50 @@ function _aiBooksLoadTimeEntry(title,idx){
   const sorted=_bbtSortedByTime(_bbtGetEntries(title));
   const sel=sorted[idx]; if(!sel) return;
   const text=`📗 ${title} — ${_bbtFullLabel(sel)}\n${'─'.repeat(40)}\n\n${sel.text}`;
+  _aiBooksInsertOrChoose(text);
+}
+
+/* 좌측 참고자료 영역에 이미 내용이 있으면 덮어쓰기/이어쓰기를 선택시키고, 비어있으면 바로 채움 */
+let _aiBooksPendingInsertText='';
+
+function _aiBooksInsertOrChoose(text){
   const lc=g('aiLeftContent');
-  if(lc){_setLeftMode('text'); lc.textContent=text;}
+  if(!lc) return;
+  if(!(lc.textContent||'').trim()){
+    _setLeftMode('text');
+    lc.textContent=text;
+    _closeAiBooksDropdown();
+    return;
+  }
+  _aiBooksPendingInsertText=text;
+  _renderAiBooksInsertChoice();
+}
+
+function _renderAiBooksInsertChoice(){
+  const list=g('aiBooksDropdownList'); if(!list) return;
+  list.innerHTML=`
+    <div onclick="event.stopPropagation();_aiBooksCancelInsert()" style="padding:7px 14px;font-size:11px;color:#64748b;cursor:pointer;border-bottom:1px solid #f1f5f9;font-weight:600" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background=''">← 뒤로</div>
+    <div style="padding:8px 14px 4px;font-size:12px;font-weight:700;color:#1e293b">기존 내용이 있습니다 — 어떻게 가져올까요?</div>
+    <div onclick="event.stopPropagation();_aiBooksConfirmInsert('overwrite')" style="padding:9px 14px;font-size:12px;cursor:pointer;border-top:1px solid #f1f5f9" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background=''">🔄 덮어쓰기 <span style="font-size:10px;color:#94a3b8">— 기존 내용을 지우고 새로 채우기</span></div>
+    <div onclick="event.stopPropagation();_aiBooksConfirmInsert('append')" style="padding:9px 14px;font-size:12px;cursor:pointer;border-top:1px solid #f1f5f9" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background=''">➕ 이어쓰기 <span style="font-size:10px;color:#94a3b8">— 기존 내용 뒤에 이어붙이기</span></div>
+  `;
+}
+
+function _aiBooksConfirmInsert(mode){
+  const lc=g('aiLeftContent');
+  const text=_aiBooksPendingInsertText;
+  if(lc&&text){
+    _setLeftMode('text');
+    lc.textContent = mode==='append' ? (lc.textContent||'').replace(/\s+$/,'')+'\n\n'+text : text;
+  }
+  _aiBooksPendingInsertText='';
   _closeAiBooksDropdown();
+}
+
+function _aiBooksCancelInsert(){
+  _aiBooksPendingInsertText='';
+  if(_aiBooksNavStep==='time') _renderAiBooksTimeList();
+  else _renderAiBooksModeSelect();
 }
 
 async function renderBookList(){
