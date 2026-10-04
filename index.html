@@ -783,14 +783,16 @@ table.pf-table .chart-cell>div{width:100%;height:88px;overflow:hidden;}
 
   /* ── 버튼 숨김 (로그인 모달·모달 X버튼·접근가능 모달 제외) ── */
   button:not(.mobile-keep):not(.mx){display:none!important;}
-  #authModal button,#adminModal button,.mobile-header-menu button,#aiChatModal button,#aiPresetModal button,#_memoStkModal button,#mscModal button{display:inline-block!important;pointer-events:auto!important;}
+  #authModal button,#adminModal button,.mobile-header-menu button,#aiChatModal button,#aiPresetModal button,#_memoStkModal button,#mscModal button,#addEcoModal button{display:inline-block!important;pointer-events:auto!important;}
   label.btn:not(.mobile-keep){display:none!important;}
   .idx-refresh-btn{display:none!important;}
 
   /* ── 입력 비활성화 ── */
   input:not([type=hidden]):not([type=file]):not([type=date]):not([type=color]),
   textarea,select{pointer-events:none!important;}
-  #mscModal select{pointer-events:auto!important;}
+  body:not(.guest-mode) #mscModal select,
+  body:not(.guest-mode) #addEcoModal input,
+  body:not(.guest-mode) #addEcoModal select{pointer-events:auto!important;}
   .rich-editor{pointer-events:none!important;cursor:default!important;}
 
   /* ── 기타 ── */
@@ -2581,12 +2583,12 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 <!-- ═══════ NEW REPORT DATE PICKER MODAL ═══════ -->
 <!-- ═══════ 경제일정 수동 추가 모달 ═══════ -->
 <div id="addEcoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10001;align-items:center;justify-content:center">
-  <div style="background:var(--card-bg,#fff);border-radius:14px;width:min(360px,92vw);box-shadow:0 8px 40px rgba(0,0,0,.35);overflow:hidden;border:1px solid var(--border,#e2e8f0)">
-    <div style="background:#1e3a5f;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
+  <div style="background:var(--card-bg,#fff);border-radius:14px;width:min(360px,92vw);max-height:90vh;box-shadow:0 8px 40px rgba(0,0,0,.35);overflow-x:hidden;overflow-y:auto;border:1px solid var(--border,#e2e8f0)">
+    <div style="position:sticky;top:0;z-index:2;background:#1e3a5f;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
       <span style="font-weight:700;font-size:14px">📌 경제일정 수동 추가</span>
-      <button onclick="closeAddEcoModal()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1">✕</button>
+      <button class="mobile-keep" onclick="closeAddEcoModal()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1">✕</button>
     </div>
-    <div style="padding:18px 18px 14px">
+    <div style="padding:18px 18px 0">
       <div style="margin-bottom:12px">
         <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#64748b);margin-bottom:4px">날짜</label>
         <input type="date" id="addEcoDate" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border,#cbd5e1);border-radius:7px;font-size:13px;background:var(--input-bg,#f8fafc);color:var(--text,#1e293b)">
@@ -2599,14 +2601,15 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
           <option value="기타">기타</option>
         </select>
       </div>
-      <div style="margin-bottom:16px">
+      <div style="margin-bottom:8px">
         <label style="display:block;font-size:11px;font-weight:700;color:var(--text-muted,#64748b);margin-bottom:4px">내용</label>
         <input type="text" id="addEcoContent" placeholder="이벤트 내용을 입력하세요" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border,#cbd5e1);border-radius:7px;font-size:13px;background:var(--input-bg,#f8fafc);color:var(--text,#1e293b)" onkeydown="if(event.key==='Enter')saveManualEcoEntry()">
       </div>
-      <div style="display:flex;gap:8px">
-        <button onclick="closeAddEcoModal()" style="flex:1;padding:10px;background:var(--bg-muted,#f1f5f9);border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#475569;font-weight:600">취소</button>
-        <button onclick="saveManualEcoEntry()" style="flex:2;padding:10px;background:#1e40af;border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#fff;font-weight:700">📌 저장</button>
-      </div>
+    </div>
+    <!-- 버튼 바 — 화면이 낮아 카드가 스크롤돼도 항상 하단에 고정(sticky) -->
+    <div style="position:sticky;bottom:0;z-index:2;display:flex;gap:8px;padding:8px 18px 14px;background:var(--card-bg,#fff)">
+      <button class="mobile-keep" onclick="closeAddEcoModal()" style="flex:1;padding:10px;background:var(--bg-muted,#f1f5f9);border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#475569;font-weight:600">취소</button>
+      <button onclick="saveManualEcoEntry()" style="flex:2;padding:10px;background:#1e40af;border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#fff;font-weight:700">📌 저장</button>
     </div>
   </div>
 </div>
@@ -3989,6 +3992,198 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
    ================================================================ */
 
 const SK = 'thefive_report_v3';
+
+/* ================================================================
+   저장 한도(localStorage ≈5MB) 감시 — "조용히 삼키는" 저장 실패를 없앰
+   ─ 배경: 자동저장(saveData/saveNow)·수동 경제일정(_saveManualEco) 등 앱 곳곳이 localStorage.setItem 을
+     try{}catch(e){} 로 감싸고 있어서, 저장 공간이 가득 차면 쓰기가 실패해도 아무 표시가 없었음
+     (리포트 임시저장·수동 일정이 사라질 수 있는데도 모름).
+   ─ 방식: setItem 을 한 곳에서 감싸 한도 초과(QuotaExceeded)만 감지 — 예외는 그대로 다시 던져 호출부 동작은 불변.
+     ① 실패한 값을 보관했다가 공간이 생기면 자동 재시도
+     ② 공간 확보 시도: 이미 IndexedDB 로 옮겨져 중복인 '옛 아카이브 사본'(BTMArchive_v2)을 IndexedDB(BTM_LegacyBackup)로
+        이동 — 삭제가 아니라 이동이라 복구 기능(recoverArchive)은 그 사본을 그대로 읽음
+     ③ 그래도 안 되면 화면 상단 경고 배너(💾 지금 Archive에 저장 / 📊 저장 공간 확인)
+   ================================================================ */
+const _lsNative={set:Storage.prototype.setItem,remove:Storage.prototype.removeItem}; /* 감시 래퍼 아래의 원본(테스트에서 교체 가능) */
+const _lsPending=new Map();       /* key → 마지막으로 저장에 실패한 값 (공간이 생기면 재시도) */
+let _lsReclaim='idle';            /* 공간 확보 시도: 'idle' | 'running' | 'done' */
+let _lsSnoozeUntil=0;             /* 배너 '닫기' 후 다시 띄우기 전까지의 유예 시각 */
+let _lsWarned=false, _lsLastFlush=0, _lsMoveP=null;
+const _LS_LABELS={
+  'thefive_report_v3':'리포트 자동저장','BTMManualEco':'수동 경제일정',
+  'BTMArchive_v2':'옛 아카이브 사본(복구용 백업)','BTMIdxMemos':'지수 메모','BTMBookBodyText':'Books 본문',
+  'BTMPfBackup':'포트폴리오 백업','BTMMemos':'메모(구버전 사본)','BTMBookRatings':'책 평점',
+  'BTM_CUSTOM_TICKERS':'사용자 티커','btm_church_calendar':'교회력 말씀','BTMSectionTitleMgmt':'섹션 제목 관리',
+  'BTMExRate_v1':'환율 기록','BTMPublished':'Publish 상태'
+};
+function _lsLabel(k){ return _LS_LABELS[k]||k; }
+function _lsEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function _lsFmt(n){ return n>=1048576?(n/1048576).toFixed(2)+'MB':Math.max(1,Math.round(n/1024))+'KB'; }
+function _lsIsQuota(e){ return !!e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014); }
+
+(function(){
+  function isLS(o){ try{ return o===window.localStorage; }catch(_){ return false; } }
+  Storage.prototype.setItem=function(k,v){
+    if(!isLS(this)) return _lsNative.set.apply(this,arguments);
+    try{ _lsNative.set.apply(this,arguments); }
+    catch(e){
+      if(_lsIsQuota(e)){ try{ _lsOnFail(String(k),String(v)); }catch(_){} }
+      throw e;                                           /* 호출부의 기존 try/catch 동작은 그대로 */
+    }
+    if(_lsPending.size){ try{ _lsOnOk(String(k)); }catch(_){} }
+  };
+  Storage.prototype.removeItem=function(k){
+    if(_lsPending.size&&isLS(this)){ _lsPending.delete(String(k)); try{ _lsRefreshBanner(); }catch(_){} }
+    return _lsNative.remove.apply(this,arguments);
+  };
+})();
+
+function _lsOnFail(k,v){
+  _lsPending.set(k,v);
+  if(!_lsWarned){ _lsWarned=true; console.warn('[저장소] 브라우저 저장 공간(localStorage) 부족으로 저장 실패 →',_lsLabel(k),'('+_lsFmt(v.length)+')'); }
+  if(_lsReclaim==='idle'){ _lsReclaim='running'; _lsReclaimRun(); }
+  else if(_lsReclaim==='done'){ _lsRefreshBanner(); }
+}
+function _lsOnOk(k){
+  _lsPending.delete(k);
+  if(_lsPending.size&&Date.now()-_lsLastFlush>5000){ _lsLastFlush=Date.now(); _lsFlushPending(); }   /* 다른 쓰기가 성공했다면 공간이 생겼을 수 있음 */
+  _lsRefreshBanner();
+}
+function _lsFlushPending(){
+  [..._lsPending].forEach(([k,v])=>{ try{ _lsNative.set.call(localStorage,k,v); _lsPending.delete(k); }catch(_){} });
+}
+async function _lsReclaimRun(){
+  let freed=0;
+  try{ freed=await _lsMoveLegacyArchive(); }catch(e){ console.warn('[저장소] 옛 아카이브 사본 이동 실패(원본 유지):',e); }
+  _lsFlushPending();
+  _lsReclaim='done';
+  try{
+    if(freed&&!_lsPending.size) _showMainToast('✅ 저장 공간을 확보했어요 — 저장을 이어갑니다');
+    _lsRefreshBanner();
+  }catch(_){}
+}
+
+/* ── 옛 아카이브 사본 → IndexedDB(BTM_LegacyBackup) 이동 ── */
+function _lgOpen(){
+  return new Promise((res,rej)=>{
+    if(!window.indexedDB){ rej(new Error('IndexedDB 미지원')); return; }
+    const r=indexedDB.open('BTM_LegacyBackup',1);
+    r.onupgradeneeded=()=>{ r.result.createObjectStore('blobs',{keyPath:'key'}); };
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error||new Error('BTM_LegacyBackup을 열 수 없습니다'));
+  });
+}
+async function _lgPut(key,raw){
+  const db=await _lgOpen();
+  try{
+    await new Promise((res,rej)=>{
+      const tx=db.transaction('blobs','readwrite');
+      tx.objectStore('blobs').put({key,raw,length:raw.length,savedAt:Date.now()});
+      tx.oncomplete=res; tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error||new Error('저장 취소'));
+    });
+  } finally { db.close(); }
+}
+async function _lgGet(key){
+  const db=await _lgOpen();
+  try{
+    return await new Promise((res,rej)=>{
+      const q=db.transaction('blobs','readonly').objectStore('blobs').get(key);
+      q.onsuccess=()=>res(q.result||null); q.onerror=()=>rej(q.error);
+    });
+  } finally { db.close(); }
+}
+function _lsMoveLegacyArchive(){
+  if(!_lsMoveP) _lsMoveP=_lsMoveLegacyArchiveImpl().finally(()=>{ _lsMoveP=null; });
+  return _lsMoveP;
+}
+async function _lsMoveLegacyArchiveImpl(){
+  await _arcReadyPromise;                                          /* Archive IndexedDB 초기화·이전이 끝난 뒤에 판단 */
+  if(!_arcDB) return 0;                                            /* 현재 Archive IndexedDB가 정상일 때만 */
+  if(localStorage.getItem('BTMArcIDB2Migrated')!=='1') return 0;   /* 옛 사본 → IndexedDB 이전이 끝난 뒤에만 */
+  const raw=localStorage.getItem('BTMArchive_v2');
+  if(!raw) return 0;
+  await _lgPut('BTMArchive_v2',raw);                               /* IndexedDB에 원문 그대로 보관(복구용) */
+  const back=await _lgGet('BTMArchive_v2');
+  if(!back||back.raw!==raw) throw new Error('이동 검증 실패 — 원본 유지');   /* 똑같이 읽힐 때만 원본 삭제 */
+  _lsNative.remove.call(localStorage,'BTMArchive_v2');
+  console.info('[저장소] 옛 아카이브 사본을 IndexedDB로 이동했습니다(복구 기능은 그대로 사용 가능) — localStorage '+_lsFmt(raw.length)+' 확보');
+  return raw.length;
+}
+
+/* ── 경고 배너 ── */
+function _lsRefreshBanner(){
+  const el=document.getElementById('lsQuotaBanner');
+  if(!_lsPending.size){
+    _lsWarned=false;
+    if(el&&el.style.display!=='none'){ el.style.display='none'; _showMainToast('✅ 저장이 다시 정상 동작합니다'); }
+    return;
+  }
+  if(_lsReclaim==='running') return;                               /* 공간 확보 시도가 끝난 뒤에 판단 */
+  _lsShowBanner();
+}
+function _lsShowBanner(){
+  if(_authMode!=='member') return;                                 /* 읽기 전용 Guest에겐 표시하지 않음 */
+  if(Date.now()<_lsSnoozeUntil||!document.body) return;
+  let el=document.getElementById('lsQuotaBanner');
+  if(!el){
+    const b='padding:5px 12px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;';
+    el=document.createElement('div');
+    el.id='lsQuotaBanner';
+    el.className='pdf-export-hide';
+    el.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:10500;width:min(640px,94vw);box-sizing:border-box;background:#7f1d1d;color:#fff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.5);padding:11px 14px;font-size:12px;line-height:1.55;display:none';
+    el.innerHTML=
+      '<div style="font-size:13px;font-weight:800;margin-bottom:3px">⚠ 브라우저 저장 공간이 가득 차서 저장되지 않은 항목이 있어요</div>'
+     +'<div id="lsQuotaMsg" style="color:#fecaca"></div>'
+     +'<div id="lsQuotaDetail" style="display:none;margin-top:8px;background:rgba(0,0,0,.3);border-radius:7px;padding:8px 10px;font-size:11px;color:#fee2e2"></div>'
+     +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">'
+     +'<button class="mobile-keep" onclick="_lsBannerSave()" style="'+b+'background:#fff;color:#7f1d1d">💾 지금 Archive에 저장</button>'
+     +'<button class="mobile-keep" onclick="_lsBannerDetail()" style="'+b+'background:rgba(255,255,255,.18);color:#fff">📊 저장 공간 확인</button>'
+     +'<button class="mobile-keep" onclick="_lsBannerSnooze()" style="'+b+'background:rgba(255,255,255,.18);color:#fff">닫기</button>'
+     +'</div>';
+    document.body.appendChild(el);
+  }
+  const labels=[..._lsPending.keys()].map(_lsLabel);
+  el.querySelector('#lsQuotaMsg').textContent='저장 실패: '+labels.join(', ')+' — 이대로 새로고침하거나 창을 닫으면 마지막 💾 Save 이후의 변경이 사라질 수 있어요.';
+  el.style.display='block';
+}
+function _lsBannerSnooze(){
+  _lsSnoozeUntil=Date.now()+10*60*1000;                            /* 10분간 숨김(그 뒤에도 계속 실패하면 다시 표시) */
+  const el=document.getElementById('lsQuotaBanner'); if(el) el.style.display='none';
+}
+async function _lsBannerSave(){
+  const msg=document.getElementById('lsQuotaMsg');
+  try{
+    await archiveReport();
+    if(msg) msg.textContent='✅ Archive(IndexedDB)에 저장했어요 — 작업 내용은 안전합니다. 다만 브라우저 임시저장 공간은 아직 부족해요.';
+  }catch(e){ alert('Archive 저장 실패: '+(e&&e.message||e)); }
+}
+function _lsBannerDetail(){
+  const box=document.getElementById('lsQuotaDetail'); if(!box) return;
+  if(box.style.display!=='none'){ box.style.display='none'; return; }
+  const rows=[]; let total=0;
+  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); const n=k.length+(localStorage.getItem(k)||'').length; total+=n; rows.push([k,n]); }
+  rows.sort((a,b)=>b[1]-a[1]);
+  const top=rows.slice(0,6).map(([k,n])=>'<div style="display:flex;justify-content:space-between;gap:10px"><span>'+_lsEsc(_lsLabel(k))+(_lsLabel(k)!==k?' <span style="opacity:.6">('+_lsEsc(k)+')</span>':'')+'</span><b>'+_lsFmt(n)+'</b></div>').join('');
+  const lg=localStorage.getItem('BTMArchive_v2');
+  const mv=lg?'<div style="margin-top:8px"><button class="mobile-keep" onclick="_lsBannerMove()" style="padding:5px 12px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:#7f1d1d">📦 옛 아카이브 사본 '+_lsFmt(lg.length)+' → IndexedDB로 이동해 공간 확보</button><div style="opacity:.75;margin-top:3px">이미 IndexedDB에 있는 내용의 복구용 백업이라 안전하게 옮길 수 있고, 복구 기능은 옮긴 사본을 그대로 사용해요.</div></div>':'';
+  box.innerHTML='<div style="margin-bottom:5px">브라우저 임시저장소(localStorage) 사용량: <b>'+_lsFmt(total)+'</b> / 약 5MB</div>'+top
+    +'<div style="margin-top:6px;opacity:.75">※ Archive·메모 본체는 IndexedDB에 따로 저장돼 이 한도와 무관해요.</div><div id="lsQuotaEst" style="opacity:.75"></div>'+mv;
+  box.style.display='block';
+  if(navigator.storage&&navigator.storage.estimate){
+    navigator.storage.estimate().then(es=>{ const e=document.getElementById('lsQuotaEst'); if(e) e.textContent='사이트 전체 저장소(IndexedDB 포함): '+_lsFmt(es.usage||0)+' 사용 / 한도 약 '+_lsFmt(es.quota||0); }).catch(()=>{});
+  }
+}
+async function _lsBannerMove(){
+  try{
+    const n=await _lsMoveLegacyArchive();
+    _lsFlushPending();
+    if(n) _showMainToast('✅ '+_lsFmt(n)+' 확보했어요');
+    else alert('이동할 옛 아카이브 사본이 없거나, Archive 저장소가 아직 준비되지 않았어요.');
+  }catch(e){ alert('이동하지 못했어요(원본은 그대로 유지됩니다): '+(e&&e.message||e)); }
+  _lsRefreshBanner();
+  const box=document.getElementById('lsQuotaDetail');
+  if(box&&box.style.display!=='none'){ box.style.display='none'; _lsBannerDetail(); }   /* 사용량 다시 계산 */
+}
 
 /* ── 다국어(한/영/중) 리포트: 전역 상태 ── */
 let _btmLang='ko';           // 현재 화면에 표시 중인 언어: 'ko' | 'en' | 'zh'
@@ -5654,8 +5849,8 @@ const ECO_DISPLAY_MAX=15;
 
 /* ── 수동 일정: 별도 localStorage 키로 영구 보존 ── */
 const MANUAL_ECO_KEY='BTMManualEco';
-function _getManualEco(){ try{ return JSON.parse(localStorage.getItem(MANUAL_ECO_KEY)||'[]'); }catch(e){ return []; } }
-function _saveManualEco(arr){ try{ localStorage.setItem(MANUAL_ECO_KEY,JSON.stringify(arr)); }catch(e){} }
+function _getManualEco(){ try{ const p=_lsPending.get(MANUAL_ECO_KEY); return JSON.parse(p!==undefined?p:(localStorage.getItem(MANUAL_ECO_KEY)||'[]')); }catch(e){ return []; } }   /* 저장 공간 부족으로 아직 못 쓴 값(_lsPending)이 있으면 그걸 우선 — 아니면 방금 추가한 일정이 다음 📡 업데이트 때 사라짐 */
+function _saveManualEco(arr){ try{ localStorage.setItem(MANUAL_ECO_KEY,JSON.stringify(arr)); }catch(e){} }   /* 한도 초과는 setItem 감시(_lsNative 래퍼)가 배너로 알리고, 공간이 생기면 자동 재시도 */
 
 function openAddEcoModal(){
   const t=new Date();
@@ -5688,18 +5883,109 @@ function saveManualEcoEntry(){
 /* ══════════════════════════════════════════
    월간 증시 캘린더
    ══════════════════════════════════════════ */
-const MSC_KEY='msc_data';
-function _mscGet(){try{return JSON.parse(localStorage.getItem(MSC_KEY)||'[]');}catch(e){return[];}}
-/* 저장 성공 여부를 반환 — PDF는 base64 문자열로 localStorage에 들어가므로 브라우저 한도(보통 ~5MB)를 넘으면 실패할 수 있음 */
-function _mscSave(d){try{localStorage.setItem(MSC_KEY,JSON.stringify(d));return true;}catch(e){return false;}}
+const MSC_KEY='msc_data';   /* 구버전 localStorage 키 — 이전(migration) 전용. 새 데이터는 여기에 쓰지 않음 */
+const MSC_DB='BTM_MscDB';   /* 저장소: IndexedDB — meta(목록용 작은 정보) + file(PDF/이미지 본체, Blob) */
 
 let _mscType='image';      /* 현재 입력 모드: 'image' | 'pdf' */
-let _mscPendingData=null;  /* {type, data} — 추가 대기 중인 데이터 */
+let _mscPendingData=null;  /* 저장 대기 중: {type:'pdf',blob:File,name,size} | {type:'image',data:dataURL} */
 let _mscPasteListener=null;
-let _mscReading=false;     /* 파일 읽는 중(FileReader 진행) */
-let _mscLoadTok=0;         /* 늦게 끝난 이전 읽기가 최신 선택을 덮어쓰지 않게 하는 토큰 */
+let _mscSaving=false;      /* 저장 진행 중 — 더블클릭 방지 */
+let _mscRenderTok=0;       /* 늦게 끝난 이전 목록 그리기가 최신 결과를 덮어쓰지 않게 하는 토큰 */
+
+/* ── IndexedDB 저장소 ───────────────────────────────────────────────
+   왜 localStorage를 쓰지 않나: origin당 한도(약 5MB)를 앱의 다른 데이터(자동저장 리포트·종목 1년 시세·번역본 …)와
+   나눠 쓰는데, PDF/이미지를 base64 문자열로 넣으면 33%나 부풀어 금방 가득 참 — 그래서 117KB짜리 PDF도
+   "저장 공간 부족"이 났음. IndexedDB는 디스크 여유만큼 쓸 수 있고 파일을 Blob 그대로(base64 변환 없이) 저장함. */
+let _mscDbP=null;
+function _mscDb(){
+  if(_mscDbP) return _mscDbP;
+  _mscDbP=new Promise((res,rej)=>{
+    if(!window.indexedDB){ rej(new Error('이 브라우저는 IndexedDB를 지원하지 않습니다')); return; }
+    const req=indexedDB.open(MSC_DB,1);
+    req.onupgradeneeded=()=>{ const db=req.result; db.createObjectStore('meta',{keyPath:'key'}); db.createObjectStore('file',{keyPath:'key'}); };
+    req.onsuccess=()=>{ const db=req.result; db.onversionchange=()=>{ db.close(); _mscDbP=null; }; res(db); };
+    req.onerror=()=>rej(req.error||new Error('IndexedDB를 열 수 없습니다'));
+  }).catch(e=>{ _mscDbP=null; throw e; });
+  return _mscDbP;
+}
+/* stores 트랜잭션 실행 — fn(스토어들…)이 돌려준 IDBRequest의 결과(또는 값)로, 트랜잭션이 끝난 뒤 resolve */
+function _mscTx(stores,mode,fn){
+  return _mscDb().then(db=>new Promise((res,rej)=>{
+    let tx,out;
+    try{ tx=db.transaction(stores,mode); out=fn.apply(null,stores.map(n=>tx.objectStore(n))); }
+    catch(e){ rej(e); return; }
+    tx.oncomplete=()=>res(out instanceof IDBRequest?out.result:out);
+    tx.onerror=()=>rej(tx.error);
+    tx.onabort=()=>rej(tx.error||new Error('저장소 작업이 취소되었습니다'));
+  }));
+}
+function _mscPut(meta,blob){ return _mscTx(['meta','file'],'readwrite',(m,f)=>{ m.put(meta); f.put({key:meta.key,blob}); }); }
+function _mscDelete(key){ return _mscTx(['meta','file'],'readwrite',(m,f)=>{ m.delete(key); f.delete(key); }); }
+function _mscGetMeta(key){ return _mscTx(['meta'],'readonly',m=>m.get(key)); }
+function _mscGetBoth(key){
+  return _mscTx(['meta','file'],'readonly',(m,f)=>{
+    const o={};
+    m.get(key).onsuccess=e=>{ o.meta=e.target.result; };
+    f.get(key).onsuccess=e=>{ o.file=e.target.result; };
+    return o;
+  });
+}
+
+/* data URL(base64) → Blob. 구버전 데이터 이전·붙여넣은 이미지 저장에 사용 */
+function _mscDataUrlToBlob(url,forceMime){
+  url=String(url||'');
+  const i=url.indexOf(',');
+  const head=i<0?';base64':url.slice(5,i), body=i<0?url:url.slice(i+1);
+  const mime=forceMime||head.split(';')[0]||'application/octet-stream';
+  let bytes;
+  if(/;base64$/i.test(head)){
+    const bin=atob(body); bytes=new Uint8Array(bin.length);
+    for(let j=0;j<bin.length;j++) bytes[j]=bin.charCodeAt(j);
+  } else { bytes=new TextEncoder().encode(decodeURIComponent(body)); }
+  return new Blob([bytes],{type:mime});
+}
+
+/* 구버전(localStorage `msc_data`) 데이터를 IndexedDB로 이전. 모두 옮긴 뒤에만 원본을 지워 localStorage 공간을 돌려줌.
+   못 옮긴 항목이 하나라도 있으면 원본을 그대로 두고(데이터 손실 방지) 다음 기회에 다시 시도. 이전할 게 없으면 즉시 끝남. */
+let _mscInitP=null;
+function _mscInit(){
+  if(!_mscInitP) _mscInitP=_mscMigrateLegacy().catch(e=>{ _mscInitP=null; throw e; });
+  return _mscInitP;
+}
+async function _mscMigrateLegacy(){
+  await _mscDb();                                    /* IndexedDB를 못 열면 여기서 중단 → 원본 유지 */
+  let raw=null; try{ raw=localStorage.getItem(MSC_KEY); }catch(e){}
+  if(raw===null) return 0;
+  let arr; try{ arr=JSON.parse(raw); }catch(e){ return 0; }   /* 깨진 데이터는 건드리지 않음 */
+  if(!Array.isArray(arr)) return 0;
+  const have=new Set((await _mscTx(['meta'],'readonly',m=>m.getAll())).map(r=>r.key));
+  let moved=0, bad=0;
+  for(const d of arr){
+    const src=d&&(d.data||d.img);                    /* 구버전 호환: d.img */
+    const year=parseInt(d&&d.year), month=parseInt(d&&d.month);
+    if(!src||!year||!month) continue;                /* 쓸 수 없는 빈 항목 */
+    const key=year+'-'+month;
+    if(have.has(key)) continue;                      /* IndexedDB에 이미 있으면 그쪽 우선 */
+    const type=(d.type||'image')==='pdf'?'pdf':'image';
+    let blob;
+    try{ blob=_mscDataUrlToBlob(src,type==='pdf'?'application/pdf':''); }
+    catch(e){ bad++; console.warn('[월간캘린더] 이전 건너뜀(변환 실패):',key,e); continue; }
+    await _mscPut({key,year,month,type,name:'',size:blob.size,mime:blob.type,savedAt:Date.now()},blob);
+    have.add(key); moved++;
+  }
+  if(bad) return moved;                              /* 못 옮긴 게 있으면 원본 유지 */
+  try{ localStorage.removeItem(MSC_KEY); }catch(e){}
+  if(moved||raw.length>2) console.info('[월간캘린더] localStorage → IndexedDB 이전 완료: '+moved+'건, localStorage '+(raw.length/1048576).toFixed(2)+'M자 확보');
+  return moved;
+}
+/* 앱이 뜬 뒤(조금 늦춰서) 미리 이전 — 모달을 열기 전에도 가득 찼던 localStorage 공간을 돌려줌 */
+(function(){
+  const go=()=>setTimeout(()=>{ _mscInit().catch(e=>console.warn('[월간캘린더] 저장소 이전 보류:',e)); },2500);
+  if(document.readyState==='complete') go(); else window.addEventListener('load',go,{once:true});
+})();
 
 function _mscFmtSize(n){ return n>=1048576?(n/1048576).toFixed(1)+'MB':Math.max(1,Math.round(n/1024))+'KB'; }
+function _mscErrText(e){ return (e&&e.name?e.name+': ':'')+((e&&e.message)||String(e)); }
 
 /* 저장 바 왼쪽 상태 메시지 — kind: 'ok' 성공 | 'warn' 저장 전 | 'err' 실패 | 그 외 안내 */
 function _mscStatus(msg,kind){
@@ -5719,25 +6005,41 @@ function _mscPdfBoxUi(label){
   box.style.background=label?'#f0fdfa':'#fff';
 }
 
-function _mscRender(hiYear,hiMonth){
+async function _mscRender(hiYear,hiMonth){
   const list=g('mscList'); if(!list) return;
-  const data=_mscGet().sort((a,b)=>a.year!==b.year?a.year-b.year:a.month-b.month);
+  const tok=++_mscRenderTok;
+  let data;
+  try{
+    try{ await _mscInit(); }catch(e){ console.warn('[월간캘린더] 옛 데이터 이전 보류:',e); }   /* 옛 localStorage 데이터가 있으면 먼저 이전(실패해도 현재 목록은 보여줌) */
+    data=await _mscTx(['meta'],'readonly',m=>m.getAll());
+  }catch(e){
+    if(tok!==_mscRenderTok) return;
+    const div=document.createElement('div');
+    div.style.cssText='text-align:center;padding:20px 8px;color:#b91c1c;font-size:12px;line-height:1.5';
+    div.textContent='⚠ 캘린더 저장소를 열 수 없습니다 — '+_mscErrText(e);
+    list.innerHTML=''; list.appendChild(div);
+    return;
+  }
+  if(tok!==_mscRenderTok) return;                    /* 그 사이 더 새로운 그리기가 시작됨 */
+  data.sort((a,b)=>a.year!==b.year?a.year-b.year:a.month-b.month);
   if(!data.length){
     list.innerHTML='<div style="text-align:center;padding:24px 0;color:#94a3b8;font-size:12px">등록된 캘린더가 없습니다</div>';
     return;
   }
-  list.innerHTML=data.map((d,i)=>{
-    const isPdf=(d.type||'image')==='pdf';
+  list.innerHTML=data.map(d=>{
+    const isPdf=d.type==='pdf';
     const badge=isPdf
       ?'<span style="padding:2px 6px;background:#fef3c7;color:#92400e;border-radius:4px;font-size:9px;font-weight:700">PDF</span>'
       :'<span style="padding:2px 6px;background:#dbeafe;color:#1e40af;border-radius:4px;font-size:9px;font-weight:700">이미지</span>';
-    return `<div data-msc="${d.year}-${d.month}" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9">
+    const sz=d.size?'<span style="font-size:10px;color:#94a3b8">'+_mscFmtSize(d.size)+'</span>':'';
+    return `<div data-msc="${d.key}" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9">
       <span style="font-size:13px;font-weight:600;color:#334155">${d.year}년 ${d.month}월</span>
-      ${badge}<span style="flex:1"></span>
-      <button class="mobile-keep" onclick="_mscView(${i})" style="padding:3px 10px;background:#e0f2fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#0369a1;cursor:pointer">🔍 보기</button>
-      <button onclick="_mscDel(${i})" style="padding:3px 10px;background:#fee2e2;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#b91c1c;cursor:pointer">삭제</button>
+      ${badge}${sz}<span style="flex:1"></span>
+      <button class="mobile-keep" onclick="_mscView('${d.key}')" style="padding:3px 10px;background:#e0f2fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#0369a1;cursor:pointer">🔍 보기</button>
+      <button onclick="_mscDel('${d.key}')" style="padding:3px 10px;background:#fee2e2;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#b91c1c;cursor:pointer">삭제</button>
     </div>`;
   }).join('');
+  data.forEach(d=>{ if(d.name){ const r=list.querySelector('[data-msc="'+d.key+'"]'); if(r) r.title=d.name; } });   /* 파일명은 마우스를 올리면 표시 */
   if(hiYear){   /* 방금 저장한 행을 잠깐 강조하고 보이는 위치로 스크롤 */
     const row=list.querySelector('[data-msc="'+hiYear+'-'+hiMonth+'"]');
     if(row){
@@ -5751,7 +6053,6 @@ function _mscRender(hiYear,hiMonth){
 window._mscSetType=function(type){
   _mscType=type;
   _mscPendingData=null;
-  _mscReading=false; _mscLoadTok++;
   _mscStatus('');
   const isImg=type==='image';
   g('mscImgArea').style.display=isImg?'':'none';
@@ -5781,6 +6082,7 @@ window.openMscModal=function(){
   const mo=g('mscMonth'); if(mo) mo.value=new Date().getMonth()+1;
   _mscPendingData=null;
   _mscSetType('image');
+  const _ml=g('mscList'); if(_ml) _ml.innerHTML='<div style="text-align:center;padding:24px 0;color:#94a3b8;font-size:12px">불러오는 중…</div>';
   _mscRender();
   modal.style.display='flex';
   /* 모달이 열린 동안 document-level paste 수신 (capture:true = 최우선) */
@@ -5863,10 +6165,10 @@ window._mscClearImg=function(){
   _mscStatus('');
 };
 
-/* PDF 읽기 — 파일 선택(input)·끌어다 놓기 공통 */
+/* PDF 선택(파일 선택창·끌어다 놓기 공통) — 파일을 읽어 변환하지 않고 File 자체를 들고 있다가 저장할 때 Blob으로 넣음.
+   그래서 용량이 커도 선택이 즉시 끝나고 메모리도 거의 안 씀 */
 function _mscPdfLoad(f){
-  const tok=++_mscLoadTok;
-  _mscPendingData=null; _mscReading=false;
+  _mscPendingData=null;
   if(!(f.type==='application/pdf'||/\.pdf$/i.test(f.name))){
     _mscPdfBoxUi('');
     _mscStatus('❌ PDF 파일만 선택할 수 있습니다.','err');
@@ -5877,24 +6179,9 @@ function _mscPdfLoad(f){
     _mscStatus('❌ 비어 있는 파일입니다.','err');
     return;
   }
-  _mscReading=true;
-  _mscPdfBoxUi(f.name+' — 읽는 중…');
-  _mscStatus('');
-  const r=new FileReader();
-  r.onload=e=>{
-    if(tok!==_mscLoadTok) return;   /* 그 사이 다른 파일을 고르거나 모드를 바꿈 */
-    _mscReading=false;
-    _mscPendingData={type:'pdf',data:e.target.result};
-    _mscPdfBoxUi(f.name+' ('+_mscFmtSize(f.size)+')');
-    _mscStatus('⚠ 아직 저장되지 않았습니다 — 💾 저장 버튼을 눌러 주세요','warn');
-  };
-  r.onerror=()=>{
-    if(tok!==_mscLoadTok) return;
-    _mscReading=false;
-    _mscPdfBoxUi('');
-    _mscStatus('❌ 파일을 읽지 못했습니다. 다시 선택해 주세요.','err');
-  };
-  r.readAsDataURL(f);
+  _mscPendingData={type:'pdf',blob:f,name:f.name,size:f.size};
+  _mscPdfBoxUi(f.name+' ('+_mscFmtSize(f.size)+')');
+  _mscStatus('⚠ 아직 저장되지 않았습니다 — 💾 저장 버튼을 눌러 주세요','warn');
 }
 
 window._mscPdfSelect=function(input){
@@ -5908,51 +6195,72 @@ window._mscPdfDrop=function(ev){
   const f=ev.dataTransfer?.files?.[0]; if(f) _mscPdfLoad(f);
 };
 
-window._mscAdd=function(){
+window._mscAdd=async function(){
+  if(_mscSaving) return;
   const year=parseInt(g('mscYear').value);
   const month=parseInt(g('mscMonth').value);
-  if(_mscReading){ alert('파일을 읽는 중입니다. 잠시 후 💾 저장을 다시 눌러주세요.'); return; }
-  if(!_mscPendingData){
+  const pend=_mscPendingData;
+  if(!pend){
     alert(_mscType==='image'?'이미지를 붙여넣기(Ctrl+V) 또는 드래그 앤 드롭 해주세요.':'PDF 파일을 선택해주세요.');
     return;
   }
-  const list=_mscGet();
-  const idx=list.findIndex(d=>d.year===year&&d.month===month);
-  const entry={year,month,type:_mscPendingData.type,data:_mscPendingData.data};
-  if(idx>=0){
-    if(!confirm(`${year}년 ${month}월 캘린더가 이미 있습니다. 덮어쓰시겠습니까?`)) return;
-    list[idx]=entry;
-  } else { list.push(entry); }
-  if(!_mscSave(list)){
+  const key=year+'-'+month;
+  const btn=g('mscSaveBtn');
+  _mscSaving=true;
+  if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.style.cursor='wait'; }
+  _mscStatus('💾 저장 중…');
+  let blob;
+  try{
+    try{ await _mscInit(); }catch(e){ console.warn('[월간캘린더] 옛 데이터 이전 보류:',e); }   /* 이전이 실패해도 새 파일 저장은 진행 */
+    if(await _mscGetMeta(key)){
+      if(!confirm(`${year}년 ${month}월 캘린더가 이미 있습니다. 덮어쓰시겠습니까?`)){
+        _mscStatus('⚠ 저장을 취소했습니다 — 다른 년·월을 고르거나 다시 저장해 주세요','warn');
+        return;
+      }
+      _mscStatus('💾 저장 중…');
+    }
+    blob=pend.type==='pdf'?new Blob([pend.blob],{type:'application/pdf'}):_mscDataUrlToBlob(pend.data);
+    await _mscPut({key,year,month,type:pend.type,name:pend.name||'',size:blob.size,mime:blob.type,savedAt:Date.now()},blob);
+  }catch(e){
     /* 저장 실패 — 선택한 파일은 지우지 않고 그대로 둬서 다시 시도할 수 있게 함 */
-    _mscStatus('❌ 저장 실패 — 브라우저 저장 공간 부족','err');
-    alert('저장하지 못했습니다. 브라우저 저장 공간이 부족합니다.\n(이번 파일 약 '+_mscFmtSize(Math.round(entry.data.length*0.75))+')\n\n오래된 월의 캘린더를 삭제하거나, 더 작은 PDF/이미지를 사용해 주세요.');
+    const full=!!e&&e.name==='QuotaExceededError';
+    _mscStatus('❌ 저장 실패 — '+(full?'디스크 공간 부족':_mscErrText(e)),'err');
+    alert('저장하지 못했습니다.\n'+(full?'컴퓨터의 저장 공간(디스크)이 부족합니다. 공간을 확보한 뒤 다시 시도해 주세요.':'원인: '+_mscErrText(e))+'\n\n선택한 파일은 그대로 남아 있으니 다시 💾 저장을 눌러 보세요.');
     return;
+  }finally{
+    _mscSaving=false;
+    if(btn){ btn.disabled=false; btn.style.opacity=''; btn.style.cursor='pointer'; }
   }
-  const kind=entry.type==='pdf'?'PDF':'이미지';
+  const kind=pend.type==='pdf'?'PDF':'이미지';
   _mscClearImg();
   _mscPdfBoxUi('');
   const pi=g('mscPdfInput'); if(pi) pi.value='';
   _mscPendingData=null;
-  _mscRender(year,month);
-  _mscStatus('✅ '+year+'년 '+month+'월 '+kind+' 저장 완료','ok');
+  await _mscRender(year,month);
+  _mscStatus('✅ '+year+'년 '+month+'월 '+kind+' 저장 완료 ('+_mscFmtSize(blob.size)+')','ok');
 };
 
-window._mscDel=function(i){
-  const data=_mscGet().sort((a,b)=>a.year!==b.year?a.year-b.year:a.month-b.month);
-  const d=data[i]; if(!d) return;
+window._mscDel=async function(key){
+  let d;
+  try{ d=await _mscGetMeta(key); }
+  catch(e){ alert('삭제할 항목을 확인하지 못했습니다.\n원인: '+_mscErrText(e)); return; }
+  if(!d) return;
   if(!confirm(`${d.year}년 ${d.month}월 캘린더를 삭제하시겠습니까?`)) return;
-  data.splice(i,1);
-  _mscSave(data);
+  try{ await _mscDelete(key); }
+  catch(e){ alert('삭제하지 못했습니다.\n원인: '+_mscErrText(e)); return; }
   _mscRender();
 };
 
-window._mscView=function(i){
-  const data=_mscGet().sort((a,b)=>a.year!==b.year?a.year-b.year:a.month-b.month);
-  const d=data[i]; if(!d) return;
-  /* 구버전 호환: d.img 필드 사용 가능 */
-  const src=d.data||d.img; if(!src) return;
-  const isPdf=(d.type||'image')==='pdf';
+window._mscView=async function(key){
+  let rec;
+  try{ rec=await _mscGetBoth(key); }
+  catch(e){ alert('파일을 불러오지 못했습니다.\n원인: '+_mscErrText(e)); return; }
+  const d=rec&&rec.meta, fileBlob=rec&&rec.file&&rec.file.blob;
+  if(!d||!fileBlob){ alert('저장된 파일을 찾을 수 없습니다.'); return; }
+  const isPdf=d.type==='pdf';
+  /* PDF는 type을 application/pdf로 확정(빈 type이면 브라우저 PDF 뷰어가 안 뜸). Blob 감싸기는 복사 없이 즉시 끝남 */
+  const blobUrl=URL.createObjectURL(isPdf?new Blob([fileBlob],{type:'application/pdf'}):fileBlob);
+  const cleanup=()=>URL.revokeObjectURL(blobUrl);
 
   const ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:20000;display:flex;flex-direction:column;box-sizing:border-box';
@@ -5973,17 +6281,8 @@ window._mscView=function(i){
   const content=document.createElement('div');
   content.style.cssText='flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
 
-  let cleanup=()=>{};
-
   if(isPdf){
     /* PDF → Blob URL → iframe (전체 화면 채움) */
-    const b64=src.includes(',') ? src.split(',')[1] : src;
-    const bytes=atob(b64);
-    const arr=new Uint8Array(bytes.length);
-    for(let j=0;j<bytes.length;j++) arr[j]=bytes.charCodeAt(j);
-    const blob=new Blob([arr],{type:'application/pdf'});
-    const blobUrl=URL.createObjectURL(blob);
-    cleanup=()=>URL.revokeObjectURL(blobUrl);
     const iframe=document.createElement('iframe');
     iframe.src=blobUrl;
     iframe.style.cssText='width:100%;height:100%;min-height:0;border:none;border-radius:8px;flex:1';
@@ -5993,7 +6292,7 @@ window._mscView=function(i){
   } else {
     /* 이미지 → 전체 화면 맞춤 */
     const img=document.createElement('img');
-    img.src=src;
+    img.src=blobUrl;
     img.style.cssText='max-width:100%;max-height:100%;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,.6)';
     content.appendChild(img);
     /* 배경 클릭 닫기 */
@@ -10161,7 +10460,7 @@ let _saveTimer=null;
 function saveData(){
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(()=>{
-    try{localStorage.setItem(SK,JSON.stringify(collectData()));}catch(e){}
+    try{localStorage.setItem(SK,JSON.stringify(collectData()));}catch(e){ /* 한도 초과는 setItem 감시(_lsNative 래퍼)가 배너로 알리고 자동 재시도 */ }
     recalcRates();
     recalcPortfolio();
   },300);
@@ -10170,7 +10469,7 @@ function saveData(){
 /* 업데이트 완료 후 즉시 저장 (디바운스 없음) */
 function saveNow(){
   clearTimeout(_saveTimer);
-  try{localStorage.setItem(SK,JSON.stringify(collectData()));}catch(e){}
+  try{localStorage.setItem(SK,JSON.stringify(collectData()));}catch(e){ /* 한도 초과는 setItem 감시가 알림 */ }
   recalcRates();
   recalcPortfolio();
 }
@@ -10480,7 +10779,8 @@ async function confirmNewReport(){
   _fpAutoCalcDays(selectedDate, recentBook);
   /* 격언 & 교회력 말씀 적용 */
   _applyNewReportQuotes(selectedDate);
-  localStorage.setItem(SK, JSON.stringify(collectData()));
+  /* 한도 초과여도 예외로 새 리포트 생성(Publish 해제·카운터 갱신·자동백업)이 중간에 끊기지 않게 함 — 실패는 setItem 감시가 배너로 알림 */
+  try{ localStorage.setItem(SK, JSON.stringify(collectData())); }catch(_){}
   _isPublished=false; localStorage.removeItem('BTMPublished'); _clearPublishedUI();
   /* 툴바 FIVE카운팅 표시 갱신 */
   initAutoFiveCount();
@@ -10499,7 +10799,12 @@ function importJSONClick(){g('importFile').click();}
 function importJSON(e){
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
-  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);applyData(d);localStorage.setItem(SK,JSON.stringify(d));alert('불러오기 완료');}catch(err){alert('JSON 오류: '+err.message);}};
+  r.onload=ev=>{
+    let d;
+    try{ d=JSON.parse(ev.target.result); applyData(d); }catch(err){ alert('JSON 오류: '+err.message); return; }
+    try{ localStorage.setItem(SK,JSON.stringify(d)); alert('불러오기 완료'); }
+    catch(err){ alert('불러오기는 완료됐지만 브라우저 임시저장에는 실패했어요(저장 공간 부족).\n💾 Save로 Archive에 저장해 주세요.'); }
+  };
   r.readAsText(f);
 }
 
@@ -12499,9 +12804,11 @@ async function _arcDiagnose(){
 
   /* localStorage BTMArchive_v2 */
   try{
-    const lsRaw = localStorage.getItem('BTMArchive_v2');
+    let lsRaw = localStorage.getItem('BTMArchive_v2');
+    let lsMoved = false;
+    if(!lsRaw){ try{ const _b = await _lgGet('BTMArchive_v2'); if(_b && _b.raw){ lsRaw = _b.raw; lsMoved = true; } }catch(_){} }   /* IndexedDB로 이동된 사본 */
     const lsMap = lsRaw ? JSON.parse(lsRaw) : {};
-    rows['localStorage BTMArchive_v2'] = Object.keys(lsMap).length;
+    rows[lsMoved ? 'BTMArchive_v2 (옛 사본 · IndexedDB로 이동됨)' : 'localStorage BTMArchive_v2'] = Object.keys(lsMap).length;
   }catch(_){ rows['localStorage BTMArchive_v2'] = '읽기 오류'; }
 
   /* 마이그레이션 플래그 */
@@ -12568,7 +12875,7 @@ async function recoverArchive(){
 
   /* ① SK 세션 자동저장 데이터 */
   try{
-    const skRaw = localStorage.getItem(SK);
+    const skRaw = _lsPending.has(SK) ? _lsPending.get(SK) : localStorage.getItem(SK);   /* 저장 실패로 못 쓴 최신 자동저장본이 있으면 그것을 우선 */
     if(skRaw){
       const skData = JSON.parse(skRaw);
       const d = skData.reportDate;
@@ -12586,7 +12893,8 @@ async function recoverArchive(){
 
   /* ② localStorage BTMArchive_v2 (구 저장소 — 마이그레이션 후에도 원본 남아있음) */
   try{
-    const lsRaw = localStorage.getItem('BTMArchive_v2');
+    let lsRaw = localStorage.getItem('BTMArchive_v2');
+    if(!lsRaw){ try{ const _b = await _lgGet('BTMArchive_v2'); lsRaw = _b && _b.raw; }catch(_){} }   /* 저장 공간 확보로 IndexedDB(BTM_LegacyBackup)에 옮겨진 사본 */
     if(lsRaw){
       const lsMap = JSON.parse(lsRaw);
       Object.values(lsMap).forEach(r=>{
@@ -22321,7 +22629,7 @@ function _deleteMemoCat(name){
 
   const memos = _loadMemos();
   memos.forEach(m => { if(m.category === name) delete m.category; });
-  try{ localStorage.setItem(MEMO_KEY, JSON.stringify(memos)); } catch(ex){}
+  _saveMemos(memos);   /* IndexedDB 반영(이름 변경 _renameMemoCat 과 동일) — 예전엔 옛 localStorage 키에 메모 전체를 써서 용량만 차지하고 삭제도 새로고침하면 되살아났음 */
 
   if(_currentMemoCat === name) _currentMemoCat = null;
   if(_memoFilterCat  === name) _memoFilterCat  = null;
@@ -23587,6 +23895,7 @@ function enterMemberMode(){
   document.body.classList.remove('guest-mode');
   document.body.classList.add('member-mode');
   const ab=g('adminMenuBtn'); if(ab) ab.style.display='';
+  try{ _lsRefreshBanner(); }catch(_){}   /* 로그인 전에 쌓인 저장 실패가 있으면 이제 알림 */
   loadLatestArchive(false); // Save/Publish 무관 가장 최신 리포트 자동 로드
   _autoConnectClaude();     // Claude API 자동 연결 확인
   _fetchClaudeBalance();    // Claude API 잔액 표시
