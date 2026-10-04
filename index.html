@@ -4006,6 +4006,8 @@ const SK = 'thefive_report_v3';
    ================================================================ */
 const _lsNative={set:Storage.prototype.setItem,remove:Storage.prototype.removeItem}; /* 감시 래퍼 아래의 원본(테스트에서 교체 가능) */
 const _lsPending=new Map();       /* key → 마지막으로 저장에 실패한 값 (공간이 생기면 재시도) */
+const _lsExtra=new Map();         /* 라벨 → 오류 메시지: localStorage 밖(IndexedDB 등) 저장소의 쓰기 실패 */
+let _lsPersisted=null;            /* 영구 저장소(브라우저가 임의로 지우지 않음) 허용 여부 */
 let _lsReclaim='idle';            /* 공간 확보 시도: 'idle' | 'running' | 'done' */
 let _lsSnoozeUntil=0;             /* 배너 '닫기' 후 다시 띄우기 전까지의 유예 시각 */
 let _lsWarned=false, _lsLastFlush=0, _lsMoveP=null;
@@ -4064,17 +4066,20 @@ async function _lsReclaimRun(){
 }
 
 /* ── 옛 아카이브 사본 → IndexedDB(BTM_LegacyBackup) 이동 ── */
-function _lgOpen(){
+function _lgOpen(create){
   return new Promise((res,rej)=>{
     if(!window.indexedDB){ rej(new Error('IndexedDB 미지원')); return; }
     const r=indexedDB.open('BTM_LegacyBackup',1);
-    r.onupgradeneeded=()=>{ r.result.createObjectStore('blobs',{keyPath:'key'}); };
+    r.onupgradeneeded=()=>{
+      if(!create){ r.transaction.abort(); return; }                    /* 조회만 하는데 DB가 없으면 빈 DB를 만들지 않고 취소 */
+      r.result.createObjectStore('blobs',{keyPath:'key'});
+    };
     r.onsuccess=()=>res(r.result);
     r.onerror=()=>rej(r.error||new Error('BTM_LegacyBackup을 열 수 없습니다'));
   });
 }
 async function _lgPut(key,raw){
-  const db=await _lgOpen();
+  const db=await _lgOpen(true);
   try{
     await new Promise((res,rej)=>{
       const tx=db.transaction('blobs','readwrite');
@@ -4084,7 +4089,8 @@ async function _lgPut(key,raw){
   } finally { db.close(); }
 }
 async function _lgGet(key){
-  const db=await _lgOpen();
+  let db;
+  try{ db=await _lgOpen(false); }catch(_){ return null; }          /* 없으면 '사본 없음' */
   try{
     return await new Promise((res,rej)=>{
       const q=db.transaction('blobs','readonly').objectStore('blobs').get(key);
@@ -4113,7 +4119,7 @@ async function _lsMoveLegacyArchiveImpl(){
 /* ── 경고 배너 ── */
 function _lsRefreshBanner(){
   const el=document.getElementById('lsQuotaBanner');
-  if(!_lsPending.size){
+  if(!_lsPending.size&&!_lsExtra.size){
     _lsWarned=false;
     if(el&&el.style.display!=='none'){ el.style.display='none'; _showMainToast('✅ 저장이 다시 정상 동작합니다'); }
     return;
@@ -4132,7 +4138,7 @@ function _lsShowBanner(){
     el.className='pdf-export-hide';
     el.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:10500;width:min(640px,94vw);box-sizing:border-box;background:#7f1d1d;color:#fff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.5);padding:11px 14px;font-size:12px;line-height:1.55;display:none';
     el.innerHTML=
-      '<div style="font-size:13px;font-weight:800;margin-bottom:3px">⚠ 브라우저 저장 공간이 가득 차서 저장되지 않은 항목이 있어요</div>'
+      '<div style="font-size:13px;font-weight:800;margin-bottom:3px">⚠ 브라우저 저장소 문제로 저장되지 않은 항목이 있어요</div>'
      +'<div id="lsQuotaMsg" style="color:#fecaca"></div>'
      +'<div id="lsQuotaDetail" style="display:none;margin-top:8px;background:rgba(0,0,0,.3);border-radius:7px;padding:8px 10px;font-size:11px;color:#fee2e2"></div>'
      +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">'
@@ -4142,7 +4148,7 @@ function _lsShowBanner(){
      +'</div>';
     document.body.appendChild(el);
   }
-  const labels=[..._lsPending.keys()].map(_lsLabel);
+  const labels=[..._lsPending.keys()].map(_lsLabel).concat([..._lsExtra].map(([l,m])=>l+' ('+m+')'));
   el.querySelector('#lsQuotaMsg').textContent='저장 실패: '+labels.join(', ')+' — 이대로 새로고침하거나 창을 닫으면 마지막 💾 Save 이후의 변경이 사라질 수 있어요.';
   el.style.display='block';
 }
@@ -4154,7 +4160,7 @@ async function _lsBannerSave(){
   const msg=document.getElementById('lsQuotaMsg');
   try{
     await archiveReport();
-    if(msg) msg.textContent='✅ Archive(IndexedDB)에 저장했어요 — 작업 내용은 안전합니다. 다만 브라우저 임시저장 공간은 아직 부족해요.';
+    if(msg) msg.textContent='✅ Archive(IndexedDB)에 저장했어요 — 작업 내용은 안전합니다. 다만 자동저장은 아직 실패 상태예요.';
   }catch(e){ alert('Archive 저장 실패: '+(e&&e.message||e)); }
 }
 function _lsBannerDetail(){
@@ -4167,8 +4173,9 @@ function _lsBannerDetail(){
   const lg=localStorage.getItem('BTMArchive_v2');
   const mv=lg?'<div style="margin-top:8px"><button class="mobile-keep" onclick="_lsBannerMove()" style="padding:5px 12px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:#7f1d1d">📦 옛 아카이브 사본 '+_lsFmt(lg.length)+' → IndexedDB로 이동해 공간 확보</button><div style="opacity:.75;margin-top:3px">이미 IndexedDB에 있는 내용의 복구용 백업이라 안전하게 옮길 수 있고, 복구 기능은 옮긴 사본을 그대로 사용해요.</div></div>':'';
   box.innerHTML='<div style="margin-bottom:5px">브라우저 임시저장소(localStorage) 사용량: <b>'+_lsFmt(total)+'</b> / 약 5MB</div>'+top
-    +'<div style="margin-top:6px;opacity:.75">※ Archive·메모 본체는 IndexedDB에 따로 저장돼 이 한도와 무관해요.</div><div id="lsQuotaEst" style="opacity:.75"></div>'+mv;
+    +'<div style="margin-top:6px;opacity:.75">※ 리포트 자동저장·Archive·메모 본체는 IndexedDB에 저장돼 이 한도와 무관해요.</div><div id="lsQuotaEst" style="opacity:.75"></div><div id="lsQuotaPersist" style="opacity:.75"></div>'+mv;
   box.style.display='block';
+  _lsRequestPersist().then(()=>{ const p=document.getElementById('lsQuotaPersist'); if(p) p.textContent='영구 저장소(브라우저가 임의로 지우지 않음): '+(_lsPersisted===true?'✅ 허용됨':_lsPersisted===false?'⏳ 아직 허용되지 않음':'확인 불가'); });
   if(navigator.storage&&navigator.storage.estimate){
     navigator.storage.estimate().then(es=>{ const e=document.getElementById('lsQuotaEst'); if(e) e.textContent='사이트 전체 저장소(IndexedDB 포함): '+_lsFmt(es.usage||0)+' 사용 / 한도 약 '+_lsFmt(es.quota||0); }).catch(()=>{});
   }
@@ -4183,6 +4190,143 @@ async function _lsBannerMove(){
   _lsRefreshBanner();
   const box=document.getElementById('lsQuotaDetail');
   if(box&&box.style.display!=='none'){ box.style.display='none'; _lsBannerDetail(); }   /* 사용량 다시 계산 */
+}
+
+/* ================================================================
+   리포트 자동저장(SK) 저장소: localStorage → IndexedDB
+   ─ 왜: localStorage 한도(origin당 ≈5MB)는 브라우저가 고정한 값이라 웹페이지·브라우저 설정으로 늘릴 수 없음.
+     자동저장(SK)은 종목별 1년 시세·차트 스냅샷·번역본·에디터에 붙여넣은 이미지까지 통째로 담는 가장 큰 항목이라
+     이 한도에 가장 먼저 걸림. IndexedDB는 디스크 여유만큼 쓸 수 있음(Chrome: 사이트당 디스크의 최대 약 60%).
+   ─ DB `BTM_ReportDB` v1 / store `kv` / 레코드 {key:'autosave', json(문자열 그대로), t}
+   ─ 옛 localStorage 값은 시작할 때(loadData) 1회 IndexedDB로 옮기고 지움. 이후 localStorage엔 쓰지 않음.
+   ─ 저장 실패(디스크 부족 등)는 조용히 넘기지 않고 경고 배너(_lsExtraFail)로 알림.
+   ================================================================ */
+let _skLoaded=false, _skDeferred=false, _skBusy=false, _skNext=null, _skLast=null, _skBlocked=false, _skRetryT=null, _skRetries=0, _savePending=false;
+const _SK_TIMEOUT_MS=6000;       /* 저장소가 이 시간 안에 응답하지 않으면 화면부터 띄움(그 세션은 자동저장 멈춤) */
+let _skDbP=null;
+function _skDb(){
+  if(_skDbP) return _skDbP;
+  _skDbP=new Promise((res,rej)=>{
+    if(!window.indexedDB){ rej(new Error('이 브라우저는 IndexedDB를 지원하지 않습니다')); return; }
+    const req=indexedDB.open('BTM_ReportDB',1);
+    req.onupgradeneeded=()=>{ req.result.createObjectStore('kv',{keyPath:'key'}); };
+    req.onsuccess=()=>{ const db=req.result; db.onversionchange=()=>{ db.close(); _skDbP=null; }; res(db); };
+    req.onerror=()=>rej(req.error||new Error('BTM_ReportDB를 열 수 없습니다'));
+  }).catch(e=>{ _skDbP=null; throw e; });
+  return _skDbP;
+}
+async function _skGetIdb(){
+  const db=await _skDb();
+  return new Promise((res,rej)=>{
+    const q=db.transaction('kv','readonly').objectStore('kv').get('autosave');
+    q.onsuccess=()=>res(q.result||null); q.onerror=()=>rej(q.error);
+  });
+}
+async function _skPut(json){
+  const db=await _skDb();
+  await new Promise((res,rej)=>{
+    const tx=db.transaction('kv','readwrite');
+    tx.objectStore('kv').put({key:'autosave',json,t:Date.now()});
+    tx.oncomplete=res; tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error||new Error('저장 취소'));
+  });
+  try{ if(localStorage.getItem(SK)!==null) localStorage.removeItem(SK); }catch(_){}   /* IndexedDB에 안전히 들어갔으니 옛 localStorage 사본은 불필요 */
+}
+/* 시작할 때 저장본 읽기: localStorage에 옛 사본(또는 옛 버전 탭이 방금 쓴 최신본)이 있으면 그걸 쓰고 IndexedDB로 옮김 */
+async function _skRead(){
+  let ls=null; try{ ls=localStorage.getItem(SK); }catch(_){}
+  if(ls){
+    try{ await _skPut(ls); console.info('[자동저장] localStorage → IndexedDB 이전 완료 — localStorage '+_lsFmt(ls.length)+' 확보'); }
+    catch(e){ console.warn('[자동저장] IndexedDB 이전 보류(원본 유지):',e); }
+    return ls;
+  }
+  try{ const rec=await _skGetIdb(); return rec?rec.json:null; }
+  catch(e){ console.warn('[자동저장] IndexedDB 읽기 실패:',e); return null; }
+}
+async function _skReadSafe(){
+  let to;
+  const timeout=new Promise(r=>{ to=setTimeout(()=>r(undefined),_SK_TIMEOUT_MS); });
+  const v=await Promise.race([_skRead(),timeout]);
+  clearTimeout(to);
+  if(v===undefined){   /* 저장소 응답 없음 — 화면은 계속 뜨게 하되, 읽지 못한 저장본을 빈 화면으로 덮어쓰지 않도록 이번 세션 자동저장은 멈춤 */
+    _skBlocked=true;
+    console.error('[자동저장] 저장소가 '+(_SK_TIMEOUT_MS/1000)+'초 안에 응답하지 않아 이번 세션은 자동저장을 멈춥니다. 새로고침해 주세요.');
+    try{ _lsExtraFail('리포트 자동저장',new Error('저장소 응답 없음 — 새로고침해 주세요')); }catch(_){}
+    try{ return localStorage.getItem(SK); }catch(_){ return null; }
+  }
+  return v;
+}
+/* 복구 기능용: 이번 세션 최신 자동저장본 → IndexedDB → (옛) localStorage 순 */
+async function _skLatestRaw(){
+  if(_skLast) return _skLast;
+  try{ const rec=await _skGetIdb(); if(rec&&rec.json) return rec.json; }catch(_){}
+  try{ return localStorage.getItem(SK); }catch(_){ return null; }
+}
+/* 저장: 직렬화 → 쓰기(진행 중이면 최신본 하나로 합쳐서 한 번 더) */
+function _skSave(){
+  if(_skBlocked) return;
+  if(!_skLoaded){ _skDeferred=true; return; }          /* 시작 때 저장본을 읽어 적용하기 전에는 빈 화면으로 덮어쓰지 않음 */
+  let json; try{ json=JSON.stringify(collectData()); }catch(e){ console.warn('[자동저장] 직렬화 실패:',e); return; }
+  _skWrite(json);
+}
+function _skWrite(json){
+  if(_skBlocked) return;
+  _skLast=json; _skNext=json;
+  if(!_skBusy) _skFlush();
+}
+async function _skFlush(){
+  _skBusy=true;
+  try{
+    while(_skNext!==null){
+      const j=_skNext; _skNext=null;
+      try{ await _skPut(j); _skRetries=0; _lsExtraOk('리포트 자동저장'); }
+      catch(e){
+        _lsExtraFail('리포트 자동저장',e);
+        clearTimeout(_skRetryT);
+        if(_skRetries++<6) _skRetryT=setTimeout(()=>{ if(!_skBusy&&_skNext===null&&_skLast!==null&&_lsExtra.has('리포트 자동저장')) _skWrite(_skLast); },10000);   /* 일시적 실패면 10초 뒤 다시 */
+      }
+    }
+  } finally { _skBusy=false; }
+}
+/* 탭을 닫거나 숨길 때, 아직 디바운스 대기 중인 자동저장을 즉시 시작(기존엔 마지막 0.3초 편집이 사라질 수 있었음) */
+function _skFlushOnHide(){
+  if(!_savePending) return;
+  clearTimeout(_saveTimer); _savePending=false;
+  _skSave();
+}
+window.addEventListener('pagehide',_skFlushOnHide);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') _skFlushOnHide(); });
+
+/* localStorage 밖 저장소(IndexedDB 등)의 쓰기 실패 — 경고 배너에 항목으로 표시, 이후 같은 항목이 성공하면 자동으로 해제 */
+function _lsExtraFail(label,e){
+  _lsExtra.set(label,(e&&e.name?e.name+': ':'')+((e&&e.message)||String(e)));
+  console.warn('[저장소] 저장 실패 →',label,e);
+  try{ _lsRefreshBanner(); }catch(_){}
+}
+function _lsExtraOk(label){
+  if(_lsExtra.delete(label)){ try{ _lsRefreshBanner(); }catch(_){} }
+}
+/* Archive(IndexedDB) 쓰기 결과 감시 — 비동기 커밋 실패(디스크 부족 등)가 조용히 묻히지 않게 */
+function _arcWatch(tx){
+  tx.oncomplete=()=>{ try{ _lsExtraOk('Archive 저장'); }catch(_){} };
+  tx.onabort=()=>{ try{ _lsExtraFail('Archive 저장',tx.error||new Error('저장 취소')); }catch(_){} };
+}
+/* 쓰기 요청이 동기적으로 던진 경우(예: DataCloneError·디스크 부족) — 이미 만들어진 트랜잭션은 비어 있어 곧바로 oncomplete 로
+   '성공' 처리되면서 방금 기록한 실패를 지워버리므로, 감시를 떼고 중단(부분 쓰기 롤백)한 뒤 보고 */
+function _arcFail(tx,e,what){
+  if(tx){ tx.oncomplete=null; tx.onabort=null; try{ tx.abort(); }catch(_){} }
+  console.error(what,e);
+  try{ _lsExtraFail('Archive 저장',e); }catch(_){}
+}
+/* 영구 저장소 요청 — 허용되면 브라우저가 저장 공간이 부족해져도 이 사이트 데이터를 임의로 지우지 않음.
+   (Chrome은 방문·사용 기록 등으로 자동 판단하며 팝업이 없음, Firefox는 허용 팝업이 뜰 수 있어 로그인 클릭 시점에 호출) */
+async function _lsRequestPersist(){
+  try{
+    if(!(navigator.storage&&navigator.storage.persist)) return _lsPersisted;
+    _lsPersisted=await navigator.storage.persisted();
+    if(!_lsPersisted) _lsPersisted=await navigator.storage.persist();
+    console.info('[저장소] 영구 저장소(브라우저가 임의로 지우지 않음): '+(_lsPersisted?'허용됨':'아직 허용되지 않음 — 자주 사용하면 브라우저가 허용하기도 해요'));
+  }catch(_){}
+  return _lsPersisted;
 }
 
 /* ── 다국어(한/영/중) 리포트: 전역 상태 ── */
@@ -10459,8 +10603,10 @@ function _btmOpenLangMenu(e){
 let _saveTimer=null;
 function saveData(){
   clearTimeout(_saveTimer);
+  _savePending=true;
   _saveTimer=setTimeout(()=>{
-    try{localStorage.setItem(SK,JSON.stringify(collectData()));}catch(e){ /* 한도 초과는 setItem 감시(_lsNative 래퍼)가 배너로 알리고 자동 재시도 */ }
+    _savePending=false;
+    _skSave();   /* IndexedDB에 저장(localStorage 5MB 한도와 무관) — 실패하면 경고 배너 */
     recalcRates();
     recalcPortfolio();
   },300);
@@ -10468,8 +10614,8 @@ function saveData(){
 
 /* 업데이트 완료 후 즉시 저장 (디바운스 없음) */
 function saveNow(){
-  clearTimeout(_saveTimer);
-  try{localStorage.setItem(SK,JSON.stringify(collectData()));}catch(e){ /* 한도 초과는 setItem 감시가 알림 */ }
+  clearTimeout(_saveTimer); _savePending=false;
+  _skSave();
   recalcRates();
   recalcPortfolio();
 }
@@ -10667,12 +10813,16 @@ function applyData(d){
   }
 }
 
-function loadData(){
+async function loadData(){
   try{
-    const raw=localStorage.getItem(SK);
+    const raw=await _skReadSafe();   /* IndexedDB(또는 옛 localStorage 사본)에서 자동저장본 읽기 */
     if(!raw){sv('reportDate',todayStr());sv('fiveGoal','182');sv('bookGoal','50');sv('goalYear',String(new Date().getFullYear()));return;}
     applyData(JSON.parse(raw));
   }catch(e){sv('reportDate',todayStr());}
+  finally{
+    _skLoaded=true;                                    /* 이제부터 자동저장 허용 */
+    if(_skDeferred){ _skDeferred=false; saveData(); }  /* 읽는 동안 밀린 저장이 있었다면, 적용된 화면 기준으로 저장 */
+  }
 }
 
 /* ─────────── ACTIONS ─────────── */
@@ -10779,8 +10929,7 @@ async function confirmNewReport(){
   _fpAutoCalcDays(selectedDate, recentBook);
   /* 격언 & 교회력 말씀 적용 */
   _applyNewReportQuotes(selectedDate);
-  /* 한도 초과여도 예외로 새 리포트 생성(Publish 해제·카운터 갱신·자동백업)이 중간에 끊기지 않게 함 — 실패는 setItem 감시가 배너로 알림 */
-  try{ localStorage.setItem(SK, JSON.stringify(collectData())); }catch(_){}
+  _skSave();   /* 자동저장본(IndexedDB) 갱신 — 저장소 문제가 있어도 예외로 새 리포트 생성(Publish 해제·카운터·자동백업)이 끊기지 않으며, 실패는 경고 배너로 알림 */
   _isPublished=false; localStorage.removeItem('BTMPublished'); _clearPublishedUI();
   /* 툴바 FIVE카운팅 표시 갱신 */
   initAutoFiveCount();
@@ -10802,8 +10951,9 @@ function importJSON(e){
   r.onload=ev=>{
     let d;
     try{ d=JSON.parse(ev.target.result); applyData(d); }catch(err){ alert('JSON 오류: '+err.message); return; }
-    try{ localStorage.setItem(SK,JSON.stringify(d)); alert('불러오기 완료'); }
-    catch(err){ alert('불러오기는 완료됐지만 브라우저 임시저장에는 실패했어요(저장 공간 부족).\n💾 Save로 Archive에 저장해 주세요.'); }
+    _skPut(JSON.stringify(d)).then(
+      ()=>alert('불러오기 완료'),
+      ()=>alert('불러오기는 완료됐지만 브라우저 임시저장에는 실패했어요(저장소 문제).\n💾 Save로 Archive에 저장해 주세요.'));
   };
   r.readAsText(f);
 }
@@ -10867,13 +11017,15 @@ function _arcLoad(){ return {..._arcCache}; }
 /* IDB diff-upsert/delete (fire-and-forget) */
 function _arcFlushIDB(newMap){
   if(!_arcDB) return;
+  let tx;
   try{
     const oldKeys=new Set(Object.keys(_arcCache));
-    const tx=_arcDB.transaction(_ARC_STORE,'readwrite');
+    tx=_arcDB.transaction(_ARC_STORE,'readwrite');
+    _arcWatch(tx);
     const store=tx.objectStore(_ARC_STORE);
     oldKeys.forEach(k=>{ if(!(k in newMap)) store.delete(k); });
     Object.values(newMap).forEach(r=>store.put(r));
-  }catch(e){ console.error('IDB flush',e); }
+  }catch(e){ _arcFail(tx,e,'IDB flush'); }
 }
 
 /* 전체 map 저장 (기존 인터페이스 유지) */
@@ -10886,8 +11038,9 @@ function _arcSave(map){
 function _arcPutOne(record){
   _arcCache[record.date]=record;
   if(!_arcDB) return;
-  try{ _arcDB.transaction(_ARC_STORE,'readwrite').objectStore(_ARC_STORE).put(record); }
-  catch(e){ console.error('IDB put',e); }
+  let tx;
+  try{ tx=_arcDB.transaction(_ARC_STORE,'readwrite'); _arcWatch(tx); tx.objectStore(_ARC_STORE).put(record); }
+  catch(e){ _arcFail(tx,e,'IDB put'); }
 }
 
 /* 단일 레코드 삭제 */
@@ -11274,7 +11427,7 @@ async function archiveReport(isPublish=false){
        "지금 상태 저장"으로 인식하는 사용자 기대에 맞춰 SK도 같이 갱신 */
     /* pfDonutImg/summaryChartImg는 archive 상세보기 전용(applyData가 복원하지 않음) — SK에 실어봤자
        용량만 커지고 쓰이지 않으므로 빼고 저장 */
-    try{ const _sk={...data}; delete _sk.pfDonutImg; delete _sk.summaryChartImg; localStorage.setItem(SK, JSON.stringify(_sk)); }catch(e){}
+    try{ const _sk={...data}; delete _sk.pfDonutImg; delete _sk.summaryChartImg; _skWrite(JSON.stringify(_sk)); }catch(e){}
     _showMainToast('✅ 저장됨!');
     /* 저장 후 autoFiveCount 갱신 (다음 번호 표시) */
     initAutoFiveCount();
@@ -12405,7 +12558,7 @@ async function renderArchiveList(all){
           ${r.summary.fearGreed>0?`<span style="font-size:9px;font-weight:700;color:${r.summary.fearGreed>=60?'#16a34a':r.summary.fearGreed>=40?'#d97706':'#dc2626'}">F&G ${r.summary.fearGreed}</span>`:''}
         </div>
         <div style="font-size:10px;color:#64748b;margin-top:2px">
-          수익률 <span style="color:${r.summary.pfReturn>=0?'#16a34a':'#dc2626'};font-weight:600">${r.summary.pfReturn>=0?'+':''}${r.summary.pfReturn.toFixed?r.summary.pfReturn.toFixed(2):r.summary.pfReturn}%</span>
+          수익률 <span style="color:${r.summary.pfReturn>=0?'#16a34a':'#dc2626'};font-weight:600">${(r.summary.pfReturn==null)?'-':((r.summary.pfReturn>=0?'+':'')+(r.summary.pfReturn.toFixed?r.summary.pfReturn.toFixed(2):r.summary.pfReturn)+'%')}</span>
           ${r.summary.holdingCount>0?`&nbsp;·&nbsp;${r.summary.holdingCount}종목`:''}
         </div>
         <div style="font-size:10px;color:#94a3b8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${r.summary.reportNum||''}</div>
@@ -12875,7 +13028,7 @@ async function recoverArchive(){
 
   /* ① SK 세션 자동저장 데이터 */
   try{
-    const skRaw = _lsPending.has(SK) ? _lsPending.get(SK) : localStorage.getItem(SK);   /* 저장 실패로 못 쓴 최신 자동저장본이 있으면 그것을 우선 */
+    const skRaw = await _skLatestRaw();   /* 이번 세션 최신 자동저장본 → IndexedDB → (옛) localStorage 순 */
     if(skRaw){
       const skData = JSON.parse(skRaw);
       const d = skData.reportDate;
@@ -23896,6 +24049,7 @@ function enterMemberMode(){
   document.body.classList.add('member-mode');
   const ab=g('adminMenuBtn'); if(ab) ab.style.display='';
   try{ _lsRefreshBanner(); }catch(_){}   /* 로그인 전에 쌓인 저장 실패가 있으면 이제 알림 */
+  try{ _lsRequestPersist(); }catch(_){}   /* 영구 저장소 요청(로그인 클릭 직후) — 브라우저가 저장 공간 부족 시 이 사이트 데이터를 임의로 지우지 않게 */
   loadLatestArchive(false); // Save/Publish 무관 가장 최신 리포트 자동 로드
   _autoConnectClaude();     // Claude API 자동 연결 확인
   _fetchClaudeBalance();    // Claude API 잔액 표시
@@ -24242,7 +24396,7 @@ function _saveIdxMemoFromEditor(){
   const html=editor.innerHTML;
   const memos=_getIdxMemos();
   memos[_idxMemoCurrentKey]=html;
-  localStorage.setItem(_IDX_MEMO_STORE,JSON.stringify(memos));
+  try{ localStorage.setItem(_IDX_MEMO_STORE,JSON.stringify(memos)); }catch(_){ /* 한도 초과여도 메모 창 닫기가 막히지 않게 — 실패는 setItem 감시가 배너로 알림 */ }
   const btn=g('idx-mbtn-'+_idxMemoCurrentKey);
   if(btn)btn.classList.toggle('has-memo',!!(html&&html.trim()&&html!=='<br>'));
 }
@@ -24395,7 +24549,7 @@ function _initPfColResize(){
   });
 }
 
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded',async ()=>{
   /* 포트폴리오 테이블 변경 감지 → Guest 마스킹 자동 재적용 */
   const _hb=g('holdingsBody');
   if(_hb) _guestMaskObs.observe(_hb,{childList:true,subtree:true});
@@ -24437,14 +24591,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   _initInvestorStatus();                             /* Investor Status 스코어 아이템 렌더링 */
   initAutoFiveCount();        /* toolbar 다음 FIVE카운팅 자동 표시 */
   updateHeadlineDateDisplay(); /* 헤드라인 날짜 텍스트 초기화 */
-  autoFillFromLatestArchive();
   _loadPrevArchive();  /* 직전 archive 로드 → 전일비 표시 */
   loadExRate();        /* smbs.biz 환율 자동 조회 → 포트폴리오 KRW 반영 */
   buildIndicesGrid();
   _refreshIdxMemoBadges();
   _idxMemoScrollInit();
   buildEcoTable();
-  loadData();
+  await loadData();   /* 자동저장본은 IndexedDB(비동기)에서 읽음 — 읽어 적용한 뒤에 아래 단계들이 이어짐 */
+  autoFillFromLatestArchive();   /* (원래 위쪽에 있던 호출을 이동) 자동저장본을 적용한 '다음에' 최신 Archive 값으로 덮어쓰는 기존 순서 유지 */
   {const _sd=localStorage.getItem('BTMSinceDate');const _sl=g('sinceDateLabel');if(_sl&&_sd)_sl.innerHTML=_sd;}
   {const _ft=localStorage.getItem('BTMFromText');const _fl=g('headlineFromText');if(_fl&&_ft)_fl.innerText=_ft;}
   loadAllQuotesData();    // 격언/교회력 데이터 로드 & 교회력 섹션 렌더링
