@@ -15985,6 +15985,27 @@ function _initWlIsSync(){
       const a=_s2px(ix1,ny1,_cvW), b=_s2px(ix2,ny2,_cvW);
       return {dx:b.cx-a.cx, dy:b.cy-a.cy};
     };
+    /* 라벨을 maxW(px) 안에 들어오게 공백 기준으로 줄바꿈 — 한 단어가 maxW보다 길면 글자 단위로 쪼갬(띄어쓰기 없는 긴 문구 대비) */
+    const wrapLabelLines=(ctx,srcLines,maxW)=>{
+      const out=[];
+      srcLines.forEach(par=>{
+        let line='';
+        String(par).split(' ').forEach(word=>{
+          const cand=line?line+' '+word:word;
+          if(ctx.measureText(cand).width<=maxW){ line=cand; return; }
+          if(line){ out.push(line); line=''; }
+          if(ctx.measureText(word).width<=maxW){ line=word; return; }
+          let chunk='';
+          for(const ch of word){
+            if(!chunk||ctx.measureText(chunk+ch).width<=maxW) chunk+=ch;
+            else { out.push(chunk); chunk=ch; }
+          }
+          line=chunk;
+        });
+        out.push(line);
+      });
+      return out;
+    };
     /* markerColor 생략 시 기본 YELLOW. 돌파 지점(levels.breakouts) 호출부에서만
        _tsCompColor('breakout')를 명시로 넘겨 그 항목의 커스텀 색을 씀 */
     const addPointMarker=(pt,direction,label,group,groupLabel,markerColor)=>{
@@ -16001,44 +16022,61 @@ function _initWlIsSync(){
         fixedSize:true,pxDx:MARKER_PX_DIAM,pxDy:MARKER_PX_DIAM,group,groupLabel});
       added++;
       if(direction==='up'||direction==='down'){
-        /* 돌파/이탈 화살표 — 왼쪽 45° 대각선. 예전엔 시작점(원)에서 수직(위/아래)으로 뻗었는데, 같은 길이(L)를 유지한 채
-           왼쪽으로 45° 눕힘(가로·세로 성분 크기가 같음; 위 방향이면 왼쪽 위, 아래 방향이면 왼쪽 아래). 끝점(tip)은
-           시작점 + 고정 픽셀 오프셋(pxDx,pxDy)으로 그려지므로(_shapePts) 축척·창 크기가 바뀌어도 각도·길이가 유지됨 */
+        /* 돌파/이탈 마커 배치 규칙
+           · 화살표: 시작점(원 중심)에서 왼쪽 45° 대각선(위 방향=왼쪽 위, 아래 방향=왼쪽 아래). 기본 길이는 예전 수직 화살표와
+             같은 L. 끝점은 시작점 + 고정 픽셀 오프셋(pxDx,pxDy)이라 축척·창 크기가 바뀌어도 각도·길이가 유지됨(_shapePts)
+           · 글자: 항상 "화살표 끝점(삼각형 꼭짓점)의 왼쪽 6px"에 놓음 — 마지막 글자가 끝점에서 6px 떨어지고, 세로는 끝점 높이에
+             글자 블록의 가운데를 맞춤. 화면 가장자리 때문에 필요한 보정은 글자를 끌어내는 대신 화살표 쪽에서 처리함:
+             ① 차트 맨 위/아래에 가까워 글자가 잘릴 것 같으면 화살표를 45° 그대로 짧게 그림(끝점이 안쪽으로 들어옴)
+             ② 끝점 왼쪽 공간(캔버스 왼쪽 끝 2px까지)보다 글자가 길면 공백 기준으로 줄바꿈
+             (예전엔 위쪽 16px 여백·왼쪽 한계 보정이 글자만 밀어서, 맨 위나 왼쪽 근처 돌파에서 글자가 동그라미 옆에 놓였음) */
         const H=_totalH();
         const sign=(direction==='down')?1:-1;
         const sp=_cvW?_s2px(pt.ix,pt.ny,_cvW):null;      /* 시작점(원 중심)의 현재 픽셀 위치 */
         const L=0.07*H;                                   /* 기존 수직 화살표의 길이(px) */
-        /* 화면 위/아래 끝을 넘지 않게(예전 tip.ny 0~1 클램프와 같은 취지) 세로 성분을 제한 — 45°라 가로 성분도 같이 줄어듦 */
-        const v=sp?Math.max(0,Math.min(L/Math.SQRT2,sign>0?(H-sp.cy):sp.cy)):0;
+        const vMax=L/Math.SQRT2;                          /* 45°라 가로·세로 성분 크기가 같음 */
+        const FS=12, lineH=Math.round(FS*1.25);           /* 글자 크기·줄 간격 — 렌더 규칙과 동일(_tsFontCss 기본 12px, 줄 간격 fs*1.25) */
+        let lines=null, ascent=9, descent=3;
+        if(label){
+          lines=String(label).split('\n');
+          const mctx=document.getElementById('tsCanvas')?.getContext('2d');
+          if(mctx){
+            mctx.font=_tsFontCss({fontSize:FS});          /* 실제로 그려질 글꼴로 측정(한글·이모지 등은 근사치 대신 정확히 측정) */
+            if(sp){
+              const availW=sp.cx-vMax-6-2;                /* 끝점 왼쪽 6px 간격을 뺀, 캔버스 왼쪽 끝(2px)까지의 가로 공간 */
+              if(availW>=40&&Math.max(...lines.map(l=>mctx.measureText(l).width))>availW){
+                const wrapped=wrapLabelLines(mctx,lines,availW);
+                if(wrapped.length<=4) lines=wrapped;      /* 4줄을 넘게 쪼개야 하면 줄바꿈 대신 그대로 둠(왼쪽 한계에서 보정) */
+              }
+            }
+            const m1=mctx.measureText(lines[0]), m2=mctx.measureText(lines[lines.length-1]);
+            if(m1.actualBoundingBoxAscent!=null)  ascent=m1.actualBoundingBoxAscent;
+            if(m2.actualBoundingBoxDescent!=null) descent=m2.actualBoundingBoxDescent;
+          }
+        }
+        const blockH=lines?((lines.length-1)*lineH+ascent+descent):0;   /* 글자 블록(첫 줄 윗변~마지막 줄 아랫변) 높이 */
+        const MIN_V=8;                                    /* 화살표가 이보다 더 짧아지진 않게 */
+        /* 끝점 높이에 글자 블록을 가운데 맞춰도 캔버스 안에 들어오도록, 끝점이 캔버스 위/아래 끝에서 떨어져 있어야 할 최소 거리 */
+        const tipMargin=(lines?blockH/2:0)+2;
+        const v=sp?Math.max(MIN_V,Math.min(vMax,(sign>0?(H-sp.cy):sp.cy)-tipMargin)):0;
         const adx=-v, ady=sign*v;
         const tipS=sp?_px2s(sp.cx+adx,sp.cy+ady,_cvW):{ix:pt.ix,ny:Math.max(0,Math.min(1,pt.ny+sign*0.07))};
         _shapes.push({type:'arrow',x1:pt.ix,y1:pt.ny,x2:tipS.ix,y2:tipS.ny,color:col,
           ...(sp?{fixedSize:true,pxDx:adx,pxDy:ady}:{}),group,groupLabel});
         added++;
         if(label){
-          /* 글자의 세로 위치는 기존 규칙 그대로 — 글자의 시작 변(위/아래)이 화살표 끝(tip)에서 정확히 약 1px만 떨어지도록,
-             실제 렌더될 글자의 상단/하단 여백(ascent/descent)을 캔버스로 직접 측정해서 계산함(한글·이모지 등 글자 종류에
-             따라 여백이 달라 근사치 대신 정확히 측정) */
-          const gapPx=1;
-          const mctx=document.getElementById('tsCanvas')?.getContext('2d');
-          let ascent=9, descent=3;
-          if(mctx){
-            mctx.font='bold 12px sans-serif';
-            const m=mctx.measureText((label||'').split('\n')[0]);
-            if(m.actualBoundingBoxAscent!=null)  ascent=m.actualBoundingBoxAscent;
-            if(m.actualBoundingBoxDescent!=null) descent=m.actualBoundingBoxDescent;
-          }
-          const extraPx=(direction==='down')?(gapPx+ascent):-(gapPx+descent);
-          /* 돌파/이탈 텍스트는 화살표 기준 우측 정렬 + alignGap:6 — 글자의 마지막 글자가 화살표 끝점에서 왼쪽으로 6px 떨어진
-             위치에 옴. 글자는 화살표 '시작점'에 논리 좌표로 붙이고 끝점까지의 픽셀 오프셋(pxOffX,pxOffY)을 따로 저장 —
-             글자도 화살표처럼 축척이 바뀌어도 끝점과의 간격이 그대로 유지되도록(논리 좌표만 쓰면 X축 확대/축소 때 글자만
-             어긋남). 세로 위치는 캔버스 위/아래 끝 16px 여백 안으로 보정(예전 clampTextY와 같은 규칙을 픽셀 기준으로) */
+          /* 글자는 화살표 '시작점'에 논리 좌표로 붙이고 끝점까지의 픽셀 오프셋(pxOffX,pxOffY)을 따로 저장 — 글자도 화살표처럼
+             축척이 바뀌어도 끝점과의 간격이 그대로 유지되도록(논리 좌표만 쓰면 X축 확대/축소 때 글자만 어긋남).
+             align:'right'+alignGap:6 → 마지막 글자가 끝점에서 왼쪽으로 6px */
           if(sp){
-            const effY=Math.max(16,Math.min(H-16,sp.cy+ady+extraPx));
-            _shapes.push({type:'text',x1:pt.ix,y1:pt.ny,x2:pt.ix,y2:pt.ny,text:label,color:col,align:'right',alignGap:6,
-              pxOffX:adx,pxOffY:effY-sp.cy,group,groupLabel});
+            const tipY=sp.cy+ady;
+            let base1=tipY-blockH/2+ascent;                                /* 글자 블록의 세로 가운데를 끝점 높이에 맞춤(첫 줄 baseline) */
+            base1=Math.max(ascent+2,Math.min(H-(blockH-ascent)-2,base1)); /* 그래도 캔버스 밖으로 나가면 안쪽으로(마지막 안전장치) */
+            _shapes.push({type:'text',x1:pt.ix,y1:pt.ny,x2:pt.ix,y2:pt.ny,text:lines.join('\n'),color:col,align:'right',alignGap:6,
+              pxOffX:adx,pxOffY:base1-sp.cy,group,groupLabel});
           } else {
-            const ty=clampTextY(tipS.ny+(extraPx/H));
+            /* 캔버스 폭을 알 수 없는 예외 상황 — 논리 좌표로만 배치(끝점 높이에 맞춤, 왼쪽 6px) */
+            const ty=clampTextY(tipS.ny+((ascent-descent)/2)/H);
             _shapes.push({type:'text',x1:tipS.ix,y1:ty,x2:tipS.ix,y2:ty,text:label,color:col,align:'right',alignGap:6,group,groupLabel});
           }
           added++;
@@ -16550,7 +16588,9 @@ function _initWlIsSync(){
     const lines=(sh.text||'').split('\n');
     const tw=Math.max(1,...lines.map(l=>ctx.measureText(l).width));
     if(sh.align==='right'){
-      const leftLimit=PAD.left+4;
+      /* 돌파/이탈 글자(pxOffX 보유)는 "화살표 끝점 왼쪽 6px"가 최우선이라, 가격축 영역(PAD.left)까지 침범해도 되도록 캔버스
+         왼쪽 끝(2px)까지만 막음 — 일반 글자는 기존처럼 그래프 영역 왼쪽 여백(PAD.left+4)에서 막음 */
+      const leftLimit=(sh.pxOffX!=null)?2:PAD.left+4;
       const gap=sh.alignGap||0; /* 기준점에서 왼쪽으로 더 띄우는 여백(px) — 돌파/예측 라벨은 0(기준점에 딱 붙음), 추세선 이름표는 6 */
       return Math.max(p1cx-gap, leftLimit+tw);
     }
