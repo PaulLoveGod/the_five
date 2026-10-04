@@ -13876,6 +13876,8 @@ function _initWlIsSync(){
   let _shapes  = [];     /* [{type,x1,y1,x2,y2,text?,color,tag?,tagBelow?,tagSide?,align?,alignGap?,group?,groupLabel?,hidden?}] — tag: hline/vline 전용, '지지선'|'저항선'|'넥라인'|''.
                              tagBelow(hline): true=선 아래/false=선 위, tagSide(vline): 'left'|'right'(기본 right) — 이름표 박스 클릭으로 반전(_hitTagBox).
                              align/alignGap(text): align:'right'면 alignGap(px)만큼 기준점 왼쪽에서 끝나도록 우측정렬(추세선 이름표 등).
+                             pxOffX/pxOffY(text): 논리 좌표 기준점에서 고정 픽셀만큼 더 떨어진 곳을 실제 기준점으로 씀(_shapePts) — 돌파/이탈 마커의 글자를
+                             화살표 끝점에 붙여두는 용도(축척이 바뀌어도 화살표와 같은 픽셀 간격 유지).
                              group/groupLabel: AI 분석이 만든 도형(들)을 하나의 "표기"로 묶는 id/이름 — 표기 목록 체크박스에서 이 단위로 숨김/표시 */
   let _aiGroupSeq=0; /* group id 발급용 — 세션(티커 변경 전까지) 내내 겹치지 않게 계속 증가만 함 */
   /* 실행취소/다시실행 — 도형 추가뿐 아니라 이동·크기조정·삭제·전체지우기까지 전부 스냅샷 기반으로 되돌림.
@@ -14222,6 +14224,13 @@ function _initWlIsSync(){
         p1={cx:ccx-sh.pxDx/2, cy:ccy-sh.pxDy/2};
         p2={cx:ccx+sh.pxDx/2, cy:ccy+sh.pxDy/2};
       }
+    }
+    /* 텍스트 도형의 고정 픽셀 오프셋 — 돌파/이탈 마커의 글자는 화살표 시작점(논리 좌표)에 붙고, 화살표 끝점 쪽 위치는
+       이 픽셀 오프셋으로 정해짐(화살표 끝점이 시작점+pxDx/pxDy로 그려지는 것과 같은 방식) — 글자 위치를 읽는 모든 곳이
+       이 함수를 거치므로(그리기·히트테스트·핸들) 한 곳에서만 처리하면 됨 */
+    if(sh.type==='text'&&(sh.pxOffX||sh.pxOffY)){
+      p1={cx:p1.cx+(sh.pxOffX||0), cy:p1.cy+(sh.pxOffY||0)};
+      p2=p1;
     }
     return {p1,p2};
   }
@@ -15992,16 +16001,24 @@ function _initWlIsSync(){
         fixedSize:true,pxDx:MARKER_PX_DIAM,pxDy:MARKER_PX_DIAM,group,groupLabel});
       added++;
       if(direction==='up'||direction==='down'){
-        const dy=(direction==='down'?1:-1)*0.07;
-        const tip={ix:pt.ix, ny:Math.max(0,Math.min(1,pt.ny+dy))};
-        const ad=pxDelta(pt.ix,pt.ny,tip.ix,tip.ny);
-        _shapes.push({type:'arrow',x1:pt.ix,y1:pt.ny,x2:tip.ix,y2:tip.ny,color:col,
-          ...(ad?{fixedSize:true,pxDx:ad.dx,pxDy:ad.dy}:{}),group,groupLabel});
+        /* 돌파/이탈 화살표 — 왼쪽 45° 대각선. 예전엔 시작점(원)에서 수직(위/아래)으로 뻗었는데, 같은 길이(L)를 유지한 채
+           왼쪽으로 45° 눕힘(가로·세로 성분 크기가 같음; 위 방향이면 왼쪽 위, 아래 방향이면 왼쪽 아래). 끝점(tip)은
+           시작점 + 고정 픽셀 오프셋(pxDx,pxDy)으로 그려지므로(_shapePts) 축척·창 크기가 바뀌어도 각도·길이가 유지됨 */
+        const H=_totalH();
+        const sign=(direction==='down')?1:-1;
+        const sp=_cvW?_s2px(pt.ix,pt.ny,_cvW):null;      /* 시작점(원 중심)의 현재 픽셀 위치 */
+        const L=0.07*H;                                   /* 기존 수직 화살표의 길이(px) */
+        /* 화면 위/아래 끝을 넘지 않게(예전 tip.ny 0~1 클램프와 같은 취지) 세로 성분을 제한 — 45°라 가로 성분도 같이 줄어듦 */
+        const v=sp?Math.max(0,Math.min(L/Math.SQRT2,sign>0?(H-sp.cy):sp.cy)):0;
+        const adx=-v, ady=sign*v;
+        const tipS=sp?_px2s(sp.cx+adx,sp.cy+ady,_cvW):{ix:pt.ix,ny:Math.max(0,Math.min(1,pt.ny+sign*0.07))};
+        _shapes.push({type:'arrow',x1:pt.ix,y1:pt.ny,x2:tipS.ix,y2:tipS.ny,color:col,
+          ...(sp?{fixedSize:true,pxDx:adx,pxDy:ady}:{}),group,groupLabel});
         added++;
         if(label){
-          /* 텍스트를 화살표 끝(tip)에서 정확히 약 1px만 띄워서 표기 — 글자의 시작 변(위/아래)이
-             tip에서 1px만 떨어지도록, 실제 렌더될 글자의 상단/하단 여백(ascent/descent)을
-             캔버스로 직접 측정해서 계산함(한글·이모지 등 글자 종류에 따라 여백이 달라 근사치 대신 정확히 측정) */
+          /* 글자의 세로 위치는 기존 규칙 그대로 — 글자의 시작 변(위/아래)이 화살표 끝(tip)에서 정확히 약 1px만 떨어지도록,
+             실제 렌더될 글자의 상단/하단 여백(ascent/descent)을 캔버스로 직접 측정해서 계산함(한글·이모지 등 글자 종류에
+             따라 여백이 달라 근사치 대신 정확히 측정) */
           const gapPx=1;
           const mctx=document.getElementById('tsCanvas')?.getContext('2d');
           let ascent=9, descent=3;
@@ -16012,9 +16029,18 @@ function _initWlIsSync(){
             if(m.actualBoundingBoxDescent!=null) descent=m.actualBoundingBoxDescent;
           }
           const extraPx=(direction==='down')?(gapPx+ascent):-(gapPx+descent);
-          const ty=clampTextY(tip.ny+(extraPx/_totalH()));
-          /* 돌파/이탈 텍스트는 화살표 기준 우측 정렬 — 마지막 글자가 화살표 끝(모서리) 위치에 오도록 */
-          _shapes.push({type:'text',x1:tip.ix,y1:ty,x2:tip.ix,y2:ty,text:label,color:col,align:'right',group,groupLabel});
+          /* 돌파/이탈 텍스트는 화살표 기준 우측 정렬 + alignGap:6 — 글자의 마지막 글자가 화살표 끝점에서 왼쪽으로 6px 떨어진
+             위치에 옴. 글자는 화살표 '시작점'에 논리 좌표로 붙이고 끝점까지의 픽셀 오프셋(pxOffX,pxOffY)을 따로 저장 —
+             글자도 화살표처럼 축척이 바뀌어도 끝점과의 간격이 그대로 유지되도록(논리 좌표만 쓰면 X축 확대/축소 때 글자만
+             어긋남). 세로 위치는 캔버스 위/아래 끝 16px 여백 안으로 보정(예전 clampTextY와 같은 규칙을 픽셀 기준으로) */
+          if(sp){
+            const effY=Math.max(16,Math.min(H-16,sp.cy+ady+extraPx));
+            _shapes.push({type:'text',x1:pt.ix,y1:pt.ny,x2:pt.ix,y2:pt.ny,text:label,color:col,align:'right',alignGap:6,
+              pxOffX:adx,pxOffY:effY-sp.cy,group,groupLabel});
+          } else {
+            const ty=clampTextY(tipS.ny+(extraPx/H));
+            _shapes.push({type:'text',x1:tipS.ix,y1:ty,x2:tipS.ix,y2:ty,text:label,color:col,align:'right',alignGap:6,group,groupLabel});
+          }
           added++;
         }
       } else if(label){
@@ -16536,7 +16562,7 @@ function _initWlIsSync(){
     return (p1cx+tw>rightLimit) ? Math.max(PAD.left,rightLimit-tw) : p1cx;
   }
   function _textBBox(sh,w){
-    const p1=_s2px(sh.x1,sh.y1,w);
+    const p1=_shapePts(sh,w).p1;   /* 고정 픽셀 오프셋(pxOffX/pxOffY) 반영 */
     const canvas=document.getElementById('tsCanvas');
     const ctx=canvas.getContext('2d');
     ctx.font=_tsFontCss(sh);
@@ -16940,6 +16966,14 @@ function _initWlIsSync(){
             const{p1:fp1,p2:fp2}=_shapePts(eobj,cw);
             const fd1=_px2s(fp1.cx,fp1.cy,cw), fd2=_px2s(fp2.cx,fp2.cy,cw);
             eobj.x1=fd1.ix; eobj.y1=fd1.ny; eobj.x2=fd2.ix; eobj.y2=fd2.ny;
+          }
+          /* 돌파/이탈 마커의 글자(고정 픽셀 오프셋 pxOffX/pxOffY 보유)도 같은 이유로, 핸들 드래그를 시작하기 전에 지금 실제로
+             그려진 위치를 논리 좌표로 굳히고 오프셋은 제거 — 안 그러면 드래그 중 글자가 마우스보다 오프셋만큼 어긋나 보임.
+             (이후엔 사용자가 직접 옮긴 일반 글자와 동일하게 동작) */
+          if(eobj&&eobj.type==='text'&&(eobj.pxOffX||eobj.pxOffY)){
+            const tp=_shapePts(eobj,cw).p1, td=_px2s(tp.cx,tp.cy,cw);
+            eobj.x1=td.ix; eobj.y1=td.ny; eobj.x2=td.ix; eobj.y2=td.ny;
+            delete eobj.pxOffX; delete eobj.pxOffY;
           }
           if(eobj&&(epHit.ep==='p1'||epHit.ep==='p2')){
             const anchorS=epHit.ep==='p1'?{ix:eobj.x2,ny:eobj.y2}:{ix:eobj.x1,ny:eobj.y1};
