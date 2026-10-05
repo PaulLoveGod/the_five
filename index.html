@@ -790,7 +790,7 @@ table.pf-table .chart-cell>div{width:100%;height:88px;overflow:hidden;}
 
   /* ── 버튼 숨김 (로그인 모달·모달 X버튼·접근가능 모달 제외) ── */
   button:not(.mobile-keep):not(.mx){display:none!important;}
-  #authModal button,#adminModal button,.mobile-header-menu button,#aiChatModal button,#aiPresetModal button,#_memoStkModal button,#mscModal button,#addEcoModal button{display:inline-block!important;pointer-events:auto!important;}
+  #authModal button,#adminModal button,.mobile-header-menu button,#aiChatModal button,#aiPresetModal button,#_memoStkModal button,#mscModal button,#mscListModal button,#addEcoModal button{display:inline-block!important;pointer-events:auto!important;}
   label.btn:not(.mobile-keep){display:none!important;}
   .idx-refresh-btn{display:none!important;}
 
@@ -798,6 +798,7 @@ table.pf-table .chart-cell>div{width:100%;height:88px;overflow:hidden;}
   input:not([type=hidden]):not([type=file]):not([type=date]):not([type=color]),
   textarea,select{pointer-events:none!important;}
   body:not(.guest-mode) #mscModal select,
+  body:not(.guest-mode) #mscListModal input,
   body:not(.guest-mode) #addEcoModal input,
   body:not(.guest-mode) #addEcoModal select{pointer-events:auto!important;}
   .rich-editor{pointer-events:none!important;cursor:default!important;}
@@ -1852,7 +1853,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
         <div id="apanel-aiprovider" style="display:none;padding:20px;display:flex;flex-direction:column;gap:14px">
           <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:2px">🧩 AI 공급자 · 섹션별 설정</div>
           <div style="font-size:10.5px;color:#64748b;line-height:1.6;background:#f0f9ff;padding:8px 10px;border-radius:6px;border:1px solid #bae6fd">
-            Claude·DeepSeek 연결 정보를 여기서 함께 관리하고, 아래 목록에서 섹션별로 어떤 AI를 쓸지 고를 수 있습니다.<br>
+            Claude·DeepSeek·Gemini·ChatGPT 연결 정보를 여기서 함께 관리하고, 아래 목록에서 섹션별로 어떤 AI를 쓸지 고를 수 있습니다.<br>
             각 AI 채팅 팝업 상단에서도 바로 바꿀 수 있고, 한번 고르면 다시 바꾸기 전까지 그대로 유지됩니다.
           </div>
           <!-- Claude -->
@@ -1931,6 +1932,35 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
                 style="flex:1;font-size:11px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-family:monospace;color:#1e293b;min-width:0">
             </div>
             <div style="font-size:10px;color:#94a3b8;margin:-3px 0 0 92px">더 강력한 추론용 — 프리뷰(preview) 모델이라 안정성은 다소 낮을 수 있음</div>
+          </div>
+          <div style="height:1px;background:#e2e8f0;margin:4px 0"></div>
+          <!-- ChatGPT (OpenAI) -->
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:700;color:#10a37f;display:flex;align-items:center;gap:6px">
+              🟢 ChatGPT API Key
+              <a href="https://platform.openai.com/api-keys" target="_blank" style="font-size:10px;font-weight:400;color:#10a37f;text-decoration:underline">발급 받기 ↗</a>
+            </div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <input type="password" id="adminOpenAIKey" placeholder="sk-proj-..." autocomplete="off"
+                style="flex:1;font-size:11px;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-family:monospace;color:#1e293b;min-width:0"
+                onkeydown="if(event.key==='Enter')saveAiProviderKeys()">
+              <button onclick="saveAiProviderKeys()" class="mobile-keep"
+                style="padding:6px 10px;font-size:11px;background:#10a37f;color:#fff;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;font-weight:600;flex-shrink:0">저장</button>
+            </div>
+            <div style="font-size:10px;color:#94a3b8;line-height:1.5">※ ChatGPT 구독(Plus/Pro)과는 별개입니다 — OpenAI Platform(platform.openai.com)에서 API 결제 크레딧을 충전한 계정의 키가 필요합니다.</div>
+            <div style="font-size:10px;color:#94a3b8;line-height:1.5">※ OpenAI는 웹페이지에서 직접 호출이 막혀 있어, 자막·음성 변환에 쓰는 로컬 서버(transcript_server.py)가 대신 전달합니다 — 서버가 켜져 있어야 하고, 서버 파일을 업데이트한 뒤에는 한 번 재시작해야 합니다.</div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <label style="font-size:10.5px;color:#64748b;flex-shrink:0;width:88px">⚡ Flash 모델 ID</label>
+              <input id="adminOpenAIFlashModel" placeholder="gpt-6-luna"
+                style="flex:1;font-size:11px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-family:monospace;color:#1e293b;min-width:0">
+            </div>
+            <div style="font-size:10px;color:#94a3b8;margin:-3px 0 0 92px">요약·번역·메모 추출 등 빠르고 저렴하게 (추론 강도 low) — 이미지·PDF 인식 가능</div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <label style="font-size:10.5px;color:#64748b;flex-shrink:0;width:88px">🧠 Pro 모델 ID</label>
+              <input id="adminOpenAIProModel" placeholder="gpt-6.1-sol"
+                style="flex:1;font-size:11px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-family:monospace;color:#1e293b;min-width:0">
+            </div>
+            <div style="font-size:10px;color:#94a3b8;margin:-3px 0 0 92px">매매전략·기술적분석·차트분석 등 심층 추론용 (추론 강도 high) — 더 강력한 모델: gpt-6-astra(비쌈)</div>
           </div>
           <div id="adminAiProviderStatus" style="font-size:10.5px;color:#64748b;min-height:15px;line-height:1.5"></div>
           <button onclick="testAiProviderKeys()" class="mobile-keep"
@@ -2055,6 +2085,8 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
           <option value="deepseek-pro">🔷 DeepSeek(Pro)</option>
           <option value="gemini-flash">🔶 Gemini(Flash)</option>
           <option value="gemini-pro">🔶 Gemini(Pro)</option>
+          <option value="chatgpt-flash">🟢 ChatGPT(Flash)</option>
+          <option value="chatgpt-pro">🟢 ChatGPT(Pro)</option>
         </select>
         <button class="mx" onclick="closeAiRadarTargetModal()" title="닫기">✕</button>
       </div>
@@ -2111,6 +2143,8 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
           <option value="deepseek-pro">🔷 DeepSeek(Pro)</option>
           <option value="gemini-flash">🔶 Gemini(Flash)</option>
           <option value="gemini-pro">🔶 Gemini(Pro)</option>
+          <option value="chatgpt-flash">🟢 ChatGPT(Flash)</option>
+          <option value="chatgpt-pro">🟢 ChatGPT(Pro)</option>
         </select>
         <button class="mx" onclick="closeBtmLangGenModal()" title="닫기">✕</button>
       </div>
@@ -2632,8 +2666,8 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
       </span>
       <button class="mobile-keep" onclick="closeMscModal()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1">✕</button>
     </div>
-    <!-- 목록 -->
-    <div style="flex:1;overflow-y:auto;padding:12px 18px;min-height:0">
+    <!-- 목록(낮은 화면에서도 최소 높이 확보 — 모자라면 카드 전체가 스크롤) -->
+    <div style="flex:1;overflow-y:auto;padding:12px 18px;min-height:112px">
       <div id="mscList"></div>
     </div>
     <!-- 추가 폼 -->
@@ -2693,6 +2727,24 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
   </div>
 </div>
 
+<!-- ═══════ 월간 캘린더 일정 LIST 팝업 — 달력의 일정을 날짜·구분·내용으로 보여 주고, 체크한 일정만 [적용]으로 경제일정에 반영 ═══════ -->
+<div id="mscListModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10002;align-items:center;justify-content:center;padding:12px;box-sizing:border-box">
+  <div style="background:var(--card-bg,#fff);border-radius:14px;width:min(680px,100%);max-height:100%;box-shadow:0 8px 40px rgba(0,0,0,.35);border:1px solid var(--border,#e2e8f0);display:flex;flex-direction:column;overflow:hidden">
+    <!-- 헤더 -->
+    <div style="background:#1e3a5f;color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0">
+      <span id="mscListTitle" style="font-weight:700;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📋 일정 LIST</span>
+      <button class="mobile-keep" onclick="_mscListClose()" title="닫기" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1;flex-shrink:0">✕</button>
+    </div>
+    <!-- 상단 바: 적용 / 상태 / 다시 분석 -->
+    <div style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:9px 18px;border-bottom:1px solid var(--border,#e2e8f0);background:var(--bg-muted,#f8fafc);flex-wrap:wrap">
+      <button id="mscListApplyBtn" onclick="_mscListApply()" title="체크한 일정을 경제일정에 반영합니다 (체크 상태도 저장되어 유지됩니다)" style="padding:6px 18px;background:#0f766e;border:none;border-radius:6px;font-size:12px;font-weight:700;color:#fff;cursor:pointer">✅ 적용</button>
+      <span id="mscListInfo" style="flex:1;min-width:140px;font-size:11px;font-weight:600;line-height:1.35;color:#64748b"></span>
+      <button id="mscListRemakeBtn" onclick="_mscListRemake()" title="AI로 달력을 다시 읽어 LIST를 새로 만듭니다" style="padding:4px 10px;background:#e0f2fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#0369a1;cursor:pointer">🔄 다시 분석</button>
+    </div>
+    <!-- 목록(화면을 넘으면 이 영역만 스크롤) -->
+    <div id="mscListBody" style="flex:1;overflow:auto;min-height:0"></div>
+  </div>
+</div>
 <div id="newReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:none;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;width:min(360px,92vw);box-shadow:0 8px 40px rgba(0,0,0,.3);overflow:hidden">
     <!-- 헤더 -->
@@ -3230,7 +3282,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
             onclick="openMscModal()" title="월간 증시 캘린더 관리">📅 월간캘린더</button>
           <button class="btn mobile-keep" id="ecoAutoBtn"
             style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700"
-            onclick="toggleEcoUpdate(event)" title="이번 달부터 이후로 첨부된 모든 달의 월간캘린더 PDF를 먼저 분석해 반영한 뒤, 웹에서 보유 종목 실적발표일 + 배당락일 + 거시 이벤트를 추가 조회합니다 (Shift+클릭: 첨부된 PDF를 모두 다시 분석)">📡 업데이트</button>
+            onclick="toggleEcoUpdate()" title="모든 일정을 지운 뒤, 📅 월간캘린더 > LIST에서 체크해 둔 일정을 먼저 반영하고, 웹에서 오늘부터 2개월간의 보유 종목 실적발표일 + 배당락일 + 거시 이벤트를 추가 조회합니다 (수동으로 추가한 일정은 유지)">📡 업데이트</button>
           <button class="btn mobile-keep"
             style="font-size:9px;padding:0 6px;min-height:unset;height:20px;line-height:20px;background:#1e40af;border:none;border-radius:3px;font-weight:700"
             onclick="openAddEcoModal()" title="경제일정 수동 추가">+추가</button>
@@ -3669,7 +3721,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
               </label>
             </div>
           </div>
-          <button id="tsAiAnalyzeBtn" onclick="runAiChartAnalysis()" title="선택한 분석방식으로 AI가 차트를 분석해 그려줍니다 (Claude·Gemini만 지원)"
+          <button id="tsAiAnalyzeBtn" onclick="runAiChartAnalysis()" title="선택한 분석방식으로 AI가 차트를 분석해 그려줍니다 (Claude·Gemini·ChatGPT만 지원)"
                   style="font-size:10px;padding:0 6px;height:20px;border:none;border-radius:4px;cursor:pointer;background:#7c3aed;color:#fff;font-weight:600;white-space:nowrap;flex-shrink:0">🤖 적용</button>
           <!-- 노트 요구사항(톱니바퀴)도 절대위치 팝업이 있어 위 스크롤 영역(overflow-y:hidden) 밖에 둠 —
                #tsAiMethodDropdown과 같은 이유(주석 위 참고) -->
@@ -5212,7 +5264,6 @@ async function fetchOneIndex(key){
 /* ── 업데이트 토글 플래그 ── */
 let _isUpdatingIdx=false, _stopIdx=false;
 let _isUpdatingEco=false, _stopEco=false;
-let _ecoAbort=null; /* 진행 중인 월간 캘린더 PDF 분석 요청(AbortController) — 📡 중단 버튼·시간 초과로 끊음 */
 let _isUpdatingPf=false,  _stopPf=false;
 
 function _setBtnStop(btn, origBg){
@@ -5365,15 +5416,14 @@ function toggleIdxUpdate(){
     INDICES.forEach(idx=>{ const c=g(`idx-card-${idx.key}`); if(c) c.classList.remove('update-dim'); });
   } else { fetchAllIndices(); }
 }
-function toggleEcoUpdate(ev){
+function toggleEcoUpdate(){
   if(_isUpdatingEco){
     _stopEco=true; _isUpdatingEco=false;
-    if(_ecoAbort){ try{ _ecoAbort.abort(); }catch(e){} } /* PDF를 AI가 읽는 중이었다면 그 요청부터 끊음 */
     _hideUpdateSpinner();
     _setBtnReady(g('ecoAutoBtn'),'rgba(255,255,255,.18)');
     const st=g('ecoStatus'); if(st) st.textContent='중단됨';
     const ea=g('ecoScrollArea'); if(ea) ea.classList.remove('update-dim');
-  } else { autoUpdateEco(!!(ev&&ev.shiftKey)); } /* Shift+클릭: 저장된 PDF 분석 결과를 쓰지 않고 다시 분석 */
+  } else { autoUpdateEco(); }
 }
 function togglePfUpdate(){
   if(_isUpdatingPf){
@@ -5987,7 +6037,7 @@ ${_tbl.text}`:'';
     if(typeof saveData==='function') saveData();
   }catch(e){
     const busy=(e&&(e.status===429||e.status===503))||/high demand|overloaded|unavailable|try again|rate.?limit/i.test(e.message||'');
-    alert('AI 차트 분석 중 오류: '+e.message+(busy?'\n\n여러 번 자동 재시도했지만 서버가 계속 혼잡합니다. 잠시 후 다시 시도하거나, 관리 메뉴 > 🧩 AI 공급자에서 이 섹션의 모델을 바꿔보세요 (예: Gemini Pro → Gemini Flash, 또는 Claude).':''));
+    alert('AI 차트 분석 중 오류: '+e.message+(busy?'\n\n여러 번 자동 재시도했지만 서버가 계속 혼잡합니다. 잠시 후 다시 시도하거나, 관리 메뉴 > 🧩 AI 공급자에서 이 섹션의 모델을 바꿔보세요 (예: Gemini Pro → Gemini Flash, Claude 또는 ChatGPT).':''));
   }finally{
     if(btn){ btn.textContent=origTxt||'🤖 적용'; btn.disabled=false; }
   }
@@ -6073,7 +6123,6 @@ async function fetchAllIndices(){
 
 /* ─────────── 경제 일정 ─────────── */
 let ecoData=[];
-const ECO_DISPLAY_MAX=15;
 
 /* ── 수동 일정: 별도 localStorage 키로 영구 보존 ── */
 const MANUAL_ECO_KEY='BTMManualEco';
@@ -6260,10 +6309,18 @@ async function _mscRender(hiYear,hiMonth){
       ?'<span style="padding:2px 6px;background:#fef3c7;color:#92400e;border-radius:4px;font-size:9px;font-weight:700">PDF</span>'
       :'<span style="padding:2px 6px;background:#dbeafe;color:#1e40af;border-radius:4px;font-size:9px;font-weight:700">이미지</span>';
     const sz=d.size?'<span style="font-size:10px;color:#94a3b8">'+_mscFmtSize(d.size)+'</span>':'';
-    return `<div data-msc="${d.key}" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9">
+    /* 일정 LIST 상태 — AI가 읽는 중 / 목록 있음(경제일정에 반영하려고 체크한 수 / 전체) / 아직 없음 */
+    const busy=_mscAnalyzing.has(d.key);
+    const hasList=Array.isArray(d.ecoEvents)&&d.ecoSavedAt===d.savedAt;
+    const nAll=hasList?d.ecoEvents.length:0, nChk=hasList?d.ecoEvents.filter(e=>e&&e.checked).length:0;
+    const pill=(hasList&&!busy)?`<span title="경제일정에 반영하려고 체크한 일정 / 달력에서 읽은 전체 일정" style="font-size:10px;font-weight:600;color:#7c3aed;white-space:nowrap">반영 ${nChk}/${nAll}</span>`:'';
+    const listBtn=`<button onclick="_mscOpenList('${d.key}')" title="${busy?'AI가 달력에서 일정을 읽는 중입니다(최대 3분)':'달력의 일정을 날짜·구분·내용 LIST로 보고, 경제일정에 반영할 일정을 체크합니다'}" style="padding:3px 10px;background:#ede9fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#6d28d9;cursor:pointer">${busy?'⏳ 분석중…':'LIST'}</button>`;
+    return `<div data-msc="${d.key}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;row-gap:6px;padding:8px 0;border-bottom:1px solid #f1f5f9">
       <span style="font-size:13px;font-weight:600;color:#334155">${d.year}년 ${d.month}월</span>
       ${badge}${sz}<span style="flex:1"></span>
+      ${pill}
       <button class="mobile-keep" onclick="_mscView('${d.key}')" style="padding:3px 10px;background:#e0f2fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#0369a1;cursor:pointer">🔍 보기</button>
+      ${listBtn}
       <button onclick="_mscDel('${d.key}')" style="padding:3px 10px;background:#fee2e2;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#b91c1c;cursor:pointer">삭제</button>
     </div>`;
   }).join('');
@@ -6466,6 +6523,7 @@ window._mscAdd=async function(){
   _mscPendingData=null;
   await _mscRender(year,month);
   _mscStatus('✅ '+year+'년 '+month+'월 '+kind+' 저장 완료 ('+_mscFmtSize(blob.size)+')','ok');
+  _ecoAutoMakeList(key,year,month,kind);   /* 방금 저장한 달력의 일정 LIST를 AI로 만들어 둠(백그라운드) */
 };
 
 window._mscDel=async function(key){
@@ -6542,7 +6600,7 @@ function _ecoDayStr(dateStr){
 function buildEcoTable(){
   const tb=g('ecoBody'); tb.innerHTML='';
   const _tr=(_btmLang!=='ko' && _btmTranslations[_btmLang]) ? (_btmTranslations[_btmLang].ecoData||{}) : null;
-  ecoData.slice(0,ECO_DISPLAY_MAX).forEach((row,i)=>{
+  ecoData.forEach((row,i)=>{
     const tr=document.createElement('tr');
     const isManual=row.source==='manual';
     const srcBadge=isManual
@@ -6559,7 +6617,7 @@ function buildEcoTable(){
     tr.innerHTML=`
       <td class="date-cell">
         <div style="display:flex;align-items:center;gap:3px">
-          <input value="${row.date||''}" placeholder="yyyy-mm-dd"
+          <input value="${_escHtml(row.date)}" placeholder="yyyy-mm-dd"
             onchange="ecoData[${i}].date=this.value;var _dl=document.getElementById('eco-day-${i}');if(_dl)_dl.textContent=_ecoDayStr(this.value);saveData()"
             style="flex:1;min-width:0"/>
           <span id="eco-day-${i}" style="font-size:9px;color:#94a3b8;white-space:nowrap;flex-shrink:0">${dayLabel}</span>
@@ -6570,7 +6628,7 @@ function buildEcoTable(){
         <option ${row.type==='한국'?'selected':''}>한국</option>
         <option ${row.type==='기타'?'selected':''}>기타</option>
       </select></td>
-      <td><input value="${contentTxt}" placeholder="이벤트 내용" onchange="${contentOnchange}" style="width:100%"/></td>
+      <td><input value="${_escHtml(contentTxt)}" placeholder="이벤트 내용" onchange="${contentOnchange}" style="width:100%"/></td>
       <td style="text-align:center">${srcBadge}</td>
       <td><button onclick="deleteEcoRow(${i})" style="background:#fee2e2;color:#991b1b;border:none;border-radius:3px;padding:1px 5px;cursor:pointer;font-size:10px">✕</button></td>
     `;
@@ -6583,29 +6641,30 @@ function deleteEcoRow(i){
   if(entry&&entry.source==='manual'){
     const manuals=_getManualEco().filter(e=>!(e.date===entry.date&&e.content===entry.content));
     _saveManualEco(manuals);
-  }
+  } else if(entry&&entry.source==='pdf'){ _ecoUncheckPdfPick(entry); }   /* 월간캘린더 LIST의 체크도 풀어 줌 — 안 그러면 📡 업데이트 때 다시 나타남 */
   ecoData.splice(i,1); buildEcoTable(); saveData();
 }
 function clearAllEco(){
-  /* 수동 항목은 BTMManualEco에서도 삭제 */
-  const hadManual=ecoData.some(e=>e.source==='manual');
-  if(hadManual&&!confirm('수동으로 추가한 일정도 모두 삭제하시겠습니까?\n(취소 시 자동 일정만 삭제됩니다)')){
-    ecoData=ecoData.filter(e=>e.source==='manual');
+  /* 수동으로 추가한 일정과 월간캘린더 LIST에서 반영한 일정은 사용자가 직접 고른 것이라 따로 물어봄 */
+  const hadKeep=ecoData.some(e=>e.source==='manual'||e.source==='pdf');
+  if(hadKeep&&!confirm('수동으로 추가한 일정과 월간캘린더 LIST에서 반영한 일정도 모두 삭제하시겠습니까?\n(취소 시 자동 일정만 삭제됩니다)')){
+    ecoData=ecoData.filter(e=>e.source==='manual'||e.source==='pdf');
   } else {
     _saveManualEco([]);
+    _ecoUncheckAllPdfPicks();   /* LIST 체크도 모두 해제 — 안 그러면 📡 업데이트 때 다시 나타남 */
     ecoData=[];
   }
   buildEcoTable(); saveData();
 }
 
-/* 과거 일정 자동 삭제 + 3개월 초과 일정 제거 — 페이지 로드 후 호출 (한국 Q3 실적=10월 포함) */
+/* 과거 일정 자동 삭제 + 2개월 초과 일정 제거 — 페이지 로드 후 호출 (한국 Q3 실적=10월 포함) */
 function cleanPastEcoEvents(){
   const t=new Date(); t.setHours(0,0,0,0);
   const todayS=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
-  const c=new Date(t); c.setMonth(c.getMonth()+3);
+  const c=new Date(t); c.setMonth(c.getMonth()+2);
   const cutoffS=`${c.getFullYear()}-${String(c.getMonth()+1).padStart(2,'0')}-${String(c.getDate()).padStart(2,'0')}`;
   const before=ecoData.length;
-  /* 수동·PDF(첨부한 월간 캘린더에서 읽은) 항목: 오늘 이후면 유지(3개월 창 밖의 먼 달도 유지) / 웹 자동 항목: 오늘~3개월 유지 */
+  /* 수동·PDF(월간 캘린더 LIST에서 체크해 반영한) 항목: 오늘 이후면 유지(2개월 창 밖의 먼 달도 유지) / 웹 자동 항목: 오늘~2개월 유지 */
   ecoData=ecoData.filter(e=>{
     if(!e.date) return true;
     if(e.source==='manual'||e.source==='pdf') return e.date>=todayS;
@@ -7066,16 +7125,15 @@ async function _batchedSettled(items, worker, batchSize, gapMs){
   }
   return out;
 }
-/* ══ 경제일정 ← 월간 캘린더 PDF 반영(이번 달 + 이후로 첨부된 모든 달) ══
-   "📡 업데이트"(autoUpdateEco)는 웹 조회보다 먼저, 오늘 날짜가 속한 달부터 그 이후로 첨부해 둔 모든 달의 월간 증시 캘린더(PDF, 없으면 이미지)를
-   AI로 읽어 일정(날짜·구분·내용)을 뽑아 표에 먼저 반영하고(지난 달 캘린더는 안 씀), 그다음 웹 조회로 추가 일정을 보탬(PDF와 같은 날 비슷한 웹 일정은 PDF 쪽만 남김).
-   같은 PDF를 업데이트 때마다 다시 분석하면 시간·AI 비용이 계속 들어서, 분석 결과(일정 배열)를 그 PDF 기록(BTM_MscDB meta의 ecoEvents)에 함께
-   저장해 재사용함 — PDF를 다시 저장(교체)하면 기록이 새로 만들어져 자동으로 다시 분석되고, 📡 업데이트를 Shift+클릭하면 강제로 다시 분석함.
-   PDF 분석이 안 되는 상황(PDF 없음·AI 키 없음·오류·시간 초과)에서도 웹 업데이트는 그대로 진행됨(UPDATE ALL에서도 알림창 없이 조용히 건너뜀) */
+/* ══ 월간 캘린더 → 일정 LIST → 경제일정 (사용자가 체크한 일정만 반영) ══
+   월간 캘린더(PDF·이미지)를 저장하면 AI가 달력의 모든 일정을 읽어 '날짜·구분·내용' LIST를 만들고(그 달 기록 BTM_MscDB meta의 ecoEvents에 저장),
+   📅 월간캘린더 팝업의 [LIST] 버튼으로 열어 '본문반영'에 체크한 일정만 [적용]으로 경제일정에 넣음. 체크 상태는 ecoEvents[].checked로 저장돼 유지됨.
+   📡 업데이트는 이제 AI를 부르지 않음 — 모든 일정을 지운 뒤 LIST에서 체크해 둔 일정(오늘 이후)을 먼저 채우고, 웹에서 오늘~+2개월 일정을 더함.
+   한 번 넣은 일정(source:'pdf')은 날짜가 지나거나 표에서 ✕로 지우기 전까지 유지됨(✕로 지우면 그 일정의 체크도 풀려 업데이트로 되살아나지 않음).
+   (예전 방식 — 업데이트 때 첨부된 모든 달을 AI가 자동 분석해 전부 넣던 것 — 은 없앴음. 그때 저장해 둔 분석 결과(ecoEvents)는 체크 없는 LIST로 그대로 이어씀) */
 const ECO_PDF_MAP_KEY='ecoPdfCalendar';        /* 관리 메뉴 > 🧩 AI 공급자의 섹션 키(기본 Claude — DeepSeek은 PDF 인식 불가) */
-const ECO_PDF_MAX_BYTES=15*1024*1024;          /* base64로 부풀어도 AI 요청 한도(Claude 32MB·Gemini 인라인 20MB)를 넘지 않게 */
-const ECO_PDF_TIMEOUT_MS=180000;               /* 한 달 응답이 이보다 오래 걸리면 그 달만 포기하고 나머지·웹 업데이트로 넘어감 */
-const ECO_PDF_CONCURRENCY=3;                   /* 여러 달을 새로 분석할 때 동시에 보내는 요청 수(레이트리밋 회피) */
+const ECO_PDF_MAX_BYTES=15*1024*1024;          /* base64로 부풀어도 AI 요청 한도(Claude 32MB·Gemini 인라인 20MB·ChatGPT 50MB)를 넘지 않게 */
+const ECO_PDF_TIMEOUT_MS=180000;               /* 한 달 분석 응답을 이보다 오래 기다리지 않음 */
 
 function _ecoPdfSystemPrompt(year,month){
   const mm=String(month).padStart(2,'0');
@@ -7154,126 +7212,321 @@ function _ecoSameEvent(a,b){
   return false;
 }
 
-/* 한 달치(월간 캘린더 저장 기록 meta 하나)를 일정 배열로 — 저장된 분석 결과가 있으면 재사용, 없으면 AI로 분석해 그 기록에 저장.
-   다시 분석(force)하다 실패해도 저장된 이전 분석 결과가 있으면 그걸 씀(표에서 PDF 일정이 사라지지 않게).
-   반환: {events(오늘 이후만), short(상태줄에 붙일 짧은 사유), note(마우스를 올리면 보이는 자세한 설명), cached?, stopped?, failed?} — 실패해도 던지지 않음.
-   sh = _ecoLoadPdfEvents가 모든 달에 공유하는 상태 {todayS, nowYear, res(AI 공급자·키), master(📡 중단용 AbortController), setSt} */
-async function _ecoLoadOneMonth(meta,force,sh){
-  const year=+meta.year, month=+meta.month, key=meta.key||(year+'-'+month);   /* 월간 캘린더 저장 키(월은 0 패딩 없음) */
-  const isPdf=meta.type==='pdf', kind=isPdf?'PDF':'이미지';
-  const label=(year===sh.nowYear?'':year+'년 ')+month+'월';
-  const upcoming=evs=>(evs||[]).filter(e=>e.date>=sh.todayS);                 /* 지난 일정은 표에 안 쓰므로 여기서 거름(저장된 분석 결과에는 그 달 전체를 그대로 둠) */
-  const ret=(events,short,note,extra)=>Object.assign({events:upcoming(events),short,note},extra||{});
-  if(_stopEco) return ret([],'','중단됨',{stopped:true});
-  /* 이 PDF 기록에 저장된(PDF를 교체하면 사라지는) 이전 분석 결과 */
-  const cachedOk=meta.ecoSavedAt===meta.savedAt&&Array.isArray(meta.ecoEvents)&&meta.ecoEvents.length>0;
-  const cachedNote=()=>`${label} ${kind}에서 이전에 분석해 둔 일정 ${meta.ecoEvents.length}건 중 오늘 이후 ${upcoming(meta.ecoEvents).length}건을 반영했습니다.`;
-  if(!force&&cachedOk) return ret(meta.ecoEvents,'',cachedNote(),{cached:true});
-  /* 다시 분석할 수 없는 사정이면, 저장된 결과가 있을 때는 그걸 쓰고 없을 때만 이 달 PDF 반영을 건너뜀 */
-  const cantAnalyze=(short,note)=>cachedOk
-    ? ret(meta.ecoEvents,'',`${note} 대신 ${cachedNote()}`,{cached:true})
-    : ret([],short,note,{failed:true});
-  const res=sh.res;
-  if(!res||!res.key) return cantAnalyze(`${kind} 분석 Key 없음`,`${res?res.name:'AI'} API Key가 없어 ${label} ${kind}를 분석하지 못했습니다(관리 메뉴 > 🧩 AI 공급자에서 설정).`);
-  if(res.provider.startsWith('deepseek')) return cantAnalyze(`${kind} 분석 불가`,'DeepSeek은 PDF·이미지 인식을 지원하지 않아 분석하지 못했습니다(관리 메뉴 > 🧩 AI 공급자의 "경제일정 — 월간캘린더 PDF 분석"을 Claude 또는 Gemini로 바꿔주세요).');
-  let rec;
-  try{ rec=await _mscGetBoth(key); }
-  catch(e){ return cantAnalyze(`${kind} 읽기 실패`,`${label} ${kind}를 저장소에서 읽지 못했습니다 — ${_mscErrText(e)}`); }
-  const blob=rec&&rec.file&&rec.file.blob;
-  if(!blob) return cantAnalyze(`${kind} 파일 없음`,`${label} ${kind} 파일을 저장소에서 찾지 못했습니다.`);
-  if(blob.size>ECO_PDF_MAX_BYTES) return cantAnalyze(`${kind} 용량 초과`,`${label} ${kind}가 ${_mscFmtSize(blob.size)}로 너무 커서(15MB 초과) 분석하지 못했습니다.`);
-
-  /* 이 달 요청만 따로 끊을 수 있게 자식 컨트롤러 — 📡 중단(master)이면 같이 끊기고, 이 달 응답이 너무 늦으면 이 달만 포기 */
-  const child=new AbortController();
-  const onMasterAbort=()=>child.abort();
-  if(sh.master) sh.master.signal.addEventListener('abort',onMasterAbort,{once:true});
-  const timer=setTimeout(()=>child.abort(),ECO_PDF_TIMEOUT_MS);
-  try{
-    const b64=await _ecoBlobToBase64(blob);
-    const raw=await window._runFilePrompt(
-      ECO_PDF_MAP_KEY, _ecoPdfSystemPrompt(year,month),
-      {kind:isPdf?'pdf':'image', mediaType:isPdf?'application/pdf':(blob.type||'image/png'), data:b64},
-      `${year}년 ${month}월 증시 캘린더에 적힌 일정을 모두 뽑아 JSON 배열로만 답해줘.`,
-      (a,m)=>sh.setSt(`📄 ${label} ${kind} 분석 재시도 (${a}/${m})…`), child.signal);
-    const events=_ecoParsePdfEvents(raw,year,month);
-    if(!events.length) throw new Error('캘린더에서 이 달 일정을 찾지 못했습니다.');
-    /* 분석 결과를 그 PDF 기록에 함께 저장 — 분석하는 사이 PDF가 교체됐으면(savedAt이 달라졌으면) 저장하지 않음 */
+/* ── 월간 캘린더 한 달치를 AI로 읽어 일정 LIST(날짜·구분·내용)를 만들어 그 달 기록(meta.ecoEvents)에 저장 ──
+   저장 직후 자동으로(_ecoAutoMakeList), 또는 [LIST]를 눌렀는데 아직 목록이 없을 때 실행. 같은 달이 이미 분석 중이면 그 Promise를 그대로 돌려줌.
+   이미 체크해 둔 일정은 다시 분석해도 같은 날짜·내용이면 체크를 이어받음. 실패하면 사람이 읽을 문장의 Error를 던짐.
+   반환: {events:[{date,type,content,checked?}], providerName} */
+const _mscAnalyzing=new Map();   /* key('2026-10') → Promise — 지금 AI가 읽고 있는 달 */
+function _ecoMakeList(key,onStatus){
+  if(_mscAnalyzing.has(key)) return _mscAnalyzing.get(key);
+  const p=(async()=>{
+    let rec;
+    try{ rec=await _mscGetBoth(key); }
+    catch(e){ throw new Error('저장소에서 캘린더 파일을 읽지 못했습니다 — '+_mscErrText(e)); }
+    const meta=rec&&rec.meta, blob=rec&&rec.file&&rec.file.blob;
+    if(!meta||!blob) throw new Error('저장된 캘린더 파일을 찾지 못했습니다.');
+    const isPdf=meta.type==='pdf', kind=isPdf?'PDF':'이미지', year=+meta.year, month=+meta.month;
+    if(blob.size>ECO_PDF_MAX_BYTES) throw new Error(`${kind}가 ${_mscFmtSize(blob.size)}로 너무 커서(15MB 초과) 분석할 수 없습니다.`);
+    const res=(typeof window._resolveAiProvider==='function')?window._resolveAiProvider(ECO_PDF_MAP_KEY):null;
+    if(!res||!res.key) throw new Error(`${res?res.name:'AI'} API Key가 없습니다 — 관리 메뉴 > 🧩 AI 공급자에서 설정해 주세요.`);
+    if(res.provider.startsWith('deepseek')) throw new Error('DeepSeek은 PDF·이미지 인식을 지원하지 않습니다 — 관리 메뉴 > 🧩 AI 공급자의 "경제일정 — 월간캘린더 일정 LIST 만들기"를 Claude, Gemini 또는 ChatGPT로 바꿔주세요.');
+    const ctrl=new AbortController(), timer=setTimeout(()=>ctrl.abort(),ECO_PDF_TIMEOUT_MS);
+    let raw;
     try{
-      await _mscTx(['meta'],'readwrite',m=>{
-        const rq=m.get(key);
-        rq.onsuccess=()=>{ const cur=rq.result; if(cur&&cur.savedAt===meta.savedAt) m.put(Object.assign({},cur,{ecoEvents:events,ecoSavedAt:cur.savedAt,ecoAt:Date.now()})); };
-      });
-    }catch(e){ console.warn('[경제일정] 분석 결과를 저장하지 못했습니다(다음 업데이트 때 다시 분석):',e); }
-    return ret(events,'',`${label} ${kind}를 ${res.name}로 분석해 일정 ${events.length}건을 읽고, 오늘 이후 ${upcoming(events).length}건을 반영했습니다.`,{cached:false});
-  }catch(e){
-    if(child.signal.aborted&&_stopEco) return ret([],'','중단됨',{stopped:true});
-    const timedOut=child.signal.aborted;
-    console.warn('[경제일정] 월간 캘린더 분석 실패('+label+'):',e);
-    const why=timedOut?`응답 대기 ${ECO_PDF_TIMEOUT_MS/1000}초 초과`:String((e&&e.message)||e).split('\n')[0].slice(0,80);
-    return cantAnalyze(`${kind} 분석 실패`,`${label} ${kind} 분석에 실패했습니다 — ${why}.`);
-  }finally{
-    clearTimeout(timer);
-    if(sh.master) sh.master.signal.removeEventListener('abort',onMasterAbort);
-  }
+      const b64=await _ecoBlobToBase64(blob);
+      raw=await window._runFilePrompt(
+        ECO_PDF_MAP_KEY, _ecoPdfSystemPrompt(year,month),
+        {kind:isPdf?'pdf':'image', mediaType:isPdf?'application/pdf':(blob.type||'image/png'), data:b64},
+        `${year}년 ${month}월 증시 캘린더에 적힌 일정을 모두 뽑아 JSON 배열로만 답해줘.`,
+        (a,m)=>{ if(onStatus) onStatus(`AI 서버가 혼잡해 다시 시도하는 중… (${a}/${m})`); }, ctrl.signal);
+    }catch(e){
+      if(ctrl.signal.aborted) throw new Error(`AI 응답을 ${ECO_PDF_TIMEOUT_MS/1000}초 넘게 기다려 중단했습니다.`);
+      throw e;
+    }finally{ clearTimeout(timer); }
+    const events=_ecoParsePdfEvents(raw,year,month);
+    if(!events.length) throw new Error('캘린더에서 이 달의 일정을 찾지 못했습니다.');
+    /* 저장 — 분석하는 사이 파일이 교체됐으면(savedAt이 달라졌으면) 저장하지 않음. 이미 체크해 둔 일정은 같은 날짜·내용끼리 체크를 이어받음 */
+    let saved=null;
+    await _mscTx(['meta'],'readwrite',m=>{
+      const rq=m.get(key);
+      rq.onsuccess=()=>{
+        const cur=rq.result; if(!cur||cur.savedAt!==meta.savedAt) return;
+        const was=new Set((Array.isArray(cur.ecoEvents)?cur.ecoEvents:[]).filter(e=>e&&e.checked).map(e=>e.date+'|'+e.content));
+        saved=events.map(e=>was.has(e.date+'|'+e.content)?Object.assign({},e,{checked:true}):e);
+        m.put(Object.assign({},cur,{ecoEvents:saved,ecoSavedAt:cur.savedAt,ecoAt:Date.now()}));
+      };
+    });
+    if(!saved){ const er=new Error('분석하는 동안 캘린더 파일이 바뀌어 결과를 저장하지 않았습니다. 다시 시도해 주세요.'); er.superseded=true; throw er; }   /* 같은 달 파일을 다시 올려 교체한 경우 — 새 파일 분석이 이어서 돌므로 자동 생성 쪽은 이 오류를 조용히 넘김 */
+    return {events:saved, providerName:res.name};
+  })();
+  _mscAnalyzing.set(key,p);
+  const done=()=>{ if(_mscAnalyzing.get(key)===p) _mscAnalyzing.delete(key); };
+  p.then(done,done);
+  return p;
 }
 
-/* 오늘 날짜가 속한 달부터 그 이후로 월간 캘린더(PDF, 없으면 이미지)가 첨부된 모든 달을 읽어 일정을 모아 돌려줌 — 지난 달 캘린더는 안 씀.
-   달마다 저장된 분석 결과를 재사용하고 새로 분석해야 하는 달만 AI를 부르며, 요청이 몰리지 않게 ECO_PDF_CONCURRENCY달씩 병렬로 처리.
-   반환: {events(오늘 이후만, 모든 달), short(실패한 달이 있을 때 상태줄에 붙일 짧은 사유), note(달별 설명을 줄바꿈으로 이어 붙임 — 상태줄 툴팁), stopped?}.
-   실패해도 던지지 않음(그 달만 건너뛰고 나머지 달·웹 업데이트는 그대로 진행) */
-async function _ecoLoadPdfEvents(statusEl,force){
-  const now=new Date(), ny=now.getFullYear(), nm=now.getMonth()+1;
-  const todayS=`${ny}-${String(nm).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const setSt=t=>{ if(statusEl&&!_stopEco) statusEl.textContent=t; };   /* 📡 중단 뒤 늦게 끝난 달이 '중단됨' 표시를 진행 문구로 덮어쓰지 않게 */
-  let metas;
-  try{
-    try{ await _mscInit(); }catch(e){}                               /* 옛 localStorage 데이터 이전이 보류돼도 현재 저장소는 읽을 수 있음 */
-    metas=await _mscTx(['meta'],'readonly',m=>m.getAll());
-  }catch(e){
-    console.warn('[경제일정] 월간 캘린더 저장소를 읽지 못했습니다:',e);
-    return {events:[],short:'캘린더 저장소 오류',note:'월간 캘린더 저장소를 읽지 못해 PDF 반영은 건너뛰고 웹 업데이트만 합니다 — '+_mscErrText(e)};
-  }
-  const curIdx=ny*12+nm;
-  const months=(metas||[])
-    .filter(r=>r&&(+r.year)>0&&(+r.month)>=1&&(+r.month)<=12&&((+r.year)*12+(+r.month))>=curIdx)
-    .sort((a,b)=>((+a.year)*12+(+a.month))-((+b.year)*12+(+b.month)));
-  if(!months.length) return {events:[],short:'',note:`${ny}년 ${nm}월 이후에 첨부된 월간 캘린더가 없어 PDF 반영은 건너뛰고 웹 업데이트만 합니다.`};
-  const res=(typeof window._resolveAiProvider==='function')?window._resolveAiProvider(ECO_PDF_MAP_KEY):null;
-  const canAi=!!(res&&res.key&&!res.provider.startsWith('deepseek'));
-  /* 새로 분석해야 하는 달(저장된 분석 결과가 없거나 강제 재분석) — 진행 상황 표시(몇 개월 중 몇 개월째)에 씀 */
-  const need=months.map(m=>force||!(m.ecoSavedAt===m.savedAt&&Array.isArray(m.ecoEvents)&&m.ecoEvents.length>0));
-  const todo=canAi?need.filter(Boolean).length:0;
-  const sh={todayS,nowYear:ny,res,setSt,master:todo?new AbortController():null};
-  let done=0;
-  const progress=()=>{ if(todo) setSt(`📄 월간 캘린더 PDF 분석 중… ${done}/${todo}개월 (${res.name})`); };
-  if(sh.master){ _ecoAbort=sh.master; progress(); }
-  const results=new Array(months.length);
-  try{
-    let next=0;
-    const worker=async()=>{
-      while(next<months.length&&!_stopEco){
-        const i=next++;
-        results[i]=await _ecoLoadOneMonth(months[i],force,sh);
-        if(need[i]&&canAi){ done++; progress(); }
-      }
-    };
-    await Promise.all(Array.from({length:Math.min(ECO_PDF_CONCURRENCY,months.length)},worker));
-  }finally{
-    if(sh.master&&_ecoAbort===sh.master) _ecoAbort=null;
-  }
-  if(_stopEco) return {events:[],short:'',note:'중단됨',stopped:true};
-  const rs=results.filter(Boolean);
-  const events=[]; rs.forEach(r=>events.push(...r.events));
-  const failed=rs.filter(r=>r.failed);
-  let short='';
-  if(failed.length){
-    const uniq=[...new Set(failed.map(r=>r.short))];
-    short=(failed.length===rs.length&&uniq.length===1)?uniq[0]:`PDF ${failed.length}/${rs.length}개월 실패`;
-  }
-  return {events,short,note:rs.map(r=>r.note).filter(Boolean).join('\n')};
+/* 월간 캘린더를 저장한 직후 자동 호출 — 일정 LIST를 만들어 둠. 이미 저장은 끝났으므로 실패해도 상태 문구로만 알리고, [LIST]에서 다시 시도할 수 있음 */
+function _ecoAutoMakeList(key,year,month,kind){
+  const base=`${year}년 ${month}월 ${kind} 저장 완료`;
+  const refresh=()=>{ const m=g('mscModal'); if(m&&m.style.display==='flex') _mscRender(); };
+  const prev=_mscAnalyzing.get(key);   /* 같은 달 옛 파일을 아직 읽는 중이면 그게 끝난 뒤 새 파일로 다시 읽음 */
+  const p=prev?prev.catch(()=>{}).then(()=>_ecoMakeList(key)):_ecoMakeList(key);
+  refresh();                           /* 행에 '⏳ 분석중…' 표시 */
+  _mscStatus('✅ '+base+' — 📋 AI가 달력에서 일정 LIST를 만드는 중… (최대 3분, 창을 닫아도 계속됩니다)');
+  p.then(r=>{
+    _mscStatus(`✅ ${base} — 📋 일정 ${r.events.length}건 LIST 생성 완료 (LIST 버튼에서 반영할 일정을 체크하세요)`,'ok');
+    refresh();
+  }).catch(e=>{
+    if(e&&e.superseded){ refresh(); return; }   /* 새 파일의 분석이 이어서 돌고 있음 — 진행 문구를 덮어쓰지 않음 */
+    _mscStatus(`⚠ ${base} — 일정 LIST는 만들지 못했습니다: ${e&&e.message||e} (LIST 버튼에서 다시 시도할 수 있습니다)`,'warn');
+    refresh();
+  });
 }
 
-async function autoUpdateEco(forcePdf){
+/* 모든 달의 LIST에서 체크해 둔 일정 중 오늘 이후인 것 — 📡 업데이트가 표를 채울 때 씀(AI는 부르지 않음). 달 순서·날짜 순서로 정렬 */
+async function _ecoCheckedPdfEvents(todayS){
+  try{ await _mscInit(); }catch(e){}          /* 옛 localStorage 데이터 이전이 보류돼도 현재 저장소는 읽을 수 있음 */
+  const metas=await _mscTx(['meta'],'readonly',m=>m.getAll());
+  const out=[], seen=new Set();
+  (metas||[]).forEach(r=>{
+    if(!r||!Array.isArray(r.ecoEvents)||r.ecoSavedAt!==r.savedAt) return;
+    r.ecoEvents.forEach(e=>{
+      if(!e||!e.checked||!e.date||e.date<todayS) return;
+      const k=e.date+'|'+e.content; if(seen.has(k)) return; seen.add(k);
+      out.push({date:e.date,type:e.type||'기타',content:e.content,source:'pdf',pdfKey:k});
+    });
+  });
+  return out.sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+/* 오늘 날짜 archive가 있으면 그 기록의 경제일정도 지금 표로 맞춰 둠(📡 업데이트·LIST 적용 공통) */
+function _ecoSyncTodayArchive(){
+  try{
+    const d=gv('reportDate')||todayStr();
+    const a=getArchiveRecord(d);
+    if(a){ a.data=a.data||{}; a.data.ecoData=[...ecoData]; putArchiveRecord(a); }
+  }catch(_){}
+}
+
+/* LIST [적용] — ym('YYYY-MM') 달에서 예전에 반영했던 PDF 일정을 빼고, 지금 체크한 일정(picks)으로 바꿔 넣음. 수동 일정은 건드리지 않음.
+   같은 날짜의 비슷한 웹 자동 일정은 PDF 쪽만 남김. 반환: {added, before} (새로 넣은 건수, 예전 반영 건수) */
+function _ecoApplyPicks(ym,picks){
+  const mine=e=>e.source==='pdf'&&String(e.date||'').slice(0,7)===ym;
+  const before=ecoData.filter(mine).length;
+  const rest=ecoData.filter(e=>!mine(e)).filter(e=>e.source==='manual'||e.source==='pdf'||!picks.some(p=>_ecoSameEvent(p,e)));
+  const seen=new Set(rest.map(e=>e.date+'|'+e.content));
+  const add=picks.filter(p=>{ const k=p.date+'|'+p.content; if(seen.has(k)) return false; seen.add(k); return true; });
+  ecoData=[...rest,...add].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  buildEcoTable();
+  saveNow();
+  _ecoSyncTodayArchive();
+  return {added:add.length,before};
+}
+
+/* 표에서 PDF 일정을 ✕로 지웠을 때 — 그 일정이 속한 달 LIST의 체크를 풀어 줌(안 그러면 📡 업데이트 때 되살아남). 고쳐 쓴 일정도 찾도록 처음 읽은 날짜·내용(pdfKey) 기준 */
+async function _ecoUncheckPdfPick(entry){
+  try{
+    const k=entry.pdfKey||(entry.date+'|'+entry.content);
+    const [y,mo]=String(k.split('|')[0]).split('-');
+    if(!y||!mo) return;
+    const mkey=(+y)+'-'+(+mo);
+    await _mscTx(['meta'],'readwrite',st=>{
+      const rq=st.get(mkey);
+      rq.onsuccess=()=>{
+        const cur=rq.result; if(!cur||!Array.isArray(cur.ecoEvents)) return;
+        let hit=false;
+        const evs=cur.ecoEvents.map(e=>{ if(e&&e.checked&&(e.date+'|'+e.content)===k){ hit=true; const c=Object.assign({},e); delete c.checked; return c; } return e; });
+        if(hit) st.put(Object.assign({},cur,{ecoEvents:evs}));
+      };
+    });
+  }catch(e){ console.warn('[경제일정] LIST 체크를 해제하지 못했습니다:',e); }
+}
+/* 경제일정 전체삭제 때 — 모든 달 LIST의 체크를 풀어 줌 */
+async function _ecoUncheckAllPdfPicks(){
+  try{
+    await _mscTx(['meta'],'readwrite',st=>{
+      const rq=st.getAll();
+      rq.onsuccess=()=>{
+        (rq.result||[]).forEach(cur=>{
+          if(!cur||!Array.isArray(cur.ecoEvents)||!cur.ecoEvents.some(e=>e&&e.checked)) return;
+          st.put(Object.assign({},cur,{ecoEvents:cur.ecoEvents.map(e=>{ if(e&&e.checked){ const c=Object.assign({},e); delete c.checked; return c; } return e; })}));
+        });
+      };
+    });
+  }catch(e){ console.warn('[경제일정] LIST 체크를 해제하지 못했습니다:',e); }
+}
+
+/* ══ 일정 LIST 팝업 ══
+   열면 그 달 기록에 저장된 일정(날짜·구분·내용)을 표로 보여 주고(화면을 넘으면 표 영역만 스크롤), '본문반영' 체크박스를 고른 뒤 상단 [적용]을 누르면
+   경제일정에 반영하고 체크 상태를 저장함(저장된 체크 = 마지막으로 적용한 상태). 적용 전에 닫으면 바꾼 체크는 버려짐(확인창).
+   목록이 아직 없으면(예전에 저장한 캘린더·이전 분석 실패) 열 때 AI로 만듦. 지난 날짜의 일정은 경제일정에 쓰지 않으므로 체크할 수 없음 */
+let _mscListKey='', _mscListMeta=null, _mscListDraft=null, _mscListDirty=false, _mscListTok=0;
+const _mscListRefreshRows=()=>{ const m=g('mscModal'); if(m&&m.style.display==='flex') _mscRender(); };
+
+function _mscListSetBtns(applyOn,remakeOn){
+  const a=g('mscListApplyBtn'), r=g('mscListRemakeBtn');
+  if(a){ a.disabled=!applyOn; a.style.opacity=applyOn?'':'.45'; a.style.cursor=applyOn?'pointer':'not-allowed'; }
+  if(r){ r.disabled=!remakeOn; r.style.opacity=remakeOn?'':'.45'; r.style.cursor=remakeOn?'pointer':'not-allowed'; }
+}
+/* 상단 상태 문구 — msg가 없으면 체크 현황을 계산해 표시 */
+function _mscListInfo(msg,kind){
+  const el=g('mscListInfo'); if(!el) return;
+  if(msg){ el.textContent=msg; el.style.color=({ok:'#047857',warn:'#b45309',err:'#b91c1c'})[kind]||'#64748b'; return; }
+  const d=_mscListDraft;
+  if(!d){ el.textContent=''; return; }
+  const today=todayStr();
+  const sel=d.filter(e=>e.checked&&e.date>=today).length, past=d.filter(e=>e.date<today).length;
+  el.textContent=`전체 ${d.length}건 · 체크 ${sel}건`+(past?` · 지난 일정 ${past}건(반영 불가)`:'')+(_mscListDirty?' — 변경됨: [적용]을 눌러야 경제일정에 반영됩니다':'');
+  el.style.color=_mscListDirty?'#b45309':'#64748b';
+}
+/* 본문 영역을 안내 문구(진행 중·오류)로 바꿈 */
+function _mscListMsg(html){
+  const b=g('mscListBody'); if(b) b.innerHTML=`<div style="padding:34px 18px;text-align:center;font-size:12.5px;line-height:1.6;color:#64748b">${html}</div>`;
+}
+function _mscListBusy(text){
+  _mscListDraft=null; _mscListSetBtns(false,false); _mscListInfo('');
+  _mscListMsg(`<div style="font-size:22px;margin-bottom:6px">⏳</div>${_escHtml(text)}`);
+}
+function _mscListError(text,canRetry){
+  _mscListDraft=null; _mscListSetBtns(false,false); _mscListInfo('');
+  _mscListMsg(`<div style="font-size:22px;margin-bottom:6px">⚠️</div><span style="color:#b91c1c">${_escHtml(text)}</span>`
+    +(canRetry?`<div style="margin-top:14px"><button onclick="_mscListRemake()" style="padding:6px 16px;background:#0f766e;border:none;border-radius:6px;font-size:12px;font-weight:700;color:#fff;cursor:pointer">🔄 다시 시도</button></div>`:''));
+}
+function _mscListSyncAll(){
+  const all=g('mscListAll'); if(!all||!_mscListDraft) return;
+  const today=todayStr(), sel=_mscListDraft.filter(e=>e.date>=today);
+  all.checked=sel.length>0&&sel.every(e=>e.checked);
+  all.disabled=!sel.length;
+}
+function _mscListRender(events){
+  _mscListDraft=events.map(e=>({date:e.date,type:e.type||'기타',content:e.content,checked:!!e.checked}));
+  const today=todayStr();
+  const typeBadge=t=>{
+    const c=t==='미국'?['#1e40af','#dbeafe']:t==='한국'?['#b91c1c','#fee2e2']:['#475569','#e2e8f0'];
+    return `<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${c[0]};background:${c[1]}">${_escHtml(t)}</span>`;
+  };
+  const th='position:sticky;top:0;z-index:1;background:#f1f5f9;padding:7px 8px;font-size:11px;font-weight:700;color:#475569;border-bottom:1px solid #cbd5e1;text-align:center';
+  const rows=_mscListDraft.map((e,i)=>{
+    const past=e.date<today;
+    return `<tr style="${past?'opacity:.45;':''}border-bottom:1px solid #f1f5f9">
+      <td style="padding:6px 8px;white-space:nowrap;font-size:11.5px;color:#334155">${_escHtml(e.date)} <span style="color:#94a3b8;font-size:10px">${_ecoDayStr(e.date)}</span></td>
+      <td style="padding:6px 4px;text-align:center">${typeBadge(e.type)}</td>
+      <td style="padding:6px 8px;font-size:12px;color:#1e293b;line-height:1.4;word-break:break-word">${_escHtml(e.content)}</td>
+      <td style="padding:6px 4px;text-align:center"><input type="checkbox" class="mscListChk" ${e.checked?'checked':''} ${past?'disabled title="지난 일정은 경제일정에 반영되지 않습니다"':''} onchange="_mscListToggle(${i},this.checked)" style="width:15px;height:15px;cursor:${past?'not-allowed':'pointer'};accent-color:#0f766e"></td>
+    </tr>`;
+  }).join('');
+  g('mscListBody').innerHTML=`<table style="width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed">
+    <colgroup><col style="width:124px"><col style="width:52px"><col><col style="width:66px"></colgroup>
+    <thead><tr><th style="${th}">날짜</th><th style="${th}">구분</th><th style="${th}">내용</th>
+      <th style="${th}">본문반영<br><input type="checkbox" id="mscListAll" onchange="_mscListToggleAll(this.checked)" title="전체 선택/해제 (지난 일정 제외)" style="width:14px;height:14px;cursor:pointer;accent-color:#0f766e;margin-top:3px"></th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+  _mscListSetBtns(true,true);
+  _mscListSyncAll();
+  _mscListInfo();
+}
+window._mscListToggle=function(i,on){
+  if(!_mscListDraft||!_mscListDraft[i]) return;
+  _mscListDraft[i].checked=!!on; _mscListDirty=true;
+  _mscListSyncAll(); _mscListInfo();
+};
+window._mscListToggleAll=function(on){
+  if(!_mscListDraft) return;
+  const today=todayStr();
+  _mscListDraft.forEach(e=>{ if(e.date>=today) e.checked=!!on; });
+  document.querySelectorAll('#mscListBody .mscListChk').forEach(cb=>{ if(!cb.disabled) cb.checked=!!on; });
+  _mscListDirty=true; _mscListInfo();
+};
+
+window._mscOpenList=async function(key){
+  const modal=g('mscListModal'); if(!modal) return;
+  const tok=++_mscListTok;
+  _mscListKey=key; _mscListMeta=null; _mscListDraft=null; _mscListDirty=false;
+  const [yy,mm]=String(key).split('-');
+  const ttl=g('mscListTitle'); if(ttl) ttl.textContent=`📋 ${yy}년 ${+mm}월 일정 LIST`;
+  modal.style.display='flex';
+  _mscListBusy('불러오는 중…');
+  let meta;
+  try{ meta=await _mscGetMeta(key); }
+  catch(e){ if(tok===_mscListTok) _mscListError('저장소에서 읽지 못했습니다 — '+_mscErrText(e),false); return; }
+  if(tok!==_mscListTok) return;
+  if(!meta){ _mscListError('캘린더 기록을 찾을 수 없습니다.',false); return; }
+  _mscListMeta=meta;
+  if(Array.isArray(meta.ecoEvents)&&meta.ecoSavedAt===meta.savedAt){ _mscListRender(meta.ecoEvents); return; }
+  /* 아직 목록이 없음 — 읽는 중이면 끝날 때까지 기다리고, 아니면 지금 만듦(보기 전용인 게스트는 만들지 않음) */
+  if(document.body.classList.contains('guest-mode')){ _mscListError('아직 일정 LIST가 만들어지지 않았습니다.',false); return; }
+  _mscListBusy('AI가 달력에서 일정을 읽는 중… (최대 3분 걸릴 수 있습니다)');
+  try{
+    const r=await _ecoMakeList(key,t=>{ if(tok===_mscListTok) _mscListBusy(t); });
+    if(tok!==_mscListTok) return;
+    _mscListMeta=await _mscGetMeta(key);
+    _mscListRender(r.events);
+  }catch(e){
+    if(tok===_mscListTok) _mscListError(e&&e.message||String(e),true);
+  }finally{ _mscListRefreshRows(); }
+};
+
+window._mscListApply=async function(){
+  if(!_mscListDraft||!_mscListKey||!_mscListMeta) return;
+  const key=_mscListKey, draft=_mscListDraft;
+  const [yy,mm]=key.split('-'), ym=yy+'-'+String(+mm).padStart(2,'0'), today=todayStr();
+  const picks=draft.filter(e=>e.checked&&e.date>=today).map(e=>({date:e.date,type:e.type,content:e.content,source:'pdf',pdfKey:e.date+'|'+e.content}));
+  _mscListSetBtns(false,false);
+  try{
+    /* 체크 상태 저장 — 분석 뒤 파일이 교체됐으면(savedAt이 달라졌으면) 저장하지 않음 */
+    let ok=false;
+    await _mscTx(['meta'],'readwrite',st=>{
+      const rq=st.get(key);
+      rq.onsuccess=()=>{
+        const cur=rq.result; if(!cur||cur.savedAt!==_mscListMeta.savedAt) return;
+        st.put(Object.assign({},cur,{ecoEvents:draft.map(e=>e.checked?{date:e.date,type:e.type,content:e.content,checked:true}:{date:e.date,type:e.type,content:e.content}),ecoSavedAt:cur.savedAt}));
+        ok=true;
+      };
+    });
+    if(!ok) throw new Error('캘린더 파일이 바뀌어 저장하지 못했습니다. LIST를 닫았다가 다시 열어 주세요.');
+  }catch(e){
+    _mscListSetBtns(true,true);
+    alert('체크 상태를 저장하지 못했습니다.\n원인: '+_mscErrText(e));
+    return;
+  }
+  const r=_ecoApplyPicks(ym,picks);
+  _mscListDirty=false;
+  _mscListSetBtns(true,true);
+  const msg=picks.length
+    ? `✅ 체크한 ${picks.length}건 중 ${r.added}건을 경제일정에 반영했습니다`+(r.added<picks.length?` (나머지는 이미 같은 일정이 있어 제외)`:'')
+    : (r.before?`✅ 체크한 일정이 없어 이 달의 PDF 일정 ${r.before}건을 경제일정에서 뺐습니다`:'체크한 일정이 없습니다');
+  _mscListInfo(msg,'ok');
+  _mscListRefreshRows();
+  if(typeof _showMainToast==='function') _showMainToast(picks.length?`✅ 경제일정에 ${r.added}건 반영`:'✅ 경제일정에서 이 달 PDF 일정을 뺐습니다');
+};
+
+window._mscListRemake=async function(){
+  const key=_mscListKey; if(!key) return;
+  if(_mscListDraft){
+    if(!confirm('AI로 달력을 다시 읽어 LIST를 새로 만듭니다 (AI 비용이 듭니다).\n같은 날짜·내용의 일정은 체크가 유지되지만 문구가 달라진 일정은 체크가 풀리며, 끝난 뒤 [적용]을 다시 눌러야 경제일정에 반영됩니다.'+(_mscListDirty?'\n\n※ 아직 적용하지 않은 체크 변경은 사라집니다.':'')+'\n\n계속할까요?')) return;
+  }
+  const tok=++_mscListTok;
+  _mscListDirty=false;
+  _mscListBusy('AI가 달력에서 일정을 읽는 중… (최대 3분 걸릴 수 있습니다)');
+  _mscListRefreshRows();
+  try{
+    const r=await _ecoMakeList(key,t=>{ if(tok===_mscListTok) _mscListBusy(t); });
+    if(tok!==_mscListTok) return;
+    _mscListMeta=await _mscGetMeta(key);
+    _mscListRender(r.events);
+    _mscListInfo(`🔄 일정 ${r.events.length}건으로 LIST를 새로 만들었습니다 — 반영할 일정을 확인하고 [적용]을 눌러 주세요`,'warn');
+  }catch(e){
+    if(tok===_mscListTok) _mscListError(e&&e.message||String(e),true);
+  }finally{ _mscListRefreshRows(); }
+};
+
+window._mscListClose=function(force){
+  if(!force&&_mscListDirty&&!confirm('적용하지 않은 변경이 있습니다.\n그대로 닫으면 이번에 바꾼 체크는 저장되지 않습니다. 닫을까요?')) return;
+  _mscListTok++;                      /* 아직 진행 중인 불러오기·분석의 화면 갱신을 무효화(분석 자체는 백그라운드에서 계속됨) */
+  _mscListDirty=false; _mscListDraft=null; _mscListMeta=null;
+  const m=g('mscListModal'); if(m) m.style.display='none';
+};
+
+async function autoUpdateEco(){
   _isUpdatingEco=true; _stopEco=false;
   const btn=g('ecoAutoBtn');
   const status=g('ecoStatus');
@@ -7285,29 +7538,20 @@ async function autoUpdateEco(forcePdf){
 
   const today=new Date(); today.setHours(0,0,0,0);
   const todayStr2=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-  /* NASDAQ 조회용: +2개월 / 최종 필터용: +3개월 (한국 Q3 실적=10월이 +2개월 창 밖에 있어서) */
+  /* 온라인 조회(NASDAQ·Yahoo·거시 이벤트)와 최종 필터 모두 오늘부터 +2개월까지 */
   const cutoff=new Date(today); cutoff.setMonth(cutoff.getMonth()+2);
   const cutoffStr=`${cutoff.getFullYear()}-${String(cutoff.getMonth()+1).padStart(2,'0')}-${String(cutoff.getDate()).padStart(2,'0')}`;
-  const cutoffFull=new Date(today); cutoffFull.setMonth(cutoffFull.getMonth()+3);
-  const cutoffFullStr=`${cutoffFull.getFullYear()}-${String(cutoffFull.getMonth()+1).padStart(2,'0')}-${String(cutoffFull.getDate()).padStart(2,'0')}`;
 
-  /* ⓪ 월간 캘린더 PDF 먼저 — 오늘 날짜가 속한 달부터 그 이후로 첨부된 모든 달의 PDF(없으면 이미지)를 분석해 표에 먼저 반영하고, 아래 ①~⑤ 웹 조회는 그 위에 추가로 보탬.
-     PDF가 없거나 분석에 실패해도(키 없음·오류·시간 초과) 웹 업데이트는 그대로 진행(알림창 없이 상태줄·툴팁에만 사유 표시) */
-  let pdfEvents=[], pdfShort='', pdfNote='';
-  try{
-    const pr=await _ecoLoadPdfEvents(status,!!forcePdf);
-    pdfShort=pr.short||''; pdfNote=pr.note||'';
-    /* 웹 자동 일정은 오늘~3개월만 쓰지만, 첨부한 캘린더의 일정은 3개월 창 밖의 먼 달이어도 오늘 이후면 전부 씀 */
-    pdfEvents=(pr.events||[]).filter(e=>e.date>=todayStr2).map(e=>({...e,source:'pdf'}));
-  }catch(e){
-    console.warn('[경제일정] 월간 캘린더 PDF 반영 중 오류:',e);
-    pdfShort='PDF 오류'; pdfNote='월간 캘린더 PDF 반영 중 오류 — '+((e&&e.message)||e);
-  }
-  status.title=pdfNote;
-  if(_stopEco) return; /* PDF 분석 중에 중단됨 — 화면은 toggleEcoUpdate가 이미 원래대로 돌려놓음 */
-  if(pdfEvents.length){
-    /* 웹 조회(수십 초)를 기다리는 동안에도 PDF 일정이 바로 보이게 — 표에 있던 기존 자동·수동 일정은 그대로 두고 PDF 일정만 앞에 얹음 */
-    ecoData=[...pdfEvents,...ecoData.filter(e=>e.source==='manual'||(e.source!=='pdf'&&!pdfEvents.some(p=>_ecoSameEvent(p,e))))]
+  /* ⓪ 모든 일정을 지우고, 📅 월간캘린더 > LIST에서 체크해 둔 일정(오늘 이후)부터 다시 채움 — AI 분석은 하지 않고 LIST에 저장된 체크 상태를 그대로 씀.
+     수동으로 추가한 일정은 별도 저장소(BTMManualEco)에서 그대로 유지. 웹 조회(수십 초)를 기다리는 동안에도 이 일정들이 바로 보이게 표를 먼저 갱신 */
+  let pdfEvents=[];
+  try{ pdfEvents=await _ecoCheckedPdfEvents(todayStr2); }
+  catch(e){ console.warn('[경제일정] 월간 캘린더 LIST에서 체크한 일정을 읽지 못했습니다:',e); }
+  status.title=`월간 캘린더 LIST에서 체크한 일정 ${pdfEvents.length}건 + 웹 조회(오늘~${cutoffStr})`;
+  {
+    const _man0=_getManualEco().filter(e=>!e.date||e.date>=todayStr2);
+    const _seen0=new Set();
+    ecoData=[..._man0,...pdfEvents].filter(e=>{ const k=e.date+'|'+e.content; if(_seen0.has(k)) return false; _seen0.add(k); return true; })
       .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
     buildEcoTable();
   }
@@ -7408,9 +7652,9 @@ async function autoUpdateEco(forcePdf){
     earningEvents.push({date:r.earningsDate,type:'한국',content:label});
   });
 
-  /* ④ 거시 이벤트 + 기업 이벤트 합산 — 오늘~3개월 */
+  /* ④ 거시 이벤트 + 기업 이벤트 합산 — 오늘~2개월 */
   const merged=[...MACRO_EVENTS,...earningEvents]
-    .filter(e=>e.date&&e.date>=todayStr2&&e.date<=cutoffFullStr)
+    .filter(e=>e.date&&e.date>=todayStr2&&e.date<=cutoffStr)
     .sort((a,b)=>a.date.localeCompare(b.date));
 
   const seen=new Set();
@@ -7424,9 +7668,9 @@ async function autoUpdateEco(forcePdf){
   const _manualEcos=_getManualEco().filter(e=>!e.date||e.date>=todayStr2);
   _saveManualEco(_manualEcos); /* 만료분 정리 */
   /* auto 항목에 source:'auto' 태그, 수동과 합산 후 날짜순 정렬 */
-  /* ⓪에서 가져온 PDF 일정이 먼저 오고, 같은 날짜의 비슷한 웹 일정은 PDF 쪽만 남김 */
+  /* 같은 날짜·내용이 겹치면 수동 일정이 남고(수동 > PDF 체크분 > 웹 자동), 같은 날짜의 비슷한 웹 일정은 PDF 쪽만 남김 */
   const _autoTagged=deduped.filter(e=>!pdfEvents.some(p=>_ecoSameEvent(p,e))).map(e=>({...e,source:'auto'}));
-  const _merged2=[...pdfEvents,..._autoTagged,..._manualEcos];
+  const _merged2=[..._manualEcos,...pdfEvents,..._autoTagged];
   const _seen2=new Set();
   ecoData=_merged2.filter(e=>{
     const key=e.date+'|'+e.content;
@@ -7439,22 +7683,14 @@ async function autoUpdateEco(forcePdf){
   saveNow();
 
   /* 오늘 날짜 archive가 있으면 ecoData 자동 갱신 (한국 종목 포함) */
-  try{
-    const _todayArcDate=gv('reportDate')||todayStr();
-    const _existArc=getArchiveRecord(_todayArcDate);
-    if(_existArc){
-      _existArc.data=_existArc.data||{};
-      _existArc.data.ecoData=[...ecoData];
-      putArchiveRecord(_existArc);
-    }
-  }catch(_){}
+  _ecoSyncTodayArchive();
 
   _isUpdatingEco=false;
   _setBtnReady(btn,'#1e40af');
   const now=new Date();
   const _krCnt=ecoData.filter(e=>e.type==='한국').length;
   const _pdfCnt=ecoData.filter(e=>e.source==='pdf').length;
-  const _pdfTxt=_pdfCnt?` | PDF:${_pdfCnt}건${pdfShort?'(일부 실패)':''}`:(pdfShort?` | ${pdfShort}`:'');   /* 일부 달만 실패했으면 건수 옆에 표시 — 자세한 사유는 상태줄 툴팁 */
+  const _pdfTxt=_pdfCnt?` | PDF:${_pdfCnt}건`:'';
   status.textContent=_stopEco?'중단됨':`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} (${ecoData.length}건${_pdfTxt}${_krCnt?` | 한국:${_krCnt}건`:''})`;
 }
 
@@ -10263,11 +10499,99 @@ function _btmBackoffMs(attempt, r){
   return (heavy?base*4:base)+Math.floor(Math.random()*400);
 }
 
+/* ═══ ChatGPT(OpenAI) 공통 호출부 ═══════════════════════════════════════════════════
+   OpenAI Responses API(POST /v1/responses)를 씀 — Chat Completions와 달리 최신 모델(GPT-6 계열)까지 모든 모델이
+   지원되는 권장 API라서, 관리 메뉴에서 모델 ID를 바꿔도 그대로 동작함(이미지·PDF 입력 형식도 같음).
+   AI 채팅(스트리밍)·차트 비전·PDF 분석·번역(논스트리밍)·종목 메모 추출이 모두 이 헬퍼를 공유함.
+   [로컬 서버 중계] OpenAI는 브라우저에서 직접 보내는 요청(CORS)을 막음 — GET /v1/models만 열려 있고 POST /v1/responses·
+   /v1/chat/completions 는 "No 'Access-Control-Allow-Origin' header" 로 차단됨(Claude·Gemini·DeepSeek와 다른 점, 2026-10-05 실측).
+   그래서 자막·음성 변환에 쓰는 로컬 서버(transcript_server.py, 기본 localhost:15050)의 /openai/* 중계를 거침 —
+   서버는 키를 저장하지 않고 요청 헤더로 받아 그대로 전달만 하며, 브라우저가 ⏹ 중단하면 OpenAI 쪽 요청도 같이 끊음.
+   Flash=추론 강도 low(빠르고 저렴) / Pro=high(심층 분석). store:false — 대화 내용을 OpenAI 서버에 보관하지 않음.
+   비추론 모델(gpt-4.1 등)은 reasoning 파라미터를 400으로 거부하므로, 그 모델만 기억해 두고(_openaiNoReasoning)
+   파라미터를 뺀 채 한 번 다시 보냄 — 이후 호출은 처음부터 빼고 보내 재시도 낭비가 없음 */
+const _OPENAI_DEF_FLASH='gpt-6-luna', _OPENAI_DEF_PRO='gpt-6.1-sol';
+const _OPENAI_MAX_OUT=16000;         /* 답변 + 추론 토큰 합계 상한 — 어떤 모델이든 받아주는 안전한 값 */
+const _openaiNoReasoning=new Set();
+/* 중계 서버 주소 — 기본 http://localhost:15050 (포트를 바꿨다면 localStorage 'BTMOpenAILocalServer'에 전체 주소를 넣으면 됨) */
+function _openaiServer(){ return (localStorage.getItem('BTMOpenAILocalServer')||'http://localhost:15050').replace(/\/+$/,''); }
+function _openaiModelId(isPro){
+  return localStorage.getItem(isPro?'BTMOpenAIProModel':'BTMOpenAIFlashModel')||(isPro?_OPENAI_DEF_PRO:_OPENAI_DEF_FLASH);
+}
+/* Responses API 요청 1회(로컬 서버 중계 경유). 성공·실패와 무관하게 Response를 그대로 돌려줌(호출부가 ok/status 판단).
+   body엔 instructions·input·max_output_tokens·stream 등을 담음. 서버에 아예 연결 못 하면 localServerDown 오류를 던짐 */
+async function _openaiRequest(key,isPro,body,signal){
+  const model=_openaiModelId(isPro);
+  const send=async effort=>{
+    try{
+      return await fetch(_openaiServer()+'/openai/v1/responses',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body:JSON.stringify(Object.assign({model,store:false},body,effort?{reasoning:{effort}}:{})),
+        signal
+      });
+    }catch(e){
+      if(e&&e.name==='AbortError') throw e;   /* 사용자가 ⏹ 중단했거나 시간 초과 — 그대로 전달 */
+      /* 서버가 아예 꺼진 건지, 떠 있지만 /openai 중계를 모르는 옛 버전인지 구분 — 옛 서버는 프리플라이트가 Authorization 헤더를 허용하지 않아
+         fetch가 똑같이 TypeError로 실패하므로 /ping 으로 확인(옛 버전엔 openai_proxy 표식이 없음) */
+      let stale=false;
+      try{
+        const pc=new AbortController(), pt=setTimeout(()=>pc.abort(),2500);
+        const pr=await fetch(_openaiServer()+'/ping',{signal:pc.signal}); clearTimeout(pt);
+        stale=pr.ok&&!((await pr.json().catch(()=>({}))).openai_proxy);
+      }catch(_){}
+      const err=new Error(stale
+        ? '로컬 서버(transcript_server.py)가 ChatGPT 중계를 모르는 이전 버전입니다 — 서버를 종료했다가 다시 시작해 주세요.'
+        : 'ChatGPT는 로컬 서버(transcript_server.py)를 통해 연결되는데 서버에 연결할 수 없습니다 — start_transcript_server.bat 으로 서버를 실행한 뒤 다시 시도하세요.');
+      err.status=0; err.localServerDown=!stale; err.localServerStale=stale; throw err;
+    }
+  };
+  let r=await send(_openaiNoReasoning.has(model)?'':(isPro?'high':'low'));
+  if(r.status===400 && !_openaiNoReasoning.has(model)){
+    const er=((await r.clone().json().catch(()=>({}))).error)||{};
+    if(/reasoning/i.test((er.message||'')+' '+(er.param||''))){ _openaiNoReasoning.add(model); r=await send(''); }
+  }
+  return r;
+}
+/* !r.ok 인 응답을 Error로 변환 — status·param을 붙여 호출부가 재시도·대체 경로를 판단할 수 있게 함.
+   OpenAI 오류는 {"error":{message,...}}, 로컬 서버가 직접 낸 오류는 {"error":"문자열"} — 후자 중 404는 /openai 중계를 모르는 옛 버전 서버 */
+async function _openaiHttpError(r){
+  const j=await r.json().catch(()=>({}));
+  const e=(j&&j.error)||{};
+  if(typeof e==='string'){
+    const err=new Error(r.status===404?'로컬 서버(transcript_server.py)가 ChatGPT 중계를 모르는 이전 버전입니다 — 서버를 종료했다가 다시 시작해 주세요.':e);
+    err.status=r.status; err.param=''; err.localServerStale=(r.status===404); return err;
+  }
+  const err=new Error(e.message||'HTTP '+r.status); err.status=r.status; err.param=e.param||''; return err;
+}
+/* 논스트리밍 응답(data.output[])에서 답변 텍스트를 모음 — REST 응답엔 SDK의 output_text 편의 속성이 없음 */
+function _openaiExtractText(data){
+  let t='';
+  for(const it of (data&&data.output)||[]){
+    if(it.type!=='message') continue;
+    for(const c of it.content||[]){
+      if(c.type==='output_text'&&c.text) t+=c.text;
+      else if(c.type==='refusal'&&c.refusal) t+=c.refusal;
+    }
+  }
+  return t;
+}
+function _openaiIncompleteMsg(reason){
+  return reason==='max_output_tokens'
+    ? `출력 토큰 한도(${_OPENAI_MAX_OUT})를 추론에 대부분 써서 답변이 만들어지지 못했습니다. Flash 모델로 바꾸거나 요청을 나눠서 다시 시도해보세요.`
+    : '응답이 중간에 끊겼습니다'+(reason?' ('+reason+')':'')+'.';
+}
+function _openaiEmptyMsg(data){
+  if(data&&data.status==='failed') return (data.error&&data.error.message)||'ChatGPT 응답 생성에 실패했습니다.';
+  if(data&&data.status==='incomplete') return _openaiIncompleteMsg(data.incomplete_details&&data.incomplete_details.reason);
+  return 'ChatGPT가 빈 응답을 반환했습니다.';
+}
+
 /* API 호출 1회(타임아웃 포함). 반환: {ok:true,text,stopReason} | {ok:false,fatal,status,reason,retryAfterMs}
    fatal=true(400/401/403/404 등)는 다시 보내도 소용없는 오류라 호출자가 재시도하지 않음.
-   provider: 'claude'(기본) | 'deepseek-flash' | 'deepseek-pro' | 'gemini-flash' | 'gemini-pro' —
+   provider: 'claude'(기본) | 'deepseek-flash' | 'deepseek-pro' | 'gemini-flash' | 'gemini-pro' | 'chatgpt-flash' | 'chatgpt-pro' —
    번역은 스트리밍 UI가 필요 없으므로(AI 채팅 팝업의 _stream/_streamGemini와 달리) 논스트리밍 엔드포인트로
-   한 번에 전체 텍스트를 받아옴. stopReason은 세 공급자 표기(max_tokens/length/MAX_TOKENS)를 모두
+   한 번에 전체 텍스트를 받아옴. stopReason은 네 공급자 표기(max_tokens/length/MAX_TOKENS/max_output_tokens)를 모두
    'max_tokens'로 통일해 반환 — 호출자(_btmCallTranslateChunk 등)가 공급자와 무관하게 판단 가능 */
 async function _btmApiCall(provider, apiKey, system, userContent, debugLabel){
   const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(), _btmXlateTimeoutMs);
@@ -10295,6 +10619,8 @@ async function _btmApiCall(provider, apiKey, system, userContent, debugLabel){
           generationConfig:{maxOutputTokens:8000}
         })
       });
+    } else if(provider==='chatgpt-flash'||provider==='chatgpt-pro'){
+      resp=await _openaiRequest(apiKey, provider==='chatgpt-pro', {instructions:system, input:userContent, max_output_tokens:_OPENAI_MAX_OUT}, ctrl.signal);
     } else {
       resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
@@ -10318,7 +10644,7 @@ async function _btmApiCall(provider, apiKey, system, userContent, debugLabel){
       console.error('[다국어 생성]',debugLabel,'HTTP',resp.status,errText.slice(0,300));
       const retryable=[408,409,425,429,500,502,503,504,529].includes(resp.status);
       const ra=parseFloat(resp.headers.get('retry-after')); /* CORS에서 노출 안 되면 null → NaN → 기본 대기 */
-      return {ok:false, fatal:!retryable, status:resp.status, reason:'HTTP '+resp.status, retryAfterMs:isFinite(ra)?Math.min(ra*1000,30000):null};
+      return {ok:false, fatal:!retryable, status:resp.status, reason:'HTTP '+resp.status+((provider.startsWith('chatgpt')&&resp.status===404)?' (로컬 서버가 구버전 — 재시작 필요)':''), retryAfterMs:isFinite(ra)?Math.min(ra*1000,30000):null};
     }
     const data=await resp.json();
     let text='', stopReason;
@@ -10331,6 +10657,9 @@ async function _btmApiCall(provider, apiKey, system, userContent, debugLabel){
       const parts=cand&&cand.content&&cand.content.parts;
       text=parts?parts.map(p=>p.text||'').join(''):'';
       stopReason=(cand&&cand.finishReason==='MAX_TOKENS')?'max_tokens':(cand&&cand.finishReason);
+    } else if(provider==='chatgpt-flash'||provider==='chatgpt-pro'){
+      text=_openaiExtractText(data);
+      stopReason=(data.status==='incomplete'&&data.incomplete_details&&data.incomplete_details.reason==='max_output_tokens')?'max_tokens':data.status;
     } else {
       text=(data.content||[]).find(c=>c.type==='text')?.text||'';
       stopReason=data.stop_reason;
@@ -10338,8 +10667,10 @@ async function _btmApiCall(provider, apiKey, system, userContent, debugLabel){
     return {ok:true, text, stopReason};
   }catch(e){
     const timedOut=!!(e && e.name==='AbortError');
-    console.error('[다국어 생성]',debugLabel,timedOut?'시간 초과':'네트워크 오류',e);
-    return {ok:false, fatal:false, status:0, reason:timedOut?'시간 초과':'네트워크 오류', retryAfterMs:null};
+    const srvDown=!!(e && e.localServerDown), srvOld=!!(e && e.localServerStale);   /* ChatGPT 중계용 로컬 서버가 꺼져 있거나 구버전 — 다시 보내도 소용없으니 재시도하지 않음 */
+    const why=timedOut?'시간 초과':srvDown?'로컬 서버 연결 실패':srvOld?'로컬 서버 구버전 — 재시작 필요':'네트워크 오류';
+    console.error('[다국어 생성]',debugLabel,why,e);
+    return {ok:false, fatal:srvDown||srvOld, status:0, reason:why, retryAfterMs:null};
   } finally { clearTimeout(timer); }
 }
 
@@ -10678,9 +11009,10 @@ function _btmFinalStatus(langs, stats){
    반환: {lang: true|'partial'|false} — API Key가 없으면 null */
 async function _btmTranslateLangs(langs, onProgress, force){
   const provider=_getBtmLangGenProvider();
-  const _pName={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini'}[provider]||'Claude';
+  const _pName={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'}[provider]||'Claude';
   const apiKey=provider.startsWith('deepseek')?localStorage.getItem('BTMDeepSeekApiKey')
     :provider.startsWith('gemini')?localStorage.getItem('BTMGeminiApiKey')
+    :provider.startsWith('chatgpt')?localStorage.getItem('BTMOpenAIApiKey')
     :localStorage.getItem('BTMClaudeApiKey');
   if(!apiKey){ alert('먼저 관리 메뉴 > 🧩 AI 공급자에서 '+_pName+' API Key를 설정하세요.'); return null; }
   const snap=(_btmLang==='ko')?_btmSnapshotKoText():_koSnapshot;
@@ -24847,8 +25179,12 @@ function openAdminPanel(){
   const gmKEl=g('adminGeminiKey'); if(gmKEl) gmKEl.value=gmK?'●'.repeat(Math.min(gmK.length,24)):'';
   const gmFEl=g('adminGeminiFlashModel'); if(gmFEl) gmFEl.value=localStorage.getItem('BTMGeminiFlashModel')||'gemini-3.8-flash';
   const gmPEl=g('adminGeminiProModel'); if(gmPEl) gmPEl.value=localStorage.getItem('BTMGeminiProModel')||'gemini-3.1-pro-preview';
+  const oaK=localStorage.getItem('BTMOpenAIApiKey')||'';
+  const oaKEl=g('adminOpenAIKey'); if(oaKEl) oaKEl.value=oaK?'●'.repeat(Math.min(oaK.length,24)):'';
+  const oaFEl=g('adminOpenAIFlashModel'); if(oaFEl) oaFEl.value=localStorage.getItem('BTMOpenAIFlashModel')||_OPENAI_DEF_FLASH;
+  const oaPEl=g('adminOpenAIProModel'); if(oaPEl) oaPEl.value=localStorage.getItem('BTMOpenAIProModel')||_OPENAI_DEF_PRO;
   const apSt=g('adminAiProviderStatus');
-  const apKeys=[]; if(dsK) apKeys.push('DeepSeek ✓'); if(gmK) apKeys.push('Gemini ✓');
+  const apKeys=[]; if(dsK) apKeys.push('DeepSeek ✓'); if(gmK) apKeys.push('Gemini ✓'); if(oaK) apKeys.push('ChatGPT ✓');
   if(apSt) apSt.textContent=apKeys.length?apKeys.join(' · '):'API Key 미설정';
   if(typeof _renderAiProviderSettings==='function') _renderAiProviderSettings();
   _adminTab('pw'); /* 첫 탭으로 초기화 */
@@ -26150,7 +26486,7 @@ async function testWebApiKeys(){
   if(st) st.textContent=results.join(' · ');
 }
 
-/* ── AI 공급자(DeepSeek) 키 저장 ── */
+/* ── AI 공급자(DeepSeek·Gemini·ChatGPT) 키 저장 ── */
 function saveAiProviderKeys(){
   const ds=(g('adminDeepSeekKey').value||'').trim();
   const gm=(g('adminGeminiKey').value||'').trim();
@@ -26158,14 +26494,20 @@ function saveAiProviderKeys(){
   const dmp=(g('adminDeepSeekProModel').value||'').trim();
   const gmf=(g('adminGeminiFlashModel').value||'').trim();
   const gmp=(g('adminGeminiProModel').value||'').trim();
+  const oa=(g('adminOpenAIKey').value||'').trim();
+  const omf=(g('adminOpenAIFlashModel').value||'').trim();
+  const omp=(g('adminOpenAIProModel').value||'').trim();
   const st=g('adminAiProviderStatus');
   const saved=[];
   if(ds&&!ds.startsWith('●')){ localStorage.setItem('BTMDeepSeekApiKey',ds); g('adminDeepSeekKey').value='●'.repeat(Math.min(ds.length,24)); saved.push('DeepSeek 키'); }
   if(gm&&!gm.startsWith('●')){ localStorage.setItem('BTMGeminiApiKey',gm); g('adminGeminiKey').value='●'.repeat(Math.min(gm.length,24)); saved.push('Gemini 키'); }
+  if(oa&&!oa.startsWith('●')){ localStorage.setItem('BTMOpenAIApiKey',oa); g('adminOpenAIKey').value='●'.repeat(Math.min(oa.length,24)); saved.push('ChatGPT 키'); }
   localStorage.setItem('BTMDeepSeekFlashModel', dmf||'deepseek-flash');
   localStorage.setItem('BTMDeepSeekProModel', dmp||'deepseek-v4-pro');
   localStorage.setItem('BTMGeminiFlashModel', gmf||'gemini-3.8-flash');
   localStorage.setItem('BTMGeminiProModel', gmp||'gemini-3.1-pro-preview');
+  localStorage.setItem('BTMOpenAIFlashModel', omf||_OPENAI_DEF_FLASH);
+  localStorage.setItem('BTMOpenAIProModel', omp||_OPENAI_DEF_PRO);
   saved.push('모델 설정');
   if(st) st.textContent='✅ 저장됨: '+saved.join(', ');
 }
@@ -26189,6 +26531,32 @@ async function testAiProviderKeys(){
       results.push(r.ok?'✅ Gemini 연결 성공':'❌ Gemini 오류 ('+r.status+')');
     }catch(e){ results.push('❌ Gemini 네트워크 오류'); }
   } else { results.push('⚠ Gemini 키 없음'); }
+  const oaKey=localStorage.getItem('BTMOpenAIApiKey');
+  if(oaKey){
+    /* OpenAI는 브라우저 직접 호출이 막혀 있어 로컬 서버(/openai 중계)를 거침 — 먼저 서버가 떠 있고 중계를 아는 버전인지 확인 */
+    let srvOk=false, srvNew=false;
+    try{
+      const pc=new AbortController(), pt=setTimeout(()=>pc.abort(),3000);
+      const pr=await fetch(_openaiServer()+'/ping',{signal:pc.signal}); clearTimeout(pt);
+      srvOk=pr.ok; srvNew=!!((await pr.json().catch(()=>({}))).openai_proxy);
+    }catch(e){}
+    if(!srvOk) results.push('❌ ChatGPT: 로컬 서버(transcript_server.py)에 연결할 수 없습니다 — start_transcript_server.bat 실행 후 다시 테스트하세요');
+    else if(!srvNew) results.push('⚠ ChatGPT: 로컬 서버가 ChatGPT 중계를 모르는 이전 버전입니다 — 서버를 종료했다가 다시 시작하세요');
+    else{
+      try{
+        const r=await fetch(_openaiServer()+'/openai/v1/models',{headers:{'Authorization':'Bearer '+oaKey}});
+        if(r.ok){
+          const ids=new Set((((await r.json().catch(()=>({}))).data)||[]).map(m=>m.id));
+          const want=[...new Set([localStorage.getItem('BTMOpenAIFlashModel')||_OPENAI_DEF_FLASH, localStorage.getItem('BTMOpenAIProModel')||_OPENAI_DEF_PRO])];
+          const miss=ids.size?want.filter(m=>!ids.has(m)):[];
+          results.push(miss.length?'⚠ ChatGPT 연결 성공 — 모델 목록에서 확인되지 않음: '+miss.join(', ')+' (ID 오타일 수 있음)':'✅ ChatGPT 연결 성공');
+        } else if(r.status===401) results.push('❌ ChatGPT 키가 올바르지 않습니다 (401)');
+        else if(r.status===403) results.push('⚠ ChatGPT 키는 인식됐지만 모델 목록 조회 권한이 없습니다 (제한된 키는 정상일 수 있음)');
+        else if(r.status===502) results.push('❌ ChatGPT: 로컬 서버가 OpenAI 서버에 연결하지 못했습니다 (인터넷 연결 확인)');
+        else results.push('❌ ChatGPT 오류 ('+r.status+')');
+      }catch(e){ results.push('❌ ChatGPT 네트워크 오류'); }
+    }
+  } else { results.push('⚠ ChatGPT 키 없음'); }
   if(st) st.textContent=results.join(' · ');
 }
 
@@ -26207,11 +26575,11 @@ const _BTM_AI_SECTIONS=[
   {id:'aiStockRadarTarget',label:'AI Stock Radar Target'},
   {id:'technicalAnalysis',label:'My Technical Analysis With AI'},
   {id:'technicalAnalysisChart',label:'My Technical Analysis — AI 차트분석(지지/저항/추세선)'},
-  {id:'ecoPdfCalendar',label:'경제일정 — 월간캘린더 PDF 분석 (Claude·Gemini만 PDF 지원)'},
+  {id:'ecoPdfCalendar',label:'경제일정 — 월간캘린더 일정 LIST 만들기(PDF 분석) (Claude·Gemini·ChatGPT만 PDF 지원)'},
   {id:'tradingStrategy',label:'My Trading Strategy With AI Navigator'},
   {id:'btmLangGen',label:'🌐 다국어 생성 (번역)'},
 ];
-const _BTM_AI_PROVIDER_LABELS={claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)'};
+const _BTM_AI_PROVIDER_LABELS={claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)','chatgpt-flash':'🟢 ChatGPT(Flash)','chatgpt-pro':'🟢 ChatGPT(Pro)'};
 function _renderAiProviderSettings(){
   const wrap=g('aiSectionProviderList'); if(!wrap) return;
   let map={}; try{ map=JSON.parse(localStorage.getItem('BTMAiProviderMap')||'{}'); }catch(e){}
@@ -26222,7 +26590,7 @@ function _renderAiProviderSettings(){
       <span style="flex:1;font-size:11px;color:#374151;min-width:0">${s.label}</span>
       <select data-eid="${s.id}" onchange="_saveAiProviderForSection(this)"
         style="font-size:11px;padding:4px 6px;border:1px solid #e2e8f0;border-radius:6px;color:#1e293b">
-        ${opt('claude')}${opt('deepseek-flash')}${opt('deepseek-pro')}${opt('gemini-flash')}${opt('gemini-pro')}
+        ${opt('claude')}${opt('deepseek-flash')}${opt('deepseek-pro')}${opt('gemini-flash')}${opt('gemini-pro')}${opt('chatgpt-flash')}${opt('chatgpt-pro')}
       </select>
     </div>`;
   }).join('');
@@ -26628,7 +26996,7 @@ async function _fetchClaudeBalance(){
 /* ─── AI Chat Panel ─────────────────────────────────────────────── */
 ;(function(){
   let _eid='',_hist=[],_busy=false,_editPIdx=-1;
-  let _provider='claude'; /* 'claude' | 'deepseek-flash' | 'deepseek-pro' — 이번에 열린 채팅이 쓸 AI */
+  let _provider='claude'; /* 'claude' | 'deepseek-flash' | 'deepseek-pro' | 'gemini-flash' | 'gemini-pro' | 'chatgpt-flash' | 'chatgpt-pro' — 이번에 열린 채팅이 쓸 AI */
   let _mode='text'; /* 'text'|'url'|'file' */
   let _attachedFile=null; /* {type,data,mimeType,name} */
   let _pendingImages=[]; /* [{data,mimeType,name,url}] — 입력창에 붙여넣기/첨부한 이미지 */
@@ -26637,7 +27005,7 @@ async function _fetchClaudeBalance(){
   let _abortCtrl=null;
   const _chatStore={}; /* editorId별 채팅 기록 저장 */
   const AK='BTMClaudeApiKey',PK='BTMClaudePresets',PK2='BTMClaudePrinciples';
-  const AK_DS='BTMDeepSeekApiKey', AK_GM='BTMGeminiApiKey';
+  const AK_DS='BTMDeepSeekApiKey', AK_GM='BTMGeminiApiKey', AK_OA='BTMOpenAIApiKey';
   const MODEL_DS_FLASH='BTMDeepSeekFlashModel', MODEL_DS_PRO='BTMDeepSeekProModel';
   const MODEL_GM_FLASH='BTMGeminiFlashModel', MODEL_GM_PRO='BTMGeminiProModel';
   function _getProviderFor(editorId){
@@ -26660,16 +27028,16 @@ async function _fetchClaudeBalance(){
   /* 외부에서 특정 섹션 키에 설정된 공급자·키·표시이름을 조회 (팝업을 열기 전 사전 검증용) */
   window._resolveAiProvider=function(mapKey){
     const provider=_getProviderFor(mapKey);
-    const names={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini'};
-    const key=provider.startsWith('deepseek')?localStorage.getItem(AK_DS):provider.startsWith('gemini')?localStorage.getItem(AK_GM):localStorage.getItem(AK);
+    const names={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'};
+    const key=provider.startsWith('deepseek')?localStorage.getItem(AK_DS):provider.startsWith('gemini')?localStorage.getItem(AK_GM):provider.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK);
     return {provider, key, name:names[provider]||'Claude'};
   };
   /* 팝업 UI 없이 이미지 1장 + 프롬프트를 지정된 섹션 키의 공급자로 보내고 텍스트 응답만 받는 headless 호출
-     (예: 차트 이미지 분석용) — Claude·Gemini만 이미지 지원, DeepSeek은 명시적으로 막음 */
+     (예: 차트 이미지 분석용) — Claude·Gemini·ChatGPT만 이미지 지원, DeepSeek은 명시적으로 막음 */
   window._runVisionPrompt=async function(mapKey, sys, imageDataUrl, userText, onRetry){
     const {provider, key, name}=window._resolveAiProvider(mapKey);
     if(!key) throw new Error(name+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.');
-    if(provider.startsWith('deepseek')) throw new Error('DeepSeek은 이미지 인식을 지원하지 않습니다. 관리 메뉴 > 🧩 AI 공급자에서 이 섹션을 Claude 또는 Gemini로 바꿔주세요.');
+    if(provider.startsWith('deepseek')) throw new Error('DeepSeek은 이미지 인식을 지원하지 않습니다. 관리 메뉴 > 🧩 AI 공급자에서 이 섹션을 Claude, Gemini 또는 ChatGPT로 바꿔주세요.');
     const m=/^data:([^;]+);base64,(.+)$/.exec(imageDataUrl||'');
     if(!m) throw new Error('이미지 데이터 변환에 실패했습니다.');
     const msgs=[{role:'user',content:[{type:'image',source:{type:'base64',media_type:m[1],data:m[2]}},{type:'text',text:userText}]}];
@@ -26684,6 +27052,8 @@ async function _fetchClaudeBalance(){
       try{
         return provider.startsWith('gemini')
           ? await _streamGemini(key,sys,msgs,target,ctrl.signal,provider==='gemini-pro')
+          : provider.startsWith('chatgpt')
+          ? await _streamChatGPT(key,sys,msgs,target,ctrl.signal,provider==='chatgpt-pro')
           : await _stream(key,sys,msgs,target,ctrl.signal);
       }catch(e){
         lastErr=e;
@@ -26699,12 +27069,12 @@ async function _fetchClaudeBalance(){
   };
   /* 팝업 UI 없이 파일 1개(PDF 또는 이미지) + 프롬프트를 지정된 섹션 키의 공급자로 보내고 텍스트 응답만 받는 headless 호출 —
      _runVisionPrompt의 PDF 확장판(경제일정이 이번 달 월간 캘린더 PDF를 읽을 때 사용). file={kind:'pdf'|'image', mediaType, data(base64, data: 접두어 없이)}.
-     Claude는 document 블록, Gemini는 inline_data(application/pdf)로 PDF를 직접 읽음 — DeepSeek은 파일 인식을 지원하지 않아 명시적으로 막음.
+     Claude는 document 블록, Gemini는 inline_data(application/pdf), ChatGPT는 input_file(file_data)로 PDF를 직접 읽음 — DeepSeek은 파일 인식을 지원하지 않아 명시적으로 막음.
      signal(선택)로 호출부(경제일정 중단 버튼·시간 초과)가 요청을 끊을 수 있고, 끊긴 경우엔 재시도하지 않음 */
   window._runFilePrompt=async function(mapKey, sys, file, userText, onRetry, signal){
     const {provider, key, name}=window._resolveAiProvider(mapKey);
     if(!key) throw new Error(name+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.');
-    if(provider.startsWith('deepseek')) throw new Error('DeepSeek은 PDF·이미지 인식을 지원하지 않습니다. 관리 메뉴 > 🧩 AI 공급자에서 이 섹션을 Claude 또는 Gemini로 바꿔주세요.');
+    if(provider.startsWith('deepseek')) throw new Error('DeepSeek은 PDF·이미지 인식을 지원하지 않습니다. 관리 메뉴 > 🧩 AI 공급자에서 이 섹션을 Claude, Gemini 또는 ChatGPT로 바꿔주세요.');
     if(!file||!file.data) throw new Error('파일 데이터 변환에 실패했습니다.');
     const block=file.kind==='pdf'
       ? {type:'document',source:{type:'base64',media_type:'application/pdf',data:file.data}}
@@ -26718,6 +27088,8 @@ async function _fetchClaudeBalance(){
       try{
         return provider.startsWith('gemini')
           ? await _streamGemini(key,sys,msgs,target,signal,provider==='gemini-pro')
+          : provider.startsWith('chatgpt')
+          ? await _streamChatGPT(key,sys,msgs,target,signal,provider==='chatgpt-pro')
           : await _stream(key,sys,msgs,target,signal);
       }catch(e){
         lastErr=e;
@@ -26755,6 +27127,22 @@ async function _fetchClaudeBalance(){
         else if(b.type==='document') parts.push({inline_data:{mime_type:b.source.media_type||'application/pdf', data:b.source.data}});
       }
       return {role, parts};
+    });
+  }
+
+  /* Claude 형식(content blocks) → OpenAI Responses API 입력으로 변환 (ChatGPT용 — 텍스트·이미지·PDF 지원).
+     assistant 기록은 항상 문자열이라 그대로 두고, 블록 배열(user)만 input_text/input_image/input_file로 바꿈.
+     이미지는 detail:'high' — 차트 축 눈금·날짜 같은 작은 글자를 읽어야 하는 분석에서 정확도가 올라감 */
+  function _histToResponsesInput(msgs){
+    return msgs.map(m=>{
+      if(typeof m.content==='string') return {role:m.role, content:m.content};
+      const parts=[];
+      for(const b of m.content){
+        if(b.type==='text') parts.push({type:m.role==='assistant'?'output_text':'input_text', text:b.text});
+        else if(b.type==='image') parts.push({type:'input_image', image_url:`data:${b.source.media_type};base64,${b.source.data}`, detail:'high'});
+        else if(b.type==='document') parts.push({type:'input_file', filename:'document.pdf', file_data:`data:${b.source.media_type||'application/pdf'};base64,${b.source.data}`});
+      }
+      return {role:m.role, content:parts};
     });
   }
 
@@ -26884,7 +27272,8 @@ async function _fetchClaudeBalance(){
      AI 응답에서 [MEMO:티커]내용[/MEMO] 블록을 파싱하여
      해당 종목의 메모장에 자동 추가 */
   async function _autoSaveStockMemos(rawReply){
-    const apiKey=localStorage.getItem(AK);
+    const useGpt=_provider.startsWith('chatgpt');   /* ChatGPT로 채팅했으면 추출도 ChatGPT로 — 그 외엔 기존대로 Claude */
+    const apiKey=localStorage.getItem(useGpt?AK_OA:AK);
     if(!apiKey) return;
     const hList=typeof holdings!=='undefined'?holdings:[];
     if(!hList.length) return;
@@ -26900,7 +27289,7 @@ async function _fetchClaudeBalance(){
       return isKr?`${code}/${name}`:code+(name!==code?`(${name})`:'');
     }).filter(Boolean).join(', ');
 
-    /* Haiku에게 종목별 분석 내용 추출 요청 */
+    /* 종목별 분석 내용 추출 요청 — 기본은 Claude Haiku, ChatGPT로 채팅했으면 ChatGPT(Flash) */
     const extractSys=`You extract per-stock analysis from Korean financial AI text.
 Holding stocks (CODE/NAME or CODE(NAME)):
 ${tickerEntries}
@@ -26916,26 +27305,33 @@ Rules:
 
     let extracted=[];
     try{
-      const resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'x-api-key':apiKey,
-          'anthropic-version':'2023-06-01',
-          'anthropic-dangerous-direct-browser-access':'true'
-        },
-        body:JSON.stringify({
-          model:'claude-haiku-4-5-20251001',
-          max_tokens:16000,
-          system:extractSys,
-          messages:[{role:'user',content:`다음 AI 분석 텍스트에서 종목별 분석 내용을 추출해주세요:\n\n${rawReply}`}]
-        })
-      });
-      if(!resp.ok) return;
-      const data=await resp.json();
-      const text=(data.content||[]).find(c=>c.type==='text')?.text||'';
-      const match=text.match(/\[[\s\S]*\]/);
-      if(match) extracted=JSON.parse(match[0]);
+      if(useGpt){
+        const resp=await _openaiRequest(apiKey,false,{instructions:extractSys,input:`다음 AI 분석 텍스트에서 종목별 분석 내용을 추출해주세요:\n\n${rawReply}`,max_output_tokens:_OPENAI_MAX_OUT});
+        if(!resp.ok) return;
+        const match=_openaiExtractText(await resp.json()).match(/\[[\s\S]*\]/);
+        if(match) extracted=JSON.parse(match[0]);
+      } else {
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'x-api-key':apiKey,
+            'anthropic-version':'2023-06-01',
+            'anthropic-dangerous-direct-browser-access':'true'
+          },
+          body:JSON.stringify({
+            model:'claude-haiku-4-5-20251001',
+            max_tokens:16000,
+            system:extractSys,
+            messages:[{role:'user',content:`다음 AI 분석 텍스트에서 종목별 분석 내용을 추출해주세요:\n\n${rawReply}`}]
+          })
+        });
+        if(!resp.ok) return;
+        const data=await resp.json();
+        const text=(data.content||[]).find(c=>c.type==='text')?.text||'';
+        const match=text.match(/\[[\s\S]*\]/);
+        if(match) extracted=JSON.parse(match[0]);
+      }
     }catch(e){
       console.error('[AutoMemo] 추출 오류:',e);
       return;
@@ -28771,8 +29167,8 @@ Rules:
     const fmtCtx=_hasHtmlFmt?`\n\n[사용자 입력 HTML 서식 템플릿 — RESULT 작성 시 아래 HTML 구조·태그를 그대로 유지하고 텍스트 내용만 실제 내용으로 교체하세요]\n${inputHtml}`:'';
     const txt=(input.innerText||input.textContent||'').trim();
     if(!txt&&!_pendingImages.length) return;
-    const _provNames={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini'};
-    const key=_provider.startsWith('deepseek')?localStorage.getItem(AK_DS):_provider.startsWith('gemini')?localStorage.getItem(AK_GM):localStorage.getItem(AK);
+    const _provNames={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'};
+    const key=_provider.startsWith('deepseek')?localStorage.getItem(AK_DS):_provider.startsWith('gemini')?localStorage.getItem(AK_GM):_provider.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK);
     if(!key){ _addBubble('error','❌ '+(_provNames[_provider]||'Claude')+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.'); return; }
     input.innerHTML='';
     /* 사용자 말풍선 — 이미지 썸네일 포함. ↩ 되돌리기(_restoreUserMsg)가 이 DOM에서 본문·이미지를 읽어가므로 클래스로 구분해 둠 */
@@ -28875,6 +29271,8 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${fmtCtx}
         ? await _streamDeepSeek(key,sys,_hist,aDiv,_abortCtrl.signal,_provider==='deepseek-pro')
         : _provider.startsWith('gemini')
         ? await _streamGemini(key,sys,_hist,aDiv,_abortCtrl.signal,_provider==='gemini-pro')
+        : _provider.startsWith('chatgpt')
+        ? await _streamChatGPT(key,sys,_hist,aDiv,_abortCtrl.signal,_provider==='chatgpt-pro')
         : await _stream(key,sys,_hist,aDiv,_abortCtrl.signal);
       if(reply){
         _hist.push({role:'assistant',content:reply});
@@ -29011,6 +29409,47 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${fmtCtx}
     return text;
   }
 
+  /* ── ChatGPT 스트리밍 (OpenAI Responses API — Flash: 빠르고 저렴 / Pro: 추론 강도 high로 심층 분석, 텍스트·이미지·PDF 지원) ──
+     SSE 이벤트 중 response.output_text.delta 의 delta 가 답변 조각. 추론(reasoning) 토큰은 스트림에 오지 않으므로 첫 글자가 늦게 나올 수 있음 */
+  async function _streamChatGPT(key,sys,msgs,target,signal,isPro){
+    const base={instructions:sys,input:_histToResponsesInput(msgs),max_output_tokens:_OPENAI_MAX_OUT};
+    const show=t=>{ target.textContent=t; g('aiMessages').scrollTop=g('aiMessages').scrollHeight; };
+    let r=await _openaiRequest(key,isPro,Object.assign({stream:true},base),signal);
+    if(!r.ok){
+      const err=await _openaiHttpError(r);
+      /* 일부 모델·계정은 스트리밍에 조직 인증이 필요함(400, param=stream) — 그땐 스트리밍 없이 한 번에 받는 방식으로 다시 요청 */
+      if(err.status!==400||!(err.param==='stream'||/stream/i.test(err.message))) throw err;
+      r=await _openaiRequest(key,isPro,Object.assign({stream:false},base),signal);
+      if(!r.ok) throw await _openaiHttpError(r);
+      const data=await r.json();
+      const full=_openaiExtractText(data);
+      if(!full) throw new Error(_openaiEmptyMsg(data));
+      show(full); return full;
+    }
+    const reader=r.body.getReader(), dec=new TextDecoder();
+    let buf='',text='',stopMsg='';
+    const onLine=ln=>{
+      if(!ln.startsWith('data:')) return;
+      const d=ln.slice(5).trim(); if(!d||d==='[DONE]') return;
+      let ev; try{ ev=JSON.parse(d); }catch(e){ return; }
+      if(ev.type==='response.output_text.delta'||ev.type==='response.refusal.delta'){ if(ev.delta){ text+=ev.delta; show(text); } }
+      else if(ev.type==='response.incomplete') stopMsg=_openaiIncompleteMsg(ev.response&&ev.response.incomplete_details&&ev.response.incomplete_details.reason);
+      else if(ev.type==='response.failed') throw new Error((ev.response&&ev.response.error&&ev.response.error.message)||'ChatGPT 응답 생성에 실패했습니다.');
+      else if(ev.type==='error') throw new Error(ev.message||(ev.error&&ev.error.message)||'ChatGPT 오류');
+    };
+    try{
+      while(true){
+        const {done,value}=await reader.read(); if(done) break;
+        buf+=dec.decode(value,{stream:true});
+        const lines=buf.split('\n'); buf=lines.pop();
+        lines.forEach(ln=>onLine(ln));
+      }
+      onLine(buf);
+    } finally { try{ reader.cancel().catch(()=>{}); }catch(e){} }
+    if(!text) throw new Error(stopMsg||'ChatGPT가 빈 응답을 반환했습니다.');
+    return text;
+  }
+
   /* ── 입력창 이미지 첨부 ── */
   function _addImgToInput(file){
     if(!file||!file.type.startsWith('image/')) return;
@@ -29089,6 +29528,8 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${fmtCtx}
         <option value="deepseek-pro">🔷 DeepSeek(Pro)</option>
         <option value="gemini-flash">🔶 Gemini(Flash)</option>
         <option value="gemini-pro">🔶 Gemini(Pro)</option>
+        <option value="chatgpt-flash">🟢 ChatGPT(Flash)</option>
+        <option value="chatgpt-pro">🟢 ChatGPT(Pro)</option>
       </select>
       <button id="aiNewChatBtn" class="mobile-keep" onclick="_createNewChat()" title="왼쪽 자료 + 채팅 기록 모두 초기화">＋ 새 대화</button>
       <button id="aiModalClose" class="mobile-keep" onclick="closeAIChat()" title="닫기">✕</button>
