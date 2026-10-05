@@ -385,7 +385,14 @@ select{
 .ts-period:hover:not(.active){background:#e2e8f0}
 .ts-period-row{display:block;width:100%;text-align:center;box-sizing:border-box}
 .ts-period-row+.ts-period-row{margin-top:2px}
-#tsMaDropdown,#tsPeriodDropdown,#tsRatioDropdown,#tsNoteReqDropdown{display:none;position:absolute;top:22px;left:0;min-width:96px;background:#fff;border:1px solid #cbd5e1;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:10100;padding:4px}
+#tsMaDropdown,#tsPeriodDropdown,#tsRatioDropdown{display:none;position:absolute;top:22px;left:0;min-width:96px;background:#fff;border:1px solid #cbd5e1;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:10100;padding:4px}
+/* Chart Note 작성 요구사항 팝업 — 오른쪽 변을 ⚙ 버튼(#tsNoteReqBtn) 오른쪽에 맞추고(right:0 → 왼쪽으로 펼쳐짐) 왼쪽 아래 모서리 그립으로 크기 조절.
+   너비는 기본 360px(저장된 크기가 있으면 열 때 JS가 인라인으로 덮어씀), 아래 padding 20px은 그립이 입력창을 가리지 않게 비워 둔 자리 */
+#tsNoteReqDropdown{display:none;position:absolute;top:22px;right:0;left:auto;width:360px;min-width:220px;max-width:calc(100vw - 16px);background:#fff;border:1px solid #cbd5e1;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:10100;padding:4px 4px 20px}
+#tsNoteReqGrip{position:absolute;left:0;bottom:0;width:20px;height:20px;cursor:nesw-resize;touch-action:none;border-radius:0 0 0 7px}
+#tsNoteReqGrip svg{position:absolute;left:4px;bottom:4px;pointer-events:none}
+#tsNoteReqGrip svg path{stroke:#94a3b8}
+#tsNoteReqGrip:hover svg path{stroke:#475569}
 #tsAiMethodDropdown{display:none;position:absolute;top:22px;left:0;min-width:212px;background:#fff;border:1px solid #cbd5e1;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:10100;padding:4px}
 .ts-aim-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 8px;font-size:11px;color:#374151;cursor:pointer;border-radius:5px;white-space:nowrap}
 .ts-aim-row:hover{background:#f1f5f9}
@@ -3223,7 +3230,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
             onclick="openMscModal()" title="월간 증시 캘린더 관리">📅 월간캘린더</button>
           <button class="btn mobile-keep" id="ecoAutoBtn"
             style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700"
-            onclick="toggleEcoUpdate()" title="보유 종목 실적발표일 + 배당락일 + 거시 이벤트 자동 조회">📡 업데이트</button>
+            onclick="toggleEcoUpdate(event)" title="이번 달부터 이후로 첨부된 모든 달의 월간캘린더 PDF를 먼저 분석해 반영한 뒤, 웹에서 보유 종목 실적발표일 + 배당락일 + 거시 이벤트를 추가 조회합니다 (Shift+클릭: 첨부된 PDF를 모두 다시 분석)">📡 업데이트</button>
           <button class="btn mobile-keep"
             style="font-size:9px;padding:0 6px;min-height:unset;height:20px;line-height:20px;background:#1e40af;border:none;border-radius:3px;font-weight:700"
             onclick="openAddEcoModal()" title="경제일정 수동 추가">+추가</button>
@@ -3670,13 +3677,17 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
             <button id="tsNoteReqBtn" type="button" onclick="_tsNoteReqDropdownToggle(event)"
                     title="Chart Note 작성 요구사항 설정 — '적용'으로 AI가 분석할 때 Chart Note에 쓰이는 서술형 해설을 어떤 요구사항에 맞춰 쓸지 지정합니다"
                     style="font-size:10px;padding:0 6px;height:20px;border:1px solid #e2e8f0;border-radius:4px;cursor:pointer;background:#f1f5f9;color:#374151;font-weight:600;white-space:nowrap">⚙</button>
-            <div id="tsNoteReqDropdown" style="width:224px">
+            <div id="tsNoteReqDropdown">
               <div style="padding:2px 4px 4px;font-size:10px;color:#64748b;line-height:1.4">
                 Chart Note 작성 요구사항<br><span style="color:#94a3b8">('적용'으로 분석할 때마다 반영됩니다)</span>
               </div>
               <textarea id="tsNoteReqInp" placeholder="예: 초보자도 이해하기 쉽게 3줄 이내로 간단히 써줘"
-                style="display:block;width:100%;box-sizing:border-box;min-height:64px;font-size:11px;padding:5px 6px;border:1px solid #e2e8f0;border-radius:4px;outline:none;resize:vertical;font-family:inherit"
+                style="display:block;width:100%;box-sizing:border-box;min-height:64px;font-size:11px;padding:5px 6px;border:1px solid #e2e8f0;border-radius:4px;outline:none;resize:none;font-family:inherit"
                 onchange="tsSetNoteReq(this.value)" onkeydown="event.stopPropagation()" onmousedown="event.stopPropagation()"></textarea>
+              <!-- 크기 조절 그립 — 팝업 오른쪽 변은 ⚙ 버튼 오른쪽에 붙어 있으니 왼쪽 아래 모서리를 왼쪽·아래로 끌면 너비·높이가 늘어남(_tsNoteReqGripDown) -->
+              <div id="tsNoteReqGrip" title="드래그하여 상자 크기 조절 — 왼쪽으로 끌면 넓어지고 아래로 끌면 길어집니다 (크기는 저장됩니다)" onpointerdown="_tsNoteReqGripDown(event)">
+                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M0.5 8.5 L3.5 11.5 M0.5 5.5 L6.5 11.5 M0.5 2.5 L9.5 11.5" fill="none" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
             </div>
           </div>
           <!-- 종목검색·조회는 스크롤 영역 밖에 둠 — #tsTickerDropdown이 absolute 팝업이라 overflow:auto 조상 안에 있으면 잘려서 안 보임 -->
@@ -5201,6 +5212,7 @@ async function fetchOneIndex(key){
 /* ── 업데이트 토글 플래그 ── */
 let _isUpdatingIdx=false, _stopIdx=false;
 let _isUpdatingEco=false, _stopEco=false;
+let _ecoAbort=null; /* 진행 중인 월간 캘린더 PDF 분석 요청(AbortController) — 📡 중단 버튼·시간 초과로 끊음 */
 let _isUpdatingPf=false,  _stopPf=false;
 
 function _setBtnStop(btn, origBg){
@@ -5353,14 +5365,15 @@ function toggleIdxUpdate(){
     INDICES.forEach(idx=>{ const c=g(`idx-card-${idx.key}`); if(c) c.classList.remove('update-dim'); });
   } else { fetchAllIndices(); }
 }
-function toggleEcoUpdate(){
+function toggleEcoUpdate(ev){
   if(_isUpdatingEco){
     _stopEco=true; _isUpdatingEco=false;
+    if(_ecoAbort){ try{ _ecoAbort.abort(); }catch(e){} } /* PDF를 AI가 읽는 중이었다면 그 요청부터 끊음 */
     _hideUpdateSpinner();
     _setBtnReady(g('ecoAutoBtn'),'rgba(255,255,255,.18)');
     const st=g('ecoStatus'); if(st) st.textContent='중단됨';
     const ea=g('ecoScrollArea'); if(ea) ea.classList.remove('update-dim');
-  } else { autoUpdateEco(); }
+  } else { autoUpdateEco(!!(ev&&ev.shiftKey)); } /* Shift+클릭: 저장된 PDF 분석 결과를 쓰지 않고 다시 분석 */
 }
 function togglePfUpdate(){
   if(_isUpdatingPf){
@@ -5628,11 +5641,56 @@ window.tsSetNoteReq=function(val){
   _tsNoteReq=val||'';
   localStorage.setItem('BTMChartNoteReq',_tsNoteReq);
 };
+/* Chart Note 작성 요구사항 팝업 크기 — 오른쪽 변은 ⚙ 버튼 오른쪽에 고정(CSS right:0)이고, 왼쪽 아래 모서리 그립(#tsNoteReqGrip)을 끌어 너비·높이를 조절.
+   크기는 localStorage(BTMNoteReqBox)에 저장해 다음에 열어도 유지 — w=팝업 너비(테두리 포함), h=입력창(textarea) 높이. 리포트 데이터가 아니라 화면 설정이라 localStorage에만 둠 */
+const _TS_NOTEREQ_DEF={w:360,h:120};
+function _tsNoteReqLoadSize(){
+  try{ const o=JSON.parse(localStorage.getItem('BTMNoteReqBox')||'null'); if(o&&isFinite(o.w)&&isFinite(o.h)) return {w:+o.w,h:+o.h}; }catch(e){}
+  return {..._TS_NOTEREQ_DEF};
+}
+/* 너비는 왼쪽 변이 화면 밖으로 나가지 않게(⚙ 버튼 오른쪽 − 8px 이내), 높이는 너무 작거나 화면보다 커지지 않게 보정 */
+function _tsNoteReqClamp(w,h){
+  const dd=g('tsNoteReqDropdown'), wrap=dd&&dd.parentElement;
+  const wr=wrap?wrap.getBoundingClientRect():null;
+  const maxW=Math.max(220,Math.min(window.innerWidth-16,wr?wr.right-8:window.innerWidth-16));
+  const maxH=Math.max(120,window.innerHeight-120);
+  return {w:Math.round(Math.max(220,Math.min(maxW,w))), h:Math.round(Math.max(64,Math.min(maxH,h)))};
+}
+function _tsNoteReqApplySize(size){
+  const dd=g('tsNoteReqDropdown'), ta=g('tsNoteReqInp'); if(!dd||!ta) return null;
+  const base=size||_tsNoteReqLoadSize();
+  const s=_tsNoteReqClamp(base.w,base.h);
+  dd.style.width=s.w+'px'; ta.style.height=s.h+'px';
+  return s;
+}
+/* 그립 드래그 — 오른쪽 변이 고정이라 마우스를 왼쪽으로 끌면 너비가 늘고(왼쪽 변이 마우스를 따라감), 아래로 끌면 높이가 늚. 놓을 때 저장.
+   포인터 캡처로 팝업 밖까지 끌어도 계속 따라오며, 끝난 직후의 click이 바깥 클릭으로 오인되어 팝업이 닫히지 않게 시각을 기록(_tsNoteReqResizeEnd) */
+window._tsNoteReqResizeEnd=0;
+function _tsNoteReqGripDown(e){
+  if(e.button!==undefined&&e.button!==0) return;
+  const grip=e.currentTarget, dd=g('tsNoteReqDropdown'), ta=g('tsNoteReqInp'); if(!grip||!dd||!ta) return;
+  e.preventDefault(); e.stopPropagation();
+  const sx=e.clientX, sy=e.clientY, sw=dd.offsetWidth, sh=ta.offsetHeight;
+  try{ grip.setPointerCapture(e.pointerId); }catch(_){}
+  const move=ev=>{
+    const s=_tsNoteReqClamp(sw+(sx-ev.clientX), sh+(ev.clientY-sy));
+    dd.style.width=s.w+'px'; ta.style.height=s.h+'px';
+  };
+  const up=ev=>{
+    grip.removeEventListener('pointermove',move); grip.removeEventListener('pointerup',up); grip.removeEventListener('pointercancel',up);
+    try{ grip.releasePointerCapture(ev.pointerId); }catch(_){}
+    window._tsNoteReqResizeEnd=Date.now();
+    try{ localStorage.setItem('BTMNoteReqBox',JSON.stringify({w:dd.offsetWidth,h:ta.offsetHeight})); }catch(_){}
+  };
+  grip.addEventListener('pointermove',move); grip.addEventListener('pointerup',up); grip.addEventListener('pointercancel',up);
+}
 window._tsNoteReqDropdownToggle=function(ev){
   if(ev) ev.stopPropagation();
   const dd=g('tsNoteReqDropdown');
   if(!dd) return;
-  dd.style.display = dd.style.display==='block' ? 'none' : 'block';
+  const open=dd.style.display!=='block';
+  dd.style.display = open ? 'block' : 'none';
+  if(open) _tsNoteReqApplySize(); /* 열 때마다 저장된 크기(없으면 기본값)를 적용 — 창 크기가 달라졌으면 화면 안으로 보정 */
 };
 function _tsChartNoteRefreshBody(){
   const body=g('tsChartNoteBody');
@@ -6489,7 +6547,9 @@ function buildEcoTable(){
     const isManual=row.source==='manual';
     const srcBadge=isManual
       ?'<span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:#ea580c;border-radius:3px;padding:1px 4px;line-height:1.4">수동</span>'
-      :'<span style="display:inline-block;font-size:9px;color:#94a3b8;line-height:1.4">자동</span>';
+      :row.source==='pdf'
+        ?'<span title="월간 캘린더 PDF에서 가져온 일정" style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:#7c3aed;border-radius:3px;padding:1px 4px;line-height:1.4">PDF</span>'
+        :'<span style="display:inline-block;font-size:9px;color:#94a3b8;line-height:1.4">자동</span>';
     const dayLabel=_ecoDayStr(row.date);
     const contentTxt=_tr?(_tr[row.content]??(row.content||'')):(row.content||'');
     /* 번역 보기 중엔 content 수정이 ecoData 배열(=한국어 원본) 대신 번역 저장소로 감(_btmEditTranslatedText) */
@@ -6545,10 +6605,10 @@ function cleanPastEcoEvents(){
   const c=new Date(t); c.setMonth(c.getMonth()+3);
   const cutoffS=`${c.getFullYear()}-${String(c.getMonth()+1).padStart(2,'0')}-${String(c.getDate()).padStart(2,'0')}`;
   const before=ecoData.length;
-  /* 수동 항목: 오늘 이후면 유지 / 자동 항목: 오늘~3개월 유지 */
+  /* 수동·PDF(첨부한 월간 캘린더에서 읽은) 항목: 오늘 이후면 유지(3개월 창 밖의 먼 달도 유지) / 웹 자동 항목: 오늘~3개월 유지 */
   ecoData=ecoData.filter(e=>{
     if(!e.date) return true;
-    if(e.source==='manual') return e.date>=todayS;
+    if(e.source==='manual'||e.source==='pdf') return e.date>=todayS;
     return e.date>=todayS&&e.date<=cutoffS;
   });
   /* BTMManualEco도 만료분 제거 */
@@ -7006,7 +7066,214 @@ async function _batchedSettled(items, worker, batchSize, gapMs){
   }
   return out;
 }
-async function autoUpdateEco(){
+/* ══ 경제일정 ← 월간 캘린더 PDF 반영(이번 달 + 이후로 첨부된 모든 달) ══
+   "📡 업데이트"(autoUpdateEco)는 웹 조회보다 먼저, 오늘 날짜가 속한 달부터 그 이후로 첨부해 둔 모든 달의 월간 증시 캘린더(PDF, 없으면 이미지)를
+   AI로 읽어 일정(날짜·구분·내용)을 뽑아 표에 먼저 반영하고(지난 달 캘린더는 안 씀), 그다음 웹 조회로 추가 일정을 보탬(PDF와 같은 날 비슷한 웹 일정은 PDF 쪽만 남김).
+   같은 PDF를 업데이트 때마다 다시 분석하면 시간·AI 비용이 계속 들어서, 분석 결과(일정 배열)를 그 PDF 기록(BTM_MscDB meta의 ecoEvents)에 함께
+   저장해 재사용함 — PDF를 다시 저장(교체)하면 기록이 새로 만들어져 자동으로 다시 분석되고, 📡 업데이트를 Shift+클릭하면 강제로 다시 분석함.
+   PDF 분석이 안 되는 상황(PDF 없음·AI 키 없음·오류·시간 초과)에서도 웹 업데이트는 그대로 진행됨(UPDATE ALL에서도 알림창 없이 조용히 건너뜀) */
+const ECO_PDF_MAP_KEY='ecoPdfCalendar';        /* 관리 메뉴 > 🧩 AI 공급자의 섹션 키(기본 Claude — DeepSeek은 PDF 인식 불가) */
+const ECO_PDF_MAX_BYTES=15*1024*1024;          /* base64로 부풀어도 AI 요청 한도(Claude 32MB·Gemini 인라인 20MB)를 넘지 않게 */
+const ECO_PDF_TIMEOUT_MS=180000;               /* 한 달 응답이 이보다 오래 걸리면 그 달만 포기하고 나머지·웹 업데이트로 넘어감 */
+const ECO_PDF_CONCURRENCY=3;                   /* 여러 달을 새로 분석할 때 동시에 보내는 요청 수(레이트리밋 회피) */
+
+function _ecoPdfSystemPrompt(year,month){
+  const mm=String(month).padStart(2,'0');
+  return `당신은 증시 월간 캘린더(PDF 또는 이미지)에 적힌 일정을 정확히 옮겨 적는 도우미입니다. 첨부된 캘린더는 ${year}년 ${month}월 자료입니다.
+
+[작업]
+캘린더에 적힌 모든 일정(경제지표 발표, 중앙은행 회의·금리 결정, 기업 실적발표, 옵션·선물 만기, 증시 휴장·단축거래, 주요 정치·경제 이벤트 등)을 하나도 빠뜨리지 말고 날짜별로 한 건씩 뽑아 주세요. 캘린더에 없는 내용은 절대 추가하거나 지어내지 마세요.
+
+[출력 형식 — 반드시 지킬 것]
+다른 설명이나 마크다운 코드블록 없이, 아래 형태의 순수 JSON 배열만 출력하세요:
+[{"date":"${year}-${mm}-DD","type":"미국","content":"미국_CPI 발표 (9월분)"}]
+
+규칙:
+- date: 반드시 ${year}-${mm}-DD 형식이며 이 달 안의 날짜여야 합니다. 달력 앞뒤에 보이는 다른 달의 칸은 제외하세요. 요일·날짜 칸의 배치를 눈여겨보고 일정이 적힌 칸의 날짜를 정확히 읽으세요.
+- type: 미국 관련이면 "미국", 한국 관련이면 "한국", 그 밖의 나라·지역(일본·중국·유럽 등)이거나 국가 구분이 없으면 "기타" 중 하나만 쓰세요.
+- content: 한국어로 간결하게(40자 이내). "미국_CPI 발표 (9월분)", "한국_금통위 기준금리 결정", "미국_엔비디아(NVDA) 실적발표", "미국_증시 휴장 (노동절)"처럼 국가 접두어를 붙여 쓰세요. 원문이 영어면 널리 쓰는 한국어 표기로 옮기되 티커·약어(CPI, FOMC, NVDA 등)는 그대로 두세요. 발표 시각이 적혀 있으면 내용 끝에 괄호로 덧붙이세요.
+- 며칠에 걸친 일정은 날짜마다 한 건씩 적되, "(1일차)", "(결과 발표)"처럼 구분하세요.
+- 같은 날짜·같은 내용을 중복해서 적지 마세요. 이 달에 일정이 하나도 없으면 빈 배열 []만 출력하세요.`;
+}
+
+function _ecoBlobToBase64(blob){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>{ const s=String(r.result||''); const i=s.indexOf(','); res(i<0?'':s.slice(i+1)); };
+    r.onerror=()=>rej(r.error||new Error('파일을 읽지 못했습니다'));
+    r.readAsDataURL(blob);
+  });
+}
+
+/* AI 응답 → [{date,type,content}]. 코드블록·앞뒤 설명이 섞여도 배열 부분만 읽고, 응답이 중간에 잘려 JSON이 깨졌으면 온전한 항목만 건져 씀.
+   이 달(YYYY-MM)이 아니거나 존재하지 않는 날짜(2026-02-31 등)·빈 내용은 버리고, type은 미국/한국/기타로 정리, 같은 날짜·내용 중복은 제거 */
+function _ecoParsePdfEvents(raw,year,month){
+  let t=String(raw||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```\s*$/,'');
+  const i=t.indexOf('[');
+  if(i<0) throw new Error('AI 응답에서 일정 목록을 찾지 못했습니다.');
+  let arr=null;
+  const j=t.lastIndexOf(']');
+  if(j>i){ try{ arr=JSON.parse(t.slice(i,j+1)); }catch(e){} }
+  if(!Array.isArray(arr)){
+    arr=[];
+    (t.slice(i).match(/\{[^{}]*\}/g)||[]).forEach(s=>{ try{ arr.push(JSON.parse(s)); }catch(e){} });
+  }
+  const ym=year+'-'+String(month).padStart(2,'0');
+  const out=[], seen=new Set();
+  arr.forEach(o=>{
+    if(!o||typeof o!=='object') return;
+    const date=String(o.date||'').trim();
+    const content=String(o.content||o.title||'').replace(/\s+/g,' ').trim();
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date.slice(0,7)!==ym||!content) return;
+    const d=new Date(date+'T00:00:00');
+    if(isNaN(d.getTime())||d.getDate()!==+date.slice(8)) return;      /* 2026-02-31처럼 없는 날짜 */
+    const type=(o.type==='미국'||o.type==='한국')?o.type:'기타';
+    const k=date+'|'+content; if(seen.has(k)) return; seen.add(k);
+    out.push({date,type,content:content.slice(0,80)});
+  });
+  out.sort((a,b)=>a.date.localeCompare(b.date));
+  return out;
+}
+
+/* 같은 날짜의 같은(비슷한) 일정인지 — PDF 일정과 웹 조회 일정이 겹칠 때 웹 쪽을 빼는 데 씀.
+   내용이 같거나, 종류(실적/배당/기타)가 맞고 눈에 띄는 단어(CPI·FOMC·NVDA·엔비디아 같은 영문/숫자 3자 이상, 한글 3자 이상)를 공유하면 같은 일정으로 봄 */
+const _ECO_TOKEN_STOP=new Set(['실적발표','배당락일','이벤트','결과발표','발표일']);
+function _ecoTokens(s){
+  const set=new Set();
+  String(s||'').toLowerCase().replace(/[a-z0-9]{3,}|[가-힣]{3,}/g,m=>{ if(!_ECO_TOKEN_STOP.has(m)) set.add(m); return m; });
+  return set;
+}
+function _ecoKind(s){ return /배당/.test(s)?'div':/실적|earnings/i.test(s)?'earn':'x'; }
+function _ecoSameEvent(a,b){
+  if(!a||!b||!a.date||a.date!==b.date) return false;
+  if(a.content===b.content) return true;
+  const ka=_ecoKind(a.content||''), kb=_ecoKind(b.content||'');
+  if(ka!=='x'&&kb!=='x'&&ka!==kb) return false;                      /* 실적발표 vs 배당락일처럼 종류가 다르면 다른 일정 */
+  const ta=_ecoTokens(a.content), tb=_ecoTokens(b.content);
+  for(const t of ta) if(tb.has(t)) return true;
+  return false;
+}
+
+/* 한 달치(월간 캘린더 저장 기록 meta 하나)를 일정 배열로 — 저장된 분석 결과가 있으면 재사용, 없으면 AI로 분석해 그 기록에 저장.
+   다시 분석(force)하다 실패해도 저장된 이전 분석 결과가 있으면 그걸 씀(표에서 PDF 일정이 사라지지 않게).
+   반환: {events(오늘 이후만), short(상태줄에 붙일 짧은 사유), note(마우스를 올리면 보이는 자세한 설명), cached?, stopped?, failed?} — 실패해도 던지지 않음.
+   sh = _ecoLoadPdfEvents가 모든 달에 공유하는 상태 {todayS, nowYear, res(AI 공급자·키), master(📡 중단용 AbortController), setSt} */
+async function _ecoLoadOneMonth(meta,force,sh){
+  const year=+meta.year, month=+meta.month, key=meta.key||(year+'-'+month);   /* 월간 캘린더 저장 키(월은 0 패딩 없음) */
+  const isPdf=meta.type==='pdf', kind=isPdf?'PDF':'이미지';
+  const label=(year===sh.nowYear?'':year+'년 ')+month+'월';
+  const upcoming=evs=>(evs||[]).filter(e=>e.date>=sh.todayS);                 /* 지난 일정은 표에 안 쓰므로 여기서 거름(저장된 분석 결과에는 그 달 전체를 그대로 둠) */
+  const ret=(events,short,note,extra)=>Object.assign({events:upcoming(events),short,note},extra||{});
+  if(_stopEco) return ret([],'','중단됨',{stopped:true});
+  /* 이 PDF 기록에 저장된(PDF를 교체하면 사라지는) 이전 분석 결과 */
+  const cachedOk=meta.ecoSavedAt===meta.savedAt&&Array.isArray(meta.ecoEvents)&&meta.ecoEvents.length>0;
+  const cachedNote=()=>`${label} ${kind}에서 이전에 분석해 둔 일정 ${meta.ecoEvents.length}건 중 오늘 이후 ${upcoming(meta.ecoEvents).length}건을 반영했습니다.`;
+  if(!force&&cachedOk) return ret(meta.ecoEvents,'',cachedNote(),{cached:true});
+  /* 다시 분석할 수 없는 사정이면, 저장된 결과가 있을 때는 그걸 쓰고 없을 때만 이 달 PDF 반영을 건너뜀 */
+  const cantAnalyze=(short,note)=>cachedOk
+    ? ret(meta.ecoEvents,'',`${note} 대신 ${cachedNote()}`,{cached:true})
+    : ret([],short,note,{failed:true});
+  const res=sh.res;
+  if(!res||!res.key) return cantAnalyze(`${kind} 분석 Key 없음`,`${res?res.name:'AI'} API Key가 없어 ${label} ${kind}를 분석하지 못했습니다(관리 메뉴 > 🧩 AI 공급자에서 설정).`);
+  if(res.provider.startsWith('deepseek')) return cantAnalyze(`${kind} 분석 불가`,'DeepSeek은 PDF·이미지 인식을 지원하지 않아 분석하지 못했습니다(관리 메뉴 > 🧩 AI 공급자의 "경제일정 — 월간캘린더 PDF 분석"을 Claude 또는 Gemini로 바꿔주세요).');
+  let rec;
+  try{ rec=await _mscGetBoth(key); }
+  catch(e){ return cantAnalyze(`${kind} 읽기 실패`,`${label} ${kind}를 저장소에서 읽지 못했습니다 — ${_mscErrText(e)}`); }
+  const blob=rec&&rec.file&&rec.file.blob;
+  if(!blob) return cantAnalyze(`${kind} 파일 없음`,`${label} ${kind} 파일을 저장소에서 찾지 못했습니다.`);
+  if(blob.size>ECO_PDF_MAX_BYTES) return cantAnalyze(`${kind} 용량 초과`,`${label} ${kind}가 ${_mscFmtSize(blob.size)}로 너무 커서(15MB 초과) 분석하지 못했습니다.`);
+
+  /* 이 달 요청만 따로 끊을 수 있게 자식 컨트롤러 — 📡 중단(master)이면 같이 끊기고, 이 달 응답이 너무 늦으면 이 달만 포기 */
+  const child=new AbortController();
+  const onMasterAbort=()=>child.abort();
+  if(sh.master) sh.master.signal.addEventListener('abort',onMasterAbort,{once:true});
+  const timer=setTimeout(()=>child.abort(),ECO_PDF_TIMEOUT_MS);
+  try{
+    const b64=await _ecoBlobToBase64(blob);
+    const raw=await window._runFilePrompt(
+      ECO_PDF_MAP_KEY, _ecoPdfSystemPrompt(year,month),
+      {kind:isPdf?'pdf':'image', mediaType:isPdf?'application/pdf':(blob.type||'image/png'), data:b64},
+      `${year}년 ${month}월 증시 캘린더에 적힌 일정을 모두 뽑아 JSON 배열로만 답해줘.`,
+      (a,m)=>sh.setSt(`📄 ${label} ${kind} 분석 재시도 (${a}/${m})…`), child.signal);
+    const events=_ecoParsePdfEvents(raw,year,month);
+    if(!events.length) throw new Error('캘린더에서 이 달 일정을 찾지 못했습니다.');
+    /* 분석 결과를 그 PDF 기록에 함께 저장 — 분석하는 사이 PDF가 교체됐으면(savedAt이 달라졌으면) 저장하지 않음 */
+    try{
+      await _mscTx(['meta'],'readwrite',m=>{
+        const rq=m.get(key);
+        rq.onsuccess=()=>{ const cur=rq.result; if(cur&&cur.savedAt===meta.savedAt) m.put(Object.assign({},cur,{ecoEvents:events,ecoSavedAt:cur.savedAt,ecoAt:Date.now()})); };
+      });
+    }catch(e){ console.warn('[경제일정] 분석 결과를 저장하지 못했습니다(다음 업데이트 때 다시 분석):',e); }
+    return ret(events,'',`${label} ${kind}를 ${res.name}로 분석해 일정 ${events.length}건을 읽고, 오늘 이후 ${upcoming(events).length}건을 반영했습니다.`,{cached:false});
+  }catch(e){
+    if(child.signal.aborted&&_stopEco) return ret([],'','중단됨',{stopped:true});
+    const timedOut=child.signal.aborted;
+    console.warn('[경제일정] 월간 캘린더 분석 실패('+label+'):',e);
+    const why=timedOut?`응답 대기 ${ECO_PDF_TIMEOUT_MS/1000}초 초과`:String((e&&e.message)||e).split('\n')[0].slice(0,80);
+    return cantAnalyze(`${kind} 분석 실패`,`${label} ${kind} 분석에 실패했습니다 — ${why}.`);
+  }finally{
+    clearTimeout(timer);
+    if(sh.master) sh.master.signal.removeEventListener('abort',onMasterAbort);
+  }
+}
+
+/* 오늘 날짜가 속한 달부터 그 이후로 월간 캘린더(PDF, 없으면 이미지)가 첨부된 모든 달을 읽어 일정을 모아 돌려줌 — 지난 달 캘린더는 안 씀.
+   달마다 저장된 분석 결과를 재사용하고 새로 분석해야 하는 달만 AI를 부르며, 요청이 몰리지 않게 ECO_PDF_CONCURRENCY달씩 병렬로 처리.
+   반환: {events(오늘 이후만, 모든 달), short(실패한 달이 있을 때 상태줄에 붙일 짧은 사유), note(달별 설명을 줄바꿈으로 이어 붙임 — 상태줄 툴팁), stopped?}.
+   실패해도 던지지 않음(그 달만 건너뛰고 나머지 달·웹 업데이트는 그대로 진행) */
+async function _ecoLoadPdfEvents(statusEl,force){
+  const now=new Date(), ny=now.getFullYear(), nm=now.getMonth()+1;
+  const todayS=`${ny}-${String(nm).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const setSt=t=>{ if(statusEl&&!_stopEco) statusEl.textContent=t; };   /* 📡 중단 뒤 늦게 끝난 달이 '중단됨' 표시를 진행 문구로 덮어쓰지 않게 */
+  let metas;
+  try{
+    try{ await _mscInit(); }catch(e){}                               /* 옛 localStorage 데이터 이전이 보류돼도 현재 저장소는 읽을 수 있음 */
+    metas=await _mscTx(['meta'],'readonly',m=>m.getAll());
+  }catch(e){
+    console.warn('[경제일정] 월간 캘린더 저장소를 읽지 못했습니다:',e);
+    return {events:[],short:'캘린더 저장소 오류',note:'월간 캘린더 저장소를 읽지 못해 PDF 반영은 건너뛰고 웹 업데이트만 합니다 — '+_mscErrText(e)};
+  }
+  const curIdx=ny*12+nm;
+  const months=(metas||[])
+    .filter(r=>r&&(+r.year)>0&&(+r.month)>=1&&(+r.month)<=12&&((+r.year)*12+(+r.month))>=curIdx)
+    .sort((a,b)=>((+a.year)*12+(+a.month))-((+b.year)*12+(+b.month)));
+  if(!months.length) return {events:[],short:'',note:`${ny}년 ${nm}월 이후에 첨부된 월간 캘린더가 없어 PDF 반영은 건너뛰고 웹 업데이트만 합니다.`};
+  const res=(typeof window._resolveAiProvider==='function')?window._resolveAiProvider(ECO_PDF_MAP_KEY):null;
+  const canAi=!!(res&&res.key&&!res.provider.startsWith('deepseek'));
+  /* 새로 분석해야 하는 달(저장된 분석 결과가 없거나 강제 재분석) — 진행 상황 표시(몇 개월 중 몇 개월째)에 씀 */
+  const need=months.map(m=>force||!(m.ecoSavedAt===m.savedAt&&Array.isArray(m.ecoEvents)&&m.ecoEvents.length>0));
+  const todo=canAi?need.filter(Boolean).length:0;
+  const sh={todayS,nowYear:ny,res,setSt,master:todo?new AbortController():null};
+  let done=0;
+  const progress=()=>{ if(todo) setSt(`📄 월간 캘린더 PDF 분석 중… ${done}/${todo}개월 (${res.name})`); };
+  if(sh.master){ _ecoAbort=sh.master; progress(); }
+  const results=new Array(months.length);
+  try{
+    let next=0;
+    const worker=async()=>{
+      while(next<months.length&&!_stopEco){
+        const i=next++;
+        results[i]=await _ecoLoadOneMonth(months[i],force,sh);
+        if(need[i]&&canAi){ done++; progress(); }
+      }
+    };
+    await Promise.all(Array.from({length:Math.min(ECO_PDF_CONCURRENCY,months.length)},worker));
+  }finally{
+    if(sh.master&&_ecoAbort===sh.master) _ecoAbort=null;
+  }
+  if(_stopEco) return {events:[],short:'',note:'중단됨',stopped:true};
+  const rs=results.filter(Boolean);
+  const events=[]; rs.forEach(r=>events.push(...r.events));
+  const failed=rs.filter(r=>r.failed);
+  let short='';
+  if(failed.length){
+    const uniq=[...new Set(failed.map(r=>r.short))];
+    short=(failed.length===rs.length&&uniq.length===1)?uniq[0]:`PDF ${failed.length}/${rs.length}개월 실패`;
+  }
+  return {events,short,note:rs.map(r=>r.note).filter(Boolean).join('\n')};
+}
+
+async function autoUpdateEco(forcePdf){
   _isUpdatingEco=true; _stopEco=false;
   const btn=g('ecoAutoBtn');
   const status=g('ecoStatus');
@@ -7023,6 +7290,27 @@ async function autoUpdateEco(){
   const cutoffStr=`${cutoff.getFullYear()}-${String(cutoff.getMonth()+1).padStart(2,'0')}-${String(cutoff.getDate()).padStart(2,'0')}`;
   const cutoffFull=new Date(today); cutoffFull.setMonth(cutoffFull.getMonth()+3);
   const cutoffFullStr=`${cutoffFull.getFullYear()}-${String(cutoffFull.getMonth()+1).padStart(2,'0')}-${String(cutoffFull.getDate()).padStart(2,'0')}`;
+
+  /* ⓪ 월간 캘린더 PDF 먼저 — 오늘 날짜가 속한 달부터 그 이후로 첨부된 모든 달의 PDF(없으면 이미지)를 분석해 표에 먼저 반영하고, 아래 ①~⑤ 웹 조회는 그 위에 추가로 보탬.
+     PDF가 없거나 분석에 실패해도(키 없음·오류·시간 초과) 웹 업데이트는 그대로 진행(알림창 없이 상태줄·툴팁에만 사유 표시) */
+  let pdfEvents=[], pdfShort='', pdfNote='';
+  try{
+    const pr=await _ecoLoadPdfEvents(status,!!forcePdf);
+    pdfShort=pr.short||''; pdfNote=pr.note||'';
+    /* 웹 자동 일정은 오늘~3개월만 쓰지만, 첨부한 캘린더의 일정은 3개월 창 밖의 먼 달이어도 오늘 이후면 전부 씀 */
+    pdfEvents=(pr.events||[]).filter(e=>e.date>=todayStr2).map(e=>({...e,source:'pdf'}));
+  }catch(e){
+    console.warn('[경제일정] 월간 캘린더 PDF 반영 중 오류:',e);
+    pdfShort='PDF 오류'; pdfNote='월간 캘린더 PDF 반영 중 오류 — '+((e&&e.message)||e);
+  }
+  status.title=pdfNote;
+  if(_stopEco) return; /* PDF 분석 중에 중단됨 — 화면은 toggleEcoUpdate가 이미 원래대로 돌려놓음 */
+  if(pdfEvents.length){
+    /* 웹 조회(수십 초)를 기다리는 동안에도 PDF 일정이 바로 보이게 — 표에 있던 기존 자동·수동 일정은 그대로 두고 PDF 일정만 앞에 얹음 */
+    ecoData=[...pdfEvents,...ecoData.filter(e=>e.source==='manual'||(e.source!=='pdf'&&!pdfEvents.some(p=>_ecoSameEvent(p,e))))]
+      .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    buildEcoTable();
+  }
 
   /* ① 포트폴리오 US 종목 + 주요 기업 목록 */
   const pfTickers=holdings
@@ -7136,8 +7424,9 @@ async function autoUpdateEco(){
   const _manualEcos=_getManualEco().filter(e=>!e.date||e.date>=todayStr2);
   _saveManualEco(_manualEcos); /* 만료분 정리 */
   /* auto 항목에 source:'auto' 태그, 수동과 합산 후 날짜순 정렬 */
-  const _autoTagged=deduped.map(e=>({...e,source:'auto'}));
-  const _merged2=[..._autoTagged,..._manualEcos];
+  /* ⓪에서 가져온 PDF 일정이 먼저 오고, 같은 날짜의 비슷한 웹 일정은 PDF 쪽만 남김 */
+  const _autoTagged=deduped.filter(e=>!pdfEvents.some(p=>_ecoSameEvent(p,e))).map(e=>({...e,source:'auto'}));
+  const _merged2=[...pdfEvents,..._autoTagged,..._manualEcos];
   const _seen2=new Set();
   ecoData=_merged2.filter(e=>{
     const key=e.date+'|'+e.content;
@@ -7164,7 +7453,9 @@ async function autoUpdateEco(){
   _setBtnReady(btn,'#1e40af');
   const now=new Date();
   const _krCnt=ecoData.filter(e=>e.type==='한국').length;
-  status.textContent=_stopEco?'중단됨':`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} (${ecoData.length}건${_krCnt?` | 한국:${_krCnt}건`:''})`;
+  const _pdfCnt=ecoData.filter(e=>e.source==='pdf').length;
+  const _pdfTxt=_pdfCnt?` | PDF:${_pdfCnt}건${pdfShort?'(일부 실패)':''}`:(pdfShort?` | ${pdfShort}`:'');   /* 일부 달만 실패했으면 건수 옆에 표시 — 자세한 사유는 상태줄 툴팁 */
+  status.textContent=_stopEco?'중단됨':`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} (${ecoData.length}건${_pdfTxt}${_krCnt?` | 한국:${_krCnt}건`:''})`;
 }
 
 /* ─────────── 포트폴리오 ─────────── */
@@ -21210,7 +21501,7 @@ KR|238490.KS|힘스`;
       const rdd=document.getElementById('tsRatioDropdown');
       if(rdd) rdd.style.display='none';
     }
-    if(!e.target.closest('#tsNoteReqDropdown')&&!e.target.closest('#tsNoteReqBtn')){
+    if(!e.target.closest('#tsNoteReqDropdown')&&!e.target.closest('#tsNoteReqBtn')&&Date.now()-(window._tsNoteReqResizeEnd||0)>400){ /* 크기 조절 드래그가 막 끝났다면(놓은 자리가 팝업 밖이어도) 닫지 않음 */
       const nrdd=document.getElementById('tsNoteReqDropdown');
       if(nrdd) nrdd.style.display='none';
     }
@@ -25916,6 +26207,7 @@ const _BTM_AI_SECTIONS=[
   {id:'aiStockRadarTarget',label:'AI Stock Radar Target'},
   {id:'technicalAnalysis',label:'My Technical Analysis With AI'},
   {id:'technicalAnalysisChart',label:'My Technical Analysis — AI 차트분석(지지/저항/추세선)'},
+  {id:'ecoPdfCalendar',label:'경제일정 — 월간캘린더 PDF 분석 (Claude·Gemini만 PDF 지원)'},
   {id:'tradingStrategy',label:'My Trading Strategy With AI Navigator'},
   {id:'btmLangGen',label:'🌐 다국어 생성 (번역)'},
 ];
@@ -26396,6 +26688,40 @@ async function _fetchClaudeBalance(){
       }catch(e){
         lastErr=e;
         if(attempt<MAX_TRY && isBusyErr(e)){
+          if(typeof onRetry==='function') onRetry(attempt,MAX_TRY);
+          await new Promise(r=>setTimeout(r,attempt*2500));
+          continue;
+        }
+        throw e;
+      }
+    }
+    throw lastErr;
+  };
+  /* 팝업 UI 없이 파일 1개(PDF 또는 이미지) + 프롬프트를 지정된 섹션 키의 공급자로 보내고 텍스트 응답만 받는 headless 호출 —
+     _runVisionPrompt의 PDF 확장판(경제일정이 이번 달 월간 캘린더 PDF를 읽을 때 사용). file={kind:'pdf'|'image', mediaType, data(base64, data: 접두어 없이)}.
+     Claude는 document 블록, Gemini는 inline_data(application/pdf)로 PDF를 직접 읽음 — DeepSeek은 파일 인식을 지원하지 않아 명시적으로 막음.
+     signal(선택)로 호출부(경제일정 중단 버튼·시간 초과)가 요청을 끊을 수 있고, 끊긴 경우엔 재시도하지 않음 */
+  window._runFilePrompt=async function(mapKey, sys, file, userText, onRetry, signal){
+    const {provider, key, name}=window._resolveAiProvider(mapKey);
+    if(!key) throw new Error(name+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.');
+    if(provider.startsWith('deepseek')) throw new Error('DeepSeek은 PDF·이미지 인식을 지원하지 않습니다. 관리 메뉴 > 🧩 AI 공급자에서 이 섹션을 Claude 또는 Gemini로 바꿔주세요.');
+    if(!file||!file.data) throw new Error('파일 데이터 변환에 실패했습니다.');
+    const block=file.kind==='pdf'
+      ? {type:'document',source:{type:'base64',media_type:'application/pdf',data:file.data}}
+      : {type:'image',source:{type:'base64',media_type:file.mediaType||'image/png',data:file.data}};
+    const msgs=[{role:'user',content:[block,{type:'text',text:userText}]}];
+    const isBusyErr=(e)=>(e&&(e.status===429||e.status===503))||/high demand|overloaded|unavailable|try again|rate.?limit/i.test((e&&e.message)||'');
+    const MAX_TRY=3;
+    let lastErr;
+    for(let attempt=1;attempt<=MAX_TRY;attempt++){
+      const target={textContent:''};
+      try{
+        return provider.startsWith('gemini')
+          ? await _streamGemini(key,sys,msgs,target,signal,provider==='gemini-pro')
+          : await _stream(key,sys,msgs,target,signal);
+      }catch(e){
+        lastErr=e;
+        if(attempt<MAX_TRY && isBusyErr(e) && !(signal&&signal.aborted)){
           if(typeof onRetry==='function') onRetry(attempt,MAX_TRY);
           await new Promise(r=>setTimeout(r,attempt*2500));
           continue;
