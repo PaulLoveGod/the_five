@@ -11638,8 +11638,21 @@ function saveNow(){
   recalcPortfolio();
 }
 
+/* MindMap 복원 — 마인드맵은 그 리포트(날짜)에 딸린 것: 불러온 기록에 마인드맵이 있으면 그것으로, 없으면(마인드맵 기능 이전 기록·미작성) 빈 마인드맵으로 시작해서
+   이전에 보던 날짜의 마인드맵이 남아 섞이거나 이 기록에 저장되는 일이 없게 함.
+   예외(저장 전 작업 보호): 로그인 직후 자동 불러오기(window._mmAutoLoad)에서 '같은 날짜' 리포트의 더 최신 마인드맵이 화면에 있으면 그대로 둠 — 멤버만(Guest 는 공개된 기록 그대로) */
+function _mmRestoreFor(d,prevDate){
+  if(!window.MM||typeof MM.load!=='function') return;
+  try{
+    let same=false;
+    try{ same=!!window._mmAutoLoad&&_authMode==='member'&&!!prevDate&&prevDate===(d.reportDate||''); }catch(_){}
+    if(d.mindmap) MM.load(d.mindmap,{auto:same});
+    else if(!same) MM.load(null);
+  }catch(e){ console.warn('[MindMap] 복원 실패:',e); }
+}
 function applyData(d){
   if(!d) return;
+  const _prevRptDate=gv('reportDate');   /* 불러오기 전 화면의 리포트 날짜 — 마인드맵이 같은 리포트의 것인지 판단용 */
   sv('reportDate',d.reportDate||todayStr()); updateHeadlineDateDisplay();
   { const _cTo=g('summaryChartTo'); if(_cTo) _cTo.value=d.reportDate||todayStr(); }
   sv('reportNum',d.reportNum||'');
@@ -11807,8 +11820,7 @@ function applyData(d){
   if(d.charlieBatteryTitle){ const el=g('charlieBatteryTitle'); if(el) el.textContent=d.charlieBatteryTitle; }
   if(d.investorStatusNote!==undefined) sv('investorStatusNote', d.investorStatusNote||'');
   if(d.watchlistNote!==undefined) sv('watchlistNote', d.watchlistNote||'');
-  /* MindMap 복원 — 로그인 직후 자동 불러오기(window._mmAutoLoad)에서는 지금 화면의 마인드맵이 더 최신이면 그대로 둠 */
-  if(d.mindmap&&window.MM&&typeof MM.load==='function'){ try{ MM.load(d.mindmap,{auto:!!window._mmAutoLoad}); }catch(e){ console.warn('[MindMap] 복원 실패:',e); } }
+  _mmRestoreFor(d,_prevRptDate);   /* MindMap 복원(리포트별) */
   /* Investor Status 복원 */
   if(d.investorStatus){
     if(Array.isArray(d.investorStatus) && d.investorStatus.length > 0){
@@ -11885,9 +11897,17 @@ async function confirmNewReport(){
   /* 최신 archive 데이터 (날짜 내림차순이므로 [0]이 최신) */
   const _latestArcData = allArcs.length > 0 ? (allArcs[0].data || {}) : {};
 
+  try{ if(window.MM&&typeof MM.flush==='function') MM.flush(); }catch(_){}   /* 글 편집 중인 마인드맵 주제가 있으면 먼저 확정 */
   const cur = collectData();
+  /* MindMap: 직전 report(새 날짜 바로 앞 날짜의 Archive)의 마인드맵을 이어받음. 이어받은 뒤 고치고 💾 Save하면 새 날짜 Archive에만 따로 저장되고 직전 report 의 것은 그대로.
+     화면의 리포트가 직전 report 이후(같은 날짜 포함)·새 날짜 이전이면 화면의 마인드맵(저장 전 수정 포함)을, 그보다 옛 리포트를 보고 있었다면 직전 report 의 것을 씀 */
+  const _prevArc = allArcs.find(r => r.date < selectedDate);
+  const _scrDate = cur.reportDate || '';
+  let _mmCarry = cur.mindmap;
+  if(_prevArc && _prevArc.data && _prevArc.data.mindmap && !(_scrDate >= _prevArc.date && _scrDate < selectedDate)) _mmCarry = _prevArc.data.mindmap;
   const fresh = {
     ...cur,
+    mindmap: _mmCarry,
     translations:{}, displayLang:'ko', /* 새 리포트에는 이전 리포트의 번역이 섞이지 않도록 초기화 */
     reportDate: selectedDate,
     reportNum: String((parseInt(cur.reportNum)||0)+1),
@@ -12388,6 +12408,7 @@ function _saveReportBodyMemo(reportDate){
 }
 
 async function archiveReport(isPublish=false){
+  try{ if(window.MM&&typeof MM.flush==='function') MM.flush(); }catch(_){}   /* 글 편집 중인 마인드맵 주제가 있으면 먼저 확정(Ctrl+S 등 포커스가 안 빠지는 경우) */
   const data=collectData();
   /* 도넛차트 이미지 캡처 */
   const _donutC=g('pfDonutCanvas');
@@ -23768,7 +23789,7 @@ async function loadLatestArchive(publishedOnly=false){
     _isPublished=!!rec.published;
     if(_isPublished){ localStorage.setItem('BTMPublished','1'); _applyPublishedUI(); }
     else{ localStorage.removeItem('BTMPublished'); _clearPublishedUI(); }
-    window._mmAutoLoad=true;   /* 자동 불러오기: 더 최신 마인드맵이 화면에 있으면 Archive 의 옛 마인드맵으로 덮어쓰지 않음 */
+    window._mmAutoLoad=true;   /* 자동 불러오기: 같은 날짜 리포트의 저장 전(더 최신) 마인드맵만 유지 — applyData→_mmRestoreFor 가 판단(다른 날짜의 마인드맵은 섞지 않음, Guest 는 공개된 기록 그대로) */
     try{ applyData(rec.data); } finally { window._mmAutoLoad=false; }
     initAutoFiveCount();
     _prevArcLoaded=false; _loadPrevArchive(); /* 로그인 후 전일비 재계산 */
@@ -29883,6 +29904,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${fmtCtx}
 /* ═══════════════════════════════════════════════════════════════
    MindMap 모듈 (window.MM) — 오른쪽 열 Investment Status 아래 마인드맵 편집기
    · 저장: collectData() → d.mindmap / applyData() → MM.load()  (자동저장·Archive·JSON 백업에 함께 저장)
+   · 리포트(날짜)별로 독립: Archive 기록마다 자기 마인드맵을 가짐 — 불러오면 그 기록 것으로(없으면 MM.load(null)=빈 지도), Create New 는 직전 report 것을 복사해 시작
    · 렌더: HTML 노드(#mmNodes) + SVG 연결선(#mmSvg) 을 #mmWorld(translate+scale) 위에 그림
    · 권한: 멤버 로그인(body.member-mode)일 때만 편집, 게스트/잠금(Publish)/좁은 화면(<680px)은 보기 전용
    · 수정 요령: 이 블록(표식 MM-JS-BEGIN~END)과 위쪽 MM-CSS 블록만 고치면 됨
@@ -29913,8 +29935,8 @@ const LAYOUTS=[['map','↔ 양쪽 마인드맵'],['right','→ 오른쪽 트리'
 const EDGES=[['curve','곡선'],['straight','직선'],['elbow','꺾은선'],['round','둥근 꺾은선']];
 const BGS=[['dots','점 무늬'],['grid','격자'],['plain','없음']];
 const LV_FS=[22,17,14.5,13];
-const DEF_SET={layout:'map',edge:'curve',theme:'vivid',hgap:46,vgap:10,maxw:240,fs:100,ff:'',bg:'dots',taper:1,inh:1,lvAlign:'auto',pAlign:'center'};   /* inh: 새 주제가 선택한 주제의 서식을 이어받음 / lvAlign: 같은 레벨 정렬(auto·left·right) / pAlign: 부모 정렬(center·top·bottom) / lvFlip(없으면 생략): 트리변경한 단계 번호 목록 — 배치별 기본 가로·세로 방식을 뒤집을 단계 */
-const LV_ALIGNS=[['auto','자동(기본)'],['left','왼쪽 맞춤'],['right','오른쪽 맞춤']];
+const DEF_SET={layout:'map',edge:'curve',theme:'vivid',hgap:46,vgap:10,maxw:240,fs:100,ff:'',bg:'dots',taper:1,inh:1,lvAlign:'auto',pAlign:'center'};   /* inh: 새 주제가 선택한 주제의 서식을 이어받음 / lvAlign: 같은 레벨 정렬(auto·left·center·right) / pAlign: 부모 정렬(center·top·bottom) / lvFlip(없으면 생략): 트리변경한 단계 번호 목록 — 배치별 기본 가로·세로 방식을 뒤집을 단계 */
+const LV_ALIGNS=[['auto','자동(기본)'],['left','왼쪽 맞춤'],['center','가운데 맞춤'],['right','오른쪽 맞춤']];
 const P_ALIGNS=[['center','가운데(기본)'],['top','위쪽 맞춤'],['bottom','아래쪽 맞춤']];
 const MAX_SKIP=3;
 const MAX_LV=30;   /* 트리변경(lvFlip)이 바꿀 수 있는 최대 단계 */
@@ -30380,11 +30402,11 @@ function layoutHoriz(root,Lm,sub){
         let ex=0; for(let j=1;j<=skipOf(n);j++) ex+=colW[pe+j]+gh;
         p.x=d==='R'?pp.x+pp.w+gh+ex:pp.x-gh-ex-p.w;
       });
-    } else {             /* 같은 레벨(열)끼리 한 줄로: left=왼쪽 끝 맞춤 / right=오른쪽 끝 맞춤 */
+    } else {             /* 같은 레벨(열)끼리 한 줄로: left=왼쪽 끝 / center=가운데 / right=오른쪽 끝 맞춤 */
       const cl=[], cr=[];
       if(d==='R'){ let x=rs.w/2+gh; for(let e=1;e<=E;e++){ cl[e]=x; cr[e]=x+colW[e]; x=cr[e]+gh; } }
       else{ let r=-rs.w/2-gh; for(let e=1;e<=E;e++){ cr[e]=r; cl[e]=r-colW[e]; r=cl[e]-gh; } }
-      for(let e=1;e<=E;e++) (lv[e]||[]).forEach(n=>{ const p=P.get(n.id); p.x=mode==='left'?cl[e]:cr[e]-p.w; });
+      for(let e=1;e<=E;e++) (lv[e]||[]).forEach(n=>{ const p=P.get(n.id); p.x=mode==='left'?cl[e]:mode==='center'?(cl[e]+cr[e])/2-p.w/2:cr[e]-p.w; });
     }
   });
 }
@@ -30451,14 +30473,14 @@ function layoutGen(root,L,FS){
     } else {        /* 하위 주제들: 한 열(위→아래), 양쪽이면 오른쪽 열·왼쪽 열. 부모 정렬(pAlign)은 열마다. 건너뛴 단계(sk)는 그만큼 더 옆으로 */
       ['R','L'].forEach(sd=>{
         const g=bl.filter(o=>o.sd===sd); if(!g.length) return;
-        const mir=sd==='L', md=mir?({left:'right',right:'left'}[lm]||'auto'):lm, X0=s.w/2+gh, tx=[], ty=[];
+        const mir=sd==='L', md=mir?({left:'right',right:'left'}[lm]||lm):lm, X0=s.w/2+gh, tx=[], ty=[];
         const ms=g.map(o=>{ const cw=P.get(o.c.id).w, m0=mir?-o.b.x1:o.b.x0; return {cw,m0,bleed:-cw/2-m0}; });   /* 왼쪽 열 계산은 거울에 비춘 오른쪽 열처럼 / bleed: 영역이 주제 상자보다 부모 쪽으로 삐져나온 길이 */
-        const XL=X0+Math.max(...ms.map(m=>m.bleed)), XR=X0+Math.max(...ms.map(m=>m.cw+m.bleed));
+        const XL=X0+Math.max(...ms.map(m=>m.bleed)), XR=X0+Math.max(...ms.map(m=>m.cw+m.bleed)), XC=X0+Math.max(...ms.map(m=>m.cw/2+m.bleed));   /* 왼쪽 끝·오른쪽 끝·가운데 맞춤 기준선(영역이 부모 쪽으로 안 삐져나오는 가장 가까운 자리) */
         let cur=0;
         g.forEach((o,i)=>{
           const m=ms[i], ex=skipOf(o.c)*(EMPTY_COL+gh);
           ty[i]=cur-o.b.y0; cur=ty[i]+o.b.y1+gs;
-          const cx=md==='left'?XL+m.cw/2:md==='right'?XR-m.cw/2:X0-m.m0;   /* auto=영역 가장자리를 부모 옆에 / left·right=같은 레벨 상자의 왼쪽·오른쪽 끝 맞춤 */
+          const cx=md==='left'?XL+m.cw/2:md==='right'?XR-m.cw/2:md==='center'?XC:X0-m.m0;   /* auto=영역 가장자리를 부모 옆에 / left·center·right=같은 레벨 상자의 왼쪽 끝·가운데·오른쪽 끝 맞춤 */
           tx[i]=(mir?-1:1)*(cx+ex);
         });
         const k=g.length-1, rcy=pa==='top'?ty[0]:pa==='bottom'?ty[k]:(ty[0]+ty[k])/2;
@@ -31053,6 +31075,41 @@ function toggleStyle(k){
 function resetStyle(){
   const ids=targetIds(); if(!ids.length) return toast('먼저 주제를 선택하세요.');
   mutate(()=>{ ids.forEach(id=>{ const n=node(id); if(!n||!n.st) return; OVR.forEach(k=>delete n.st[k]); if(!Object.keys(n.st).length) delete n.st; }); });
+}
+/* ───────── 카테고리(=단계) 너비 — 선택한 주제가 속한 단계의 보이는 모든 주제에 적용(적용 범위 선택과 무관) ─────────
+   카테고리 너비 일치: 그 단계에서 글자에 맞춘(자연) 너비가 가장 넓은 주제를 기준으로 모두 같은 너비(st.bw)로 통일
+   개별항목 너비 적용: 직접 정한 너비(st.bw)를 풀어 각 주제가 자기 글자 너비에 맞게 되돌림 */
+function levelGroups(){   /* 선택한 주제들이 속한 단계별 보이는 주제 id: {깊이:[id…]} */
+  const ds=new Set(selIds().map(depthOf)), g={};
+  walkAll((n,d)=>{ if(ds.has(d)&&I.has(n.id)) (g[d]=g[d]||[]).push(n.id); });
+  return g;
+}
+function naturalW(id){   /* 직접 정한 너비를 잠시 빼고 글자·이미지에 맞춘 자연 너비(px, 소수) */
+  const el=els.get(id), inf=I.get(id); if(!el||!inf) return 0;
+  const s=el.style, w0=s.width, m0=s.maxWidth;
+  s.width=''; s.maxWidth=inf.rs.w>=1000?'none':inf.rs.w+'px';
+  const w=el.getBoundingClientRect().width/(view.k||1);
+  s.width=w0; s.maxWidth=m0;
+  return w;
+}
+function matchLevelWidth(){
+  if(isRO()) return;
+  if(editing) endEdit(true);
+  const g=levelGroups(), ds=Object.keys(g);
+  if(!ds.length) return toast('먼저 너비를 맞출 카테고리(단계)의 주제를 하나 선택하세요.');
+  const W={}; ds.forEach(d=>{ W[d]=clamp(Math.ceil(Math.max(...g[d].map(naturalW))-0.01),24,2000); });
+  mutate(()=>{ ds.forEach(d=>g[d].forEach(id=>{ const n=node(id); if(!n) return; n.st=n.st||{}; n.st.bw=W[d]; })); });
+  const cnt=ds.reduce((a,d)=>a+g[d].length,0);
+  toast(ds.length===1?ds[0]+'단계 '+cnt+'개 주제의 너비를 가장 넓은 주제 기준 '+W[ds[0]]+'px로 맞췄어요.':ds.join('·')+'단계 '+cnt+'개 주제의 너비를 단계별로 맞췄어요.');
+}
+function autoLevelWidth(){
+  if(isRO()) return;
+  if(editing) endEdit(true);
+  const g=levelGroups(), ds=Object.keys(g);
+  if(!ds.length) return toast('먼저 너비를 되돌릴 카테고리(단계)의 주제를 하나 선택하세요.');
+  mutate(()=>{ ds.forEach(d=>g[d].forEach(id=>{ const n=node(id); if(!n||!n.st) return; delete n.st.bw; if(!Object.keys(n.st).length) delete n.st; })); });
+  const cnt=ds.reduce((a,d)=>a+g[d].length,0);
+  toast(ds.join('·')+'단계 '+cnt+'개 주제를 각자 글자 너비에 맞췄어요.');
 }
 function applyAttr(ids,fn){ if(isRO()) return; ids=ids&&ids.length?ids:selIds(); if(!ids.length) return toast('먼저 주제를 선택하세요.'); mutate(()=>{ ids.forEach(id=>{ const n=node(id); if(n) fn(n); }); }); }
 
@@ -31816,8 +31873,10 @@ function searchStep(d){
 /* ───────── 내보내기·가져오기 ───────── */
 const ymd=()=>{ const d=new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); };
 function saveBlob(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); }
-function serialize(){
+/* force 가 없으면 한 번도 손대지 않은 예시 지도(doc.mt=0)는 undefined — 리포트 기록(collectData)에는 '마인드맵 없음'으로 남김 */
+function serialize(force){
   if(!doc) return undefined;
+  if(!doc.mt&&!force) return undefined;
   const c=clone({v:doc.v,title:doc.title,seq:doc.seq,mt:doc.mt,settings:doc.settings,root:doc.roots[0],more:doc.roots.slice(1),rels:doc.rels,imgs:doc.imgs});
   const used=new Set();
   walk(c.root,n=>{ if(n.img) used.add(n.img); }); c.more.forEach(rt=>walk(rt,n=>{ if(n.img) used.add(n.img); }));
@@ -31825,7 +31884,7 @@ function serialize(){
   if(!c.more.length) delete c.more;   /* 중심 주제가 하나뿐인 문서는 이전 형식 그대로 */
   return c;
 }
-function exportJson(){ saveBlob(new Blob([JSON.stringify({type:'btm-mindmap',v:1,doc:serialize()})],{type:'application/json'}),'mindmap_'+ymd()+'.json'); toast('JSON 파일로 저장했습니다.'); }
+function exportJson(){ saveBlob(new Blob([JSON.stringify({type:'btm-mindmap',v:1,doc:serialize(true)})],{type:'application/json'}),'mindmap_'+ymd()+'.json'); toast('JSON 파일로 저장했습니다.'); }
 function importJsonFile(file){
   const rd=new FileReader();
   rd.onload=()=>{
@@ -31955,7 +32014,7 @@ function openSettings(){
 function showHelp(){
   const rows=[
     ['<kbd>Tab</kbd>','선택한 주제의 하위 주제 추가 — 새 주제는 선택했던 주제의 서식(모양·색·글꼴·크기·연결선)을 그대로 이어받음 (설정에서 끌 수 있음)'],['<kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd>','형제 주제 추가(뒤 / 앞)'],['<kbd>Ctrl</kbd>+<kbd>Enter</kbd>','상위 주제 삽입'],
-    ['<kbd>Shift</kbd>+<kbd>Tab</kbd> · 툴바 ⇉ 건너뛰기','레벨을 건너뛴 하위 주제 추가 — 건너뛴 레벨 자리는 비워 두고 연결선만 길게 이어짐 (메뉴에서 1~3단계)'],['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','선택한 주제의 건너뛰기 단계 늘리기 / 줄이기'],['툴바 ⇄ 트리변경 · 우클릭 › 트리변경','선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿈 — 예) 오른쪽 트리에서 2단계 주제를 고르고 누르면 2단계 주제들이 각자 부모 아래 한 줄로 늘어섬. 여러 단계의 주제를 함께 고르면 단계마다 바뀌고, 한 번 더 누르면 원래대로 (배치를 새로 고르면 초기화)'],['서식 패널 › 레벨 정렬','같은 레벨 주제들의 왼쪽 끝 / 오른쪽 끝을 한 줄로 맞춤 (좌우로 뻗는 단계에서)'],['서식 패널 › 부모 정렬','부모를 하위 주제 묶음의 가운데(기본) / 첫 번째 하위 주제와 같은 줄(위쪽 맞춤) / 마지막 하위 주제와 같은 줄(아래쪽 맞춤)에 맞춤 (좌우로 뻗는 단계에서)'],
+    ['<kbd>Shift</kbd>+<kbd>Tab</kbd> · 툴바 ⇉ 건너뛰기','레벨을 건너뛴 하위 주제 추가 — 건너뛴 레벨 자리는 비워 두고 연결선만 길게 이어짐 (메뉴에서 1~3단계)'],['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','선택한 주제의 건너뛰기 단계 늘리기 / 줄이기'],['툴바 ⇄ 트리변경 · 우클릭 › 트리변경','선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿈 — 예) 오른쪽 트리에서 2단계 주제를 고르고 누르면 2단계 주제들이 각자 부모 아래 한 줄로 늘어섬. 여러 단계의 주제를 함께 고르면 단계마다 바뀌고, 한 번 더 누르면 원래대로 (배치를 새로 고르면 초기화)'],['서식 패널 › 레벨 정렬','같은 레벨 주제들의 왼쪽 끝 / 가운데 / 오른쪽 끝을 한 줄로 맞춤 (좌우로 뻗는 단계에서)'],['서식 패널 › 주제 모양 › 카테고리 너비 일치 · 개별항목 너비 적용','주제 하나를 선택하고 누르면 그 주제가 속한 카테고리(같은 단계)의 모든 주제 너비를 가장 넓은 주제에 맞춰 통일 / 각자 글자 너비로 되돌림'],['서식 패널 › 부모 정렬','부모를 하위 주제 묶음의 가운데(기본) / 첫 번째 하위 주제와 같은 줄(위쪽 맞춤) / 마지막 하위 주제와 같은 줄(아래쪽 맞춤)에 맞춤 (좌우로 뻗는 단계에서)'],
     ['<kbd>F2</kbd> · 더블클릭','주제 글 편집 (편집 중 <kbd>Enter</kbd> 확정, <kbd>Shift</kbd>+<kbd>Enter</kbd> 줄바꿈, <kbd>Esc</kbd> 취소)'],
     ['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> · 툴바 ＋ 중심주제','독립된 중심 주제를 하나 더 만듭니다(오른쪽 끝에 자동 배치). 빈 곳 우클릭 → “여기에 중심 주제 추가”로 원하는 자리에도 가능'],['중심 주제 끌기','트리 전체가 따라 움직이고, 다른 주제 위에 놓으면 그 하위로 합쳐집니다 (우클릭 → “중심 주제로 분리”는 반대 동작)'],['<kbd>Delete</kbd>','선택한 주제 삭제 (중심 주제는 2개 이상일 때만, 마지막 하나는 지울 수 없음)'],['<kbd>Space</kbd>','접기 / 펼치기'],['<kbd>←↑↓→</kbd>','주제 사이 이동'],['<kbd>Alt</kbd>+<kbd>↑↓</kbd>','형제 사이에서 순서 바꾸기'],['<kbd>Alt</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','한 단계 아래로 / 위로 (들여쓰기 / 내어쓰기)'],
     ['<kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd>','복사 / 잘라내기 / 붙여넣기 (여러 줄 텍스트·이미지도 붙여넣기)'],['<kbd>Ctrl</kbd>+<kbd>D</kbd>','복제'],['<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd>','실행 취소 / 다시 실행'],
@@ -32095,7 +32154,7 @@ function buildToolbar(){
    +irow('배치','<select class="mm-s" data-f="layout" title="배치 방식">'+opts(LAYOUTS)+'</select>','mm-glob')
    +irow('연결선','<select class="mm-s" data-f="edge" title="연결선 모양">'+opts(EDGES)+'</select>','mm-glob')
    +irow('테마','<select class="mm-s" data-f="theme" title="테마(색 조합)">'+Object.keys(THEMES).map(k=>'<option value="'+k+'">'+THEMES[k].n+'</option>').join('')+'</select>','mm-glob')
-   +irow('레벨 정렬','<span class="mm-g">'+bt('lva-auto','자동','같은 레벨 주제를 부모 옆에 자연스럽게 배치(기본)')+bt('lva-left','⇤ 왼쪽','같은 레벨 주제들의 왼쪽 끝을 한 줄로 맞춤 (좌우 배치에서)')+bt('lva-right','⇥ 오른쪽','같은 레벨 주제들의 오른쪽 끝을 한 줄로 맞춤 (좌우 배치에서)')+'</span>','mm-glob')
+   +irow('레벨 정렬','<span class="mm-g">'+bt('lva-auto','자동','같은 레벨 주제를 부모 옆에 자연스럽게 배치(기본)','pa')+bt('lva-left','왼쪽','같은 레벨 주제들의 왼쪽 끝을 한 줄로 맞춤 (좌우 배치에서)','pa')+bt('lva-center','가운데','같은 레벨 주제들의 가운데를 한 줄로 맞춤 (좌우 배치에서)','pa')+bt('lva-right','오른쪽','같은 레벨 주제들의 오른쪽 끝을 한 줄로 맞춤 (좌우 배치에서)','pa')+'</span>','mm-glob')
    +irow('부모 정렬','<span class="mm-g">'+bt('pa-center',paIcon('center')+'가운데','부모를 하위 주제 묶음의 가운데에 맞춤(기본)','pa')+bt('pa-top',paIcon('top')+'위쪽','부모를 첫 번째 하위 주제와 같은 줄에 맞춤 — 하위 주제가 부모 줄부터 아래로 늘어섭니다 (좌우 배치에서)','pa')+bt('pa-bottom',paIcon('bottom')+'아래쪽','부모를 마지막 하위 주제와 같은 줄에 맞춤 — 하위 주제가 부모 줄까지 위로 늘어섭니다 (좌우 배치에서)','pa')+'</span>','mm-glob')
    +'<div class="mm-ih">글자 <small>(선택한 주제)</small></div>'
    +irow('글꼴','<select class="mm-s" data-f="ff" title="글꼴">'+fontOpts+'</select>')
@@ -32110,6 +32169,9 @@ function buildToolbar(){
    +irow('테두리','<select class="mm-s" data-f="sw" title="테두리 두께">'+nums([0,1,1.5,2,3,4,6],'px')+'</select><select class="mm-s" data-f="sd" title="테두리 선 종류"><option value="solid">실선</option><option value="dashed">파선</option><option value="dotted">점선</option></select>')
    +irow('최대 폭','<select class="mm-s" data-f="w" title="이 폭을 넘으면 줄바꿈"><option value="">기본</option>'+nums([100,140,180,220,280,360,480],'px')+'<option value="1000">제한 없음</option></select>')
    +irow('크기','<input type="number" class="mm-n" data-f="bw" min="24" max="2000" step="1" placeholder="자동" title="상자 너비(px) — 비우면 글자 길이에 맞춤. 주제를 선택했을 때 보이는 8개의 손잡이를 끌어도 됩니다"><span class="mm-x">×</span><input type="number" class="mm-n" data-f="bh" min="12" max="2000" step="1" placeholder="자동" title="상자 높이(px) — 비우면 글자 높이에 맞춤">'+bt('size-auto','⟲','크기를 자동(글자에 맞춤)으로 되돌리기','sq'))
+   +'<div class="mm-ir">'+bt('lvw-match','카테고리 너비 일치','선택한 주제가 속한 카테고리(같은 단계)의 모든 주제를, 그 중 가장 넓은 주제의 너비에 맞춰 같은 너비로 통일합니다 (적용 범위 선택과 무관)','wide')+'</div>'
+   +'<div class="mm-ir">'+bt('lvw-auto','개별항목 너비 적용','선택한 주제가 속한 카테고리(같은 단계)의 모든 주제를 각자 글자 너비에 맞게 되돌립니다 (직접 정한 너비 해제, 적용 범위 선택과 무관)','wide')+'</div>'
+   +'<div class="mm-hint">주제 하나를 선택한 뒤 누르면, 그 주제와 같은 단계의 모든 주제에 적용돼요.</div>'
    +'<div class="mm-ih">연결선(가지)</div>'
    +irow('색상',cbtn('c-line','line','연결선(가지) 색 — 선택한 주제와 그 하위에 적용'))
    +irow('선','<select class="mm-s" data-f="lw" title="연결선 두께"><option value="">자동</option>'+nums([1,1.5,2,3,4,6,8],'px')+'</select><select class="mm-s" data-f="ld" title="연결선 종류"><option value="">실선</option><option value="dashed">파선</option><option value="dotted">점선</option></select>'+bt('la','→','연결선 끝에 화살표','sq'))
@@ -32261,7 +32323,8 @@ function act(a,btn){
     case 'size-auto': applyStyle({bw:null,bh:null},'st:size'); break;
     case 'sk-dec': stepSkip(-1); break; case 'sk-inc': stepSkip(1); break;
     case 'flip': flipTree(); break; case 'flip-reset': resetFlips(); break;
-    case 'lva-auto': case 'lva-left': case 'lva-right': setLvAlign(a.slice(4)); break;
+    case 'lva-auto': case 'lva-left': case 'lva-center': case 'lva-right': setLvAlign(a.slice(4)); break;
+    case 'lvw-match': matchLevelWidth(); break; case 'lvw-auto': autoLevelWidth(); break;
     case 'pa-center': case 'pa-top': case 'pa-bottom': setPAlign(a.slice(3)); break;
     case 'note': if(!primary) toast('먼저 주제를 선택하세요.'); else openNote(primary); break;
     case 'link': openLink(primary); break;
@@ -32484,10 +32547,12 @@ function init(){
   render(); restoreView(); syncTitle();
   loading=false;
 }
+/* 글 편집 중인 주제가 있으면 확정 — 💾 Save·Create New 가 마인드맵을 읽기 직전에 호출 */
+function flush(){ if(editing) endEdit(true); }
 function load(d,opt){
   if(!stage){ init(); if(!stage) return false; }
   opt=opt||{};
-  const nd=sanitize(d); if(!nd) return false;
+  const nd=d==null?sampleDoc():sanitize(d); if(!nd) return false;   /* null = 이 리포트엔 마인드맵이 없음 → 빈 예시 지도로 시작(다른 날짜의 마인드맵이 남지 않게) */
   if(opt.auto&&doc&&doc.mt>0&&doc.mt>nd.mt) return false;   /* 자동 불러오기(로그인 직후 Archive 등): 지금 화면의 마인드맵이 더 최신이면 덮어쓰지 않음 */
   endEdit(false); loading=true;
   doc=nd; undoS=[]; redoS=[]; lastMut={key:null,t:0}; sel.clear(); primary=null; selRel=null; matches=new Set(); matchList=[]; relMode=null;
@@ -32499,13 +32564,13 @@ function load(d,opt){
   return true;
 }
 window.MM={
-  init, load, serialize, titleChanged, setEdit, toggleEdit, openOutline,
+  init, load, flush, serialize, titleChanged, setEdit, toggleEdit, openOutline,
   isEditing(){ return editMode; }, canEdit(){ return !permRO(); },
   refresh(){ if(stage){ measure(true); render(); } },
   fit(){ fitView(); },
   isReadOnly:isRO,
   _dbg:{get doc(){ return doc; },get P(){ return P; },get I(){ return I; },get view(){ return view; },get sel(){ return sel; },get editing(){ return editing; },els,idx:()=>idx,
-        api:{flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary}}
+        api:{matchLevelWidth,autoLevelWidth,levelGroups,naturalW,flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary}}
 };
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>init()); else init();
 })();
