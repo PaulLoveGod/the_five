@@ -1636,7 +1636,19 @@ body.guest-mode #mindmapSection .mm-e,
 #report-root.published-mode #mindmapSection .mm-stage{pointer-events:auto!important;opacity:1!important}
 body #mindmapSection .mm-search input,body #mindmapSection .mm-v input{pointer-events:auto!important}
 
-#mindmapSection .mm-tb{flex-shrink:0;background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:5px 8px;display:flex;flex-direction:column;gap:4px}
+/* ── 편집 모드 팝업: 툴바(B, 카드 위) · 서식 패널(A, 카드 왼쪽).
+   카드(overflow:hidden) 밖의 #mindmapSection 직계 자식이라 잘리지 않고, 페이지와 함께 스크롤됨 ── */
+#mindmapSection>.mm-fp{display:none;position:absolute;z-index:3000;background:#fff;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 10px 30px rgba(15,23,42,.28);box-sizing:border-box}
+#mindmapSection.mm-editing>.mm-tb{display:block;left:0;bottom:calc(100% + 8px);width:max-content;max-width:100%;padding:6px 8px 6px 4px}
+#mindmapSection.mm-editing>.mm-insp{display:flex;flex-direction:column;right:calc(100% + 6px);top:34px;bottom:0;width:252px}
+#mindmapSection.mm-editing.mm-insp-off>.mm-insp{display:none}
+#mindmapSection.mm-editing.mm-insp-inside>.mm-insp{right:8px;top:44px;bottom:8px}
+#mindmapSection.mm-full>.mm-fp{position:fixed;z-index:9600}
+#mindmapSection.mm-full.mm-editing>.mm-tb{left:8px;bottom:auto;top:44px;max-width:calc(100vw - 16px)}
+#mindmapSection.mm-full.mm-editing>.mm-insp{right:8px;left:auto;top:96px;bottom:8px}
+#mindmapSection .mm-fp-hd{cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}
+#mindmapSection .mm-tb .mm-fp-grip{width:16px;height:26px;display:inline-flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;flex-shrink:0;margin-right:2px}
+#mindmapSection .mm-tb .mm-fp-grip:hover{color:#475569}
 #mindmapSection .mm-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 5px}
 #mindmapSection .mm-g{display:inline-flex;align-items:center;gap:3px;flex-wrap:nowrap}
 #mindmapSection .mm-sep{width:1px;height:18px;background:#cbd5e1;margin:0 2px;flex-shrink:0}
@@ -1747,7 +1759,7 @@ body #mindmapSection .mm-search input,body #mindmapSection .mm-v input{pointer-e
 #mindmapSection .mm-band{position:absolute;z-index:7;border:1px solid #3b82f6;background:rgba(59,130,246,.12);pointer-events:none}
 /* HUD·검색 */
 #mindmapSection .mm-hud{position:absolute;left:8px;bottom:6px;z-index:6;font-size:10px;color:#94a3b8;pointer-events:none;line-height:1.5;text-shadow:0 0 3px #fff,0 0 3px #fff}
-#mindmapSection .mm-search{position:absolute;right:8px;top:8px;z-index:9;display:flex;align-items:center;gap:4px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:4px 6px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+#mindmapSection .mm-search{position:absolute;left:8px;top:8px;z-index:9;display:flex;align-items:center;gap:4px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:4px 6px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
 #mindmapSection .mm-search input{width:150px;height:24px;min-height:0;border:1px solid #cbd5e1;border-radius:4px;padding:0 6px;font-size:12px;font-family:inherit;background:#fff}
 #mindmapSection .mm-search .mm-cnt{font-size:10px;color:#64748b;min-width:34px;text-align:center;white-space:nowrap}
 /* 확대 보기(전체 화면) */
@@ -1800,13 +1812,14 @@ body.mm-fs{overflow:hidden}
 .mm-dlg table.mm-keys td{padding:3px 6px;border-bottom:1px solid #f1f5f9;vertical-align:top}
 .mm-dlg table.mm-keys td:first-child{white-space:nowrap;width:42%}
 .mm-dlg .mm-sec{font-weight:800;color:#1e3a5f;margin:10px 0 4px;font-size:12px}
-@media print{#mindmapSection .mm-tb,#mindmapSection .mm-hud,#mindmapSection .mm-search,#mindmapSection .mm-tog,#mindmapSection .mm-plus{display:none!important}}
+@media print{#mindmapSection .mm-fp,#mindmapSection .mm-viewbar,#mindmapSection .mm-hud,#mindmapSection .mm-search,#mindmapSection .mm-tog,#mindmapSection .mm-plus{display:none!important}}
 
-/* ── 본문(지도 + 서식 패널) ── */
+/* ── 본문(지도 C 가 카드 전체 영역) · 서식 패널(A) 안쪽 ── */
 #mindmapSection .mm-main{flex:1 1 auto;min-height:0;display:flex;min-width:0}
 #mindmapSection .mm-main>.mm-stage{flex:1 1 auto;min-width:0}
-#mindmapSection .mm-insp{flex:0 0 220px;width:220px;overflow-y:auto;overflow-x:hidden;background:#f8fafc;border-left:1px solid #e2e8f0;padding:6px 8px 12px;box-sizing:border-box;font-size:11px;color:#334155}
-#mindmapSection .mm-main.mm-insp-off>.mm-insp{display:none}
+#mindmapSection .mm-insp>.mm-fp-hd{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:7px 10px;background:#1e3a5f;color:#fff;font-size:11px;font-weight:700;border-radius:9px 9px 0 0}
+#mindmapSection .mm-insp>.mm-fp-hd small{margin-left:auto;font-weight:400;opacity:.7;font-size:10px}
+#mindmapSection .mm-insp>.mm-insp-in{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:6px 10px 12px;font-size:11px;color:#334155}
 #mindmapSection .mm-insp.mm-dim .mm-ir,#mindmapSection .mm-insp.mm-dim .mm-ig{opacity:.5}
 #mindmapSection .mm-insp .mm-ih{font-size:10px;font-weight:800;color:#1e3a5f;margin:9px 0 4px;padding-bottom:2px;border-bottom:1px solid #e2e8f0;letter-spacing:.3px}
 #mindmapSection .mm-insp .mm-ih:first-child{margin-top:2px}
@@ -1823,6 +1836,20 @@ body.mm-fs{overflow:hidden}
 #mindmapSection .mm-insp .mm-ig .mm-b{justify-content:flex-start;padding:0 6px;min-width:0;overflow:hidden;text-overflow:ellipsis}
 #mindmapSection .mm-dim{opacity:1}
 #mindmapSection .mm-insp.mm-dim .mm-ir.mm-glob{opacity:1}
+
+/* ── 헤더의 편집/완료 버튼 · 제목(편집 중에만 수정 가능) ── */
+#mindmapSection .card-header #mmEditBtn{height:24px!important;min-height:0!important;line-height:24px!important;padding:0 14px!important;font-size:12px!important;font-weight:700;border:none;border-radius:5px;background:#16a34a;color:#fff;cursor:pointer;letter-spacing:.3px;font-family:inherit}
+#mindmapSection .card-header #mmEditBtn:hover{background:#15803d}
+#mindmapSection .card-header #mmEditBtn.on{background:#2563eb}
+#mindmapSection .card-header #mmEditBtn.on:hover{background:#1d4ed8}
+#mindmapSection #stid-mindmap:not([contenteditable=true]){cursor:default;text-decoration:none!important}
+/* 편집 중 표시: 지도 둘레에 옅은 파란 테두리 */
+#mindmapSection.mm-editing .mm-stage{box-shadow:inset 0 0 0 2px rgba(59,130,246,.38)}
+/* 보기 모드의 작은 보기 막대(마우스를 올릴 때만 보임 · 터치 기기·확대 보기에서는 항상) */
+#mindmapSection .mm-viewbar{position:absolute;right:8px;top:8px;z-index:7;display:flex;align-items:center;gap:3px;opacity:0;pointer-events:none;transition:opacity .15s}
+#mindmapSection .mm-stage:hover .mm-viewbar,#mindmapSection.mm-full .mm-viewbar{opacity:1;pointer-events:auto}
+@media (hover:none){#mindmapSection .mm-viewbar{opacity:1;pointer-events:auto}}
+#mindmapSection.mm-editing .mm-viewbar{display:none}
 </style>
 <!-- MM-CSS-END -->
 </head>
@@ -3736,23 +3763,25 @@ body.mm-fs{overflow:hidden}
     <div class="rs-grip" data-target="summarySection" data-key="BTMSummaryH" title="드래그하여 높이 조절">⠿</div>
   </div>
 
-  <!-- ③ MindMap (오른쪽 맨 아래 · 우측 하단 그립으로 크기 조절 · Investor Status 와 밑변 정렬) -->
+  <!-- ③ MindMap (오른쪽 맨 아래 · 우측 하단 그립으로 크기 조절 · Investor Status 와 밑변 정렬)
+       헤더의 [편집] 버튼 → 툴바(B: 카드 위)·서식 패널(A: 카드 왼쪽)이 팝업으로 뜨고, 지도(C)는 카드 전체 영역.  [완료] → 팝업·점 배경 숨김 -->
   <div id="mindmapSection" class="rs-section" style="position:relative;margin-bottom:0;flex:1 0 auto;height:480px;min-height:260px;display:flex;flex-direction:column">
+    <div id="mmToolbar" class="mm-tb mm-fp mm-e pdf-export-hide"></div>
+    <div id="mmInspector" class="mm-insp mm-fp mm-e pdf-export-hide"></div>
     <div id="mmCard" class="card" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-bottom:0;overflow:hidden">
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <span id="stid-mindmap" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="MM.titleChanged()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ MindMap</span>
+        <span id="stid-mindmap" class="stid-edit" contenteditable="false" spellcheck="false" oninput="MM.titleChanged()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ MindMap</span>
         <span class="pdf-export-hide" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <button id="mmEditBtn" type="button" class="mm-e" onclick="MM.toggleEdit()" title="편집 모드 켜기/끄기 — 편집 중에는 메뉴 팝업이 표시됩니다" aria-pressed="false">편집</button>
           <span id="mmStatus" style="font-size:9px;color:#94a3b8;font-weight:normal"></span>
         </span>
       </div>
       <div class="card-body" style="padding:0;flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden">
-        <div id="mmToolbar" class="mm-tb pdf-export-hide"></div>
         <div id="mmMain" class="mm-main">
           <div id="mmStage" class="mm-stage" tabindex="0" aria-label="마인드맵">
             <div id="mmWorld" class="mm-world"><svg id="mmSvg" class="mm-svg"></svg><div id="mmNodes" class="mm-nodes"></div></div>
             <div id="mmHud" class="mm-hud pdf-export-hide"></div>
           </div>
-          <div id="mmInspector" class="mm-insp mm-e pdf-export-hide"></div>
         </div>
       </div>
     </div>
@@ -30027,10 +30056,12 @@ function edgeStyleOf(n,depth){
 /* ───────── 되돌리기/다시하기 ───────── */
 let undoS=[], redoS=[], lastMut={key:null,t:0}, loading=false;
 function snap(){ return JSON.stringify({title:doc.title,seq:doc.seq,settings:doc.settings,root:doc.root,rels:doc.rels}); }
-function isRO(){
+/* permRO: 권한상 편집 불가(멤버 로그인 전·게스트·Publish 잠금·좁은 화면) / isRO: 지금 이 순간 편집 불가 = 권한 없음 또는 '편집' 모드가 아님 */
+function permRO(){
   const b=document.body;
   return !b.classList.contains('member-mode')||b.classList.contains('guest-mode')||!!document.querySelector('#report-root.published-mode')||window.matchMedia('(max-width:679px)').matches;
 }
+function isRO(){ return !editMode||permRO(); }
 function persist(){ if(!loading&&typeof window.saveData==='function'){ try{ window.saveData(); }catch(_){} } }
 /* 모든 편집은 mutate()를 거침: 되돌리기 스냅샷 → 변경 → 재렌더 → 자동저장.
    key를 주면 같은 key의 연속 변경(0.9초 이내)은 하나의 되돌리기 단계로 합침(글자 크기 스핀 등) */
@@ -30054,7 +30085,8 @@ function restoreSnap(s){
 function undo(){ if(!undoS.length||isRO()) return; redoS.push(snap()); restoreSnap(undoS.pop()); }
 function redo(){ if(!redoS.length||isRO()) return; undoS.push(snap()); restoreSnap(redoS.pop()); }
 /* ───────── 화면 요소·상태 ───────── */
-let section,stage,world,svg,layer,hud,tbEl,inspEl,mainEl,msgEl;
+let section,stage,world,svg,layer,hud,tbEl,inspEl,viewEl,btnEl,titleEl,msgEl;
+let editMode=false;           /* 헤더의 '편집' 버튼으로 켜는 편집 모드 (꺼져 있으면 보기 전용 + 점 배경·메뉴 팝업 숨김) */
 let view={x:0,y:0,k:1}, needFit=true, autoFit=true, fsMode=false, lastSize={w:0,h:0};
 let sel=new Set(), primary=null, selRel=null;
 let editing=null, editBackup='', editNew=false, editNewUndo=0, composing=false;
@@ -30375,13 +30407,13 @@ function drawSvg(){
 /* ───────── 보기(이동·확대/축소·맞춤) ───────── */
 function applyView(){
   world.style.transform=`translate(${f1(view.x)}px,${f1(view.y)}px) scale(${view.k})`;
-  const bgm=doc.settings.bg, k=view.k, th=theme();
+  const bgm=editMode?doc.settings.bg:'plain', k=view.k, th=theme();   /* 점·격자 무늬는 편집 중에만 */
   stage.style.backgroundColor=th.bg;
   const dot=th.dark?'rgba(148,163,184,.30)':'rgba(100,116,139,.32)', line=th.dark?'rgba(148,163,184,.14)':'rgba(100,116,139,.14)';
   if(bgm==='dots'){ const s=24*k; stage.style.backgroundImage=`radial-gradient(circle,${dot} ${Math.max(.8,1.1*k)}px,transparent ${Math.max(1,1.4*k)}px)`; stage.style.backgroundSize=`${s}px ${s}px`; stage.style.backgroundPosition=`${view.x}px ${view.y}px`; }
   else if(bgm==='grid'){ const s=32*k; stage.style.backgroundImage=`linear-gradient(${line} 1px,transparent 1px),linear-gradient(90deg,${line} 1px,transparent 1px)`; stage.style.backgroundSize=`${s}px ${s}px`; stage.style.backgroundPosition=`${view.x}px ${view.y}px`; }
   else stage.style.backgroundImage='none';
-  const zl=$('mmZoomLbl'); if(zl) zl.textContent=Math.round(view.k*100)+'%';
+  section.querySelectorAll('.mm-zl').forEach(z=>{ z.textContent=Math.round(view.k*100)+'%'; });
 }
 function zoomAt(cx,cy,k2){
   k2=clamp(k2,MIN_K,MAX_K);
@@ -30433,7 +30465,7 @@ function toWorld(cx,cy){ const r=stage.getBoundingClientRect(); return {x:(cx-r.
 /* 보기 전용(게스트·잠금·좁은 화면)인데 한 번도 작성된 적 없는 예시 마인드맵이면 예시 대신 안내 문구만 보여 줌 */
 function updateEmptyMsg(){
   if(!msgEl||!doc) return;
-  const empty=isRO()&&!doc.mt;
+  const empty=permRO()&&!doc.mt;
   msgEl.style.display=empty?'block':'none'; msgEl.textContent=empty?'아직 작성된 마인드맵이 없습니다.':'';
   world.style.visibility=empty?'hidden':'';
 }
@@ -30441,7 +30473,7 @@ function updateHud(){
   if(!hud) return;
   let total=0; walk(doc.root,()=>total++);
   const st=$('mmStatus'); if(st) st.textContent='주제 '+total+'개';
-  hud.textContent=isRO()?'드래그: 이동 · Ctrl+휠: 확대/축소 · 클릭: 접기/펼치기':'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · Ctrl+휠 확대/축소 · 우클릭 메뉴';
+  hud.textContent=editMode?'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · Ctrl+휠 확대/축소 · 우클릭 메뉴':'';   /* 보기 모드에서는 깔끔하게 비움 */
 }
 /* ───────── 선택 ───────── */
 function selIds(){ return [...sel].filter(id=>idx.has(id)); }
@@ -30811,7 +30843,7 @@ function onDown(e){
   const nEl=tg.closest('.mm-node');
   if(editing){ if(nEl&&nEl.dataset.id===editing) return; endEdit(true); }
   if(document.activeElement!==stage) stage.focus({preventScroll:true});
-  const rEl=tg.closest('[data-rid]');
+  const rEl=isRO()?null:tg.closest('[data-rid]');   /* 보기 모드: 관계선 선택 없음 */
   if(rEl){
     const rid=rEl.dataset.rid, t0=Date.now(), dbl=lastTap.id==='rel:'+rid&&t0-lastTap.t<420;
     selRel=rid; sel.clear(); primary=null; refreshSelUI(); syncTb(); drawSvg();
@@ -30825,18 +30857,21 @@ function onDown(e){
     if(a==='tog'){ e.preventDefault(); toggleCollapse(id); return; }
     if(a==='plus'){ e.preventDefault(); addChildOf(id); return; }
     if(a==='chk'){ e.preventDefault(); toggleDone(id); return; }
-    if(a==='note'){ e.preventDefault(); selectOnly(id); openNote(id); return; }
-    if(a==='link'){ e.preventDefault(); selectOnly(id); openNodeUrl(id); return; }
-    const add=e.shiftKey||e.ctrlKey||e.metaKey, was=sel.has(id);
-    if(add) toggleSel(id); else if(!was||sel.size===0) selectOnly(id); else { primary=id; refreshSelUI(); syncTb(); }
-    gesture={type:'node',id,sx:e.clientX,sy:e.clientY,moved:false,wasSel:was&&!add,pid:e.pointerId};
-    try{ stage.setPointerCapture(e.pointerId); }catch(_){}
-    e.preventDefault();
-    return;
+    if(a==='note'){ e.preventDefault(); if(!isRO()) selectOnly(id); openNote(id); return; }
+    if(a==='link'){ e.preventDefault(); if(!isRO()) selectOnly(id); openNodeUrl(id); return; }
+    if(!isRO()){
+      const add=e.shiftKey||e.ctrlKey||e.metaKey, was=sel.has(id);
+      if(add) toggleSel(id); else if(!was||sel.size===0) selectOnly(id); else { primary=id; refreshSelUI(); syncTb(); }
+      gesture={type:'node',id,sx:e.clientX,sy:e.clientY,moved:false,wasSel:was&&!add,pid:e.pointerId};
+      try{ stage.setPointerCapture(e.pointerId); }catch(_){}
+      e.preventDefault();
+      return;
+    }
+    /* 보기 모드: 노드 위에서 눌러도 선택·편집하지 않고 지도를 끌어 이동 → 아래 '빈 곳' 처리로 이어짐 */
   }
   /* 빈 곳 */
   if(relMode){ relMode=null; stage.classList.remove('mm-relmode'); syncTb(); }
-  const bandMode=e.shiftKey;
+  const bandMode=e.shiftKey&&!isRO();
   if(!bandMode&&!(e.ctrlKey||e.metaKey)){ if(sel.size||selRel){ sel.clear(); primary=null; selRel=null; refreshSelUI(); syncTb(); drawSvg(); } }
   gesture={type:bandMode?'band':'pan',sx:e.clientX,sy:e.clientY,vx:view.x,vy:view.y,moved:false};
   try{ stage.setPointerCapture(e.pointerId); }catch(_){}
@@ -30872,7 +30907,10 @@ function onUp(e){
       if(lastTap.id===g.id&&t-lastTap.t<420){ lastTap={id:null,t:0}; startEdit(g.id,{all:false}); } else lastTap={id:g.id,t};
     }
   }
-  else if(g.type==='pan'){ if(g.moved) saveViewSoon(); }
+  else if(g.type==='pan'){
+    if(g.moved) saveViewSoon();
+    else{ const t=Date.now(); if(lastTap.id==='bg'&&t-lastTap.t<400){ lastTap={id:null,t:0}; fitView(); } else lastTap={id:'bg',t}; }   /* 빈 곳 더블클릭 → 화면에 맞추기 */
+  }
   else if(g.type==='band') endBand();
 }
 function onCancel(e){
@@ -30939,7 +30977,7 @@ function onKey(e){
     switch(k.toLowerCase()){
       case 'z': if(!ro){ sh?redo():undo(); } break;
       case 'y': if(!ro) redo(); break;
-      case 'a': selectAll(); break;
+      case 'a': if(!ro) selectAll(); break;
       case 'c': copySel(false); break;
       case 'x': if(!ro) copySel(true); break;
       case 'v': used=false; break;
@@ -30963,15 +31001,15 @@ function onKey(e){
     case 'Enter': if(!ro){ if(!primary) selectOnly(doc.root.id); else addSiblingOf(primary,sh); } break;
     case 'F2': if(!ro&&primary) startEdit(primary,{all:true}); break;
     case 'Delete': case 'Backspace': if(!ro) deleteSel(); break;
-    case ' ': if(primary) toggleCollapse(primary); break;
+    case ' ': if(!ro){ if(primary) toggleCollapse(primary); } else used=false; break;
     case 'Escape':
       if(relMode){ relMode=null; stage.classList.remove('mm-relmode'); refreshSelUI(); syncTb(); }
       else if(sel.size||selRel){ selectOnly(null); drawSvg(); }
       else if(fsMode) toggleFull(false);
       else used=false;
       break;
-    case 'Home': selectOnly(doc.root.id); ensureVisible(doc.root.id); break;
-    case 'ArrowUp': case 'ArrowDown': case 'ArrowLeft': case 'ArrowRight': navigate(k); break;
+    case 'Home': if(!ro){ selectOnly(doc.root.id); ensureVisible(doc.root.id); } else used=false; break;
+    case 'ArrowUp': case 'ArrowDown': case 'ArrowLeft': case 'ArrowRight': if(!ro) navigate(k); else used=false; break;
     case '?': showHelp(); break;
     default: used=false;
   }
@@ -31231,7 +31269,7 @@ function openSearch(){
   searchEl.addEventListener('click',e=>{ const b=e.target.closest('[data-sa]'); if(!b) return; const a=b.dataset.sa; if(a==='close') closeSearch(); else searchStep(a==='next'?1:-1); });
   inp.focus(); syncTb();
 }
-function closeSearch(){ if(searchEl){ searchEl.remove(); searchEl=null; } matches=new Set(); matchList=[]; matchPos=-1; searchQ=''; refreshSelUI(); syncTb(); if(stage) stage.focus({preventScroll:true}); }
+function closeSearch(){ if(searchEl){ searchEl.remove(); searchEl=null; } matches=new Set(); matchList=[]; matchPos=-1; searchQ=''; if(isRO()&&(sel.size||selRel)) selectOnly(null); refreshSelUI(); syncTb(); if(stage) stage.focus({preventScroll:true}); }
 function runSearch(q){
   searchQ=q.trim().toLowerCase(); matches=new Set(); matchList=[]; matchPos=-1;
   if(searchQ) walk(doc.root,n=>{ if((n.t+' '+(n.note||'')+' '+(n.url||'')).toLowerCase().includes(searchQ)){ matches.add(n.id); matchList.push(n.id); } });
@@ -31480,17 +31518,19 @@ function buildToolbar(){
   const nums=(arr,unit)=>arr.map(v=>'<option value="'+v+'">'+v+(unit||'')+'</option>').join('');
   tbEl.innerHTML=
   '<div class="mm-row">'
+   +'<span class="mm-fp-grip mm-fp-hd" data-drag="tb" title="드래그해서 위치 이동 (더블클릭: 원래 자리)">⠿</span>'
    +'<span class="mm-g mm-e">'+bt('child','＋ 하위','하위 주제 추가 (Tab)','pri')+bt('sibling','＋ 형제','같은 단계 주제 추가 (Enter)')+bt('parent','⤴ 상위','선택한 주제 위에 상위 주제 삽입 (Ctrl+Enter)')+bt('del','🗑 삭제','선택한 주제 삭제 (Delete)','dng')+'</span>'
    +'<span class="mm-sep mm-e"></span>'
    +'<span class="mm-g mm-e">'+bt('undo','↶','실행 취소 (Ctrl+Z)','sq')+bt('redo','↷','다시 실행 (Ctrl+Y)','sq')+'</span>'
    +'<span class="mm-sep mm-e"></span>'
    +'<span class="mm-g">'+bt('expand','⊞ 펼침 ▾','단계별로 펼치기 / 접기','',1)+'</span>'
    +'<span class="mm-sep"></span>'
-   +'<span class="mm-g">'+bt('zoom-out','−','축소 (Ctrl+휠)','sq',1)+bt('zoom-reset','100%','100% 크기로','mm-zoom',1).replace('data-a="zoom-reset"','data-a="zoom-reset" id="mmZoomLbl"')+bt('zoom-in','＋','확대 (Ctrl+휠)','sq',1)+bt('fit','⤢ 맞춤','지도 전체가 보이게 맞추기 (Ctrl+0)','',1)+bt('full','⛶ 확대 보기','전체 화면으로 크게 보기','',1)+'</span>'
+   +'<span class="mm-g">'+bt('zoom-out','−','축소 (Ctrl+휠)','sq',1)+bt('zoom-reset','100%','100% 크기로','mm-zoom mm-zl',1)+bt('zoom-in','＋','확대 (Ctrl+휠)','sq',1)+bt('fit','⤢ 맞춤','지도 전체가 보이게 맞추기 (Ctrl+0)','',1)+bt('full','⛶ 확대 보기','전체 화면으로 크게 보기','',1)+'</span>'
    +'<span class="mm-sep"></span>'
    +'<span class="mm-g">'+bt('search','🔍 검색','주제 검색 (Ctrl+F)','',1)+bt('more','⋯ 더보기','내보내기·가져오기·템플릿·설정·도움말','',1)+bt('fmt-toggle','🎨 서식','서식 패널 열기/닫기','mm-e')+'</span>'
   +'</div>';
-  inspEl.innerHTML='<div class="mm-insp-in">'
+  viewEl.innerHTML=bt('expand','⊞ 펼침 ▾','단계별로 펼치기 / 접기','',1)+bt('zoom-out','−','축소 (Ctrl+휠)','sq',1)+bt('zoom-reset','100%','100% 크기로','mm-zoom mm-zl',1)+bt('zoom-in','＋','확대 (Ctrl+휠)','sq',1)+bt('fit','⤢ 맞춤','지도 전체가 보이게 맞추기 (빈 곳 더블클릭)','',1)+bt('full','⛶','전체 화면으로 크게 보기','sq',1)+bt('search','🔍','주제 검색 (Ctrl+F)','sq',1)+bt('more','⋯','내보내기·개요 복사·도움말','sq',1);
+  inspEl.innerHTML='<div class="mm-fp-hd" data-drag="insp" title="드래그해서 위치 이동 (더블클릭: 원래 자리)"><span>⠿</span><span>🎨 서식</span><small>드래그로 이동</small></div><div class="mm-insp-in">'
    +'<div class="mm-ih">지도</div>'
    +irow('배치','<select class="mm-s" data-f="layout" title="배치 방식">'+opts(LAYOUTS)+'</select>','mm-glob')
    +irow('연결선','<select class="mm-s" data-f="edge" title="연결선 모양">'+opts(EDGES)+'</select>','mm-glob')
@@ -31543,9 +31583,9 @@ function syncTb(){
   }
   setSel(tq('[data-f=scope]'),scope);
   const rl=tq('[data-a=rel]'); if(rl) rl.classList.toggle('on',!!relMode);
-  const se=tq('[data-a=search]'); if(se) se.classList.toggle('on',!!searchEl);
-  const fu=tq('[data-a=full]'); if(fu) fu.classList.toggle('on',fsMode);
-  const ft=tq('[data-a=fmt-toggle]'); if(ft&&mainEl) ft.classList.toggle('on',!mainEl.classList.contains('mm-insp-off'));
+  section.querySelectorAll('[data-a=search]').forEach(b=>b.classList.toggle('on',!!searchEl));
+  section.querySelectorAll('[data-a=full]').forEach(b=>b.classList.toggle('on',fsMode));
+  const ft=tq('[data-a=fmt-toggle]'); if(ft) ft.classList.toggle('on',!section.classList.contains('mm-insp-off'));
   syncUndoBtns();
 }
 function stepFs(d){
@@ -31582,8 +31622,8 @@ function toggleFull(force){
   const want=force==null?!fsMode:!!force; if(want===fsMode) return;
   fsMode=want; closeMenus();
   section.classList.toggle('mm-full',fsMode); document.body.classList.toggle('mm-fs',fsMode);
-  const b=tq('[data-a=full]'); if(b) b.innerHTML=fsMode?'✕ 닫기':'⛶ 확대 보기';
-  updateCtl();
+  section.querySelectorAll('[data-a=full]').forEach(b=>{ const sq=b.classList.contains('sq'); b.innerHTML=fsMode?(sq?'✕':'✕ 닫기'):(sq?'⛶':'⛶ 확대 보기'); });
+  updateCtl(); placePopups(); applyPopPos();
   setTimeout(()=>{ fitView(); },60);
   stage.focus({preventScroll:true}); syncTb();
 }
@@ -31603,7 +31643,7 @@ function act(a,btn){
     case 'full': toggleFull(); break;
     case 'search': searchEl?closeSearch():openSearch(); break;
     case 'more': moreMenu(btn); break;
-    case 'fmt-toggle': { mainEl.classList.toggle('mm-insp-off'); saveUi(); syncTb(); break; }
+    case 'fmt-toggle': { section.classList.toggle('mm-insp-off'); syncTb(); break; }
     case 'fs-dec': stepFs(-1); break; case 'fs-inc': stepFs(1); break;
     case 'b': case 'i': case 'u': case 's': toggleStyle(a); break;
     case 'al-l': applyStyle({al:'l'}); break; case 'al-c': applyStyle({al:'c'}); break; case 'al-r': applyStyle({al:'r'}); break;
@@ -31645,11 +31685,9 @@ function onField(e){
   else if(f==='lw') applyStyle({lw:v===''?null:parseFloat(v)});
   else if(f==='w') applyStyle({w:v===''?null:parseFloat(v)});
 }
-function saveUi(){ try{ localStorage.setItem(LS_UI,JSON.stringify({inspOff:mainEl.classList.contains('mm-insp-off'),scope})); }catch(_){} }
+function saveUi(){ try{ localStorage.setItem(LS_UI,JSON.stringify({scope})); }catch(_){} }
 function loadUi(){
   let u=null; try{ u=JSON.parse(localStorage.getItem(LS_UI)||'null'); }catch(_){}
-  if(u&&typeof u.inspOff==='boolean') mainEl.classList.toggle('mm-insp-off',u.inspOff);
-  else mainEl.classList.toggle('mm-insp-off',section.clientWidth<600);   /* 처음 열 때: 카드가 좁으면 서식 패널을 닫아 둠 */
   if(u&&['node','sub','level','all'].includes(u.scope)) scope=u.scope;
 }
 function syncTitle(){
@@ -31674,21 +31712,99 @@ function onDrop(e){
 }
 
 /* ───────── 초기화·공개 API ───────── */
+/* ───────── 편집 모드(편집/완료) · 팝업 배치 ───────── */
+let editStartMt=0;
+function syncEditUi(){
+  if(!section) return;
+  section.classList.toggle('mm-editing',editMode);
+  if(btnEl){ btnEl.textContent=editMode?'완료':'편집'; btnEl.classList.toggle('on',editMode); btnEl.setAttribute('aria-pressed',editMode?'true':'false'); }
+  if(titleEl){ titleEl.contentEditable=editMode?'true':'false'; titleEl.title=editMode?'클릭하여 제목 수정':''; }
+}
+/* on=true: 툴바(B)·서식 패널(A) 팝업 표시 + 점 배경 + 편집 가능 / on=false(완료): 팝업·점 배경 숨김, 선택 해제, 변경분 즉시 저장 */
+function setEdit(on){
+  on=!!on&&!permRO();
+  if(on===editMode){ syncEditUi(); return on; }
+  if(!on){
+    if(editing) endEdit(true);                 /* 아직 editMode가 켜져 있어야 글 확정(mutate)이 동작 */
+    relMode=null; stage.classList.remove('mm-relmode');
+    if(searchEl) closeSearch();
+    closeMenus();
+  }
+  editMode=on;
+  if(on) editStartMt=doc?doc.mt:0;
+  syncEditUi();
+  if(!on){
+    sel.clear(); primary=null; selRel=null;
+    if(doc&&doc.mt!==editStartMt&&typeof window.saveNow==='function'){ try{ window.saveNow(); }catch(_){} }
+  }
+  updateCtl(); applyView();
+  if(on){ placePopups(); applyPopPos(); revealPopups(); stage.focus({preventScroll:true}); }
+  render();
+  return on;
+}
+function toggleEdit(){ return setEdit(!editMode); }
+/* 카드 왼쪽에 서식 패널(A)이 들어갈 자리가 없으면(왼쪽 열을 좁혔을 때) 카드 안쪽 오른쪽에 겹쳐 띄움 */
+function placePopups(){
+  if(!section||!inspEl) return;
+  const inside=editMode&&!fsMode&&section.getBoundingClientRect().left<((inspEl.offsetWidth||252)+14);
+  if(section.classList.contains('mm-insp-inside')!==inside){ section.classList.toggle('mm-insp-inside',inside); applyPopPos(); }
+}
+/* 편집을 시작했을 때 툴바 팝업이 화면 위(고정 메뉴바 뒤)로 가려져 있으면 내려서 보이게 */
+function revealPopups(){
+  if(fsMode||!tbEl) return;
+  const r=tbEl.getBoundingClientRect(); if(!r.height) return;
+  if(r.top<56) window.scrollBy(0,r.top-56);
+}
+/* 팝업 이동 — 손잡이(data-drag)를 끌어 옮기고, 위치는 모드(바깥/안쪽/확대 보기)별로 기억, 더블클릭하면 원래 자리 */
+const LS_POP='BTMMindmapPopPos';
+const popMode=()=>fsMode?'F':(section.classList.contains('mm-insp-inside')?'I':'O');
+function loadPos(){ try{ const o=JSON.parse(localStorage.getItem(LS_POP)||'{}'); return o&&typeof o==='object'?o:{}; }catch(_){ return {}; } }
+function savePos(mode,name,p){ const all=loadPos(); (all[mode]=all[mode]||{})[name]={x:Math.round(p.x)||0,y:Math.round(p.y)||0}; try{ localStorage.setItem(LS_POP,JSON.stringify(all)); }catch(_){} }
+function setPopPos(el,p){ el._pos={x:p.x||0,y:p.y||0}; el.style.transform=(el._pos.x||el._pos.y)?'translate('+el._pos.x+'px,'+el._pos.y+'px)':''; }
+function clampPop(el,vertical){   /* 손잡이가 화면 밖으로 사라지지 않게 */
+  if(!el.offsetWidth) return;
+  const r=el.getBoundingClientRect(); let dx=0,dy=0;
+  if(r.right<80) dx=80-r.right; else if(r.left>innerWidth-80) dx=(innerWidth-80)-r.left;
+  if(vertical){ if(r.bottom<60) dy=60-r.bottom; else if(r.top>innerHeight-60) dy=(innerHeight-60)-r.top; }
+  if(dx||dy){ const p=el._pos||{x:0,y:0}; setPopPos(el,{x:p.x+dx,y:p.y+dy}); }
+}
+function applyPopPos(){
+  if(!tbEl||!inspEl) return;
+  const all=loadPos(), m=popMode();
+  [['tb',tbEl],['insp',inspEl]].forEach(([name,el])=>{ setPopPos(el,(all[m]&&all[m][name])||{x:0,y:0}); clampPop(el,false); });
+}
+function initPopDrag(){
+  section.addEventListener('pointerdown',e=>{
+    const h=e.target.closest&&e.target.closest('[data-drag]'); if(!h||e.button!==0) return;
+    const name=h.dataset.drag, el=name==='tb'?tbEl:inspEl; e.preventDefault();
+    const st=el._pos||{x:0,y:0}, sx=e.clientX, sy=e.clientY;
+    try{ h.setPointerCapture(e.pointerId); }catch(_){}
+    const mv=ev=>setPopPos(el,{x:st.x+ev.clientX-sx,y:st.y+ev.clientY-sy});
+    const up=()=>{ h.removeEventListener('pointermove',mv); h.removeEventListener('pointerup',up); h.removeEventListener('pointercancel',up); clampPop(el,true); savePos(popMode(),name,el._pos); };
+    h.addEventListener('pointermove',mv); h.addEventListener('pointerup',up); h.addEventListener('pointercancel',up);
+  });
+  section.addEventListener('dblclick',e=>{
+    const h=e.target.closest&&e.target.closest('[data-drag]'); if(!h) return;
+    const name=h.dataset.drag, el=name==='tb'?tbEl:inspEl; setPopPos(el,{x:0,y:0}); savePos(popMode(),name,{x:0,y:0});
+  });
+}
 function onModeChange(){
-  updateCtl();
+  if(editMode&&permRO()) setEdit(false);   /* 로그아웃·게스트·Publish 잠금·좁은 화면이 되면 편집 모드 종료 */
+  syncEditUi(); updateCtl();
   if(!doc) return;
   if(isRO()){ if(editing) endEdit(true); relMode=null; stage.classList.remove('mm-relmode'); }
   render();
 }
 function init(){
   section=$('mindmapSection'); if(!section||stage) return;
-  stage=$('mmStage'); world=$('mmWorld'); svg=$('mmSvg'); layer=$('mmNodes'); hud=$('mmHud'); tbEl=$('mmToolbar'); inspEl=$('mmInspector'); mainEl=$('mmMain');
-  if(!stage||!world||!svg||!layer||!tbEl||!inspEl||!mainEl) return;
+  stage=$('mmStage'); world=$('mmWorld'); svg=$('mmSvg'); layer=$('mmNodes'); hud=$('mmHud'); tbEl=$('mmToolbar'); inspEl=$('mmInspector'); btnEl=$('mmEditBtn'); titleEl=$('stid-mindmap');
+  if(!stage||!world||!svg||!layer||!tbEl||!inspEl) return;
   loading=true;
   msgEl=document.createElement('div'); msgEl.className='mm-msg'; msgEl.style.display='none'; stage.appendChild(msgEl);
+  viewEl=document.createElement('div'); viewEl.className='mm-viewbar pdf-export-hide'; stage.appendChild(viewEl);
   doc=sampleDoc(); reindex(); ensureBranchColors();
-  buildToolbar(); loadUi();
-  stage.addEventListener('pointerdown',onDown);
+  buildToolbar(); loadUi(); initPopDrag(); syncEditUi();
+  stage.addEventListener('pointerdown',e=>{ if(e.target.closest&&e.target.closest('.mm-viewbar,.mm-search')) return; onDown(e); });
   stage.addEventListener('pointermove',onMove);
   stage.addEventListener('pointerup',onUp);
   stage.addEventListener('pointercancel',onCancel);
@@ -31713,7 +31829,7 @@ function init(){
     dirtyM.add(nEl.dataset.id); cancelAnimationFrame(layer._lr);
     layer._lr=requestAnimationFrame(()=>{ measure(); computeLayout(); place(); drawSvg(); });
   },true);
-  [tbEl,inspEl].forEach(host=>{
+  [tbEl,inspEl,viewEl].forEach(host=>{
     host.addEventListener('click',e=>{
       const b=e.target.closest('[data-a]'); if(!b||b.disabled) return;
       act(b.dataset.a,b,e);
@@ -31726,7 +31842,8 @@ function init(){
   });
   document.addEventListener('pointerdown',e=>{ if(!(e.target.closest&&e.target.closest('.mm-menu,.mm-pop,[data-a=more],[data-a=expand],[data-a=prio],[data-a=prog],[data-a=icon],[data-a^=c-]'))) closeMenus(); },true);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&fsMode&&!document.querySelector('.mm-dlg-wrap,.mm-menu,.mm-pop')&&!(e.target.closest&&e.target.closest('.mm-search'))) toggleFull(false); });
-  window.addEventListener('resize',closeMenus);
+  window.addEventListener('resize',()=>{ closeMenus(); placePopups(); });
+  if(typeof ResizeObserver!=='undefined') new ResizeObserver(()=>placePopups()).observe(section);
   window.addEventListener('scroll',closeMenus,true);
   if(typeof ResizeObserver!=='undefined'){
     let _rt=0;
@@ -31768,12 +31885,13 @@ function load(d,opt){
   return true;
 }
 window.MM={
-  init, load, serialize, titleChanged,
+  init, load, serialize, titleChanged, setEdit, toggleEdit,
+  isEditing(){ return editMode; }, canEdit(){ return !permRO(); },
   refresh(){ if(stage){ measure(true); render(); } },
   fit(){ fitView(); },
   isReadOnly:isRO,
   _dbg:{get doc(){ return doc; },get P(){ return P; },get I(){ return I; },get view(){ return view; },get sel(){ return sel; },get editing(){ return editing; },els,idx:()=>idx,
-        api:{copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary}}
+        api:{setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary}}
 };
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>init()); else init();
 })();
