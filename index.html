@@ -1882,6 +1882,8 @@ body.mm-fs{overflow:hidden}
 #mindmapSection .mm-b .mm-pai{flex-shrink:0;display:block}
 /* ── 헤더의 AI 버튼(편집 버튼 오른쪽): 전역 '.card-header button' 높이·글자 강제 규칙을 덮어 24px 원형으로 ── */
 #mindmapSection .card-header #mmAiBtn{width:24px!important;min-width:24px;height:24px!important;min-height:0!important;line-height:1!important;padding:0!important;font-size:12px!important;border-radius:50%!important;margin-left:0!important}
+/* ── 터치패드 두 손가락 스크롤은 지도를 움직임(onWheel) — 끝에서 페이지 스크롤·가로 스와이프(뒤로 가기)로 번지지 않게 */
+#mindmapSection .mm-stage{overscroll-behavior:contain}
 </style>
 <!-- MM-CSS-END -->
 </head>
@@ -29906,7 +29908,7 @@ function normHex(v){ const a=hex2rgb(v); return a?rgb2hex(a[0],a[1],a[2]):null; 
 
 /* ───────── 상수 ───────── */
 const SHAPES=[['rounded','둥근 사각형'],['pill','알약(캡슐)'],['rect','사각형'],['ellipse','타원'],['diamond','마름모'],['hexagon','육각형'],['underline','밑줄'],['plain','글자만']];
-const LAYOUTS=[['map','↔ 양쪽 마인드맵'],['right','→ 오른쪽 트리'],['left','← 왼쪽 트리'],['down','↓ 조직도(아래)'],['up','↑ 조직도(위)'],['radial','◎ 방사형']];
+const LAYOUTS=[['map','↔ 양쪽 마인드맵'],['right','→ 오른쪽 트리'],['left','← 왼쪽 트리'],['down','↓ 조직도(아래)'],['up','↑ 조직도(위)'],['radial','◎ 방사형'],['mixr','↳ 오른쪽 혼합트리'],['mixl','↲ 왼쪽 혼합트리'],['mixb','↲↳ 양쪽 혼합트리'],['mixv','↴ 세로 혼합트리']];
 const EDGES=[['curve','곡선'],['straight','직선'],['elbow','꺾은선'],['round','둥근 꺾은선']];
 const BGS=[['dots','점 무늬'],['grid','격자'],['plain','없음']];
 const LV_FS=[22,17,14.5,13];
@@ -30290,14 +30292,15 @@ function measure(all){
 }
 
 /* ───────── 배치(레이아웃) ───────── */
-function rootSides(root){
-  const cs=kids(root), res=new Map(), L=doc.settings.layout;
+/* Lm: 배치 방식(없으면 지도 설정) / ign: 주제에 저장된 side 를 무시하고 순서대로 오른쪽·왼쪽 번갈아(양쪽 혼합트리의 1단계 주제 가지) */
+function rootSides(root,Lm,ign){
+  const cs=kids(root), res=new Map(), L=Lm||doc.settings.layout;
   if(L==='right'){ cs.forEach(c=>res.set(c.id,'R')); return res; }
   if(L==='left'){ cs.forEach(c=>res.set(c.id,'L')); return res; }
   let r=0,l=0;
-  cs.forEach(c=>{ if(c.side==='R') r++; else if(c.side==='L') l++; });
+  if(!ign) cs.forEach(c=>{ if(c.side==='R') r++; else if(c.side==='L') l++; });
   cs.forEach(c=>{
-    if(c.side==='R'||c.side==='L'){ res.set(c.id,c.side); return; }
+    if(!ign&&(c.side==='R'||c.side==='L')){ res.set(c.id,c.side); return; }
     if(r<=l){ res.set(c.id,'R'); r++; } else { res.set(c.id,'L'); l++; }
   });
   return res;
@@ -30328,6 +30331,7 @@ function computeLayout(){
   doc.roots.forEach(root=>{
     if(L==='radial') layoutRadial(root);
     else if(L==='down'||L==='up') layoutVertical(root,L==='up');
+    else if(MIXED[L]) layoutMixed(root,L);
     else layoutHoriz(root);
     const ids=treeIds(root);
     let x0=1e9,x1=-1e9;
@@ -30341,10 +30345,11 @@ function computeLayout(){
 }
 /* ───── 배치 3종 공통: 열(레벨) 번호 e = 부모의 열 + 1 + 건너뛴 단계(sk). 건너뛴 열은 비워 두고 연결선만 길게 이어짐 ───── */
 const EMPTY_COL=96, EMPTY_ROW=44, EMPTY_RING=64;   /* 아무 주제도 없는 열(행·고리)이 건너뛰어질 때 비워 둘 기본 크기 */
-function layoutHoriz(root){
+/* Lm: 'right'·'left'·'map'(양쪽) — 없으면 지도 설정 / sub: 혼합트리에서 1단계 주제를 뿌리로 보고 부를 때 */
+function layoutHoriz(root,Lm,sub){
   const S=doc.settings, gh=S.hgap, gv=S.vgap, rs=SZ.get(root.id)||{w:100,h:36}, mode=S.lvAlign||'auto';
   P.set(root.id,{x:-rs.w/2,y:-rs.h/2,w:rs.w,h:rs.h,dir:'C',depth:0});
-  const sides=rootSides(root), groups={R:[],L:[]};
+  const sides=rootSides(root,Lm,sub&&Lm==='map'), groups={R:[],L:[]};
   kids(root).forEach(c=>groups[sides.get(c.id)||'R'].push(c));
   ['R','L'].forEach(d=>{
     const cs=groups[d]; if(!cs.length) return;
@@ -30379,6 +30384,38 @@ function layoutHoriz(root){
       for(let e=1;e<=E;e++) (lv[e]||[]).forEach(n=>{ const p=P.get(n.id); p.x=mode==='left'?cl[e]:cr[e]-p.w; });
     }
   });
+}
+/* ───── 혼합트리: 중심 주제 → 1단계 주제는 p 방식, 1단계 주제부터 아래 가지는 s 방식 ─────
+   오른쪽·왼쪽·양쪽 혼합트리 = p:세로(1단계 주제가 중심 주제 아래 한 줄) + s:가로(오른쪽·왼쪽·양쪽 트리)
+   세로 혼합트리            = p:오른쪽(1단계 주제가 중심 주제 오른쪽에 한 줄로 쌓임) + s:세로(아래로 뻗는 트리)
+   1단계 주제마다 자기 가지를 s 방식으로 배치(그 주제 중심 = (0,0))하고, 차지하는 영역(블록)을 p 방향으로 이어 붙임 */
+const MIXED={mixr:{p:'down',s:'right'},mixl:{p:'down',s:'left'},mixb:{p:'down',s:'map'},mixv:{p:'right',s:'down'}};
+function layoutMixed(root,L){
+  const S=doc.settings, cfg=MIXED[L], gh=S.hgap, gv=S.vgap, gl=Math.round(gh*0.8), gs=gv+8, rs=SZ.get(root.id)||{w:100,h:36};
+  P.set(root.id,{x:-rs.w/2,y:-rs.h/2,w:rs.w,h:rs.h,dir:'C',depth:0});
+  const cs=kids(root); if(!cs.length) return;
+  const bl=cs.map(c=>{
+    if(cfg.s==='down') layoutVertical(c,false); else layoutHoriz(c,cfg.s,true);
+    const ids=treeIds(c), cp=P.get(c.id), cx=cp.x+cp.w/2, cy=cp.y+cp.h/2;
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    ids.forEach(id=>{ const p=P.get(id); if(!p) return; p.x-=cx; p.y-=cy; x0=Math.min(x0,p.x); y0=Math.min(y0,p.y); x1=Math.max(x1,p.x+p.w); y1=Math.max(y1,p.y+p.h); });
+    return {c,ids,x0,y0,x1,y1};
+  });
+  const n=bl.length, tx=[], ty=[];
+  let rcx=0, rcy=0;
+  if(cfg.p==='down'){   /* 1단계 주제: 한 줄(왼쪽→오른쪽). 블록이 1단계 주제 위로 솟은 만큼 중심 주제를 더 위에 둠. 건너뛴 단계(sk)는 그만큼 아래로 */
+    let cur=0;
+    bl.forEach((b,i)=>{ tx[i]=cur-b.x0; cur=tx[i]+b.x1+gl; ty[i]=skipOf(b.c)*(EMPTY_ROW+gl); });
+    const top=Math.min(...bl.map((b,i)=>ty[i]+b.y0));
+    rcx=(tx[0]+tx[n-1])/2; rcy=top-gl-rs.h/2;   /* 중심 주제는 첫·마지막 1단계 주제의 가운데 위 */
+    bl.forEach(b=>{ const cp=P.get(b.c.id); cp.dir='D'; cp.bdir=cfg.s==='left'?'L':'R'; cp.busY=rs.h/2+gl/2; });
+  } else {              /* 1단계 주제: 한 열(위→아래). 블록 왼쪽 끝을 한 줄로 맞춤. 건너뛴 단계(sk)는 그만큼 오른쪽으로 */
+    let cur=0; const pa=S.pAlign||'center';
+    bl.forEach((b,i)=>{ ty[i]=cur-b.y0; cur=ty[i]+b.y1+gs; tx[i]=rs.w/2+gh-b.x0+skipOf(b.c)*(EMPTY_COL+gh); });
+    rcx=0; rcy=pa==='top'?ty[0]:pa==='bottom'?ty[n-1]:(ty[0]+ty[n-1])/2;   /* 부모 정렬(pAlign)을 중심 주제↔1단계 주제에 적용 */
+    bl.forEach(b=>{ const cp=P.get(b.c.id); cp.dir='R'; cp.bdir='D'; cp.busX=rs.w/2+gh/2; });
+  }
+  bl.forEach((b,i)=>{ b.ids.forEach(id=>{ const p=P.get(id); if(p){ p.x+=tx[i]-rcx; p.y+=ty[i]-rcy; } }); });   /* 중심 주제 중심이 (0,0) */
 }
 function layoutVertical(root,up){
   const gl=Math.round(doc.settings.hgap*0.8), gs=doc.settings.vgap+8;
@@ -30440,7 +30477,8 @@ function place(){
   I.forEach((inf,id)=>{
     const p=P.get(id), el=els.get(id); if(!p||!el) return;
     el.style.transform=`translate(${Math.round(p.x)}px,${Math.round(p.y)}px)`;
-    if(el.dataset.dir!==p.dir) el.dataset.dir=p.dir;
+    const dd=p.bdir||p.dir;   /* bdir: 하위 주제가 뻗는 쪽(혼합트리의 1단계 주제는 연결선 방향과 다름) — 접기·+ 버튼 위치 */
+    if(el.dataset.dir!==dd) el.dataset.dir=dd;
     const t=el.querySelector('.mm-tog');
     if(t){
       if(p.dir==='C'&&p.ang!=null) radialPos(t,p,14);
@@ -30492,20 +30530,20 @@ function pathD(e,style){
     return `M${f1(sx)} ${f1(sy)}C${f1(sx+dx*.3+nx*o)} ${f1(sy+dy*.3+ny*o)} ${f1(ex-dx*.3+nx*o)} ${f1(ey-dy*.3+ny*o)} ${f1(ex)} ${f1(ey)}`;
   }
   if(v===0){
-    const mx=(sx+ex)/2;
+    const mx=e.mx!=null?e.mx:(sx+ex)/2;
     if(style==='elbow'||style==='round'){
       if(style==='round'&&Math.abs(dy)>1){
-        const r=Math.min(14,Math.abs(dx)/2,Math.abs(dy)/2), sg=dx>=0?1:-1, sy2=dy>=0?1:-1;
+        const r=Math.min(14,Math.abs(mx-sx),Math.abs(ex-mx),Math.abs(dy)/2), sg=dx>=0?1:-1, sy2=dy>=0?1:-1;
         return `M${f1(sx)} ${f1(sy)}H${f1(mx-r*sg)}Q${f1(mx)} ${f1(sy)} ${f1(mx)} ${f1(sy+r*sy2)}V${f1(ey-r*sy2)}Q${f1(mx)} ${f1(ey)} ${f1(mx+r*sg)} ${f1(ey)}H${f1(ex)}`;
       }
       return `M${f1(sx)} ${f1(sy)}H${f1(mx)}V${f1(ey)}H${f1(ex)}`;
     }
     return `M${f1(sx)} ${f1(sy)}C${f1(mx)} ${f1(sy)} ${f1(mx)} ${f1(ey)} ${f1(ex)} ${f1(ey)}`;
   }
-  const my=(sy+ey)/2;
+  const my=e.my!=null?e.my:(sy+ey)/2;
   if(style==='elbow'||style==='round'){
     if(style==='round'&&Math.abs(dx)>1){
-      const r=Math.min(14,Math.abs(dy)/2,Math.abs(dx)/2), sg=dy>=0?1:-1, sx2=dx>=0?1:-1;
+      const r=Math.min(14,Math.abs(my-sy),Math.abs(ey-my),Math.abs(dx)/2), sg=dy>=0?1:-1, sx2=dx>=0?1:-1;
       return `M${f1(sx)} ${f1(sy)}V${f1(my-r*sg)}Q${f1(sx)} ${f1(my)} ${f1(sx+r*sx2)} ${f1(my)}H${f1(ex-r*sx2)}Q${f1(ex)} ${f1(my)} ${f1(ex)} ${f1(my+r*sg)}V${f1(ey)}`;
     }
     return `M${f1(sx)} ${f1(sy)}V${f1(my)}H${f1(ex)}V${f1(ey)}`;
@@ -30540,6 +30578,7 @@ function drawSvg(){
     const pp=P.get(inf.p.id), cp=P.get(id); if(!pp||!cp) return;
     const pu=I.get(inf.p.id).rs.shape==='underline', cu=inf.rs.shape==='underline';
     const e=edgeEnds(pp,cp,pu,cu), st=edgeStyleOf(inf.n,inf.depth);
+    if(cp.busY!=null&&e.v===1) e.my=cp.busY; else if(cp.busX!=null&&e.v===0) e.mx=cp.busX;   /* 혼합트리: 중심 주제→1단계 주제 연결선이 한 줄기(공통 가로·세로 선)에서 갈라지게 */
     let d=pathD(e,es);
     /* 레벨을 건너뛴 주제: 평소 연결선 모양으로 첫 칸(부모 바로 옆)까지 이은 뒤, 건너뛴 칸은 같은 높이로 곧게 연장 — 비워 둔 칸을 지나는 선이 다른 주제 상자를 가로지르지 않게 */
     if(skipOf(inf.n)>0&&(e.v===0||e.v===1)){
@@ -30632,7 +30671,7 @@ function updateHud(){
   if(!hud) return;
   let total=0; walkAll(()=>total++);
   const st=$('mmStatus'); if(st) st.textContent='주제 '+total+'개';
-  hud.textContent=editMode?'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · 좌드래그 범위 선택 · 우드래그 화면 이동 · 우클릭 메뉴 · Ctrl+휠 확대/축소':'';   /* 보기 모드에서는 깔끔하게 비움 */
+  hud.textContent=editMode?'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · 좌드래그 범위 선택 · 우드래그·두 손가락 스크롤 화면 이동 · 우클릭 메뉴 · Ctrl+휠·핀치 확대/축소':'';   /* 보기 모드에서는 깔끔하게 비움 */
 }
 /* ───────── 선택 ───────── */
 function selIds(){ return [...sel].filter(id=>idx.has(id)); }
@@ -31335,12 +31374,23 @@ function endBand(g){
   refreshSelUI(); syncTb();
 }
 
-/* 휠: Ctrl(또는 확대 보기)일 때만 확대/축소 — 평소엔 페이지 스크롤을 그대로 둠 */
+/* 휠·터치패드 스크롤:
+   · 그냥 스크롤 = 지도 이동 — 터치패드 두 손가락 위아래·좌우 / 마우스 휠(Shift+휠 = 좌우). 방향은 운영체제의 스크롤 설정(자연스러운 스크롤 등)을 그대로 따름
+   · Ctrl(맥 ⌘) + 휠 = 확대/축소 — 터치패드 핀치도 브라우저가 Ctrl+휠로 보내므로 같은 경로 (커서 자리 기준)
+   · 열람 전용 화면(게스트·잠금·좁은 화면)에서는 페이지 스크롤을 가로채지 않도록 확대 보기에서만 지도를 움직임 */
 function onWheel(e){
-  if(!(fsMode||e.ctrlKey||e.metaKey)) return;
+  const zoom=e.ctrlKey||e.metaKey;
+  if(!zoom&&permRO()&&!fsMode) return;
   e.preventDefault();
-  const f=Math.exp(-e.deltaY*(e.ctrlKey?0.012:0.0016));
-  zoomAt(e.clientX,e.clientY,view.k*f);
+  if(menuEl||popEl) closeMenus();   /* 페이지 스크롤처럼, 열려 있던 메뉴는 닫음 */
+  const lines=e.deltaMode===1, pages=e.deltaMode===2;   /* 줄·쪽 단위(파이어폭스 마우스 휠 등)는 픽셀로 */
+  let dx=e.deltaX*(pages?stage.clientWidth:lines?16:1), dy=e.deltaY*(pages?stage.clientHeight:lines?16:1);
+  if(zoom){   /* 핀치는 작은 값이 연달아, 마우스 휠 한 칸은 ±100 안팎 → 한 칸당 약 ×1.2 */
+    zoomAt(e.clientX,e.clientY,view.k*Math.exp(-dy*(Math.abs(dy)>=50?0.0018:0.012)));
+    return;
+  }
+  if(e.shiftKey&&!dx){ dx=dy; dy=0; }
+  autoFit=false; view.x-=dx; view.y-=dy; applyView(); saveViewSoon();
 }
 
 /* ───────── 키보드 ───────── */
@@ -31828,12 +31878,12 @@ function showHelp(){
     ['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> · 툴바 ＋ 중심주제','독립된 중심 주제를 하나 더 만듭니다(오른쪽 끝에 자동 배치). 빈 곳 우클릭 → “여기에 중심 주제 추가”로 원하는 자리에도 가능'],['중심 주제 끌기','트리 전체가 따라 움직이고, 다른 주제 위에 놓으면 그 하위로 합쳐집니다 (우클릭 → “중심 주제로 분리”는 반대 동작)'],['<kbd>Delete</kbd>','선택한 주제 삭제 (중심 주제는 2개 이상일 때만, 마지막 하나는 지울 수 없음)'],['<kbd>Space</kbd>','접기 / 펼치기'],['<kbd>←↑↓→</kbd>','주제 사이 이동'],['<kbd>Alt</kbd>+<kbd>↑↓</kbd>','형제 사이에서 순서 바꾸기'],['<kbd>Alt</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','한 단계 아래로 / 위로 (들여쓰기 / 내어쓰기)'],
     ['<kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd>','복사 / 잘라내기 / 붙여넣기 (여러 줄 텍스트·이미지도 붙여넣기)'],['<kbd>Ctrl</kbd>+<kbd>D</kbd>','복제'],['<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd>','실행 취소 / 다시 실행'],
     ['<kbd>Ctrl</kbd>+<kbd>B</kbd> <kbd>I</kbd> <kbd>U</kbd>','굵게 / 기울임 / 밑줄'],['<kbd>Ctrl</kbd>+<kbd>F</kbd>','주제 검색'],['<kbd>Ctrl</kbd>+<kbd>A</kbd>','모두 선택'],['<kbd>Home</kbd>','중심 주제로 (여러 개면 거듭 눌러 차례로)'],
-    ['<kbd>Ctrl</kbd>+<kbd>휠</kbd> · <kbd>Ctrl</kbd>+<kbd>+</kbd>/<kbd>-</kbd>','확대 / 축소 (확대 보기에서는 휠만으로 가능)'],['<kbd>Ctrl</kbd>+<kbd>0</kbd>','화면에 맞추기'],
+    ['터치패드 두 손가락 위아래·좌우 스크롤 · 마우스 휠 (<kbd>Shift</kbd>+휠: 좌우)','지도 이동 — 포인터를 지도 위에 올려 두면 페이지 대신 지도가 움직입니다 (열람 전용 화면은 확대 보기에서만)'],['<kbd>Ctrl</kbd>+<kbd>휠</kbd> · 터치패드 핀치 · <kbd>Ctrl</kbd>+<kbd>+</kbd>/<kbd>-</kbd>','확대 / 축소'],['<kbd>Ctrl</kbd>+<kbd>0</kbd>','화면에 맞추기'],
     ['빈 곳 좌클릭 드래그','범위(사각형)를 그려 걸리는 주제를 한 번에 선택 (<kbd>Shift</kbd>/<kbd>Ctrl</kbd>을 누르고 드래그하면 기존 선택에 추가)'],['빈 곳 우클릭 드래그 · 휠 클릭 드래그 · <kbd>Alt</kbd>+좌드래그','지도 이동(모든 주제가 함께 움직임) — 보기 모드·터치에서는 좌드래그도 이동'],['<kbd>Shift</kbd>/<kbd>Ctrl</kbd>+클릭','여러 주제 선택'],['주제 좌클릭 / 끌어다 놓기','클릭: 선택 · 끌기: 주제 이동 — 다른 주제 위에 놓으면 하위로, 위·아래 가장자리에 놓으면 형제 순서 이동 (<kbd>Ctrl</kbd> 누르고 놓으면 복사)'],
     ['선택한 주제의 손잡이 8곳 끌기','크기 조절(네 변·네 모서리) — 여러 주제를 선택하고 하나를 끌면 모두 함께 바뀜, <kbd>Shift</kbd>+모서리는 비율 유지, 손잡이 더블클릭은 자동 크기'],
     ['우클릭(드래그 없이)','상황별 메뉴'],['<kbd>Esc</kbd>','선택 해제 · 모드 취소 · 확대 보기 닫기']
   ];
-  dialog('❓ 마인드맵 사용법','<table class="mm-keys">'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table><div class="mm-sec">서식</div><div style="color:#475569">주제를 선택하고 서식 줄에서 글꼴·크기·굵게/기울임/밑줄·글자색·채움색·테두리·모양·연결선·최대 폭·정렬을 바꿉니다. <b>적용 범위</b>로 “선택한 주제만 / 하위 포함 / 같은 단계 전체 / 전체”를 고를 수 있고, 테마·배치·연결선 모양은 맨 위 줄에서 바꿉니다. 메모·링크·아이콘·우선순위·진행률·체크·이미지·관계선·경계도 지원합니다.</div><div class="mm-sec">저장</div><div style="color:#475569">마인드맵은 리포트 데이터에 함께 저장됩니다(자동 저장 · 💾 Save · JSON 백업). 보기 전용(게스트·잠금·좁은 화면)에서는 이동·확대/축소·접기만 가능합니다.</div>',[{t:'닫기',pri:1}],{w:640});
+  dialog('❓ 마인드맵 사용법','<table class="mm-keys">'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table><div class="mm-sec">서식</div><div style="color:#475569">주제를 선택하고 서식 줄에서 글꼴·크기·굵게/기울임/밑줄·글자색·채움색·테두리·모양·연결선·최대 폭·정렬을 바꿉니다. <b>적용 범위</b>로 “선택한 주제만 / 하위 포함 / 같은 단계 전체 / 전체”를 고를 수 있고, 테마·배치·연결선 모양은 맨 위 줄에서 바꿉니다. <b>혼합트리</b> 배치는 중심 주제→1단계 주제와 그 아래 가지를 서로 다른 방식으로 놓습니다 — 오른쪽·왼쪽·양쪽 혼합트리: 1단계는 세로 트리(중심 주제 아래 한 줄), 그 아래는 가로 트리(오른쪽·왼쪽·양쪽) / 세로 혼합트리: 1단계는 오른쪽 트리, 그 아래는 세로 트리. 메모·링크·아이콘·우선순위·진행률·체크·이미지·관계선·경계도 지원합니다.</div><div class="mm-sec">저장</div><div style="color:#475569">마인드맵은 리포트 데이터에 함께 저장됩니다(자동 저장 · 💾 Save · JSON 백업). 보기 전용(게스트·잠금·좁은 화면)에서는 이동·확대/축소·접기만 가능합니다.</div>',[{t:'닫기',pri:1}],{w:640});
 }
 
 /* ───────── 컨텍스트 메뉴 ───────── */
@@ -31994,9 +32044,9 @@ function syncTb(){
   if(!tbEl||!inspEl||!doc) return;
   const S=doc.settings, n=primary&&node(primary), inf=n&&I.get(primary), rs=inf&&inf.rs;
   setSel(tq('[data-f=layout]'),S.layout); setSel(tq('[data-f=edge]'),S.edge); setSel(tq('[data-f=theme]'),S.theme);
-  const horiz=['map','right','left'].includes(S.layout);   /* 레벨 정렬은 좌우로 뻗는 배치에서만 */
+  const horiz=['map','right','left','mixr','mixl','mixb'].includes(S.layout), pal=horiz||S.layout==='mixv';   /* 레벨 정렬: 좌우로 뻗는 가지가 있는 배치 / 부모 정렬: 그 배치 + 세로 혼합트리(중심 주제↔1단계 주제) */
   LV_ALIGNS.forEach(a=>{ const b=tq('[data-a=lva-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.lvAlign||'auto')===a[0]); b.disabled=!horiz&&a[0]!=='auto'; } });
-  P_ALIGNS.forEach(a=>{ const b=tq('[data-a=pa-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.pAlign||'center')===a[0]); b.disabled=!horiz&&a[0]!=='center'; } });
+  P_ALIGNS.forEach(a=>{ const b=tq('[data-a=pa-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.pAlign||'center')===a[0]); b.disabled=!pal&&a[0]!=='center'; } });
   inspEl.classList.toggle('mm-dim',!n&&!selRel);
   if(rs){
     setSel(tq('[data-f=ff]'),rs.ff||'');
