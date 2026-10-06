@@ -1874,6 +1874,7 @@ body.mm-fs{overflow:hidden}
 #mindmapSection .mm-gbadge{position:absolute;right:-9px;top:-9px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#2563eb;color:#fff;font:700 11px/18px 'Segoe UI',Arial,sans-serif;text-align:center;z-index:4}
 /* ── 서식 패널: 크기 입력·건너뛰기 단계·안내문 ── */
 #mindmapSection .mm-insp .mm-x{font-size:11px;color:#94a3b8;flex-shrink:0}
+#mindmapSection .mm-insp .mm-flv{flex:1;min-width:0;font-size:11px;font-weight:800;color:#1e3a5f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mindmapSection .mm-insp .mm-skv{min-width:22px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;color:#1e3a5f}
 #mindmapSection .mm-insp .mm-hint{font-size:10px;line-height:1.4;color:#94a3b8;margin:-1px 0 4px 2px}
 @media print{#mindmapSection .mm-rhl{display:none!important}}
@@ -29912,10 +29913,11 @@ const LAYOUTS=[['map','↔ 양쪽 마인드맵'],['right','→ 오른쪽 트리'
 const EDGES=[['curve','곡선'],['straight','직선'],['elbow','꺾은선'],['round','둥근 꺾은선']];
 const BGS=[['dots','점 무늬'],['grid','격자'],['plain','없음']];
 const LV_FS=[22,17,14.5,13];
-const DEF_SET={layout:'map',edge:'curve',theme:'vivid',hgap:46,vgap:10,maxw:240,fs:100,ff:'',bg:'dots',taper:1,inh:1,lvAlign:'auto',pAlign:'center'};   /* inh: 새 주제가 선택한 주제의 서식을 이어받음 / lvAlign: 같은 레벨 정렬(auto·left·right) / pAlign: 부모 정렬(center·top·bottom) */
+const DEF_SET={layout:'map',edge:'curve',theme:'vivid',hgap:46,vgap:10,maxw:240,fs:100,ff:'',bg:'dots',taper:1,inh:1,lvAlign:'auto',pAlign:'center'};   /* inh: 새 주제가 선택한 주제의 서식을 이어받음 / lvAlign: 같은 레벨 정렬(auto·left·right) / pAlign: 부모 정렬(center·top·bottom) / lvFlip(없으면 생략): 트리변경한 단계 번호 목록 — 배치별 기본 가로·세로 방식을 뒤집을 단계 */
 const LV_ALIGNS=[['auto','자동(기본)'],['left','왼쪽 맞춤'],['right','오른쪽 맞춤']];
 const P_ALIGNS=[['center','가운데(기본)'],['top','위쪽 맞춤'],['bottom','아래쪽 맞춤']];
 const MAX_SKIP=3;
+const MAX_LV=30;   /* 트리변경(lvFlip)이 바꿀 수 있는 최대 단계 */
 const BASE_FONT="'Malgun Gothic','Noto Sans KR','Apple SD Gothic Neo','Segoe UI',sans-serif";
 const EMOJIS=[
   ['표시','⭐ ❗ ❓ 💡 ✅ ❌ ⚠️ 🔥 📌 🎯 🚩 🔒 ✨ 🔔 ⏰ 🏁'],
@@ -30047,6 +30049,7 @@ function sanitize(d){
   out.settings.inh=(out.settings.inh===0||out.settings.inh===false||out.settings.inh==='0')?0:1;
   if(!LV_ALIGNS.some(a=>a[0]===out.settings.lvAlign)) out.settings.lvAlign='auto';
   if(!P_ALIGNS.some(a=>a[0]===out.settings.pAlign)) out.settings.pAlign='center';
+  { const f=out.settings.lvFlip; const a=Array.isArray(f)?[...new Set(f.map(v=>v|0).filter(v=>v>=1&&v<=MAX_LV))].sort((x,y)=>x-y):[]; if(a.length) out.settings.lvFlip=a; else delete out.settings.lvFlip; }   /* 트리변경한 단계 목록 */
   out.settings.hgap=clamp(+out.settings.hgap||46,16,160); out.settings.vgap=clamp(+out.settings.vgap||10,2,60);
   out.settings.maxw=clamp(+out.settings.maxw||240,80,1000); out.settings.fs=clamp(+out.settings.fs||100,50,250);
   let maxSeq=+d.seq||0; const seen=new Set(); let count=0;
@@ -30326,12 +30329,12 @@ function treeIds(root){ const a=[]; (function w(n){ a.push(n.id); kids(n).forEac
    기준점은 직접 옮겨 둔 위치(root.px/py)가 있으면 그것, 없으면 앞 트리들의 오른쪽에 간격을 두고 자동 배치 */
 function computeLayout(){
   P.clear(); SP.clear(); SC.clear(); SB.clear(); ORG.clear();
-  const L=doc.settings.layout, gapT=Math.max(90,doc.settings.hgap*2);
+  const L=doc.settings.layout, gapT=Math.max(90,doc.settings.hgap*2), FS=L==='radial'?null:flipSet();
   let right=null;
   doc.roots.forEach(root=>{
     if(L==='radial') layoutRadial(root);
+    else if(FS||MIXED_L[L]) layoutGen(root,L,FS);   /* 혼합트리 4종 · 트리변경한 단계가 있는 지도 */
     else if(L==='down'||L==='up') layoutVertical(root,L==='up');
-    else if(MIXED[L]) layoutMixed(root,L);
     else layoutHoriz(root);
     const ids=treeIds(root);
     let x0=1e9,x1=-1e9;
@@ -30385,37 +30388,86 @@ function layoutHoriz(root,Lm,sub){
     }
   });
 }
-/* ───── 혼합트리: 중심 주제 → 1단계 주제는 p 방식, 1단계 주제부터 아래 가지는 s 방식 ─────
-   오른쪽·왼쪽·양쪽 혼합트리 = p:세로(1단계 주제가 중심 주제 아래 한 줄) + s:가로(오른쪽·왼쪽·양쪽 트리)
-   세로 혼합트리            = p:오른쪽(1단계 주제가 중심 주제 오른쪽에 한 줄로 쌓임) + s:세로(아래로 뻗는 트리)
-   1단계 주제마다 자기 가지를 s 방식으로 배치(그 주제 중심 = (0,0))하고, 차지하는 영역(블록)을 p 방향으로 이어 붙임 */
-const MIXED={mixr:{p:'down',s:'right'},mixl:{p:'down',s:'left'},mixb:{p:'down',s:'map'},mixv:{p:'right',s:'down'}};
-function layoutMixed(root,L){
-  const S=doc.settings, cfg=MIXED[L], gh=S.hgap, gv=S.vgap, gl=Math.round(gh*0.8), gs=gv+8, rs=SZ.get(root.id)||{w:100,h:36};
-  P.set(root.id,{x:-rs.w/2,y:-rs.h/2,w:rs.w,h:rs.h,dir:'C',depth:0});
-  const cs=kids(root); if(!cs.length) return;
-  const bl=cs.map(c=>{
-    if(cfg.s==='down') layoutVertical(c,false); else layoutHoriz(c,cfg.s,true);
-    const ids=treeIds(c), cp=P.get(c.id), cx=cp.x+cp.w/2, cy=cp.y+cp.h/2;
+/* ───── 레벨별 가로·세로 혼합 배치: 혼합트리 4종 + '트리변경' ─────
+   레벨 d(중심 주제의 하위 = 1단계)마다 그 레벨 주제들이 부모에 대해 놓이는 방식이 하나씩 정해짐
+     H(가로 트리) = 부모 옆(오른쪽·왼쪽)에 한 열로 쌓임 / V(세로 트리) = 부모 아래(조직도(위)는 위)에 한 줄로 늘어섬
+   배치별 기본 방식(baseArr)에서 설정 lvFlip 에 든 레벨만 H↔V 를 뒤집음 — 예) 오른쪽 트리의 1단계를 뒤집으면 오른쪽 혼합트리와 똑같아짐
+   (오른쪽·왼쪽·양쪽 혼합트리 = 1단계 V + 그 아래 H / 세로 혼합트리 = 1단계 H + 그 아래 V).
+   끝까지 같은 방식이 이어지는 가지는 기존 함수(layoutHoriz·layoutVertical)로 그리고, 방식이 바뀌는 곳에서만
+   하위 가지의 영역(블록)을 한 줄/한 열로 이어 붙임 — 블록끼리는 겹치지 않음 */
+const MIXED_L={mixr:1,mixl:1,mixb:1,mixv:1};
+function baseArr(L,d){
+  if(L==='down'||L==='up') return 'V';
+  if(L==='mixr'||L==='mixl'||L==='mixb') return d===1?'V':'H';
+  if(L==='mixv') return d===1?'H':'V';
+  return 'H';   /* map · right · left */
+}
+const flipSet=()=>{ const f=doc.settings.lvFlip; return Array.isArray(f)&&f.length?new Set(f):null; };
+const arrOf=(L,d,fs)=>{ const b=baseArr(L,d); return fs&&fs.has(d)?(b==='H'?'V':'H'):b; };
+function layoutGen(root,L,FS){
+  const S=doc.settings, gh=S.hgap, gv=S.vgap, gl=Math.round(gh*0.8), gs=gv+8, up=L==='up', pa=S.pAlign||'center', lm=S.lvAlign||'auto';
+  const pol=(L==='left'||L==='mixl')?'L':(L==='map'||L==='mixb')?'B':'R';   /* 가로 레벨이 뻗는 쪽: R·L 한쪽 / B 양쪽(번갈아) */
+  const arr=d=>arrOf(L,d,FS), sz=n=>SZ.get(n.id)||{w:60,h:24};
+  let maxD=0; (function w(n,d){ if(d>maxD) maxD=d; kids(n).forEach(c=>w(c,d+1)); })(root,0);
+  const FU=FS?new Set([...FS].filter(d=>d<=maxD)):null;   /* 이 트리에 없는 깊은 단계의 트리변경은 모양에 영향이 없으므로 아래 '끝까지 같은 방식' 판정에서 뺌 */
+  const uni=d0=>{ const a=arrOf(L,d0+1,FU); for(let d=d0+2;d<=MAX_LV+1;d++) if(arrOf(L,d,FU)!==a) return null; return a; };   /* d0 단계 아래가 끝까지 같은 방식이면 그 방식(배치 정의로 판단 — 트리가 얕아도 혼합트리는 늘 혼합) */
+  const lmOf=side=>side?(side==='R'?'right':'left'):(pol==='L'?'left':pol==='B'?'map':'right');
+  const cdir=(d0,side)=>arr(d0+1)==='H'?(side||(pol==='L'?'L':'R')):(up?'U':'D');   /* d0 단계 주제의 하위 주제가 뻗는 쪽 — 접기·＋ 버튼이 붙는 변 */
+  const ru=uni(0);
+  if(ru==='V') return layoutVertical(root,up);
+  if(ru==='H') return layoutHoriz(root,lmOf(null));
+  const pad=(n,b)=>{ if(n.bd){ b.x0-=17; b.y0-=17; b.x1+=17; b.y1+=17; } return b; };   /* 경계(영역 묶기) 테두리가 이웃과 겹치지 않게 */
+  const shift=(b,dx,dy)=>{ b.ids.forEach(id=>{ const p=P.get(id); if(p){ p.x+=dx; p.y+=dy; } }); };
+  /* 기존 함수로 배치한 가지를 n 중심이 (0,0)이 되게 옮기고 영역(bbox)을 잼 */
+  const norm=n=>{
+    const ids=treeIds(n), cp=P.get(n.id), cx=cp.x+cp.w/2, cy=cp.y+cp.h/2;
     let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
     ids.forEach(id=>{ const p=P.get(id); if(!p) return; p.x-=cx; p.y-=cy; x0=Math.min(x0,p.x); y0=Math.min(y0,p.y); x1=Math.max(x1,p.x+p.w); y1=Math.max(y1,p.y+p.h); });
-    return {c,ids,x0,y0,x1,y1};
-  });
-  const n=bl.length, tx=[], ty=[];
-  let rcx=0, rcy=0;
-  if(cfg.p==='down'){   /* 1단계 주제: 한 줄(왼쪽→오른쪽). 블록이 1단계 주제 위로 솟은 만큼 중심 주제를 더 위에 둠. 건너뛴 단계(sk)는 그만큼 아래로 */
-    let cur=0;
-    bl.forEach((b,i)=>{ tx[i]=cur-b.x0; cur=tx[i]+b.x1+gl; ty[i]=skipOf(b.c)*(EMPTY_ROW+gl); });
-    const top=Math.min(...bl.map((b,i)=>ty[i]+b.y0));
-    rcx=(tx[0]+tx[n-1])/2; rcy=top-gl-rs.h/2;   /* 중심 주제는 첫·마지막 1단계 주제의 가운데 위 */
-    bl.forEach(b=>{ const cp=P.get(b.c.id); cp.dir='D'; cp.bdir=cfg.s==='left'?'L':'R'; cp.busY=rs.h/2+gl/2; });
-  } else {              /* 1단계 주제: 한 열(위→아래). 블록 왼쪽 끝을 한 줄로 맞춤. 건너뛴 단계(sk)는 그만큼 오른쪽으로 */
-    let cur=0; const pa=S.pAlign||'center';
-    bl.forEach((b,i)=>{ ty[i]=cur-b.y0; cur=ty[i]+b.y1+gs; tx[i]=rs.w/2+gh-b.x0+skipOf(b.c)*(EMPTY_COL+gh); });
-    rcx=0; rcy=pa==='top'?ty[0]:pa==='bottom'?ty[n-1]:(ty[0]+ty[n-1])/2;   /* 부모 정렬(pAlign)을 중심 주제↔1단계 주제에 적용 */
-    bl.forEach(b=>{ const cp=P.get(b.c.id); cp.dir='R'; cp.bdir='D'; cp.busX=rs.w/2+gh/2; });
-  }
-  bl.forEach((b,i)=>{ b.ids.forEach(id=>{ const p=P.get(id); if(p){ p.x+=tx[i]-rcx; p.y+=ty[i]-rcy; } }); });   /* 중심 주제 중심이 (0,0) */
+    return pad(n,{ids,x0,y0,x1,y1});
+  };
+  /* n(d0 단계)과 그 하위 가지를 배치하고 영역({ids,x0,y0,x1,y1}, n 중심 = (0,0))을 돌려줌. side: n 이 가로 레벨의 한 열에 놓였다면 그 열의 쪽(R·L) — 더 아래 가로 레벨이 같은 쪽으로 이어짐 */
+  const blk=(n,d0,side)=>{
+    const s=sz(n), ks=kids(n);
+    P.set(n.id,{x:-s.w/2,y:-s.h/2,w:s.w,h:s.h,dir:'C',depth:d0});
+    if(!ks.length) return pad(n,{ids:[n.id],x0:-s.w/2,y0:-s.h/2,x1:s.w/2,y1:s.h/2});
+    const u=uni(d0);
+    if(u){ if(u==='H') layoutHoriz(n,lmOf(side),true); else layoutVertical(n,up); return norm(n); }
+    const a1=arr(d0+1);
+    let sides=null;
+    if(a1==='H'){
+      if(side){ sides=new Map(); ks.forEach(c=>sides.set(c.id,side)); }
+      else if(pol==='B') sides=rootSides(n,'map',d0>0);   /* 중심 주제의 1단계는 저장된 쪽(side)대로, 그 밖에는 번갈아 */
+      else{ sides=new Map(); ks.forEach(c=>sides.set(c.id,pol==='L'?'L':'R')); }
+    }
+    const bl=ks.map(c=>{ const sd=sides?sides.get(c.id):null; return {c,sd,b:blk(c,d0+1,sd)}; });
+    let x0=-s.w/2,y0=-s.h/2,x1=s.w/2,y1=s.h/2;
+    const put=(o,dx,dy)=>{ shift(o.b,dx,dy); x0=Math.min(x0,o.b.x0+dx); y0=Math.min(y0,o.b.y0+dy); x1=Math.max(x1,o.b.x1+dx); y1=Math.max(y1,o.b.y1+dy); };
+    if(a1==='V'){   /* 하위 주제들: 한 줄(왼쪽→오른쪽). 블록이 위로 솟은 만큼 부모를 더 위에 둠. 부모는 첫·마지막 하위 주제의 가운데 위. 건너뛴 단계(sk)는 그만큼 더 아래로 */
+      const dv=up?-1:1, N=bl.length, tx=[], ty=[]; let cur=0;
+      bl.forEach((o,i)=>{ tx[i]=cur-o.b.x0; cur=tx[i]+o.b.x1+gl; ty[i]=dv*skipOf(o.c)*(EMPTY_ROW+gl); });
+      const rcx=(tx[0]+tx[N-1])/2;
+      const sh=up?-(s.h/2+gl)-Math.max(...bl.map((o,i)=>ty[i]+o.b.y1)):s.h/2+gl-Math.min(...bl.map((o,i)=>ty[i]+o.b.y0));
+      bl.forEach((o,i)=>{ put(o,tx[i]-rcx,ty[i]+sh); const cp=P.get(o.c.id); cp.dir=up?'U':'D'; cp.bdir=cdir(d0+1,null); cp.bus=gl/2; });
+    } else {        /* 하위 주제들: 한 열(위→아래), 양쪽이면 오른쪽 열·왼쪽 열. 부모 정렬(pAlign)은 열마다. 건너뛴 단계(sk)는 그만큼 더 옆으로 */
+      ['R','L'].forEach(sd=>{
+        const g=bl.filter(o=>o.sd===sd); if(!g.length) return;
+        const mir=sd==='L', md=mir?({left:'right',right:'left'}[lm]||'auto'):lm, X0=s.w/2+gh, tx=[], ty=[];
+        const ms=g.map(o=>{ const cw=P.get(o.c.id).w, m0=mir?-o.b.x1:o.b.x0; return {cw,m0,bleed:-cw/2-m0}; });   /* 왼쪽 열 계산은 거울에 비춘 오른쪽 열처럼 / bleed: 영역이 주제 상자보다 부모 쪽으로 삐져나온 길이 */
+        const XL=X0+Math.max(...ms.map(m=>m.bleed)), XR=X0+Math.max(...ms.map(m=>m.cw+m.bleed));
+        let cur=0;
+        g.forEach((o,i)=>{
+          const m=ms[i], ex=skipOf(o.c)*(EMPTY_COL+gh);
+          ty[i]=cur-o.b.y0; cur=ty[i]+o.b.y1+gs;
+          const cx=md==='left'?XL+m.cw/2:md==='right'?XR-m.cw/2:X0-m.m0;   /* auto=영역 가장자리를 부모 옆에 / left·right=같은 레벨 상자의 왼쪽·오른쪽 끝 맞춤 */
+          tx[i]=(mir?-1:1)*(cx+ex);
+        });
+        const k=g.length-1, rcy=pa==='top'?ty[0]:pa==='bottom'?ty[k]:(ty[0]+ty[k])/2;
+        g.forEach((o,i)=>{ put(o,tx[i],ty[i]-rcy); const cp=P.get(o.c.id); cp.dir=sd; cp.bdir=cdir(d0+1,sd); cp.bus=gh/2; });
+      });
+    }
+    return pad(n,{ids:[n.id].concat(...bl.map(o=>o.b.ids)),x0,y0,x1,y1});
+  };
+  blk(root,0,null);
 }
 function layoutVertical(root,up){
   const gl=Math.round(doc.settings.hgap*0.8), gs=doc.settings.vgap+8;
@@ -30578,7 +30630,7 @@ function drawSvg(){
     const pp=P.get(inf.p.id), cp=P.get(id); if(!pp||!cp) return;
     const pu=I.get(inf.p.id).rs.shape==='underline', cu=inf.rs.shape==='underline';
     const e=edgeEnds(pp,cp,pu,cu), st=edgeStyleOf(inf.n,inf.depth);
-    if(cp.busY!=null&&e.v===1) e.my=cp.busY; else if(cp.busX!=null&&e.v===0) e.mx=cp.busX;   /* 혼합트리: 중심 주제→1단계 주제 연결선이 한 줄기(공통 가로·세로 선)에서 갈라지게 */
+    if(cp.bus!=null){ if(e.v===1) e.my=e.sy+(cp.dir==='U'?-cp.bus:cp.bus); else if(e.v===0) e.mx=e.sx+(cp.dir==='L'?-cp.bus:cp.bus); }   /* 방식이 바뀌는 곳(혼합트리·트리변경): 한 부모의 하위 주제들이 부모 가장자리에서 bus 만큼 떨어진 공통 가로·세로 선 한 줄기에서 갈라지게 */
     let d=pathD(e,es);
     /* 레벨을 건너뛴 주제: 평소 연결선 모양으로 첫 칸(부모 바로 옆)까지 이은 뒤, 건너뛴 칸은 같은 높이로 곧게 연장 — 비워 둔 칸을 지나는 선이 다른 주제 상자를 가로지르지 않게 */
     if(skipOf(inf.n)>0&&(e.v===0||e.v===1)){
@@ -30772,6 +30824,36 @@ function setLvAlign(v){
 function setPAlign(v){
   if(isRO()||!P_ALIGNS.some(a=>a[0]===v)) return;
   mutate(()=>{ doc.settings.pAlign=v; },'set:pAlign');
+  if(autoFit) fitView();
+}
+/* 트리변경: 선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿈.
+   배치별 기본 방식(baseArr)에서 그 단계만 뒤집힌 상태를 설정 lvFlip 에 기록 — 한 번 더 하면 원래대로. 중심 주제를 고르면 그 하위(1단계)를 바꿈 */
+const ARR_NM={H:'가로',V:'세로'};
+function flipLevelsOfSel(){ const s=new Set(); selIds().forEach(id=>s.add(Math.max(1,depthOf(id)))); return [...s].sort((a,b)=>a-b); }
+function flipLabel(){   /* 메뉴·서식 패널에 보일 설명: "2단계 세로 → 가로" */
+  const ds=flipLevelsOfSel(); if(!ds.length) return '';
+  if(ds.length>1) return ds.join('·')+'단계';
+  const a=arrOf(doc.settings.layout,ds[0],flipSet());
+  return ds[0]+'단계 '+ARR_NM[a]+' → '+ARR_NM[a==='H'?'V':'H'];
+}
+function flipTree(levels){
+  if(isRO()) return;
+  const L=doc.settings.layout;
+  if(L==='radial') return toast('방사형 배치에서는 트리변경을 쓸 수 없어요. 다른 배치를 고른 뒤 사용해 주세요.');
+  const ds=levels&&levels.length?levels.slice():flipLevelsOfSel();
+  if(!ds.length) return toast('먼저 바꿀 단계의 주제를 선택하세요. (그 단계의 모든 주제가 세로 ↔ 가로로 바뀝니다)');
+  const msg=ds.length===1?ds[0]+'단계 트리: '+(()=>{ const a=arrOf(L,ds[0],flipSet()); return ARR_NM[a]+' → '+ARR_NM[a==='H'?'V':'H']; })():ds.join('·')+'단계 트리를 바꿨어요';
+  mutate(()=>{
+    const s=new Set(doc.settings.lvFlip||[]);
+    ds.forEach(d=>{ if(d<1||d>MAX_LV) return; if(s.has(d)) s.delete(d); else s.add(d); });
+    const a=[...s].sort((x,y)=>x-y); if(a.length) doc.settings.lvFlip=a; else delete doc.settings.lvFlip;
+  });
+  toast(msg);
+  if(autoFit) fitView(); else if(primary) ensureVisible(primary);
+}
+function resetFlips(){
+  if(isRO()||!(doc.settings.lvFlip&&doc.settings.lvFlip.length)) return;
+  mutate(()=>{ delete doc.settings.lvFlip; });
   if(autoFit) fitView();
 }
 /* 새 중심 주제: pos({x,y}, 월드 좌표)를 주면 그 자리에, 없으면 기존 트리들의 오른쪽 끝에 자동 배치 */
@@ -31873,7 +31955,7 @@ function openSettings(){
 function showHelp(){
   const rows=[
     ['<kbd>Tab</kbd>','선택한 주제의 하위 주제 추가 — 새 주제는 선택했던 주제의 서식(모양·색·글꼴·크기·연결선)을 그대로 이어받음 (설정에서 끌 수 있음)'],['<kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd>','형제 주제 추가(뒤 / 앞)'],['<kbd>Ctrl</kbd>+<kbd>Enter</kbd>','상위 주제 삽입'],
-    ['<kbd>Shift</kbd>+<kbd>Tab</kbd> · 툴바 ⇉ 건너뛰기','레벨을 건너뛴 하위 주제 추가 — 건너뛴 레벨 자리는 비워 두고 연결선만 길게 이어짐 (메뉴에서 1~3단계)'],['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','선택한 주제의 건너뛰기 단계 늘리기 / 줄이기'],['서식 패널 › 레벨 정렬','같은 레벨 주제들의 왼쪽 끝 / 오른쪽 끝을 한 줄로 맞춤 (좌우로 뻗는 배치에서)'],['서식 패널 › 부모 정렬','부모를 하위 주제 묶음의 가운데(기본) / 첫 번째 하위 주제와 같은 줄(위쪽 맞춤) / 마지막 하위 주제와 같은 줄(아래쪽 맞춤)에 맞춤 (좌우로 뻗는 배치에서)'],
+    ['<kbd>Shift</kbd>+<kbd>Tab</kbd> · 툴바 ⇉ 건너뛰기','레벨을 건너뛴 하위 주제 추가 — 건너뛴 레벨 자리는 비워 두고 연결선만 길게 이어짐 (메뉴에서 1~3단계)'],['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','선택한 주제의 건너뛰기 단계 늘리기 / 줄이기'],['툴바 ⇄ 트리변경 · 우클릭 › 트리변경','선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿈 — 예) 오른쪽 트리에서 2단계 주제를 고르고 누르면 2단계 주제들이 각자 부모 아래 한 줄로 늘어섬. 여러 단계의 주제를 함께 고르면 단계마다 바뀌고, 한 번 더 누르면 원래대로 (배치를 새로 고르면 초기화)'],['서식 패널 › 레벨 정렬','같은 레벨 주제들의 왼쪽 끝 / 오른쪽 끝을 한 줄로 맞춤 (좌우로 뻗는 단계에서)'],['서식 패널 › 부모 정렬','부모를 하위 주제 묶음의 가운데(기본) / 첫 번째 하위 주제와 같은 줄(위쪽 맞춤) / 마지막 하위 주제와 같은 줄(아래쪽 맞춤)에 맞춤 (좌우로 뻗는 단계에서)'],
     ['<kbd>F2</kbd> · 더블클릭','주제 글 편집 (편집 중 <kbd>Enter</kbd> 확정, <kbd>Shift</kbd>+<kbd>Enter</kbd> 줄바꿈, <kbd>Esc</kbd> 취소)'],
     ['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> · 툴바 ＋ 중심주제','독립된 중심 주제를 하나 더 만듭니다(오른쪽 끝에 자동 배치). 빈 곳 우클릭 → “여기에 중심 주제 추가”로 원하는 자리에도 가능'],['중심 주제 끌기','트리 전체가 따라 움직이고, 다른 주제 위에 놓으면 그 하위로 합쳐집니다 (우클릭 → “중심 주제로 분리”는 반대 동작)'],['<kbd>Delete</kbd>','선택한 주제 삭제 (중심 주제는 2개 이상일 때만, 마지막 하나는 지울 수 없음)'],['<kbd>Space</kbd>','접기 / 펼치기'],['<kbd>←↑↓→</kbd>','주제 사이 이동'],['<kbd>Alt</kbd>+<kbd>↑↓</kbd>','형제 사이에서 순서 바꾸기'],['<kbd>Alt</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','한 단계 아래로 / 위로 (들여쓰기 / 내어쓰기)'],
     ['<kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd>','복사 / 잘라내기 / 붙여넣기 (여러 줄 텍스트·이미지도 붙여넣기)'],['<kbd>Ctrl</kbd>+<kbd>D</kbd>','복제'],['<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd>','실행 취소 / 다시 실행'],
@@ -31883,7 +31965,7 @@ function showHelp(){
     ['선택한 주제의 손잡이 8곳 끌기','크기 조절(네 변·네 모서리) — 여러 주제를 선택하고 하나를 끌면 모두 함께 바뀜, <kbd>Shift</kbd>+모서리는 비율 유지, 손잡이 더블클릭은 자동 크기'],
     ['우클릭(드래그 없이)','상황별 메뉴'],['<kbd>Esc</kbd>','선택 해제 · 모드 취소 · 확대 보기 닫기']
   ];
-  dialog('❓ 마인드맵 사용법','<table class="mm-keys">'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table><div class="mm-sec">서식</div><div style="color:#475569">주제를 선택하고 서식 줄에서 글꼴·크기·굵게/기울임/밑줄·글자색·채움색·테두리·모양·연결선·최대 폭·정렬을 바꿉니다. <b>적용 범위</b>로 “선택한 주제만 / 하위 포함 / 같은 단계 전체 / 전체”를 고를 수 있고, 테마·배치·연결선 모양은 맨 위 줄에서 바꿉니다. <b>혼합트리</b> 배치는 중심 주제→1단계 주제와 그 아래 가지를 서로 다른 방식으로 놓습니다 — 오른쪽·왼쪽·양쪽 혼합트리: 1단계는 세로 트리(중심 주제 아래 한 줄), 그 아래는 가로 트리(오른쪽·왼쪽·양쪽) / 세로 혼합트리: 1단계는 오른쪽 트리, 그 아래는 세로 트리. 메모·링크·아이콘·우선순위·진행률·체크·이미지·관계선·경계도 지원합니다.</div><div class="mm-sec">저장</div><div style="color:#475569">마인드맵은 리포트 데이터에 함께 저장됩니다(자동 저장 · 💾 Save · JSON 백업). 보기 전용(게스트·잠금·좁은 화면)에서는 이동·확대/축소·접기만 가능합니다.</div>',[{t:'닫기',pri:1}],{w:640});
+  dialog('❓ 마인드맵 사용법','<table class="mm-keys">'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table><div class="mm-sec">서식</div><div style="color:#475569">주제를 선택하고 서식 줄에서 글꼴·크기·굵게/기울임/밑줄·글자색·채움색·테두리·모양·연결선·최대 폭·정렬을 바꿉니다. <b>적용 범위</b>로 “선택한 주제만 / 하위 포함 / 같은 단계 전체 / 전체”를 고를 수 있고, 테마·배치·연결선 모양은 맨 위 줄에서 바꿉니다. <b>혼합트리</b> 배치는 중심 주제→1단계 주제와 그 아래 가지를 서로 다른 방식으로 놓습니다 — 오른쪽·왼쪽·양쪽 혼합트리: 1단계는 세로 트리(중심 주제 아래 한 줄), 그 아래는 가로 트리(오른쪽·왼쪽·양쪽) / 세로 혼합트리: 1단계는 오른쪽 트리, 그 아래는 세로 트리. 혼합트리는 <b>트리변경</b>으로 단계마다 가로·세로를 바꾼 것과 같아서, 어떤 배치에서든 단계별로 자유롭게 섞을 수 있습니다. 메모·링크·아이콘·우선순위·진행률·체크·이미지·관계선·경계도 지원합니다.</div><div class="mm-sec">저장</div><div style="color:#475569">마인드맵은 리포트 데이터에 함께 저장됩니다(자동 저장 · 💾 Save · JSON 백업). 보기 전용(게스트·잠금·좁은 화면)에서는 이동·확대/축소·접기만 가능합니다.</div>',[{t:'닫기',pri:1}],{w:640});
 }
 
 /* ───────── 컨텍스트 메뉴 ───────── */
@@ -31902,6 +31984,7 @@ function nodeMenu(){
     {t:'상위 주제 삽입',k:'Ctrl+Enter',dis:isRoot,f:()=>insertParentOf(primary)},
     {t:'하위 주제 추가 — 레벨 건너뛰기',sub:[1,2,3].map(k=>({t:k+'단계 건너뛰기',k:k===1?'Shift+Tab':'',f:()=>addChildOf(primary,null,true,k)}))},
     {t:'레벨 건너뛰기 설정',dis:isRoot,sub:[0,1,2,3].map(k=>({t:k?k+'단계 건너뛰기':'없음(바로 아래 레벨)',on:(n&&n.sk||0)===k,f:()=>setSkip(null,k)}))},
+    {t:'트리변경 — '+flipLabel(),dis:doc.settings.layout==='radial',f:()=>flipTree()},
     {t:'새 중심 주제 추가',k:'Ctrl+Shift+Enter',f:()=>addRoot()},
     {t:'중심 주제로 분리',dis:isRoot,f:()=>detachToRoot(primary)},
     '-',
@@ -31942,7 +32025,7 @@ function bgMenu(w){
   return (ro?[]:[{t:'여기에 중심 주제 추가',f:()=>addRoot(w)},'-',{t:'붙여넣기',k:'Ctrl+V',f:()=>pasteFromClipboard(doc.root.id)},{t:'모두 선택',k:'Ctrl+A',f:()=>selectAll()},'-']).concat([
     {t:'전체 펼치기',f:()=>setCollapseLevel(99)},{t:'1단계까지만 보기',f:()=>setCollapseLevel(1)},{t:'2단계까지만 보기',f:()=>setCollapseLevel(2)},'-',
     {t:'화면에 맞추기',k:'Ctrl+0',f:()=>fitView()},{t:'중심 주제로 이동',k:'Home',f:()=>{ selectOnly(doc.root.id); centerOn(doc.root.id,true); }}
-  ]).concat(ro?[]:['-',{t:'부모 정렬',sub:P_ALIGNS.map(a=>({t:a[1],on:(doc.settings.pAlign||'center')===a[0],f:()=>setPAlign(a[0])}))},{t:'같은 레벨 정렬',sub:LV_ALIGNS.map(a=>({t:a[1],on:(doc.settings.lvAlign||'auto')===a[0],f:()=>setLvAlign(a[0])}))},{t:'설정…',f:()=>openSettings()}]);
+  ]).concat(ro?[]:['-',{t:'부모 정렬',sub:P_ALIGNS.map(a=>({t:a[1],on:(doc.settings.pAlign||'center')===a[0],f:()=>setPAlign(a[0])}))},{t:'같은 레벨 정렬',sub:LV_ALIGNS.map(a=>({t:a[1],on:(doc.settings.lvAlign||'auto')===a[0],f:()=>setLvAlign(a[0])}))},{t:'트리변경 모두 되돌리기',dis:!(doc.settings.lvFlip&&doc.settings.lvFlip.length),f:()=>resetFlips()},{t:'설정…',f:()=>openSettings()}]);
 }
 function pasteFromClipboard(tid){
   if(isRO()) return;
@@ -31996,6 +32079,8 @@ function buildToolbar(){
    +'<span class="mm-fp-grip mm-fp-hd" data-drag="tb" title="드래그해서 위치 이동 (더블클릭: 원래 자리)">⠿</span>'
    +'<span class="mm-g mm-e">'+bt('root','＋ 중심주제','새 중심 주제 추가 (Ctrl+Shift+Enter) — 지도에 독립된 중심 주제를 하나 더 만듭니다. 빈 곳 우클릭 → "여기에 중심 주제 추가"로 원하는 자리에도 만들 수 있어요.','ind')+bt('child','＋ 하위','하위 주제 추가 (Tab)','pri')+bt('skip','⇉ 건너뛰기 ▾','레벨 건너뛰기 — 선택한 주제의 하위 주제를 한두 레벨 건너뛰어 추가합니다(건너뛴 레벨 자리는 비우고 연결선만 길게 이어짐, Shift+Tab). 이미 만든 주제의 건너뛰기 단계도 여기서 바꿀 수 있어요.')+bt('sibling','＋ 형제','같은 단계 주제 추가 (Enter)')+bt('parent','⤴ 상위','선택한 주제 위에 상위 주제 삽입 (Ctrl+Enter)')+bt('del','🗑 삭제','선택한 주제 삭제 (Delete)','dng')+'</span>'
    +'<span class="mm-sep mm-e"></span>'
+   +'<span class="mm-g mm-e">'+bt('flip','⇄ 트리변경','트리변경 — 선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿉니다. 한 번 더 누르면 원래대로 돌아가요. (배치를 새로 고르면 초기화)')+'</span>'
+   +'<span class="mm-sep mm-e"></span>'
    +'<span class="mm-g mm-e">'+bt('undo','↶','실행 취소 (Ctrl+Z)','sq')+bt('redo','↷','다시 실행 (Ctrl+Y)','sq')+'</span>'
    +'<span class="mm-sep mm-e"></span>'
    +'<span class="mm-g">'+bt('expand','⊞ 펼침 ▾','단계별로 펼치기 / 접기','',1)+'</span>'
@@ -32031,6 +32116,10 @@ function buildToolbar(){
    +'<div class="mm-ih">레벨 건너뛰기 <small>(선택한 주제)</small></div>'
    +irow('단계',bt('sk-dec','−','건너뛰기 줄이기 (Ctrl+Shift+←)','sq')+'<span class="mm-skv" data-skv>0</span>'+bt('sk-inc','＋','건너뛰기 늘리기 (Ctrl+Shift+→)','sq')+'<span class="mm-u">단계</span>')
    +'<div class="mm-hint">부모와 이 주제 사이의 레벨 자리를 비우고 연결선을 길게 이어요. 새로 만들 때는 툴바 ⇉ 건너뛰기(Shift+Tab).</div>'
+   +'<div class="mm-ih">트리변경 <small>(선택한 주제의 단계)</small></div>'
+   +irow('현재','<span class="mm-flv" data-flv>-</span>')
+   +'<div class="mm-ir">'+bt('flip','⇄ 트리변경','선택한 주제가 속한 단계의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿉니다 (한 번 더 누르면 원래대로)','wide')+bt('flip-reset','↺ 되돌리기','트리변경한 단계를 모두 원래 배치로 되돌리기')+'</div>'
+   +'<div class="mm-hint">선택한 주제와 같은 단계의 모든 주제가 세로 트리 ↔ 가로 트리로 바뀝니다. 배치를 새로 고르면 초기화돼요.</div>'
    +'<div class="mm-ih">주제 속성</div>'
    +'<div class="mm-ig">'+bt('note','📝 메모','메모(상세 내용) 추가/편집')+bt('link','🔗 링크','웹 링크 추가/편집')+bt('icon','😀 아이콘','이모지 아이콘 넣기')+bt('prio','❗ 우선순위','우선순위 표시')+bt('prog','◔ 진행률','진행률 표시')+bt('task','☑ 체크','체크박스(할 일) 켜기/끄기')+bt('image','🖼 이미지','이미지 넣기 (Ctrl+V로 붙여넣기도 가능)')+bt('bound','▢ 경계','선택한 주제와 하위를 영역으로 묶기')+bt('rel','⤳ 관계선','두 주제를 선으로 연결 (출발 → 대상 클릭)')+bt('outline','📥 개요 가져오기','들여쓰기 텍스트로 마인드맵 만들기')+'</div>'
    +'<div class="mm-ih">적용 범위</div>'
@@ -32044,7 +32133,13 @@ function syncTb(){
   if(!tbEl||!inspEl||!doc) return;
   const S=doc.settings, n=primary&&node(primary), inf=n&&I.get(primary), rs=inf&&inf.rs;
   setSel(tq('[data-f=layout]'),S.layout); setSel(tq('[data-f=edge]'),S.edge); setSel(tq('[data-f=theme]'),S.theme);
-  const horiz=['map','right','left','mixr','mixl','mixb'].includes(S.layout), pal=horiz||S.layout==='mixv';   /* 레벨 정렬: 좌우로 뻗는 가지가 있는 배치 / 부모 정렬: 그 배치 + 세로 혼합트리(중심 주제↔1단계 주제) */
+  const fsx=S.layout==='radial'?null:flipSet(); let mxd=3; I.forEach(x=>{ if(x.depth>mxd) mxd=x.depth; });
+  let horiz=false; if(S.layout!=='radial') for(let d=1;d<=mxd;d++) if(arrOf(S.layout,d,fsx)==='H'){ horiz=true; break; }
+  const pal=horiz;   /* 레벨 정렬·부모 정렬: 옆으로 뻗는(가로) 레벨이 하나라도 있는 배치에서만 */
+  { const fds=flipLevelsOfSel(), flv=tq('[data-flv]'); if(flv) flv.textContent=!fds.length?'주제를 선택하세요':fds.length===1?fds[0]+'단계 · '+ARR_NM[arrOf(S.layout,fds[0],fsx)]+' 트리':fds.join('·')+'단계 선택';
+    const fr=tq('[data-a=flip-reset]'); if(fr) fr.disabled=!(S.lvFlip&&S.lvFlip.length);
+    const lo=tq('[data-f=layout]'); if(lo) [...lo.options].forEach(o=>{ const l=LAYOUTS.find(x=>x[0]===o.value); if(l){ const t=l[1]+((S.lvFlip&&S.lvFlip.length&&o.value===S.layout)?' · 트리변경 '+S.lvFlip.join(','):''); if(o.textContent!==t) o.textContent=t; } });
+    if(lo){ const t='배치 방식'+((S.lvFlip&&S.lvFlip.length)?' — 트리변경한 단계: '+S.lvFlip.join('·')+' (서식 패널 › 트리변경 › 되돌리기)':''); if(lo.title!==t) lo.title=t; } }
   LV_ALIGNS.forEach(a=>{ const b=tq('[data-a=lva-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.lvAlign||'auto')===a[0]); b.disabled=!horiz&&a[0]!=='auto'; } });
   P_ALIGNS.forEach(a=>{ const b=tq('[data-a=pa-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.pAlign||'center')===a[0]); b.disabled=!pal&&a[0]!=='center'; } });
   inspEl.classList.toggle('mm-dim',!n&&!selRel);
@@ -32165,6 +32260,7 @@ function act(a,btn){
     case 'reset-style': resetStyle(); break;
     case 'size-auto': applyStyle({bw:null,bh:null},'st:size'); break;
     case 'sk-dec': stepSkip(-1); break; case 'sk-inc': stepSkip(1); break;
+    case 'flip': flipTree(); break; case 'flip-reset': resetFlips(); break;
     case 'lva-auto': case 'lva-left': case 'lva-right': setLvAlign(a.slice(4)); break;
     case 'pa-center': case 'pa-top': case 'pa-bottom': setPAlign(a.slice(3)); break;
     case 'note': if(!primary) toast('먼저 주제를 선택하세요.'); else openNote(primary); break;
@@ -32186,7 +32282,7 @@ function onField(e){
   if(f==='scope'){ scope=v; saveUi(); return; }
   if(f==='layout'||f==='edge'||f==='theme'){
     if(isRO()) return;
-    mutate(()=>{ doc.settings[f]=v; if(f==='theme'){ const pal=THEMES[v].pal; doc.roots.forEach(rt=>rt.c.forEach((c,i)=>{ c.st=c.st||{}; c.st.lc=pal[i%pal.length]; c.st.lca=1; })); } },'set:'+f);
+    mutate(()=>{ doc.settings[f]=v; if(f==='layout') delete doc.settings.lvFlip; if(f==='theme'){ const pal=THEMES[v].pal; doc.roots.forEach(rt=>rt.c.forEach((c,i)=>{ c.st=c.st||{}; c.st.lc=pal[i%pal.length]; c.st.lca=1; })); } },'set:'+f);
     if(f==='layout') fitView(); if(f==='theme') applyView();
     return;
   }
@@ -32409,7 +32505,7 @@ window.MM={
   fit(){ fitView(); },
   isReadOnly:isRO,
   _dbg:{get doc(){ return doc; },get P(){ return P; },get I(){ return I; },get view(){ return view; },get sel(){ return sel; },get editing(){ return editing; },els,idx:()=>idx,
-        api:{addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary}}
+        api:{flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary}}
 };
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>init()); else init();
 })();
