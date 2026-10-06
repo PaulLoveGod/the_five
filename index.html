@@ -30153,7 +30153,7 @@ function modeStyle(mode,bc,th){
   if(mode==='solid')   return {shape:'rounded',fill:bc,stroke:bc,sw:0,color:readable(bc)};
   if(mode==='tint')    return {shape:'rounded',fill:dk?mix(bc,bg,.72):mix(bc,'#ffffff',.86),stroke:bc,sw:1.5,color:dk?'#e5e7eb':mix(bc,'#000000',.6)};
   if(mode==='outline') return {shape:'rounded',fill:bg,stroke:bc,sw:2,color:dk?'#e5e7eb':'#1f2937'};
-  return {shape:'underline',fill:'none',stroke:bc,sw:2,color:dk?'#e5e7eb':'#1f2937'};
+  return {shape:'plain',fill:'none',stroke:bc,sw:2,color:dk?'#e5e7eb':'#1f2937'};   /* 3단계 이후: 글자만 — 연결선이 글자 높이 가운데로 곧게 이어짐('밑줄' 모양을 직접 고르면 선이 상자 아래쪽에 붙어 꺾임) */
 }
 function rootStyle(th){ return {shape:'pill',fill:th.root,stroke:th.dark?'#94a3b8':th.root,sw:th.dark?2:0,color:readable(th.root)}; }
 const OVR=['shape','fill','stroke','sw','sd','color','ff','fs','b','i','u','s','al','w','iw','bw','bh'];
