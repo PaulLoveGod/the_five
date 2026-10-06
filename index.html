@@ -1880,6 +1880,8 @@ body.mm-fs{overflow:hidden}
 /* ── 서식 패널 '부모 정렬' 버튼: 작은 도식 아이콘 + 글자 ── */
 #mindmapSection .mm-b.pa{padding:0 4px;gap:3px}
 #mindmapSection .mm-b .mm-pai{flex-shrink:0;display:block}
+/* ── 헤더의 AI 버튼(편집 버튼 오른쪽): 전역 '.card-header button' 높이·글자 강제 규칙을 덮어 24px 원형으로 ── */
+#mindmapSection .card-header #mmAiBtn{width:24px!important;min-width:24px;height:24px!important;min-height:0!important;line-height:1!important;padding:0!important;font-size:12px!important;border-radius:50%!important;margin-left:0!important}
 </style>
 <!-- MM-CSS-END -->
 </head>
@@ -3803,6 +3805,7 @@ body.mm-fs{overflow:hidden}
         <span id="stid-mindmap" class="stid-edit" contenteditable="false" spellcheck="false" oninput="MM.titleChanged()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ MindMap</span>
         <span class="pdf-export-hide" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           <button id="mmEditBtn" type="button" class="mm-e" onclick="MM.toggleEdit()" title="편집 모드 켜기/끄기 — 편집 중에는 메뉴 팝업이 표시됩니다" aria-pressed="false">편집</button>
+          <button id="mmAiBtn" type="button" class="ai-btn mm-e" onclick="openAIChat('mindmapOutline','MindMap')" title="AI 어시스턴트 — 주제·자료를 마인드맵 개요로 만들고, 결과의 '본문에 반영'을 누르면 개요 가져오기 창에 채워집니다" aria-label="MindMap AI 어시스턴트 열기">✨</button>
           <span id="mmStatus" style="font-size:9px;color:#94a3b8;font-weight:normal"></span>
         </span>
       </div>
@@ -26889,6 +26892,7 @@ const _BTM_AI_SECTIONS=[
   {id:'technicalAnalysisChart',label:'My Technical Analysis — AI 차트분석(지지/저항/추세선)'},
   {id:'ecoPdfCalendar',label:'경제일정 — 월간캘린더 일정 LIST 만들기(PDF 분석) (Claude·Gemini·ChatGPT만 PDF 지원)'},
   {id:'tradingStrategy',label:'My Trading Strategy With AI Navigator'},
+  {id:'mindmapOutline',label:'MindMap — AI로 개요 만들기 (본문에 반영 → 개요 가져오기)'},
   {id:'btmLangGen',label:'🌐 다국어 생성 (번역)'},
 ];
 const _BTM_AI_PROVIDER_LABELS={claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)','chatgpt-flash':'🟢 ChatGPT(Flash)','chatgpt-pro':'🟢 ChatGPT(Pro)'};
@@ -27568,9 +27572,10 @@ async function _fetchClaudeBalance(){
       /* 결과물 박스 */
       const box=document.createElement('div'); box.className='ai-result-box';
       const lbl=document.createElement('div'); lbl.className='ai-result-label';
-      lbl.textContent='📋 결과물 — 본문에 반영되는 내용';
+      lbl.textContent=(_eid===_MM_EID)?'📋 결과물 — MindMap 개요 가져오기에 반영되는 내용':'📋 결과물 — 본문에 반영되는 내용';
       const cnt=document.createElement('div'); cnt.className='ai-result-content';
-      cnt.innerHTML=_lastResult||_sanitizeResultHtml(result);
+      if(_eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(rawText); }   /* MindMap: 개요 텍스트(들여쓰기 = 단계) 그대로 */
+      else cnt.innerHTML=_lastResult||_sanitizeResultHtml(result);
       box.appendChild(lbl); box.appendChild(cnt);
       div.appendChild(box);
     } else {
@@ -27728,6 +27733,7 @@ Rules:
     const _applyLabel=editorId?'📝 본문에 반영':'📝 메모장에 저장';
     const _b1=g('aiLeftApplyBtn'); if(_b1) _b1.textContent=_applyLabel;
     const _b2=g('aiApplyBtn'); if(_b2) _b2.textContent=_applyLabel;
+    [_b1,_b2].forEach(b=>{ if(b) b.title=(editorId===_MM_EID)?"MindMap 의 '개요 가져오기' 창을 열어 내용을 채워 넣습니다":''; });
     /* Preset / Principle 패널 닫힌 상태로 리셋 */
     ['aiPresetPanel','aiPrinciplePanel'].forEach(id=>{ const el=g(id); if(el) el.style.display='none'; });
     ['aiPresetToggle','aiPrincipleToggle'].forEach(id=>{ const el=g(id); if(el) el.classList.remove('active'); });
@@ -28141,10 +28147,29 @@ Rules:
     openMemoModal();
   }
 
+  /* ── MindMap 전용: 본문(요소)이 없으므로 '본문에 반영' 이 MindMap 의 '개요 가져오기' 창을 열어 내용을 채움 ──
+     (오른쪽 AI 결과의 반영 / 왼쪽 참고자료의 반영 모두. 덮어쓰기·이어쓰기 묻기는 생략 — 개요 가져오기 창에 '교체 / 선택한 주제 아래에 추가'가 있음) */
+  const _MM_EID='mindmapOutline';
+  function _mmOutlineFromReply(reply){
+    const {result}=_parseResult(reply||'');
+    let t=result||reply||'';
+    t=t.replace(/<\/?RESULT>/gi,'').replace(/<br\s*\/?>/gi,'\n').replace(/<\/(?:div|p|li|h[1-6])>/gi,'\n').replace(/<[^>]+>/g,'')
+       .replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+       .replace(/\r/g,'').replace(/\*\*|__/g,'');
+    return t.replace(/^\s*\n+/,'').replace(/\s+$/,'');   /* 앞뒤 빈 줄만 제거 — 줄마다의 들여쓰기는 단계를 뜻하므로 보존 */
+  }
+  function _sendToMindmap(text){
+    text=(text||'').trim(); if(!text) return;
+    if(typeof MM==='undefined'||typeof MM.openOutline!=='function'||!MM.canEdit()){ alert('MindMap을 편집할 수 있는 상태가 아닙니다. (멤버 로그인 후 이용하세요)'); return; }
+    closeAIChat();
+    MM.openOutline(text,'📥 개요 가져오기 — AI 결과 반영');
+  }
+
   window._applyLeftToEditor=function(mode){
     const lc=g('aiLeftContent');
     const rawText=(lc?.textContent||'').trim();
     if(!rawText) return;
+    if(_eid===_MM_EID){ _sendToMindmap((lc.innerText||'').trim()||rawText); return; }
     const el=_eid?g(_eid):null;
     if(!el){ _saveResultToMemo(rawText,false); return; }
 
@@ -28183,6 +28208,7 @@ Rules:
 
   window._applyToEditor=function(mode){
     if(!_lastResult&&!_lastReply) return;
+    if(_eid===_MM_EID){ _sendToMindmap(_mmOutlineFromReply(_lastReply)); return; }
     const el=_eid?g(_eid):null;
     if(!el){ _saveResultToMemo(_lastResult||_md2html(_lastReply),true); return; }
 
@@ -29521,6 +29547,26 @@ Rules:
        — 이게 없으면 "최신"·"최근" 요청 시 학습 컷오프 시점 데이터를 현재인 것처럼 답변함 */
     const _todayForAI=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
 
+    /* MindMap 채팅: 결과물이 '개요 가져오기'(들여쓰기 = 단계)로 그대로 들어가므로 순수 텍스트 개요 형식을 강제 */
+    const _mmRules=(_eid===_MM_EID)?`
+
+[MindMap 개요 작성 규칙 — 이 채팅의 결과물은 MindMap 의 '개요 가져오기'에 그대로 들어가며, 위 [답변 형식 규칙]의 서식(HTML·강조) 관련 내용보다 이 규칙이 우선합니다]
+- 마인드맵으로 만들 내용은 <RESULT> 와 </RESULT> 사이에 '개요 텍스트'로만 작성하세요. HTML 태그, 마크다운 기호(**, ## 등), 번호·글머리 기호는 쓰지 않습니다.
+- 한 줄에 주제 하나. 첫 줄은 중심 주제 1개(들여쓰기 없음)이고, 그 아래 주제는 한 단계 깊어질 때마다 스페이스 2칸씩 들여씁니다.
+- 각 주제는 문장이 아니라 짧은 명사구·키워드(가급적 20자 이내)로 쓰고, 깊이는 보통 3~4단계, 한 주제 아래 하위 주제는 2~7개 정도로 구성하세요.
+- 사용자가 '마인드맵'이라고 말하지 않아도 이 채팅에서 만드는 결과물은 항상 이 개요 형식입니다. [현재 참고 자료]가 있으면 그 내용을 구조화해 개요로 만드세요.
+
+예시:
+<RESULT>
+투자 전략
+  시장 분석
+    금리
+    환율
+  종목 선정
+    성장성
+    밸류에이션
+</RESULT>`:'';
+
     const sys=`당신은 BTM 투자 리포트 작성을 돕는 AI 어시스턴트입니다.
 
 [오늘 날짜]
@@ -29549,7 +29595,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${fmtCtx}
 · S&P 500은 전일 대비 1.2% 상승하며 5,400선을 돌파했습니다.
 </RESULT>
 
-단순 질문·대화·설명만 요청하는 경우에는 <RESULT> 태그를 사용하지 않아도 됩니다.
+단순 질문·대화·설명만 요청하는 경우에는 <RESULT> 태그를 사용하지 않아도 됩니다.${_mmRules}
 위 내용을 참고하여 사용자 요청에 한국어로 답변하세요.`;
 
     /* 파일 첨부 + 입력창 이미지 처리 */
@@ -31689,6 +31735,15 @@ function openOutlineImport(initial,title){
   ],{focus:'#mmOutTa',w:560});
   return w;
 }
+/* 외부(AI 팝업의 '본문에 반영')에서 호출: 편집 모드를 켜고 '개요 가져오기' 창을 열어 text 를 채워 넣음 — 편집 권한이 없으면 false */
+function openOutline(text,title){
+  if(!doc||!stage) return false;
+  if(permRO()){ toast('이 화면에서는 마인드맵을 편집할 수 없습니다.'); return false; }
+  if(!editMode) setEdit(true);
+  closeMenus();
+  openOutlineImport(String(text==null?'':text),title);
+  return true;
+}
 function replaceWithOutline(forest,title){
   mutate(()=>{
     let root; const list=buildFromParsed(forest);
@@ -32298,7 +32353,7 @@ function load(d,opt){
   return true;
 }
 window.MM={
-  init, load, serialize, titleChanged, setEdit, toggleEdit,
+  init, load, serialize, titleChanged, setEdit, toggleEdit, openOutline,
   isEditing(){ return editMode; }, canEdit(){ return !permRO(); },
   refresh(){ if(stage){ measure(true); render(); } },
   fit(){ fitView(); },
