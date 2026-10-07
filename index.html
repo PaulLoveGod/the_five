@@ -1705,6 +1705,15 @@ body #mindmapSection .mm-search input,body #mindmapSection .mm-v input{pointer-e
 #mindmapSection .mm-lh:hover{background:#dbeafe}
 #mindmapSection .mm-lh.s{width:calc(9px*var(--mm-inv,1));height:calc(9px*var(--mm-inv,1));margin:calc(-4.5px*var(--mm-inv,1)) 0 0 calc(-4.5px*var(--mm-inv,1));background:#2563eb;border:calc(1.5px*var(--mm-inv,1)) solid #fff;border-radius:calc(1.5px*var(--mm-inv,1));transform:rotate(45deg)}
 #mindmapSection .mm-lh.s:hover{background:#1d4ed8}
+/* 연결 부위 아이콘(빨간 동그라미 ↔) — 선택한 주제의 연결선이 붙은 자리 / 끌 때 도형 네 변 가운데에 같은 아이콘 */
+#mindmapSection .mm-phl{position:absolute;left:0;top:0;width:0;height:0;z-index:7;pointer-events:none}
+#mindmapSection .mm-ph{position:absolute;box-sizing:border-box;width:calc(17px*var(--mm-inv,1));height:calc(17px*var(--mm-inv,1));margin:calc(-8.5px*var(--mm-inv,1)) 0 0 calc(-8.5px*var(--mm-inv,1));border-radius:50%;background:#e11d48;border:calc(1.5px*var(--mm-inv,1)) solid #fff;box-shadow:0 0 0 calc(1px*var(--mm-inv,1)) #e11d48,0 calc(1px*var(--mm-inv,1)) calc(3px*var(--mm-inv,1)) rgba(0,0,0,.35);color:#fff;font:700 calc(11px*var(--mm-inv,1))/1 'Segoe UI Symbol','Segoe UI',Arial,sans-serif;font-style:normal;display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;white-space:nowrap}
+#mindmapSection .mm-ph:hover{background:#be123c}
+#mindmapSection .mm-ph.t{pointer-events:none;cursor:default}
+#mindmapSection .mm-ph.t.cur{opacity:.55}
+#mindmapSection .mm-ph.t.hot{background:#be123c;box-shadow:0 0 0 calc(3px*var(--mm-inv,1)) rgba(225,29,72,.35),0 calc(1px*var(--mm-inv,1)) calc(3px*var(--mm-inv,1)) rgba(0,0,0,.35)}
+#mindmapSection .mm-ph.drag{pointer-events:none;cursor:grabbing;opacity:.95}
+#mindmapSection.mm-pdragging .mm-stage,#mindmapSection .mm-stage.mm-pdragging{cursor:grabbing}
 #mindmapSection .mm-nodes{position:absolute;left:0;top:0;width:0;height:0}
 #mindmapSection .mm-msg{position:absolute;left:0;right:0;top:40%;text-align:center;color:#94a3b8;font-size:12px;pointer-events:none}
 
@@ -1903,7 +1912,7 @@ body.mm-fs{overflow:hidden}
 #mindmapSection .mm-insp .mm-flv{flex:1;min-width:0;font-size:11px;font-weight:800;color:#1e3a5f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mindmapSection .mm-insp .mm-skv{min-width:22px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;color:#1e3a5f}
 #mindmapSection .mm-insp .mm-hint{font-size:10px;line-height:1.4;color:#94a3b8;margin:-1px 0 4px 2px}
-@media print{#mindmapSection .mm-rhl,#mindmapSection .mm-lhl,#mindmapSection .mm-lsel{display:none!important}}
+@media print{#mindmapSection .mm-rhl,#mindmapSection .mm-lhl,#mindmapSection .mm-phl,#mindmapSection .mm-lsel{display:none!important}}
 /* ── 서식 패널 '부모 정렬' 버튼: 작은 도식 아이콘 + 글자 ── */
 #mindmapSection .mm-b.pa{padding:0 4px;gap:3px}
 #mindmapSection .mm-b .mm-pai{flex-shrink:0;display:block}
@@ -30462,6 +30471,7 @@ function sanitize(d){
     if(depth>0&&n.sk>=1&&n.sk<=MAX_SKIP) o.sk=n.sk|0;   /* 레벨 건너뛰기(중심 주제는 제외) */
     { const ox=clamp(Math.round((+n.ox||0)*10)/10,-1e6,1e6), oy=clamp(Math.round(+n.oy||0),-1e6,1e6); if(ox||oy){ o.ox=ox; o.oy=oy; } if(depth>0){ const lx=clamp(Math.round((+n.lx||0)*10)/10,-1e6,1e6); if(lx) o.lx=lx; } }   /* 우클릭 드래그로 손수 옮긴 거리 — 주제는 자동 배치 자리 기준(하위 가지도 따라감), 중심 주제는 그 상자만(하위 주제는 제자리) · 중심 주제 트리 전체의 위치는 px/py 로 따로 / lx: 레벨 정렬(왼쪽·가운데·오른쪽)이 레벨 맨 위 주제에 맞추느라 옮긴 가로 거리(ox 와 같이 하위 가지가 따라감) */
     if(depth>0&&Array.isArray(n.lp)){ const c=v=>(v==null?null:clamp(Math.round((+v||0)*10)/10,-1e5,1e5)); const lp=n.lp.slice(0,30).map(q=>(Array.isArray(q)&&q.length>=2)?[c(q[0]),c(q[1])]:null).filter(Boolean); if(lp.length) o.lp=lp; }   /* 연결선 꺾임점(마디) — 자식 포트 기준 (a,b) 좌표 목록, null = 포트 줄을 따라다님 */
+    if(depth>0&&(n.ps==='L'||n.ps==='R'||n.ps==='U'||n.ps==='D')) o.ps=n.ps;   /* 연결 부위 — 연결선이 붙는 변(배치가 정한 변이 아닌 사용자가 고른 것) */
     if(n.st&&typeof n.st==='object'){ const s=cleanStyle(n.st); if(Object.keys(s).length) o.st=s; }
     { const rr=cleanRuns(n.rt,o.t); if(rr) o.rt=rr; }   /* 글자 일부 서식 */
     if(Array.isArray(n.ic)&&n.ic.length) o.ic=n.ic.filter(x=>typeof x==='string').slice(0,8);
@@ -30590,6 +30600,7 @@ let matches=new Set(), searchQ='';
 let relMode=null;             /* 관계선 만들기 모드: {src:null|id} */
 let dragState=null;
 let lhl=null;                 /* 선택한 연결선의 꺾임점·구간 핸들 층(월드 좌표) */
+let phl=null;                 /* 선택한 주제의 연결 부위 아이콘(빨간 ↔) 층(월드 좌표) */
 let rhl=null, _hk=0;          /* rhl: 크기 조절 손잡이 층(월드 좌표) / _hk: 손잡이를 마지막으로 그린 확대율 */
 
 /* ───────── 렌더링 파이프라인 ─────────
@@ -30747,7 +30758,7 @@ function applyFree(root){
 /* 중심 주제마다 독립된 트리: ① 루트 중심이 (0,0)인 좌표로 배치 ② 기준점으로 평행 이동.
    기준점은 직접 옮겨 둔 위치(root.px/py)가 있으면 그것, 없으면 앞 트리들의 오른쪽에 간격을 두고 자동 배치 */
 function computeLayout(){
-  P.clear(); SP.clear(); SC.clear(); SB.clear(); ORG.clear(); BX=null; LVG.length=0;
+  P.clear(); SP.clear(); SC.clear(); SB.clear(); ORG.clear(); BX=null; RC=null; LVG.length=0;
   const L=doc.settings.layout, gapT=Math.max(90,doc.settings.hgap*2), FS=L==='radial'?null:flipSet();
   let right=null;
   doc.roots.forEach(root=>{
@@ -31036,13 +31047,13 @@ function pathD(e,style){
   return `M${f1(sx)} ${f1(sy)}C${f1(sx)} ${f1(my)} ${f1(ex)} ${f1(my)} ${f1(ex)} ${f1(ey)}`;
 }
 /* ───────── 연결선 경로: 바깥쪽 포트 + 꺾은선 ─────────
-   포트: 부모는 자식 쪽 변, 자식은 부모 쪽 변(배치 방향 dir 이 정함) — 어디로 옮겨도 바뀌지 않음. 포트에서 바깥으로 STUB 만큼 곧게 나간 뒤 꺾임.
+   포트: 부모는 자식 쪽 변, 자식은 부모 쪽 변(배치 방향 dir 이 정함) — 어디로 옮겨도 바뀌지 않음(자식 쪽 변은 사용자가 연결 부위 아이콘으로 바꿀 수 있음: n.ps — 아래 '연결 부위' 절). 포트에서 바깥으로 STUB 만큼 곧게 나간 뒤 꺾임.
    좌표계(a,b): 원점 = 자식 포트 E, a = 부모→자식 진행 방향(자식 포트로 들어가는 방향), b = 그에 수직. 사용자 마디(n.lp)도 이 좌표계로 저장 → 자식이 옮겨져도 마디가 자식을 따라가고,
    배치 방향이 좌우로 뒤집혀도(양쪽 마인드맵의 왼쪽 가지 등) 모양이 그대로 거울처럼 따라감.
    자동 경로: ① 자식이 부모 포트 앞쪽에 충분히 있으면 한 번 꺾는 H-V-H(세로·가로 한 줄기는 배치가 정한 '복도' 자리 — 부모와 자식 열 사이) ② 아니면(자식이 부모 옆·뒤로 옮겨짐) 두 상자의 위·아래 틈이나 바깥으로 돌아가는 5구간 */
 const STUB=12, CLR=3, NOSKIP=new Set();   /* CLR: 연결선과 다른 주제 상자 사이 최소 여백 */
 /* 월드 좌표의 가로·세로 선분이 skip 에 든 주제를 뺀 모든 주제 상자(여백 CLR 포함)를 지나지 않는가 — 상자 목록은 배치가 바뀔 때마다(computeLayout) 새로 만듦 */
-let BX=null;
+let BX=null, RC=null;   /* RC: 연결 부위를 바꾼 연결선의 자동 경로 캐시 — 배치가 바뀔 때마다(computeLayout) 새로 */
 function boxList(){ if(!BX){ BX=[]; P.forEach((q,qid)=>{ BX.push({id:qid,x0:q.x,y0:q.y,x1:q.x+q.w,y1:q.y+q.h}); }); } return BX; }
 function lineFree(skip,x0,y0,x1,y1){
   const L=boxList(), ax0=Math.min(x0,x1), ax1=Math.max(x0,x1), ay0=Math.min(y0,y1), ay1=Math.max(y0,y1);
@@ -31050,12 +31061,114 @@ function lineFree(skip,x0,y0,x1,y1){
   return true;
 }
 const LINE_FRAME={R:{H:[1,0],Q:[0,1]},L:{H:[-1,0],Q:[0,1]},D:{H:[0,1],Q:[1,0]},U:{H:[0,-1],Q:[1,0]}};
+/* ───────── 연결 부위(포트) 바꾸기 + 가장 단순한(꺾임 최소) 꺾은선 ─────────
+   주제의 n.ps = 'L'|'R'|'U'|'D' : 부모와 이어지는 연결선이 이 주제의 어느 변 가운데에 붙는지(없으면 배치가 정한 변 — 오른쪽 트리의 하위 주제는 왼쪽 변).
+   부모 쪽은 늘 배치가 정한 변. ps 를 바꾸면 minBendPath 가 두 포트 사이를 꺾임이 가장 적은 직각 경로로 이음(같은 꺾임 수면 짧은 쪽, 상자 사이 골목 가운데 우선). */
+const SIDE_V={L:[-1,0],R:[1,0],U:[0,-1],D:[0,1]};   /* 변에서 바깥으로 나가는 방향 */
+const SIDE_IN={L:'R',R:'L',U:'D',D:'U'};            /* 그 변으로 들어올 때의 진행 방향(= LINE_FRAME 의 키) */
+const DIR_SIDE={R:'L',L:'R',D:'U',U:'D'};           /* 배치 방향(부모→자식) → 자식 쪽 기본 변 */
+const DIRV=[[1,0],[0,1],[-1,0],[0,-1]], dIdx=v=>v[0]>0?0:v[1]>0?1:v[0]<0?2:3;
+function sidePt(p,s,u){ const cy=u?p.y+p.h:p.y+p.h/2; return s==='L'?[p.x,cy]:s==='R'?[p.x+p.w,cy]:s==='U'?[p.x+p.w/2,p.y]:[p.x+p.w/2,p.y+p.h]; }   /* u: 밑줄 모양이면 좌우 포트는 밑줄 높이(상자 아래) */
+function portSide(n,cp){ const d=DIR_SIDE[cp.dir]; if(!d) return null; const s=n&&n.ps; return (s&&s!==d&&SIDE_V[s])?s:d; }   /* 이 주제의 연결선이 붙는 변(방사형은 null) */
+/* S1(부모 포트에서 STUB 나간 점, 진행 방향 ds) → E1(자식 포트 앞 STUB 점, 마지막은 −de 방향으로 포트에 들어감): 후보 좌표 격자에서 Dijkstra —
+   비용 = 꺾임 수 × BEND + 길이 + 줄 위치 선호도(상자 사이 골목 가운데 0 · 시작·끝 줄 0.5 · 상자 바깥 줄 1). 부모·자식 상자는 늘 피하고, 둘레의 다른 주제 상자도 피하되(길이 없으면 무시) */
+function minBendPath(S1,ds,E1,de,pp,cp,skip){
+  const BEND=1e6, g=STUB, d0=dIdx(ds), dE=dIdx([-de[0],-de[1]]), kq=v=>Math.round(v*1e6)/1e6;
+  const rc=q=>({x0:q.x,y0:q.y,x1:q.x+q.w,y1:q.y+q.h}), must=[rc(pp),rc(cp)], near=[];
+  { const m=80, x0=Math.min(S1[0],E1[0],must[0].x0,must[1].x0)-m, x1=Math.max(S1[0],E1[0],must[0].x1,must[1].x1)+m, y0=Math.min(S1[1],E1[1],must[0].y0,must[1].y0)-m, y1=Math.max(S1[1],E1[1],must[0].y1,must[1].y1)+m;
+    boxList().forEach(q=>{ if(near.length<24&&!skip.has(q.id)&&q.x1>x0&&q.x0<x1&&q.y1>y0&&q.y0<y1) near.push(q); }); }
+  const attempt=boxes=>{
+    const ex=boxes.map(b=>({x0:b.x0-CLR,y0:b.y0-CLR,x1:b.x1+CLR,y1:b.y1+CLR})).filter(r=>!(S1[0]>r.x0&&S1[0]<r.x1&&S1[1]>r.y0&&S1[1]<r.y1)&&!(E1[0]>r.x0&&E1[0]<r.x1&&E1[1]>r.y0&&E1[1]<r.y1));   /* 포트 앞 점이 이미 안에 든 상자(바로 옆에 붙은 이웃)는 피할 수 없으니 장애물에서 뺌 */
+    const blocked=(xa,ya,xb,yb)=>{ const ax0=Math.min(xa,xb), ax1=Math.max(xa,xb), ay0=Math.min(ya,yb), ay1=Math.max(ya,yb); for(let i=0;i<ex.length;i++){ const r=ex[i]; if(ax1>r.x0&&ax0<r.x1&&ay1>r.y0&&ay0<r.y1) return true; } return false; };
+    const xs=new Map(), ys=new Map(), put=(m,v,c)=>{ const k=kq(v), o=m.get(k); if(o===undefined||c<o) m.set(k,c); };
+    put(xs,S1[0],.5); put(xs,E1[0],.5); put(ys,S1[1],.5); put(ys,E1[1],.5); put(xs,(S1[0]+E1[0])/2,0); put(ys,(S1[1]+E1[1])/2,0);
+    const wx=new Set(), wy=new Set();
+    boxes.forEach(b=>{ wx.add(b.x0); wx.add(b.x1); wy.add(b.y0); wy.add(b.y1); put(xs,b.x0-g,1); put(xs,b.x1+g,1); put(ys,b.y0-g,1); put(ys,b.y1+g,1); });
+    const mids=(set,m)=>{ const a=[...set].sort((p,q)=>p-q); for(let i=0;i+1<a.length;i++) if(a[i+1]-a[i]>2*CLR+2) put(m,(a[i]+a[i+1])/2,0); };
+    mids(wx,xs); mids(wy,ys);
+    const X=[...xs.keys()].sort((p,q)=>p-q), Y=[...ys.keys()].sort((p,q)=>p-q), nx=X.length, ny=Y.length;
+    const CX=X.map(v=>xs.get(v)), CY=Y.map(v=>ys.get(v)), ix=new Map(X.map((v,i)=>[v,i])), iy=new Map(Y.map((v,i)=>[v,i]));
+    const iS=ix.get(kq(S1[0])), jS=iy.get(kq(S1[1])), iE=ix.get(kq(E1[0])), jE=iy.get(kq(E1[1]));
+    if(iS==null||jS==null||iE==null||jE==null) return null;
+    const N=nx*ny*4, dist=new Float64Array(N).fill(Infinity), prev=new Int32Array(N).fill(-1), heap=[];
+    const hpush=(c,s)=>{ let i=heap.length; heap.push([c,s]); while(i>0){ const p=(i-1)>>1; if(heap[p][0]<=heap[i][0]) break; const t=heap[p]; heap[p]=heap[i]; heap[i]=t; i=p; } };
+    const hpop=()=>{ const top=heap[0], last=heap.pop(); if(heap.length){ heap[0]=last; let i=0; for(;;){ const l=2*i+1, r=l+1; let m=i; if(l<heap.length&&heap[l][0]<heap[m][0]) m=l; if(r<heap.length&&heap[r][0]<heap[m][0]) m=r; if(m===i) break; const t=heap[m]; heap[m]=heap[i]; heap[i]=t; i=m; } } return top; };
+    const st0=(jS*nx+iS)*4+d0; dist[st0]=0; hpush(0,st0);
+    let best=Infinity, bestS=-1;
+    while(heap.length){
+      const top=hpop(), c=top[0], s=top[1]; if(c>dist[s]) continue; if(c>=best) break;
+      const d=s&3, ij=s>>2, i=ij%nx, j=(ij-i)/nx;
+      if(i===iE&&j===jE&&d!==((dE+2)&3)){ const f=c+(d===dE?0:BEND); if(f<best){ best=f; bestS=s; } }
+      for(let nd=0;nd<4;nd++){
+        if(nd===((d+2)&3)) continue;
+        const ni=i+DIRV[nd][0], nj=j+DIRV[nd][1]; if(ni<0||nj<0||ni>=nx||nj>=ny) continue;
+        if(blocked(X[i],Y[j],X[ni],Y[nj])) continue;
+        const bend=nd===d?0:1, nc=c+Math.abs(X[ni]-X[i])+Math.abs(Y[nj]-Y[j])+(bend?BEND+((nd&1)?CX[ni]:CY[nj]):0), ns=(nj*nx+ni)*4+nd;
+        if(nc<dist[ns]){ dist[ns]=nc; prev[ns]=s; hpush(nc,ns); }
+      }
+    }
+    if(bestS<0) return null;
+    const raw=[]; for(let s=bestS;s>=0;s=prev[s]){ const ij=s>>2, i=ij%nx, j=(ij-i)/nx; raw.push([X[i],Y[j]]); if(s===st0) break; }
+    raw.reverse(); raw[0]=[S1[0],S1[1]]; raw[raw.length-1]=[E1[0],E1[1]];
+    const out=[raw[0]];
+    for(let k=1;k<raw.length-1;k++){ const a=out[out.length-1], b=raw[k], c2=raw[k+1]; if(Math.abs((b[0]-a[0])*(c2[1]-b[1])-(b[1]-a[1])*(c2[0]-b[0]))<1e-6) continue; out.push(b); }
+    out.push(raw[raw.length-1]);
+    return out;
+  };
+  /* 처음엔 둘레(80px) 상자만 장애물로 — 찾은 경로가 그 밖의 상자를 지나면 그 상자를 더해 다시 찾음 */
+  const all=boxList(), inR=(q,p)=>p[0]>q.x0-CLR&&p[0]<q.x1+CLR&&p[1]>q.y0-CLR&&p[1]<q.y1+CLR, forced=new Set();
+  all.forEach(q=>{ if(!skip.has(q.id)&&(inR(q,S1)||inR(q,E1))) forced.add(q); });   /* 포트 앞 점을 이미 덮은 이웃은 피할 수 없음 */
+  const crosses=(pt,q)=>{ for(let i=0;i+1<pt.length;i++){ const a=pt[i], b=pt[i+1]; if(Math.max(a[0],b[0])>q.x0-CLR&&Math.min(a[0],b[0])<q.x1+CLR&&Math.max(a[1],b[1])>q.y0-CLR&&Math.min(a[1],b[1])<q.y1+CLR) return true; } return false; };
+  const boxes=must.concat(near.filter(q=>!forced.has(q)));
+  let path=null;
+  for(let tr=0;tr<6;tr++){
+    path=attempt(boxes); if(!path) break;
+    const hits=all.filter(q=>!skip.has(q.id)&&!forced.has(q)&&boxes.indexOf(q)<0&&crosses(path,q));
+    if(!hits.length) return path;
+    hits.slice(0,30).forEach(q=>boxes.push(q));
+    if(boxes.length>110) break;
+  }
+  return path||attempt(must)||attempt([])||[S1,[E1[0],S1[1]],E1];
+}
+/* 포트에서 dv 방향 바로 앞에 이웃 상자가 있으면(형제 사이 틈 등) 곧게 나가는 길이를 그 틈에 맞춰 줄임 — 기본 STUB, 좁으면 틈의 절반(최소 CLR+1) */
+function stubFor(pt,dv,selfId){
+  let gap=1e9;
+  boxList().forEach(q=>{
+    if(q.id===selfId) return;
+    if(dv[0]){ if(pt[1]>q.y0-CLR&&pt[1]<q.y1+CLR){ const d=dv[0]>0?q.x0-pt[0]:pt[0]-q.x1; if(d>=-0.5&&d<gap) gap=Math.max(0,d); } }
+    else if(pt[0]>q.x0-CLR&&pt[0]<q.x1+CLR){ const d=dv[1]>0?q.y0-pt[1]:pt[1]-q.y1; if(d>=-0.5&&d<gap) gap=Math.max(0,d); }
+  });
+  return STUB>gap-CLR-1?Math.max(CLR+1,gap/2):STUB;
+}
+/* 연결 부위를 바꾼 연결선(ps)의 경로 — 부모 쪽은 배치가 정한 변, 자식 쪽은 고른 변. 좌표계(a,b)는 자식 포트 E 기준(a = 포트로 들어가는 방향)이라 마디(n.lp)·핸들 편집이 그대로 동작. 마디엔 null 을 쓰지 않음 */
+function routeOv(id,inf,pp,cp,lp,cs){
+  const pu=I.get(inf.p.id).rs.shape==='underline', cu=inf.rs.shape==='underline';
+  const S=sidePt(pp,cp.dir,pu), E=sidePt(cp,cs,cu), ds=SIDE_V[cp.dir], de=SIDE_V[cs];
+  const fr=LINE_FRAME[SIDE_IN[cs]], H=fr.H, Q=fr.Q;
+  const toF=(x,y)=>[(x-E[0])*H[0]+(y-E[1])*H[1],(x-E[0])*Q[0]+(y-E[1])*Q[1]];
+  const fromF=(a,b)=>[E[0]+a*H[0]+b*Q[0],E[1]+a*H[1]+b*Q[1]];
+  const ck=id+'|'+cs;
+  let c=RC&&RC.get(ck);   /* 자동 경로·곧은 길이는 배치가 바뀔 때까지 캐시 */
+  if(!c){
+    const ms=stubFor(S,ds,inf.p.id), me=stubFor(E,de,id);   /* 포트에서 곧게 나가는 길이(이웃이 바로 앞이면 짧게) */
+    const path=minBendPath([S[0]+ds[0]*ms,S[1]+ds[1]*ms],ds,[E[0]+de[0]*me,E[1]+de[1]*me],de,pp,cp,new Set([inf.p.id,id]));
+    c={ms,me,autoRaw:path.slice(1,-1).map(q=>toF(q[0],q[1]))};
+    if(!RC) RC=new Map(); RC.set(ck,c);
+  }
+  const ms=c.ms, me=c.me, autoRaw=c.autoRaw;
+  const Sp=toF(S[0],S[1]), S1=toF(S[0]+ds[0]*ms,S[1]+ds[1]*ms), E1=[-me,0];
+  const raw=lp?lp.map(q=>[q[0],q[1]]):autoRaw.map(q=>[q[0],q[1]]), wp=raw.map(q=>[q[0]==null?0:q[0],q[1]==null?0:q[1]]), auto=autoRaw.map(q=>[q[0],q[1]]);
+  const F=[Sp,S1].concat(wp,[E1,[0,0]]);
+  return {id,e:{sx:S[0],sy:S[1],ex:E[0],ey:E[1],v:0},H,Q,toF,fromF,S:Sp,S1,E1,auto,autoRaw,raw,wp,custom:!!lp,normal:false,ov:true,pts:F.map(q=>fromF(q[0],q[1]))};
+}
 function routeOf(id,forEdit){
   const inf=I.get(id); if(!inf||!inf.p) return null;
   const pp=P.get(inf.p.id), cp=P.get(id); if(!pp||!cp) return null;
   const fr=LINE_FRAME[cp.dir]; if(!fr) return null;   /* 방사형(C)은 상자 가장자리끼리 곧게 잇는 기존 방식 */
   const n=inf.n, lp=(Array.isArray(n.lp)&&n.lp.length)?n.lp:null;
-  if(!lp&&!cp.oo&&!cp.po&&!forEdit) return null;       /* 평소 연결선은 기존 그대로 */
+  const cs=portSide(n,cp), ov=!!cs&&cs!==DIR_SIDE[cp.dir];   /* 연결 부위를 바꾼 주제 */
+  if(!lp&&!cp.oo&&!cp.po&&!forEdit&&!ov) return null;       /* 평소 연결선은 기존 그대로 */
+  if(ov) return routeOv(id,inf,pp,cp,lp,cs);
   const pu=I.get(inf.p.id).rs.shape==='underline', cu=inf.rs.shape==='underline';
   const e=edgeEnds(pp,cp,pu,cu), H=fr.H, Q=fr.Q;
   const toF=(x,y)=>[(x-e.ex)*H[0]+(y-e.ey)*H[1],(x-e.ex)*Q[0]+(y-e.ey)*Q[1]];
@@ -31204,7 +31317,7 @@ function drawSvg(){
 function applyView(){
   world.style.transform=`translate(${f1(view.x)}px,${f1(view.y)}px) scale(${view.k})`;
   world.style.setProperty('--mm-inv',(1/view.k).toFixed(4));   /* 크기 조절 손잡이가 확대/축소와 상관없이 화면에서 같은 크기로 보이게 */
-  if(Math.abs(view.k-_hk)>1e-4){ _hk=view.k; updateHandles(); }
+  if(Math.abs(view.k-_hk)>1e-4){ _hk=view.k; updateHandles(); updatePortHandle(); }
   const bgm=editMode?doc.settings.bg:'plain', k=view.k, th=theme();   /* 점·격자 무늬는 편집 중에만 */
   stage.style.backgroundColor=th.bg;
   const dot=th.dark?'rgba(148,163,184,.30)':'rgba(100,116,139,.32)', line=th.dark?'rgba(148,163,184,.14)':'rgba(100,116,139,.14)';
@@ -31272,7 +31385,7 @@ function updateHud(){
   if(!hud) return;
   let total=0; walkAll(()=>total++);
   const st=$('mmStatus'); if(st){ const un=unsavedMm(); st.textContent='주제 '+total+'개'+(un?' · 저장 전':''); st.title=un?'💾 Save 하지 않은 수정이 있어요 — 창을 닫거나 다른 날짜의 리포트를 불러오면 사라지고, 다시 열면 마지막으로 저장한 상태로 돌아옵니다':''; }
-  hud.textContent=editMode?'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · 좌드래그 범위 선택 · 빈 곳 우드래그·두 손가락 스크롤 화면 이동 · 주제 우드래그 자유 이동 · 연결선 클릭 꺾임 편집 · 우클릭 메뉴 · Ctrl+휠·핀치 확대/축소':'';   /* 보기 모드에서는 깔끔하게 비움 */
+  hud.textContent=editMode?'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · 좌드래그 범위 선택 · 빈 곳 우드래그·두 손가락 스크롤 화면 이동 · 주제 우드래그 자유 이동 · 연결선 클릭 꺾임 편집 · 주제 선택 후 빨간 ↔ 끌기 연결 부위 변경 · 우클릭 메뉴 · Ctrl+휠·핀치 확대/축소':'';   /* 보기 모드에서는 깔끔하게 비움 */
 }
 /* ───────── 선택 ───────── */
 function selIds(){ return [...sel].filter(id=>idx.has(id)); }
@@ -31292,13 +31405,13 @@ function refreshSelUI(){
     el.classList.toggle('match',matches.has(id));
     el.classList.toggle('rel-src',!!(relMode&&relMode.src===id));
   });
-  updatePlus(); updateHandles(); updateLineHandles();
+  updatePlus(); updateHandles(); updateLineHandles(); updatePortHandle();
 }
 /* 선택한 주제마다 8곳(네 변의 가운데 + 네 모서리)에 크기 조절 손잡이를 그림 — 월드 좌표 층(#mmWorld > .mm-rhl)이라 확대/축소와 함께 움직이고 크기는 화면 기준 일정 */
 const HANDLE_CAP=40, RS_MINW=36, RS_MINH=18;
 function updateHandles(){
   if(!rhl) return;
-  const busy=isRO()||editing||relMode||dragState||!sel.size||(gesture&&gesture.type==='band'&&gesture.moved)||(gesture&&gesture.fm);
+  const busy=isRO()||editing||relMode||dragState||!sel.size||(gesture&&gesture.type==='band'&&gesture.moved)||(gesture&&(gesture.fm||(gesture.type==='pdrag'&&gesture.moved)));
   if(busy){ if(rhl.firstChild) rhl.textContent=''; return; }
   let ids=selIds().filter(id=>P.has(id)&&I.has(id));
   if(ids.length>HANDLE_CAP) ids=ids.includes(primary)?[primary]:ids.slice(0,1);   /* 너무 많이 선택했을 땐 기준 주제 하나에만(끌면 선택한 모두가 함께 바뀜) */
@@ -31307,8 +31420,9 @@ function updateHandles(){
     const p=P.get(id), sw=p.w*k, sh=p.h*k; if(sw<14||sh<14) return;
     const pt=(t,px,py)=>{ h+='<i class="mm-rh" data-h="'+t+'" data-id="'+id+'" title="끌어서 크기 조절 (여러 주제를 선택했으면 함께 · Shift+모서리: 비율 유지 · 더블클릭: 자동 크기)" style="left:'+f1(px)+'px;top:'+f1(py)+'px"></i>'; };
     pt('nw',p.x,p.y); pt('ne',p.x+p.w,p.y); pt('se',p.x+p.w,p.y+p.h); pt('sw',p.x,p.y+p.h);
-    if(sw>=30){ pt('n',p.x+p.w/2,p.y); pt('s',p.x+p.w/2,p.y+p.h); }
-    if(sh>=24){ pt('w',p.x,p.y+p.h/2); pt('e',p.x+p.w,p.y+p.h/2); }
+    const pi=(ids.length===1&&id===primary)?portIconInfo(id):null, sk=pi?{L:'w',R:'e',U:'n',D:'s'}[pi.side]:null;   /* 연결 부위 아이콘(빨간 ↔)이 있는 변의 가운데 손잡이는 아이콘이 대신함 */
+    if(sw>=30){ if(sk!=='n') pt('n',p.x+p.w/2,p.y); if(sk!=='s') pt('s',p.x+p.w/2,p.y+p.h); }
+    if(sh>=24){ if(sk!=='w') pt('w',p.x,p.y+p.h/2); if(sk!=='e') pt('e',p.x+p.w,p.y+p.h/2); }
   });
   rhl.innerHTML=h;
 }
@@ -31342,6 +31456,7 @@ const r1=v=>v==null?null:Math.round(v*10)/10;
 function lockEnds(list,fr,tol,keepA){   /* keepA[i]: 그 꺾임점의 a 가 원래 포트 줄에 붙어(null) 있었는가 — a 는 원래 붙어 있던 것만 다시 붙임(b 는 가까우면 새로 붙음) */
   const k=list.length, raw=list.map(q=>[q[0],q[1]]);
   if(!k) return raw;
+  if(fr.ov) return raw.map(q=>[r1(q[0]),r1(q[1])]);   /* 연결 부위를 바꾼 선: 포트 줄(null)에 붙이지 않고 숫자 그대로 */
   const f=raw[0];
   if(Math.abs(f[1]-fr.S[1])<=tol) f[1]=null;
   if(keepA&&keepA[0]&&Math.abs(f[0]-fr.S1[0])<=tol) f[0]=null;
@@ -31351,7 +31466,7 @@ function lockEnds(list,fr,tol,keepA){   /* keepA[i]: 그 꺾임점의 a 가 원�
 function startLineDrag(e,lh){
   const id=lh.dataset.id, n=node(id), R=routeOf(id,true); if(!n||!R) return;
   e.preventDefault();
-  gesture={type:'ldrag',id,k:lh.dataset.k,i:+lh.dataset.i,sx:e.clientX,sy:e.clientY,moved:false,base:R.wp.map(q=>[q[0],q[1]]),keepA:R.raw.map(q=>q[0]==null),fr:{S:R.S,S1:R.S1,E1:R.E1},had:!!lineWps(n),old:lineWps(n)?JSON.parse(JSON.stringify(n.lp)):null,pre:snap(),H:R.H,Q:R.Q};
+  gesture={type:'ldrag',id,k:lh.dataset.k,i:+lh.dataset.i,sx:e.clientX,sy:e.clientY,moved:false,base:R.wp.map(q=>[q[0],q[1]]),keepA:R.raw.map(q=>q[0]==null),fr:{S:R.S,S1:R.S1,E1:R.E1,ov:R.ov},had:!!lineWps(n),old:lineWps(n)?JSON.parse(JSON.stringify(n.lp)):null,pre:snap(),H:R.H,Q:R.Q};
   try{ stage.setPointerCapture(e.pointerId); }catch(_){}
 }
 function updateLineDrag(e){
@@ -31403,18 +31518,92 @@ function delJoint(id,i){
 function resetLine(id){ const n=node(id); if(!n||isRO()||!lineWps(n)) return; mutate(()=>{ delete n.lp; }); }
 function resetLines(){ if(isRO()||!anyLine()) return; mutate(()=>{ walkAll(n=>{ delete n.lp; }); }); }
 function lineMenu(id,w,vi){
-  const custom=!!lineWps(node(id));
+  const custom=!!lineWps(node(id)), nd=node(id);
   return [
     {t:'마디 추가',f:()=>addJoint(id,w)},
     {t:'마디 삭제',dis:!(custom&&vi!=null),f:()=>delJoint(id,vi)},
     '-',
-    {t:'연결선 자동 경로로 되돌리기',dis:!custom,f:()=>resetLine(id)}
+    {t:'연결선 자동 경로로 되돌리기',dis:!custom,f:()=>resetLine(id)},
+    {t:'연결 부위 기본으로',dis:!(nd&&nd.ps),f:()=>resetPortSide([id])}
   ];
 }
+/* ───────── 연결 부위 아이콘(빨간 ↔) ─────────
+   주제를 하나 선택하면 그 주제의 연결선이 붙은 자리(도형과 선의 연결 부위)에 빨간 동그라미 ↔ 아이콘이 나타남. 끌면 도형의 네 변(왼쪽·오른쪽·위·아래) 가운데에 같은 아이콘이 나타나고,
+   그중 하나에 놓으면 연결선이 그 변으로 옮겨짐(n.ps) — 놓기 전에도 그 변에 놓을 때의 경로(꺾임 최소)를 미리 보여 줌. 더블클릭 = 기본 변으로 / Esc = 끌기 취소 / 마디(n.lp)는 새 경로로 초기화 */
+const PH_HOT=30;   /* 화면 px — 이 안에서 가장 가까운 변 아이콘이 '놓을 곳' */
+function portIconInfo(id){
+  if(!id||isRO()||editing||relMode||dragState) return null;
+  const inf=I.get(id), cp=P.get(id); if(!inf||!inf.p||!cp||!DIR_SIDE[cp.dir]) return null;
+  if(cp.w*view.k<14||cp.h*view.k<14) return null;
+  const side=portSide(inf.n,cp);
+  return {side,pt:sidePt(cp,side,inf.rs.shape==='underline'),over:side!==DIR_SIDE[cp.dir]};
+}
+function updatePortHandle(){
+  if(!phl) return;
+  const g=gesture; if(g&&g.type==='pdrag') return;   /* 끄는 동안은 끌기 코드가 그림 */
+  const o=(sel.size===1&&primary&&!selEdge&&!(g&&(g.fm||g.type==='ldrag'||(g.type==='band'&&g.moved))))?portIconInfo(primary):null;
+  if(!o){ if(phl.firstChild) phl.textContent=''; return; }
+  phl.innerHTML='<i class="mm-ph" data-id="'+primary+'" data-side="'+o.side+'" title="연결 부위 — 끌어서 도형 네 변 가운데의 아이콘 중 한 곳에 놓으면 연결선이 그 변으로 옮겨져요 (더블클릭: 기본 위치로 · Esc: 취소)" style="left:'+f1(o.pt[0])+'px;top:'+f1(o.pt[1])+'px">↔</i>';
+}
+function portTemp(g,n,cp,side){   /* 미리보기: n.ps·n.lp 를 임시로 바꿈(놓으면 확정, 취소하면 portRestore) */
+  if(side===DIR_SIDE[cp.dir]) delete n.ps; else n.ps=side;
+  if(side===g.side0){ if(g.lp0) n.lp=JSON.parse(JSON.stringify(g.lp0)); else delete n.lp; } else delete n.lp;   /* 다른 변이면 마디 없는 가장 단순한 경로 */
+}
+function portRestore(g,n){ if(g.ps0) n.ps=g.ps0; else delete n.ps; if(g.lp0) n.lp=JSON.parse(JSON.stringify(g.lp0)); else delete n.lp; }
+function drawPortLayer(g,cp,u,hot,pt){   /* 네 변 가운데 아이콘(원래 변은 흐리게, 놓을 곳은 진하게) + 포인터를 따라다니는 아이콘 */
+  let h='';
+  ['L','R','U','D'].forEach(s=>{ const p=sidePt(cp,s,u); h+='<i class="mm-ph t'+(s===g.side0?' cur':'')+(s===hot?' hot':'')+'" data-side="'+s+'" style="left:'+f1(p[0])+'px;top:'+f1(p[1])+'px">↔</i>'; });
+  h+='<i class="mm-ph drag" style="left:'+f1(pt[0])+'px;top:'+f1(pt[1])+'px">↔</i>';
+  phl.innerHTML=h;
+}
+function startPortDrag(e,el){
+  const id=el.dataset.id, n=node(id), cp=P.get(id), inf=I.get(id); if(!n||!cp||!inf||!inf.p||!DIR_SIDE[cp.dir]) return;
+  e.preventDefault();
+  if(lastTap.id==='ph:'+id&&Date.now()-lastTap.t<420){ lastTap={id:null,t:0}; if(n.ps) resetPortSide([id]); return; }   /* 더블클릭 = 기본 변으로 */
+  gesture={type:'pdrag',id,sx:e.clientX,sy:e.clientY,moved:false,pid:e.pointerId,pre:snap(),ps0:n.ps,lp0:n.lp?JSON.parse(JSON.stringify(n.lp)):null,side0:portSide(n,cp),hot:null};
+  try{ stage.setPointerCapture(e.pointerId); }catch(_){}
+}
+function updatePortDrag(e){
+  const g=gesture, n=node(g.id), cp=P.get(g.id), inf=I.get(g.id); if(!n||!cp||!inf) return;
+  if(!g.moved){ g.moved=true; stage.classList.add('mm-pdragging'); updateHandles(); updatePlus(); updateLineHandles(); }
+  const u=inf.rs.shape==='underline', w=toWorld(e.clientX,e.clientY);
+  let hot=null, bd=1e18;
+  ['L','R','U','D'].forEach(s=>{ const p=sidePt(cp,s,u), d=Math.hypot((p[0]-w.x)*view.k,(p[1]-w.y)*view.k); if(d<bd){ bd=d; hot=s; } });
+  if(bd>PH_HOT) hot=null;
+  g.hot=hot;
+  portTemp(g,n,cp,hot||g.side0);   /* 그 변에 놓으면 생길 경로를 미리 보여 줌(변 밖이면 원래대로) */
+  drawPortLayer(g,cp,u,hot,hot?sidePt(cp,hot,u):[w.x,w.y]);
+  drawSvg();
+}
+function finishPortDrag(g){
+  stage.classList.remove('mm-pdragging');
+  const n=node(g.id); if(!n){ updatePortHandle(); return; }
+  if(!g.moved){ lastTap={id:'ph:'+g.id,t:Date.now()}; updatePortHandle(); return; }   /* 끌지 않고 누르기만 — 더블클릭 감지용 기록 */
+  if(g.hot&&g.hot!==g.side0){   /* 다른 변에 놓음 — 미리보기 상태(n.ps·n.lp)가 그대로 확정 */
+    undoS.push(g.pre); if(undoS.length>120) undoS.shift(); redoS.length=0; lastMut={key:null,t:0};
+    doc.mt=Date.now(); reindex(); render(); persist(); syncUndoBtns();
+  } else { portRestore(g,n); render(); }   /* 원래 변이거나 아이콘 밖에서 놓음 — 그대로 */
+}
+function cancelPortDrag(g){
+  stage.classList.remove('mm-pdragging');
+  const n=node(g.id); if(n) portRestore(g,n);
+  drawSvg(); updatePortHandle(); updateHandles(); updatePlus(); updateLineHandles();
+}
+function setPortSide(id,side){   /* 코드·시험용: 연결선이 붙는 변을 직접 지정(기본 변이면 해제) */
+  const n=node(id), cp=P.get(id); if(!n||!cp||isRO()||!SIDE_V[side]||!DIR_SIDE[cp.dir]) return;
+  mutate(()=>{ if(side===DIR_SIDE[cp.dir]) delete n.ps; else n.ps=side; delete n.lp; });
+}
+function resetPortSide(ids){   /* 선택한(또는 지정한) 주제의 연결 부위를 배치가 정한 기본 변으로 — 마디도 새 경로로 */
+  if(isRO()) return;
+  const ns=(ids&&ids.length?ids:selIds()).map(id=>node(id)).filter(n=>n&&n.ps); if(!ns.length) return;
+  mutate(()=>{ ns.forEach(n=>{ delete n.ps; delete n.lp; }); });
+}
+function anyPort(){ let a=false; walkAll(n=>{ if(n.ps) a=true; }); return a; }
+function resetPortSides(){ if(isRO()||!anyPort()) return; mutate(()=>{ walkAll(n=>{ if(n.ps){ delete n.ps; delete n.lp; } }); }); }
 function updatePlus(){
   if(!stage) return;
   stage.querySelectorAll('.mm-plus').forEach(e=>e.remove());
-  if(isRO()||sel.size!==1||editing||!primary||dragState||relMode||(gesture&&gesture.fm)) return;
+  if(isRO()||sel.size!==1||editing||!primary||dragState||relMode||(gesture&&(gesture.fm||gesture.type==='pdrag'))) return;
   const el=els.get(primary); if(!el) return;
   const a=document.createElement('div'); a.className='mm-plus'; a.dataset.act='plus'; a.textContent='+'; a.title='하위 주제 추가 (Tab)';
   el.appendChild(a);
@@ -31534,7 +31723,7 @@ function flipTree(levels){
   mutate(()=>{
     const s=new Set(doc.settings.lvFlip||[]);
     ds.forEach(d=>{ if(d<1||d>MAX_LV) return; if(s.has(d)) s.delete(d); else s.add(d); });
-    walkAll((n,dep)=>{ if(ds.includes(dep)){ delete n.lp; delete n.lx; } });   /* 바뀌는 단계의 연결선 마디는 방향이 달라지므로 지움 / 레벨 정렬로 옮겨진 거리(lx)도 — 가로·세로가 바뀌면 의미가 없음 */
+    walkAll((n,dep)=>{ if(ds.includes(dep)){ delete n.lp; delete n.lx; delete n.ps; } });   /* 바뀌는 단계의 연결선 마디는 방향이 달라지므로 지움 / 레벨 정렬로 옮겨진 거리(lx)도 — 가로·세로가 바뀌면 의미가 없음 */
     const a=[...s].sort((x,y)=>x-y); if(a.length) doc.settings.lvFlip=a; else delete doc.settings.lvFlip;
   });
   toast(msg);
@@ -31542,7 +31731,7 @@ function flipTree(levels){
 }
 function resetFlips(){
   if(isRO()||!(doc.settings.lvFlip&&doc.settings.lvFlip.length)) return;
-  mutate(()=>{ const fl=new Set(doc.settings.lvFlip); walkAll((n,dep)=>{ if(fl.has(dep)) delete n.lx; }); delete doc.settings.lvFlip; });   /* 되돌리는 단계의 정렬 이동(lx)도 걷어냄 */
+  mutate(()=>{ const fl=new Set(doc.settings.lvFlip); walkAll((n,dep)=>{ if(fl.has(dep)){ delete n.lx; delete n.lp; delete n.ps; } }); delete doc.settings.lvFlip; });   /* 되돌리는 단계의 정렬 이동(lx)도 걷어냄 */
   if(autoFit) fitView();
 }
 /* 자유 이동 해제: 우클릭 드래그로 옮긴 주제(ox/oy)를 자동 배치 자리로 되돌림 — 중심 주제 포함(중심 주제 트리 전체의 위치 px/py 는 그대로). all=지도 전체 */
@@ -31580,7 +31769,7 @@ function detachToRoot(id){
   const r=idx.get(id||primary); if(isRO()||!r||!r.p) return null;
   const nid=r.n.id;
   mutate(()=>{
-    const n=r.n; r.p.c.splice(r.p.c.indexOf(n),1); delete n.side; delete n.px; delete n.py; delete n.sk; delete n.ox; delete n.oy; delete n.lx; delete n.lp;
+    const n=r.n; r.p.c.splice(r.p.c.indexOf(n),1); delete n.side; delete n.px; delete n.py; delete n.sk; delete n.ox; delete n.oy; delete n.lx; delete n.lp; delete n.ps;
     if(n.st){ delete n.st.lc; delete n.st.lca; if(!Object.keys(n.st).length) delete n.st; }
     doc.roots.push(n);
   });
@@ -31590,7 +31779,7 @@ function detachToRoot(id){
 function insertParentOf(id){
   const r=idx.get(id||primary); if(!r||!r.p||isRO()) return null;
   let nn=null;
-  mutate(()=>{ nn=mkNode('새 주제'); const n=r.n; if(isRootNode(r.p)&&n.side){ nn.side=n.side; delete n.side; } inheritStyle(n,nn); if(n.sk){ nn.sk=n.sk; delete n.sk; } ['ox','oy','lx'].forEach(k=>{ if(n[k]){ nn[k]=n[k]; delete n[k]; } }); if(n.lp){ nn.lp=n.lp; delete n.lp; } r.p.c.splice(r.p.c.indexOf(n),1,nn); nn.c.push(n); });   /* 새 상위가 원래 자리(열)를 차지 */
+  mutate(()=>{ nn=mkNode('새 주제'); const n=r.n; if(isRootNode(r.p)&&n.side){ nn.side=n.side; delete n.side; } inheritStyle(n,nn); if(n.sk){ nn.sk=n.sk; delete n.sk; } ['ox','oy','lx','ps'].forEach(k=>{ if(n[k]){ nn[k]=n[k]; delete n[k]; } }); if(n.lp){ nn.lp=n.lp; delete n.lp; } r.p.c.splice(r.p.c.indexOf(n),1,nn); nn.c.push(n); });   /* 새 상위가 원래 자리(열)를 차지 */
   afterAdd(nn,true); return nn;
 }
 function deleteSel(){
@@ -31630,14 +31819,14 @@ function moveNodes(ids,toId,beforeId,side){
     if(beforeId){ const bi=dst.c.findIndex(c=>c.id===beforeId); if(bi>=0) at=bi; }
     dst.c.splice(at,0,...moving);
     delete dst.col;
-    moving.forEach(n=>{ if(!sameP.has(n.id)){ delete n.sk; delete n.ox; delete n.oy; delete n.lx; delete n.lp; } if(isRootNode(dst)){ if(side) n.side=side; else if(!n.side) n.side=rootSideFor(dst); } else delete n.side; });   /* 부모가 바뀌면 새 자리에서 자동 배치(건너뛰기·손으로 옮긴 거리 해제) */
+    moving.forEach(n=>{ if(!sameP.has(n.id)){ delete n.sk; delete n.ox; delete n.oy; delete n.lx; delete n.lp; delete n.ps; } if(isRootNode(dst)){ if(side) n.side=side; else if(!n.side) n.side=rootSideFor(dst); } else delete n.side; });   /* 부모가 바뀌면 새 자리에서 자동 배치(건너뛰기·손으로 옮긴 거리 해제) */
   });
   selectMany(ids.filter(id=>idx.has(id)));
   return true;
 }
 function cloneTree(n,inner){   /* inner: 복제한 가지 안쪽 주제 — 손으로 옮긴 거리(ox/oy)는 가지 안의 배치를 지키려고 안쪽만 이어받음(맨 위 주제는 새 자리에서 자동 배치) */
   const c={id:newId(),t:n.t,c:[]};
-  ['col','side','sk','st','rt','ic','pr','pg','tk','dn','note','url','img','ia','bd'].concat(inner?['ox','oy','lx','lp']:[]).forEach(k=>{ if(n[k]!==undefined) c[k]=clone(n[k]); });
+  ['col','side','sk','st','rt','ic','pr','pg','tk','dn','note','url','img','ia','bd'].concat(inner?['ox','oy','lx','lp','ps']:[]).forEach(k=>{ if(n[k]!==undefined) c[k]=clone(n[k]); });
   if(c.st&&c.st.lca){ delete c.st.lc; delete c.st.lca; if(!Object.keys(c.st).length) delete c.st; }
   n.c.forEach(x=>c.c.push(cloneTree(x,true)));
   return c;
@@ -31678,12 +31867,12 @@ function demote(id){   /* 앞 형제의 하위로 */
   const r=idx.get(id); if(!r||!r.p||isRO()) return;
   const i=r.p.c.indexOf(r.n); if(i<=0) return toast('앞에 형제 주제가 없어 하위로 내릴 수 없습니다.');
   const prev=r.p.c[i-1];
-  mutate(()=>{ r.p.c.splice(i,1); prev.c.push(r.n); delete prev.col; delete r.n.side; delete r.n.sk; delete r.n.ox; delete r.n.oy; delete r.n.lx; delete r.n.lp; });
+  mutate(()=>{ r.p.c.splice(i,1); prev.c.push(r.n); delete prev.col; delete r.n.side; delete r.n.sk; delete r.n.ox; delete r.n.oy; delete r.n.lx; delete r.n.lp; delete r.n.ps; });
 }
 function promote(id){  /* 부모의 형제로 */
   const r=idx.get(id); if(!r||!r.p||isRO()) return;
   const pr=idx.get(r.p.id); if(!pr||!pr.p) return toast('이미 1단계 주제입니다.');
-  mutate(()=>{ r.p.c.splice(r.p.c.indexOf(r.n),1); const a=pr.p.c; a.splice(a.indexOf(r.p)+1,0,r.n); delete r.n.sk; delete r.n.ox; delete r.n.oy; delete r.n.lx; delete r.n.lp; if(isRootNode(pr.p)) r.n.side=r.p.side||rootSideFor(pr.p); });
+  mutate(()=>{ r.p.c.splice(r.p.c.indexOf(r.n),1); const a=pr.p.c; a.splice(a.indexOf(r.p)+1,0,r.n); delete r.n.sk; delete r.n.ox; delete r.n.oy; delete r.n.lx; delete r.n.lp; delete r.n.ps; if(isRootNode(pr.p)) r.n.side=r.p.side||rootSideFor(pr.p); });
 }
 function toggleCollapse(id,force){
   const n=node(id); if(!n||!n.c.length||isRootNode(n)) return;
@@ -31902,7 +32091,7 @@ function startEdit(id,opt){
   const rg=document.createRange(), sl=window.getSelection();
   rg.selectNodeContents(t); if(!opt.all) rg.collapse(false);
   sl.removeAllRanges(); sl.addRange(rg);
-  updatePlus();
+  updatePlus(); updatePortHandle();
   ftShow(t);   /* report 의 다른 텍스트박스처럼 편집 중인 주제 바로 위에 서식 툴바 */
 }
 function endEdit(commit){
@@ -32145,16 +32334,18 @@ function startPan(e,type){
 /* 우클릭한 자리가 무엇인지(관계선·주제·빈 곳)를 기록 — 우클릭 드래그 여부는 손을 뗄 때 알 수 있어서 메뉴는 그때 엶 */
 function ctxTarget(el){
   const rEl=el.closest&&el.closest('[data-rid]'), nEl=el.closest&&el.closest('.mm-node');
-  const hEl=el.closest&&el.closest('.mm-lh'), lEl=el.closest&&el.closest('[data-lid]');
+  const hEl=el.closest&&el.closest('.mm-lh'), lEl=el.closest&&el.closest('[data-lid]'), pEl=el.closest&&el.closest('.mm-ph');
   if(rEl&&!isRO()) return {k:'rel',id:rEl.dataset.rid};
   if(hEl&&!isRO()) return {k:'line',id:hEl.dataset.id,vi:hEl.dataset.k==='v'?+hEl.dataset.i:null};   /* 연결선의 꺾임점(●)이면 마디 삭제 가능 */
   if(lEl&&!isRO()) return {k:'line',id:lEl.dataset.lid,vi:null};
+  if(pEl&&pEl.dataset.id) return {k:'node',id:pEl.dataset.id};   /* 연결 부위 아이콘 위 우클릭 = 그 주제의 메뉴 */
   if(nEl) return {k:'node',id:nEl.dataset.id};
   return {k:'bg'};
 }
 function onDown(e){
   if(gesture&&gesture.fm){ const g0=gesture; gesture=null; finishFreeMove(g0); }   /* pointerup 을 놓쳐 끝나지 않은 자유 이동은 여기서 확정 */
-  if(gesture&&gesture.type==='ldrag'){ const g0=gesture; gesture=null; finishLineDrag(g0); }   /* 연결선 핸들 끌기도 마찬가지 */
+  if(gesture&&gesture.type==='ldrag'){ const g0=gesture; gesture=null; finishLineDrag(g0); }
+  if(gesture&&gesture.type==='pdrag'){ const g0=gesture; gesture=null; finishPortDrag(g0); }   /* 연결 부위 끌기도 마찬가지 */   /* 연결선 핸들 끌기도 마찬가지 */
   if(e.pointerType==='mouse'&&e.button!==0){
     if(e.button===1){ stage.classList.add('mm-panning'); startPan(e); }
     else if(e.button===2){
@@ -32177,6 +32368,8 @@ function onDown(e){
   if(document.activeElement!==stage) stage.focus({preventScroll:true});
   const rh=isRO()?null:tg.closest('.mm-rh');   /* 크기 조절 손잡이 */
   if(rh){ startResize(e,rh); return; }
+  const ph=isRO()?null:tg.closest('.mm-ph:not(.t)');   /* 연결 부위 아이콘(빨간 ↔) */
+  if(ph){ startPortDrag(e,ph); return; }
   const lh=isRO()?null:tg.closest('.mm-lh');   /* 선택한 연결선의 꺾임점(●)·구간(◆) 핸들 */
   if(lh){ startLineDrag(e,lh); return; }
   const rEl=isRO()?null:tg.closest('[data-rid]');   /* 보기 모드: 관계선 선택 없음 */
@@ -32223,7 +32416,7 @@ function onMove(e){
   if(gesture&&gesture.type==='pinch'){ doPinch(); return; }
   if(!gesture) return;
   const dx=e.clientX-gesture.sx, dy=e.clientY-gesture.sy;
-  if(!gesture.moved&&Math.hypot(dx,dy)<((gesture.type==='resize'||gesture.type==='ldrag')?2:4)) return;
+  if(!gesture.moved&&Math.hypot(dx,dy)<((gesture.type==='resize'||gesture.type==='ldrag'||gesture.type==='pdrag')?2:4)) return;
   if(gesture.type==='pan'||gesture.type==='rpan'){
     if(!gesture.moved){ gesture.moved=true; if(!(gesture.type==='rpan'&&startFreeMove(gesture))) stage.classList.add('mm-panning'); }   /* 주제 위 우클릭 드래그 = 그 주제 자유 이동 / 그 밖 = 지도 이동 */
     if(gesture.fm) updateFreeMove(e);
@@ -32235,6 +32428,7 @@ function onMove(e){
   }
   else if(gesture.type==='resize'){ gesture.moved=true; doResize(e); }
   else if(gesture.type==='ldrag'){ updateLineDrag(e); }
+  else if(gesture.type==='pdrag'){ updatePortDrag(e); }
   else if(gesture.type==='node'){
     if(isRO()||relMode) return;
     if(!gesture.moved){ if(!startDrag()){ gesture=null; return; } gesture.moved=true; }
@@ -32267,10 +32461,12 @@ function onUp(e){
   else if(g.type==='band') endBand(g);
   else if(g.type==='resize') finishResize(g);
   else if(g.type==='ldrag') finishLineDrag(g);
+  else if(g.type==='pdrag') finishPortDrag(g);
 }
 function onCancel(e){
   ptrs.delete(e.pointerId);
-  if(gesture&&gesture.type==='ldrag') cancelLineDrag(gesture);   /* 연결선 핸들 끌기 취소 → 원래 모양 */
+  if(gesture&&gesture.type==='ldrag') cancelLineDrag(gesture);
+  if(gesture&&gesture.type==='pdrag') cancelPortDrag(gesture);   /* 연결 부위 끌기 취소 → 원래 연결선 */   /* 연결선 핸들 끌기 취소 → 원래 모양 */
   if(gesture&&gesture.fm) cancelFreeMove(gesture);                                                     /* 자유 이동 취소 → 원래 자리 */
   if(dragState&&dragState.root){ restoreRootPos(dragState); computeLayout(); place(); drawSvg(); }   /* 중심 주제 끌기 취소 → 원래 자리 */
   if(dragState) endDragUI();
@@ -32385,6 +32581,7 @@ function navigate(key){
 }
 function onKey(e){
   const tg=e.target;
+  if(gesture&&gesture.type==='pdrag'&&e.key==='Escape'){ const g0=gesture; gesture=null; try{ stage.releasePointerCapture(g0.pid); }catch(_){} cancelPortDrag(g0); e.preventDefault(); e.stopPropagation(); return; }   /* 연결 부위 끌기 도중 Esc = 취소 */
   if(tg.closest&&tg.closest('.mm-search')){ if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); closeSearch(); } else if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); searchStep(e.shiftKey?-1:1); } else e.stopPropagation(); return; }
   if(editing){ editKey(e); return; }
   const k=e.key, ctrl=e.ctrlKey||e.metaKey, sh=e.shiftKey, alt=e.altKey, ro=isRO();
@@ -32815,7 +33012,7 @@ async function exportPng(){
   const pad=32, W=Math.ceil(b.w+pad*2), H=Math.ceil(b.h+pad*2);
   const cl=world.cloneNode(true);
   cl.style.cssText='position:absolute;left:0;top:0;width:0;height:0;transform:translate('+(pad-b.x)+'px,'+(pad-b.y)+'px)';
-  cl.querySelectorAll('.mm-plus,.mm-dropline,.mm-ghost,.mm-gclone,.mm-rhl,.mm-lhl,.mm-lsel,.mm-lhit').forEach(x=>x.remove());
+  cl.querySelectorAll('.mm-plus,.mm-dropline,.mm-ghost,.mm-gclone,.mm-rhl,.mm-lhl,.mm-phl,.mm-lsel,.mm-lhit').forEach(x=>x.remove());
   cl.querySelectorAll('.mm-node').forEach(x=>{ x.classList.remove('sel','pri','match','dragging','drop-in','rel-src','editing'); });
   cl.querySelectorAll('.mm-tog').forEach(x=>{ x.style.opacity=x.closest('.mm-node').classList.contains('col')?'1':'0'; });
   const css=($('mmStyle')||{}).textContent||'';
@@ -32872,7 +33069,7 @@ function showHelp(){
     ['<kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd>','복사 / 잘라내기 / 붙여넣기 (여러 줄 텍스트·이미지도 붙여넣기)'],['<kbd>Ctrl</kbd>+<kbd>D</kbd>','복제'],['<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd>','실행 취소 / 다시 실행'],
     ['<kbd>Ctrl</kbd>+<kbd>B</kbd> <kbd>I</kbd> <kbd>U</kbd>','굵게 / 기울임 / 밑줄 — 주제를 선택했을 때는 주제 전체, 글 편집 중에는 선택한 글자만'],['<kbd>Ctrl</kbd>+<kbd>F</kbd>','주제 검색'],['<kbd>Ctrl</kbd>+<kbd>A</kbd>','모두 선택'],['<kbd>Home</kbd>','중심 주제로 (여러 개면 거듭 눌러 차례로)'],
     ['터치패드 두 손가락 위아래·좌우 스크롤 · 마우스 휠 (<kbd>Shift</kbd>+휠: 좌우)','지도 이동 — 편집 모드에서만: 포인터를 지도 위에 올려 두면 페이지 대신 지도가 움직입니다. 완료(보기) 모드에서는 지도가 움직이지 않고 페이지가 스크롤됩니다 (열람 전용 화면은 확대 보기에서만 이동)'],['<kbd>Ctrl</kbd>+<kbd>휠</kbd> · 터치패드 핀치 · <kbd>Ctrl</kbd>+<kbd>+</kbd>/<kbd>-</kbd>','확대 / 축소'],['<kbd>Ctrl</kbd>+<kbd>0</kbd>','화면에 맞추기'],
-    ['빈 곳 좌클릭 드래그','범위(사각형)를 그려 걸리는 주제를 한 번에 선택 (<kbd>Shift</kbd>/<kbd>Ctrl</kbd>을 누르고 드래그하면 기존 선택에 추가)'],['빈 곳 우클릭 드래그 · 휠 클릭 드래그 · <kbd>Alt</kbd>+좌드래그','지도 이동(모든 주제가 함께 움직임) — 보기 모드·터치에서는 좌드래그도 이동'],['주제 위 우클릭 드래그','그 주제(여러 주제를 선택했다면 선택한 주제 모두, 하위 가지 포함)를 정렬·배치와 상관없이 원하는 곳으로 자유롭게 옮김 — 연결선은 어디로 옮겨도 늘 배치 방향의 바깥쪽 변에서 출발하는 꺾은선으로, 다른 요소를 피해 돌아가며 이어집니다(오른쪽 트리: 하위 주제의 왼쪽 변 · 왼쪽 트리: 오른쪽 변 · 조직도: 위/아래 변). 중심 주제는 하위 주제를 제자리에 둔 채 중심 주제 상자만 움직입니다(트리 전체를 옮기려면 좌클릭 드래그). 되돌리려면 우클릭 › 자유 이동 해제(빈 곳 우클릭 › 자유 이동한 주제 모두 원래 자리로) 또는 <kbd>Ctrl</kbd>+<kbd>Z</kbd> — 배치를 새로 고르면 초기화됩니다'],['연결선 클릭 · 핸들 끌기 · 선 위 우클릭','연결선을 클릭하면 선택(파란 테두리)되고 꺾임점(●)과 구간(◆) 핸들이 나타납니다 — ◆를 끌면 그 구간이 평행 이동(길이·위치가 바뀜), ●를 끌면 꺾임점이 자유롭게 움직입니다(포트에서 곧게 나가는 첫·끝 구간은 유지). 선 위에서 우클릭 › 마디 추가로 꺾임점을 늘리고, 꺾임점(●) 우클릭 › 마디 삭제, 선 우클릭 › 연결선 자동 경로로 되돌리기. 빈 곳 우클릭 › 연결선 마디 모두 지우기'],['<kbd>Shift</kbd>/<kbd>Ctrl</kbd>+클릭','여러 주제 선택'],['주제 좌클릭 / 끌어다 놓기','클릭: 선택 · 끌기: 주제 이동 — 다른 주제 위에 놓으면 하위로, 위·아래 가장자리에 놓으면 형제 순서 이동 (<kbd>Ctrl</kbd> 누르고 놓으면 복사)'],
+    ['빈 곳 좌클릭 드래그','범위(사각형)를 그려 걸리는 주제를 한 번에 선택 (<kbd>Shift</kbd>/<kbd>Ctrl</kbd>을 누르고 드래그하면 기존 선택에 추가)'],['빈 곳 우클릭 드래그 · 휠 클릭 드래그 · <kbd>Alt</kbd>+좌드래그','지도 이동(모든 주제가 함께 움직임) — 보기 모드·터치에서는 좌드래그도 이동'],['주제 위 우클릭 드래그','그 주제(여러 주제를 선택했다면 선택한 주제 모두, 하위 가지 포함)를 정렬·배치와 상관없이 원하는 곳으로 자유롭게 옮김 — 연결선은 어디로 옮겨도 늘 배치 방향의 바깥쪽 변에서 출발하는 꺾은선으로, 다른 요소를 피해 돌아가며 이어집니다(오른쪽 트리: 하위 주제의 왼쪽 변 · 왼쪽 트리: 오른쪽 변 · 조직도: 위/아래 변). 중심 주제는 하위 주제를 제자리에 둔 채 중심 주제 상자만 움직입니다(트리 전체를 옮기려면 좌클릭 드래그). 되돌리려면 우클릭 › 자유 이동 해제(빈 곳 우클릭 › 자유 이동한 주제 모두 원래 자리로) 또는 <kbd>Ctrl</kbd>+<kbd>Z</kbd> — 배치를 새로 고르면 초기화됩니다'],['연결선 클릭 · 핸들 끌기 · 선 위 우클릭','연결선을 클릭하면 선택(파란 테두리)되고 꺾임점(●)과 구간(◆) 핸들이 나타납니다 — ◆를 끌면 그 구간이 평행 이동(길이·위치가 바뀜), ●를 끌면 꺾임점이 자유롭게 움직입니다(포트에서 곧게 나가는 첫·끝 구간은 유지). 선 위에서 우클릭 › 마디 추가로 꺾임점을 늘리고, 꺾임점(●) 우클릭 › 마디 삭제, 선 우클릭 › 연결선 자동 경로로 되돌리기. 빈 곳 우클릭 › 연결선 마디 모두 지우기'],['주제 선택 › 빨간 ↔ 아이콘 끌기','주제를 하나 선택하면 그 주제의 연결선이 붙은 자리(도형과 선의 연결 부위)에 빨간 동그라미 ↔ 아이콘이 나타납니다. 이 아이콘을 끌면 도형의 네 변(왼쪽·오른쪽·위·아래) 가운데에 같은 아이콘이 나타나고, 그중 하나에 놓으면 연결선이 그 변으로 옮겨지며 꺾임이 가장 적은 가장 단순한 꺾은선으로 다시 그려집니다(놓기 전에도 경로를 미리 보여 줘요). 아이콘 더블클릭 · 주제 우클릭 › 연결 부위 기본으로 = 배치가 정한 원래 변으로 · 끄는 도중 <kbd>Esc</kbd> = 취소'],['<kbd>Shift</kbd>/<kbd>Ctrl</kbd>+클릭','여러 주제 선택'],['주제 좌클릭 / 끌어다 놓기','클릭: 선택 · 끌기: 주제 이동 — 다른 주제 위에 놓으면 하위로, 위·아래 가장자리에 놓으면 형제 순서 이동 (<kbd>Ctrl</kbd> 누르고 놓으면 복사)'],
     ['선택한 주제의 손잡이 8곳 끌기','크기 조절(네 변·네 모서리) — 여러 주제를 선택하고 하나를 끌면 모두 함께 바뀜, <kbd>Shift</kbd>+모서리는 비율 유지, 손잡이 더블클릭은 자동 크기'],
     ['우클릭(드래그 없이)','상황별 메뉴'],['<kbd>Esc</kbd>','선택 해제 · 모드 취소 · 확대 보기 닫기']
   ];
@@ -32897,6 +33094,7 @@ function nodeMenu(){
     {t:'레벨 건너뛰기 설정',dis:isRoot,sub:[0,1,2,3].map(k=>({t:k?k+'단계 건너뛰기':'없음(바로 아래 레벨)',on:(n&&n.sk||0)===k,f:()=>setSkip(null,k)}))},
     {t:'트리변경 — '+flipLabel(),dis:doc.settings.layout==='radial',f:()=>flipTree()},
     {t:'자유 이동 해제 (원래 자리로)',dis:!selIds().some(id=>hasFree(node(id))),f:()=>resetFree()},
+    {t:'연결 부위 기본으로',dis:!selIds().some(id=>node(id)&&node(id).ps),f:()=>resetPortSide()},
     {t:'새 중심 주제 추가',k:'Ctrl+Shift+Enter',f:()=>addRoot()},
     {t:'중심 주제로 분리',dis:isRoot,f:()=>detachToRoot(primary)},
     '-',
@@ -32937,7 +33135,7 @@ function bgMenu(w){
   return (ro?[]:[{t:'여기에 중심 주제 추가',f:()=>addRoot(w)},'-',{t:'붙여넣기',k:'Ctrl+V',f:()=>pasteFromClipboard(doc.root.id)},{t:'모두 선택',k:'Ctrl+A',f:()=>selectAll()},'-']).concat([
     {t:'전체 펼치기',f:()=>setCollapseLevel(99)},{t:'1단계까지만 보기',f:()=>setCollapseLevel(1)},{t:'2단계까지만 보기',f:()=>setCollapseLevel(2)},'-',
     {t:'화면에 맞추기',k:'Ctrl+0',f:()=>fitView()},{t:'중심 주제로 이동',k:'Home',f:()=>{ selectOnly(doc.root.id); centerOn(doc.root.id,true); }}
-  ]).concat(ro?[]:['-',{t:'부모 정렬',sub:P_ALIGNS.map(a=>({t:a[1],on:(doc.settings.pAlign||'center')===a[0],f:()=>setPAlign(a[0])}))},{t:'같은 레벨 정렬',sub:LV_ALIGNS.map(a=>({t:a[1],on:(doc.settings.lvAlign||'auto')===a[0],f:()=>setLvAlign(a[0])}))},{t:'트리변경 모두 되돌리기',dis:!(doc.settings.lvFlip&&doc.settings.lvFlip.length),f:()=>resetFlips()},{t:'자유 이동한 주제 모두 원래 자리로',dis:!anyFree(),f:()=>resetFree(null,true)},{t:'연결선 마디 모두 지우기(자동 경로로)',dis:!anyLine(),f:()=>resetLines()},{t:'설정…',f:()=>openSettings()}]);
+  ]).concat(ro?[]:['-',{t:'부모 정렬',sub:P_ALIGNS.map(a=>({t:a[1],on:(doc.settings.pAlign||'center')===a[0],f:()=>setPAlign(a[0])}))},{t:'같은 레벨 정렬',sub:LV_ALIGNS.map(a=>({t:a[1],on:(doc.settings.lvAlign||'auto')===a[0],f:()=>setLvAlign(a[0])}))},{t:'트리변경 모두 되돌리기',dis:!(doc.settings.lvFlip&&doc.settings.lvFlip.length),f:()=>resetFlips()},{t:'자유 이동한 주제 모두 원래 자리로',dis:!anyFree(),f:()=>resetFree(null,true)},{t:'연결선 마디 모두 지우기(자동 경로로)',dis:!anyLine(),f:()=>resetLines()},{t:'연결 부위 모두 기본으로',dis:!anyPort(),f:()=>resetPortSides()},{t:'설정…',f:()=>openSettings()}]);
 }
 function pasteFromClipboard(tid){
   if(isRO()) return;
@@ -33219,8 +33417,8 @@ function onField(e){
   if(f==='scope'){ scope=v; saveUi(); return; }
   if(f==='layout'||f==='edge'||f==='theme'){
     if(isRO()) return;
-    let freed=0; if(f==='layout') walkAll(n=>{ if(n.ox||n.oy||n.lx||n.lp) freed++; });
-    mutate(()=>{ doc.settings[f]=v; if(f==='layout'){ delete doc.settings.lvFlip; walkAll(n=>{ delete n.ox; delete n.oy; delete n.lx; delete n.lp; }); } if(f==='theme'){ const pal=THEMES[v].pal; doc.roots.forEach(rt=>rt.c.forEach((c,i)=>{ c.st=c.st||{}; c.st.lc=pal[i%pal.length]; c.st.lca=1; })); } },'set:'+f);
+    let freed=0; if(f==='layout') walkAll(n=>{ if(n.ox||n.oy||n.lx||n.lp||n.ps) freed++; });
+    mutate(()=>{ doc.settings[f]=v; if(f==='layout'){ delete doc.settings.lvFlip; walkAll(n=>{ delete n.ox; delete n.oy; delete n.lx; delete n.lp; delete n.ps; }); } if(f==='theme'){ const pal=THEMES[v].pal; doc.roots.forEach(rt=>rt.c.forEach((c,i)=>{ c.st=c.st||{}; c.st.lc=pal[i%pal.length]; c.st.lca=1; })); } },'set:'+f);
     if(f==='layout') fitView(); if(f==='theme') applyView();
     if(freed) toast('배치를 바꿔 자유 이동·연결선 마디를 손본 '+freed+'곳을 자동 배치로 되돌렸어요. (Ctrl+Z로 취소)');
     return;
@@ -33355,6 +33553,7 @@ function init(){
   msgEl=document.createElement('div'); msgEl.className='mm-msg'; msgEl.style.display='none'; stage.appendChild(msgEl);
   rhl=document.createElement('div'); rhl.className='mm-rhl pdf-export-hide'; world.appendChild(rhl);   /* 크기 조절 손잡이 층 */
   lhl=document.createElement('div'); lhl.className='mm-lhl pdf-export-hide'; world.appendChild(lhl);   /* 연결선 꺾임점·구간 핸들 층 */
+  phl=document.createElement('div'); phl.className='mm-phl pdf-export-hide'; world.appendChild(phl);   /* 연결 부위 아이콘(빨간 ↔) 층 */
   viewEl=document.createElement('div'); viewEl.className='mm-viewbar pdf-export-hide'; stage.appendChild(viewEl);
   doc=sampleDoc(); reindex(); ensureBranchColors();
   buildToolbar(); loadUi(); initPopDrag(); syncEditUi();
@@ -33461,7 +33660,7 @@ window.MM={
   fit(){ fitView(); },
   isReadOnly:isRO,
   _dbg:{get doc(){ return doc; },get P(){ return P; },get I(){ return I; },get view(){ return view; },get sel(){ return sel; },get selEdge(){ return selEdge; },get LVG(){ return LVG; },get editing(){ return editing; },els,idx:()=>idx,
-        api:{setLevelGap,stepLevelGap,setGlobalGap,resetLevelGaps,levelGapOf,gapH,gapV,matchLevelWidth,autoLevelWidth,levelGroups,naturalW,flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary,readRich,cleanRuns,rtHtml,ftPlace,resetFree,applyFree,hasFree,anyFree,slotXs,alignLevelsToHead,routeOf,cleanPts,polyD,selectLine,addJoint,delJoint,resetLine,resetLines,anyLine,lineMenu}}
+        api:{setLevelGap,stepLevelGap,setGlobalGap,resetLevelGaps,levelGapOf,gapH,gapV,matchLevelWidth,autoLevelWidth,levelGroups,naturalW,flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary,readRich,cleanRuns,rtHtml,ftPlace,resetFree,applyFree,hasFree,anyFree,slotXs,alignLevelsToHead,portSide,setPortSide,resetPortSide,resetPortSides,anyPort,minBendPath,portIconInfo,updatePortHandle,sidePt,routeOv,routeOf,cleanPts,polyD,selectLine,addJoint,delJoint,resetLine,resetLines,anyLine,lineMenu}}
 };
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>init()); else init();
 })();
