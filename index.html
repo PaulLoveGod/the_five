@@ -468,7 +468,12 @@ select{
 .mg-si-tk{font-family:monospace;font-size:10px;font-weight:700;color:#6366f1;background:#ede9fe;padding:2px 5px;border-radius:4px;white-space:nowrap}
 .mg-si-exch{font-size:10px;color:#94a3b8;white-space:nowrap}
 .mg-search-loading,.mg-search-empty{padding:14px;text-align:center;color:#94a3b8;font-size:12px}
-#tsChartWrap{border:1px solid var(--border);border-radius:6px;padding:6px;background:var(--panel);margin-bottom:4px}
+#tsChartWrap{position:relative;border:1px solid var(--border);border-radius:6px;padding:6px;background:var(--panel);margin-bottom:4px}
+/* 📸 캡쳐 덮개 — 찍은 이미지를 살아 있는 그래프(제목줄+캔버스) 위에 덮음. 덮여 있는 동안엔 위쪽 도구줄이 눌리지 않게 흐리게 */
+.ts-cap-ov{display:none;position:absolute;left:6px;right:6px;bottom:6px;z-index:5;overflow:hidden;border-radius:4px;background:#111827;cursor:default;-webkit-user-select:none;user-select:none}
+.ts-cap-ov img{display:block;width:100%;height:100%;object-fit:contain;object-position:center top;pointer-events:none;-webkit-user-drag:none}
+#tsChartWrap.ts-capped>div:first-child{pointer-events:none;opacity:.45}
+#tsChartWrap.ts-capped #tsLineWidthDropdown{display:none!important}
 #tsCanvas{border:1px solid var(--border);border-radius:4px;display:block;width:100%;cursor:default;touch-action:none}
 .bot-rs-grip{
   position:absolute;bottom:0;right:0;
@@ -3941,7 +3946,7 @@ body.mm-fs{overflow:hidden}
                     style="font-size:10px;padding:0 8px;height:20px;border:1px solid #2563eb;border-radius:4px;cursor:pointer;background:#2563eb;color:#fff;font-weight:700;white-space:nowrap;flex-shrink:0">Note</button>
             <button id="tsSaveMemoBtn" onclick="tsSaveChartToMemo()" title="차트 이미지를 종목 메모장에 저장"
                     style="font-size:10px;padding:0 6px;height:20px;border:none;border-radius:4px;cursor:pointer;background:#2e537a;color:#fff;font-weight:600;white-space:nowrap;flex-shrink:0">📷 메모장 저장</button>
-            <button id="tsCaptureBtn" onclick="tsCaptureChart()" title="그래프 전체 캡쳐 후 텍스트박스에 붙여넣기"
+            <button id="tsCaptureBtn" onclick="tsCaptureChart()" title="그래프를 이미지로 캡쳐해 그래프 위에 덮어씌움(PDF·이미지 저장용) — 덮은 뒤에는 '편집' 버튼으로 바뀌며, 누르면 이미지를 걷고 분석이 적용된 원본 그래프를 다시 편집"
                     style="font-size:10px;padding:0 6px;height:20px;border:none;border-radius:4px;cursor:pointer;background:#4e3d7a;color:#fff;font-weight:600;white-space:nowrap;flex-shrink:0">📸 캡쳐</button>
           </div>
           <!-- AI 방식 선택(체크박스 콤보박스)·적용 버튼도 스크롤 영역 밖에 둠 — 위 #tsTickerDropdown과 같은 이유로,
@@ -4255,6 +4260,8 @@ body.mm-fs{overflow:hidden}
             </div>
             <div id="tsHeightGrip" class="text-bot-grip" title="드래그하여 RSI 높이 조절">⠿</div>
           </div>
+          <!-- 📸 캡쳐 덮개: 찍은 이미지를 위 제목줄+캔버스 자리에 덮음(위치는 _tsCapLayout 이 계산). 그래프는 아래에 그대로 살아 있고 '✏️ 편집'을 누르면 덮개만 걷힘 -->
+          <div id="tsCapOv" class="ts-cap-ov" title="캡쳐 이미지 — 위쪽 '✏️ 편집' 버튼을 누르면 이미지를 걷고 원본 그래프를 다시 편집합니다"><img id="tsCapImg" alt="차트 캡쳐" draggable="false"></div>
         </div>
         <div id="technicalAnalysis" class="rich-editor" contenteditable="true" style="height:144px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
         <!-- ③ My Trading Strategy With AI Navigator -->
@@ -16629,13 +16636,13 @@ function _refreshISMemoBadges(){
   }
 
   /* ── 캡쳐 캔버스 공유 빌더 (header + chart, DPR-correct) ── */
-  function _buildCombinedCanvas(){
+  function _buildCombinedCanvas(hdrCss){   /* hdrCss: 위 제목줄의 CSS 높이(없으면 44) — 덮개용은 화면의 제목줄 높이와 같게 */
     const info=window._tsChartInfo;
     if(!info||!_ohlcv) return null;
     const c1=document.getElementById('tsCanvas');
     if(!c1||c1.width===0) return null;
     const dpr=window.devicePixelRatio||1;
-    const HEADER_H=Math.round(44*dpr);
+    const HEADER_H=Math.round((hdrCss>0?hdrCss:44)*dpr);
     const w=c1.width, cssW=Math.round(c1.width/dpr), cssChartH=Math.round(c1.height/dpr);
     const totalH=HEADER_H+Math.round(6*dpr)+c1.height;
     const combined=document.createElement('canvas');
@@ -16809,29 +16816,87 @@ function _refreshISMemoBadges(){
     await _execSaveChartToMemo(info,htmlContent);
   };
 
+  /* ── 📸 캡쳐 덮개 ──
+     '캡쳐'는 그래프를 이미지로 바꿔치지 않음: 찍은 이미지를 살아 있는 그래프(제목줄+캔버스) 바로 위에 덮고(#tsCapOv)
+     버튼은 '✏️ 편집'으로 바뀜. 분석 도형·선·MA 등 원본 그래프는 덮개 아래에서 그대로 살아 있고,
+     '편집'을 누르면 덮개만 걷혀 그대로 다시 편집됨. 덮여 있는 동안엔 도구줄을 흐리게 막고(.ts-capped) 키보드 편집도 막음.
+     이미지는 그래프 스냅샷(_tsSnapshotForSave)의 capImg 로 같이 저장돼 다시 열면 덮인 채로 나오고,
+     PDF·이미지 저장 때는 _tsCapPrepareClone 이 이 이미지를 (저장에서 숨겨지는) 그래프 자리에 넣어 줌.
+     새로 조회(tsQueryChart)하거나 AI 분석을 적용(tsAddAiLevels)하면 낡은 이미지가 되므로 자동으로 걷음 */
+  let _capImg=null;   /* {src:PNG dataURL, w,h:캡쳐 당시 CSS 크기} — 덮개에 올린 이미지, 없으면 null */
+  let _capRO=null;
+  /* 덮개 위치: 위는 제목줄 윗변(툴바 줄은 안 덮음), 나머지 세 변은 CSS(.ts-cap-ov)가 그래프 영역 끝까지 */
+  function _tsCapLayout(){
+    if(!_capImg) return;
+    const ov=document.getElementById('tsCapOv'); if(!ov) return;
+    const bar=document.getElementById('tsChartTitleBar');
+    const cvBox=(document.getElementById('tsCanvas')||{}).parentElement;
+    const topEl=(bar&&bar.style.display!=='none')?bar:cvBox;
+    ov.style.top=(topEl?topEl.offsetTop:0)+'px';
+  }
+  function _tsCapSyncBtn(){
+    const b=document.getElementById('tsCaptureBtn'); if(!b) return;
+    if(_capImg){
+      b.textContent='✏️ 편집'; b.style.background='#b45309';
+      b.title='캡쳐 이미지를 걷고, 분석이 적용된 원본 그래프를 다시 편집합니다';
+    } else {
+      b.textContent='📸 캡쳐'; b.style.background='#4e3d7a';
+      b.title="그래프를 이미지로 캡쳐해 그래프 위에 덮어씌움(PDF·이미지 저장용) — 덮은 뒤에는 '편집' 버튼으로 바뀌며, 누르면 이미지를 걷고 분석이 적용된 원본 그래프를 다시 편집";
+    }
+  }
+  function _tsCapShow(img){
+    const wrap=document.getElementById('tsChartWrap'), ov=document.getElementById('tsCapOv'), im=document.getElementById('tsCapImg');
+    if(!wrap||!ov||!im||!img||!img.src) return;
+    _capImg={src:img.src, w:img.w||0, h:img.h||0};
+    im.src=_capImg.src;
+    ov.style.display='block';
+    wrap.classList.add('ts-capped');
+    _tsCapLayout();
+    if(!_capRO&&window.ResizeObserver){ _capRO=new ResizeObserver(()=>_tsCapLayout()); _capRO.observe(wrap); }   /* 도구줄이 줄바꿈되는 등 위치가 바뀌면 다시 맞춤 */
+    _tsCapSyncBtn();
+  }
+  function _tsCapDrop(){
+    const wrap=document.getElementById('tsChartWrap'), ov=document.getElementById('tsCapOv'), im=document.getElementById('tsCapImg');
+    _capImg=null;
+    if(ov) ov.style.display='none';
+    if(im) im.removeAttribute('src');
+    if(wrap) wrap.classList.remove('ts-capped');
+    _tsCapSyncBtn();
+  }
+  window._tsCapOn=function(){ return !!_capImg; };
+  /* PDF·이미지 저장(html2canvas)용 — 복제 문서에서 그래프 칸(#tsChartWrap)은 저장물에서 숨겨지므로(.pdf-export-hide),
+     덮어둔 캡쳐 이미지를 그 자리(숨은 텍스트박스 #technicalAnalysis 바로 앞)로 옮겨 실음. 이미 로드된 <img> 를 옮기므로 크기 계산이 안전함 */
+  window._tsCapPrepareClone=function(doc){
+    try{
+      if(!_capImg||!doc) return;
+      const tb=doc.getElementById('technicalAnalysis'), im=doc.getElementById('tsCapImg');
+      if(!tb||!tb.parentNode||!im) return;
+      const box=doc.createElement('div');
+      box.id='tsCapExport';
+      box.style.cssText='box-sizing:border-box;width:100%;border:1px solid var(--border);border-radius:6px;padding:6px;background:var(--panel);margin-bottom:4px';
+      im.style.cssText='display:block;width:100%;height:auto;border-radius:4px';
+      if(_capImg.w>0&&_capImg.h>0){ im.setAttribute('width',_capImg.w); im.setAttribute('height',_capImg.h); }
+      box.appendChild(im);
+      tb.parentNode.insertBefore(box,tb);
+      const cb=doc.getElementById('tsCaptureBtn');   /* 저장물에 찍히는 머리줄 버튼은 예전 모양('📸 캡쳐') 그대로 — 덮개 상태의 '✏️ 편집'이 찍히지 않게 */
+      if(cb){ cb.textContent='📸 캡쳐'; cb.style.background='#4e3d7a'; }
+    }catch(e){ console.warn('[tsCap] prepareClone',e); }
+  };
+
   window.tsCaptureChart=function(){
+    /* 이미 덮여 있으면('✏️ 편집') 덮개만 걷어 원본 그래프로 */
+    if(_capImg){ _tsCapDrop(); if(typeof saveData==='function') saveData(); return; }
     const wrap=document.getElementById('tsChartWrap');
     if(!wrap||wrap.style.display==='none'){alert('그래프 조회 상태에서만 실행 가능합니다.');return;}
     const info=window._tsChartInfo;
     if(!info||!_ohlcv){alert('먼저 그래프를 조회하세요.');return;}
-    const built=_buildCombinedCanvas();
+    /* 선택 표시(핸들·강조)가 사진에 찍히지 않게 선택을 풀고 다시 그림 */
+    if(_selected||_multiSelected.length){ _selected=null; _multiSelected=[]; _updateSelBtn(); _render(); }
+    const bar=document.getElementById('tsChartTitleBar');
+    const built=_buildCombinedCanvas((bar&&bar.style.display!=='none')?bar.offsetHeight:0);
     if(!built){alert('차트 이미지를 가져올 수 없습니다.');return;}
-    const imgSrc=built.canvas.toDataURL('image/png');
-    /* hide chart, show textbox */
-    const chk=document.getElementById('tsHideChart');
-    if(chk) chk.checked=true;
-    tsToggleChart(true);
-    /* insert image into textbox (overwrite existing content) */
-    const tbox=document.getElementById('technicalAnalysis');
-    if(tbox){
-      tbox.innerHTML='';
-      const img=document.createElement('img');
-      img.src=imgSrc;
-      img.width=built.cssW; img.height=built.cssH;
-      img.style.cssText='max-width:100%;height:auto;border-radius:4px;display:block;margin:4px 0';
-      tbox.appendChild(img);
-      if(typeof saveData==='function') saveData();
-    }
+    _tsCapShow({src:built.canvas.toDataURL('image/png'), w:built.cssW, h:built.cssH});
+    if(typeof saveData==='function') saveData();
   };
 
   /* AI 본문 캡쳐용: 차트가 떠 있을 때 캔버스 데이터URL 반환 */
@@ -16944,6 +17009,7 @@ function _refreshISMemoBadges(){
     /* My Chart with AI 텍스트박스(캡쳐 이미지·직접 입력한 글 등)도 이전 종목의 내용이 남아있지
        않도록 그래프를 새로 불러오기 전에 항상 깨끗이 비움(사용자 요청) */
     { const _tb=document.getElementById('technicalAnalysis'); if(_tb) _tb.innerHTML=''; }
+    _tsCapDrop();   /* 이전 종목을 찍어둔 캡쳐 덮개도 걷음 */
     /* 종목·기간이 바뀌면 봉 인덱스·가격 범위가 통째로 달라져 이전 표기가 엉뚱한 위치를 가리키게 되므로 정리.
        단, y축 축소율/x축 폭은 사용자가 마지막으로 설정한 값을 종목이 바뀌어도 그대로 유지함(리셋하지 않음) */
     window._tsChartInfo={ticker:tk, stockName:(inp?.value||tk).trim()};
@@ -16974,7 +17040,7 @@ function _refreshISMemoBadges(){
      흐름이 도중(fetch 중)이어도 그 시점의 _ohlcv(마지막으로 조회 완료된 데이터)를 그대로 스냅샷한다. */
   window._tsSnapshotForSave=function(){
     if(!_ticker||!_ohlcv) return null;
-    return JSON.parse(JSON.stringify({
+    const snap=JSON.parse(JSON.stringify({
       ticker:_ticker, stockName:(window._tsChartInfo&&window._tsChartInfo.stockName)||_ticker,
       interval:_interval, range:_range,
       ohlcv:_ohlcv, startIdx:_startIdx, viewN:_viewN,
@@ -16982,6 +17048,8 @@ function _refreshISMemoBadges(){
       shapes:_shapes, lines:_lines,
       aiGroupSeq:_aiGroupSeq, chartNoteHtml:_chartNoteHtml||''
     }));
+    if(_capImg) snap.capImg={src:_capImg.src, w:_capImg.w, h:_capImg.h};   /* '📸 캡쳐'로 덮어둔 이미지 — 다시 열면 덮인 채로 */
+    return snap;
   };
   /* saved가 없으면(신규 리포트·구버전 데이터·차트 미조회 상태로 저장된 리포트) 화면에 남아있을 수 있는
      이전 차트를 정리해 "차트 미조회" 기본 상태로 되돌림 — applyData()가 리포트를 바꿔 불러올 때마다
@@ -17002,6 +17070,7 @@ function _refreshISMemoBadges(){
       if(status) status.textContent='';
       _tsRefreshIndicatorList();
       _tsUpdateChartTitleBar();
+      _tsCapDrop();
       return;
     }
     _ticker=saved.ticker; _interval=saved.interval||'1d'; _range=saved.range||'3mo';
@@ -17028,6 +17097,7 @@ function _refreshISMemoBadges(){
 
     _updateSelBtn(); _tsRefreshIndicatorList(); _render();
     _tsUpdateChartTitleBar();
+    if(saved.capImg&&saved.capImg.src) _tsCapShow(saved.capImg); else _tsCapDrop();   /* 캡쳐 덮개도 저장 당시 그대로 */
   };
 
   window.tsSetPeriod=function(interval,range,btn){
@@ -17117,6 +17187,7 @@ function _refreshISMemoBadges(){
      그리기 전 지우기 버튼으로 정리하고 시작하는 걸 권장) */
   window.tsAddAiLevels=function(levels){
     if(!_ohlcv||!_bounds) return {added:0,skipped:0};
+    _tsCapDrop();   /* 새 분석 결과가 보이도록 캡쳐 덮개는 걷음('편집'을 누른 것과 같음) */
     _pushUndoSnap(); /* 이번 분석 적용 전체를 하나의 실행취소 단위로 취급 */
     const n=_viewN||(_ohlcv.n-_startIdx);
     const {minP,maxP}=_bounds;
@@ -18808,6 +18879,7 @@ function _refreshISMemoBadges(){
 
     /* Delete/Backspace → 선택 도형 삭제 / 방향키 → 선택 도형 미세 이동 */
     document.addEventListener('keydown',e=>{
+      if(_capImg) return;   /* 캡쳐 이미지를 덮어둔 동안엔 아래 원본 그래프를 키보드로 건드리지 않음('편집'으로 풀기 전) */
       if(e.key==='Escape'&&_polyActive){_finalizePolyline();return;}
       const tag=(document.activeElement||{}).tagName||'';
       const isEditable=tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||(document.activeElement||{}).isContentEditable;
@@ -23663,6 +23735,8 @@ async function _doExportPDF(){
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:el.scrollHeight,
       onclone:(doc)=>{
+        try{ if(window.MM&&typeof MM.prepareClone==='function') MM.prepareClone(doc); }catch(_){}   /* 마인드맵 연결선(SVG)이 저장물에 나오게 */
+        try{ if(typeof window._tsCapPrepareClone==='function') window._tsCapPrepareClone(doc); }catch(_){}   /* 차트에 덮어둔 캡쳐 이미지를 저장물에 */
         const s=doc.createElement('style'); s.textContent=_cloneStyle; doc.head.appendChild(s);
         /* input.pf-input → div 교체: html2canvas가 input 텍스트 스크롤 위치를 그대로 캡처해 텍스트가 잘리는 문제 방지 */
         doc.querySelectorAll('input.pf-input').forEach(inp=>{
@@ -23732,6 +23806,8 @@ async function _doExportPDF(){
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:el.scrollHeight,
       onclone:(doc)=>{
+        try{ if(window.MM&&typeof MM.prepareClone==='function') MM.prepareClone(doc); }catch(_){}   /* 마인드맵 연결선(SVG)이 저장물에 나오게 */
+        try{ if(typeof window._tsCapPrepareClone==='function') window._tsCapPrepareClone(doc); }catch(_){}   /* 차트에 덮어둔 캡쳐 이미지를 저장물에 */
         const s=doc.createElement('style'); s.textContent=_cloneStyle; doc.head.appendChild(s);
         /* input.pf-input → div: 마스킹 PDF에서 텍스트 상단 치우침 방지 (투명 색상 유지) */
         doc.querySelectorAll('input.pf-input').forEach(inp=>{
@@ -23887,6 +23963,8 @@ async function _doExportImage(){
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:el.scrollHeight,
       onclone:(doc)=>{
+        try{ if(window.MM&&typeof MM.prepareClone==='function') MM.prepareClone(doc); }catch(_){}   /* 마인드맵 연결선(SVG)이 저장물에 나오게 */
+        try{ if(typeof window._tsCapPrepareClone==='function') window._tsCapPrepareClone(doc); }catch(_){}   /* 차트에 덮어둔 캡쳐 이미지를 저장물에 */
         const s=doc.createElement('style'); s.textContent=_cloneStyle; doc.head.appendChild(s);
         /* input.pf-input → div 교체: html2canvas가 input 텍스트 스크롤 위치를 그대로 캡처해 텍스트가 잘리는 문제 방지 */
         doc.querySelectorAll('input.pf-input').forEach(inp=>{
@@ -23955,6 +24033,8 @@ async function _doExportImage(){
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:el.scrollHeight,
       onclone:(doc)=>{
+        try{ if(window.MM&&typeof MM.prepareClone==='function') MM.prepareClone(doc); }catch(_){}   /* 마인드맵 연결선(SVG)이 저장물에 나오게 */
+        try{ if(typeof window._tsCapPrepareClone==='function') window._tsCapPrepareClone(doc); }catch(_){}   /* 차트에 덮어둔 캡쳐 이미지를 저장물에 */
         const s=doc.createElement('style'); s.textContent=_cloneStyle; doc.head.appendChild(s);
         /* input.pf-input → div: 마스킹 이미지에서 텍스트 상단 치우침 방지 (투명 색상 유지) */
         doc.querySelectorAll('input.pf-input').forEach(inp=>{
@@ -26741,7 +26821,8 @@ function _checkPdfImgReadySections(){
   const missing=[];
   if(!document.querySelector('#heatmapContent img.hm-manual-img')) missing.push('S&P 500 히트맵');
   const tsWrap=g('tsChartWrap');
-  if(tsWrap && getComputedStyle(tsWrap).display!=='none') missing.push('My Technical Analysis With AI');
+  /* 그래프가 떠 있어도 '📸 캡쳐'로 이미지를 덮어둔 상태면 통과 — 저장물에는 그 이미지가 실림(_tsCapPrepareClone) */
+  if(tsWrap && getComputedStyle(tsWrap).display!=='none' && !(typeof window._tsCapOn==='function'&&window._tsCapOn())) missing.push('My Technical Analysis With AI');
   return missing;
 }
 
@@ -29393,6 +29474,7 @@ Rules:
         el.style.height=el.scrollHeight+'px';
         el.style.overflow='visible';
         const canvas=await html2canvas(el,{
+          onclone:(doc)=>{ try{ if(window.MM&&typeof MM.prepareClone==='function') MM.prepareClone(doc); }catch(_){} },   /* 마인드맵 연결선(SVG) 포함 */
           useCORS:true, allowTaint:false, backgroundColor:'#ffffff',
           scale:Math.min(window.devicePixelRatio||1,2),
           logging:false,
@@ -33074,6 +33156,20 @@ async function exportPng(){
     saveBlob(new Blob([svgStr],{type:'image/svg+xml'}),'mindmap_'+ymd()+'.svg'); toast('PNG 변환에 실패해 SVG 파일로 저장했습니다.');
   }
 }
+/* PDF·이미지 저장(html2canvas)용 — 복제 문서의 연결선 SVG(#mmSvg)를 그릴 내용이 다 들어가는 크기로 손질.
+   평소 이 SVG 는 1×1px(overflow:visible)라서 html2canvas 가 SVG 를 그 크기의 이미지로만 그려 연결선이 저장물에서 사라졌음 → viewBox·크기를 내용 영역(여백 40px)으로 맞춤.
+   클릭 영역(.mm-lhit·.mm-hit)과 선택 후광(.mm-lsel)은 저장물에 필요 없어 지움. 리포트 저장(PDF·이미지)의 onclone 에서 호출 */
+function prepareClone(d){
+  try{
+    const cs=d&&d.getElementById&&d.getElementById('mmSvg'); if(!cs||!svg) return;
+    let b=null; try{ b=svg.getBBox(); }catch(_){}
+    if(!b||!isFinite(b.x)||!isFinite(b.y)||!(b.width>0||b.height>0)) return;
+    cs.querySelectorAll('.mm-lhit,.mm-lsel,.mm-hit').forEach(e=>e.remove());
+    const pad=40, x=Math.floor(b.x-pad), y=Math.floor(b.y-pad), w=Math.ceil(b.width+pad*2), h=Math.ceil(b.height+pad*2);
+    cs.setAttribute('viewBox',x+' '+y+' '+w+' '+h); cs.setAttribute('width',w); cs.setAttribute('height',h);
+    cs.style.left=x+'px'; cs.style.top=y+'px'; cs.style.width=w+'px'; cs.style.height=h+'px';
+  }catch(e){ console.warn('[MM] prepareClone',e); }
+}
 
 /* ───────── 설정·도움말 ───────── */
 function openSettings(){
@@ -33697,7 +33793,7 @@ function load(d,opt){
   return true;
 }
 window.MM={
-  init, load, flush, serialize, serializeSaved, markSaved, hasUnsaved:()=>unsavedMm(), titleChanged, setEdit, toggleEdit, openOutline,
+  init, load, flush, serialize, serializeSaved, markSaved, hasUnsaved:()=>unsavedMm(), titleChanged, setEdit, toggleEdit, openOutline, prepareClone,
   isEditing(){ return editMode; }, canEdit(){ return !permRO(); },
   refresh(){ if(stage){ measure(true); render(); } },
   fit(){ fitView(); },
