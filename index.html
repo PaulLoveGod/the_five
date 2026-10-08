@@ -31891,6 +31891,47 @@ function setLvAlign(v){
   },'set:lvAlign');
   if(autoFit) fitView();
 }
+/* 주제를 둘 이상 선택하고 '레벨 정렬'을 고르면 지도 전체 레벨(setLvAlign)이 아니라 선택한 주제들만 맞춤 — 기준은 선택한 주제 중 지금 화면에서 가장 위에 있는 주제(상자 윗변 y, 같으면 더 왼쪽):
+   그 주제는 그대로 두고 나머지 선택한 주제(와 하위 가지)를 가로로 움직여 왼쪽 끝/가운데/오른쪽 끝을 기준의 같은 쪽에 맞춤(세로 위치는 그대로). 맞추느라 움직인 거리는 지도 전체 레벨 정렬과 같이 주제의 lx 에 적고
+   (손으로 옮긴 거리 ox 와 안 섞임, 지도 설정 lvAlign 은 안 바뀜) '자동'은 선택한 주제의 맞춤 이동(lx)만 걷어냄. 중심 주제와 기준 주제의 상위 주제(가지째 움직이면 기준도 움직여 맞출 수 없음)는 옮기지 않음.
+   선택한 주제끼리 상·하위 관계면 위 주제가 움직일 때 아래 주제도 따라 움직이므로 안정될 때까지 반복 */
+function alignSelTo(v){
+  if(isRO()||!LV_ALIGNS.some(a=>a[0]===v)) return false;
+  const ids=selIds().filter(id=>P.has(id)&&node(id)); if(ids.length<2) return false;
+  if(v==='auto'){
+    const has=ids.filter(id=>node(id).lx);
+    if(!has.length){ toast('선택한 주제에는 풀어 줄 맞춤 이동이 없어요.'); return true; }
+    mutate(()=>{ has.forEach(id=>{ delete node(id).lx; }); });
+    if(autoFit) fitView();
+    toast('선택한 '+has.length+'개 주제의 맞춤 이동을 풀었어요.'); return true;
+  }
+  const edge=p=>v==='left'?p.x:v==='center'?p.x+p.w/2:p.x+p.w, NM={left:'왼쪽 끝',center:'가운데',right:'오른쪽 끝'};
+  let ref=null;   /* 선택한 주제 중 맨 위 */
+  ids.forEach(id=>{ const p=P.get(id), q=ref&&P.get(ref); if(!q||p.y<q.y-0.5||(Math.abs(p.y-q.y)<=0.5&&p.x<q.x)) ref=id; });
+  const mv=ids.filter(id=>id!==ref&&!isRootNode(node(id))&&!isAnc(id,ref));
+  if(!mv.length){ toast('맞출 주제가 없어요. (중심 주제와 기준 주제의 상위 주제는 옮기지 않아요)'); return true; }
+  const r0=edge(P.get(ref));
+  if(mv.every(id=>Math.abs(r0-edge(P.get(id)))<0.05)){ toast('선택한 주제가 이미 같은 위치에 맞춰져 있어요.'); return true; }
+  let maxD=1; I.forEach(x=>{ if(x.depth>maxD) maxD=x.depth; });
+  mutate(()=>{
+    for(let pass=0;pass<maxD+3;pass++){
+      computeLayout();
+      const rr=edge(P.get(ref)); let moved=false;
+      mv.forEach(id=>{
+        const p=P.get(id), n=node(id); if(!p||!n) return;
+        const dx=r1(rr-edge(p)); if(!dx) return;
+        const lx=r1((n.lx||0)+dx); if(lx) n.lx=lx; else delete n.lx;
+        moved=true;
+      });
+      if(!moved) break;
+    }
+  });
+  if(autoFit) fitView();
+  toast('선택한 '+ids.length+'개 주제를 맨 위 주제 기준으로 '+NM[v]+'에 맞췄어요.');
+  return true;
+}
+/* '레벨 정렬' 버튼·메뉴의 공통 진입점 — 주제를 둘 이상 선택했으면 선택한 주제만(맨 위 주제 기준), 아니면 지도 전체 레벨 */
+function lvAlignAct(v){ if(selIds().filter(id=>P.has(id)).length>1&&alignSelTo(v)) return; setLvAlign(v); }
 /* 부모 정렬: center(기본, 부모를 하위 주제 묶음의 가운데에) / top(첫 하위 주제와 같은 줄 — 하위 주제가 부모 줄부터 아래로 늘어섬) / bottom(마지막 하위 주제와 같은 줄) — 좌우 배치에서 적용 */
 function setPAlign(v){
   if(isRO()||!P_ALIGNS.some(a=>a[0]===v)) return;
@@ -33294,7 +33335,7 @@ function openSettings(){
 function showHelp(){
   const rows=[
     ['<kbd>Tab</kbd>','선택한 주제의 하위 주제 추가 — 새 주제는 선택했던 주제의 서식(모양·색·글꼴·크기·연결선)을 그대로 이어받음 (설정에서 끌 수 있음)'],['<kbd>Enter</kbd> / <kbd>Shift</kbd>+<kbd>Enter</kbd>','형제 주제 추가(뒤 / 앞)'],['<kbd>Ctrl</kbd>+<kbd>Enter</kbd>','상위 주제 삽입'],
-    ['<kbd>Shift</kbd>+<kbd>Tab</kbd> · 툴바 ⇉ 건너뛰기','레벨을 건너뛴 하위 주제 추가 — 건너뛴 레벨 자리는 비워 두고 연결선만 길게 이어짐 (메뉴에서 1~3단계)'],['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','선택한 주제의 건너뛰기 단계 늘리기 / 줄이기'],['툴바 ⇄ 트리변경 · 우클릭 › 트리변경','선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿈 — 예) 오른쪽 트리에서 2단계 주제를 고르고 누르면 2단계 주제들이 각자 부모 아래 한 줄로 늘어섬. 여러 단계의 주제를 함께 고르면 단계마다 바뀌고, 한 번 더 누르면 원래대로 (배치를 새로 고르면 초기화)'],['서식 패널 › 레벨 정렬','같은 레벨 주제들의 왼쪽 끝 / 가운데 / 오른쪽 끝을 한 줄로 맞춤 (좌우로 뻗는 단계에서) — 레벨의 맨 위 주제를 우클릭 드래그로 옮겨 둔 뒤 누르면 그 주제를 기준으로 같은 레벨 전체(와 하위 가지)가 맞춰져요. 자동을 누르면 맞춤으로 옮겨진 거리가 사라져요'],['서식 패널 › 주제 모양 › 카테고리 너비 일치 · 개별항목 너비 적용','주제 하나를 선택하고 누르면 그 주제가 속한 카테고리(같은 단계)의 모든 주제 너비를 가장 넓은 주제에 맞춰 통일 / 각자 글자 너비로 되돌림'],['서식 패널 › 지도 › 레벨 간격 · 이 단계','‘전체’ 칸 = 모든 단계의 기본 간격(px) / 주제를 하나 선택하고 ‘이 단계’의 − 입력 ＋를 쓰면 그 단계(카테고리)와 위 단계 사이 간격만 따로 조정(같은 단계 전체에 적용, ↺로 되돌림)'],['⚙ 설정 › 기본 최대 폭 · 서식 › 최대 폭','기본은 제한 없음(글자가 한 줄로 길게 이어짐) — 줄바꿈하고 싶으면 설정에서 기본 최대 폭을 줄이거나, 주제를 선택해 서식의 최대 폭·크기 손잡이로 폭을 정하세요'],['서식 패널 › 부모 정렬','부모를 하위 주제 묶음의 가운데(기본) / 첫 번째 하위 주제와 같은 줄(위쪽 맞춤) / 마지막 하위 주제와 같은 줄(아래쪽 맞춤)에 맞춤 (좌우로 뻗는 단계에서)'],
+    ['<kbd>Shift</kbd>+<kbd>Tab</kbd> · 툴바 ⇉ 건너뛰기','레벨을 건너뛴 하위 주제 추가 — 건너뛴 레벨 자리는 비워 두고 연결선만 길게 이어짐 (메뉴에서 1~3단계)'],['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','선택한 주제의 건너뛰기 단계 늘리기 / 줄이기'],['툴바 ⇄ 트리변경 · 우클릭 › 트리변경','선택한 주제가 속한 단계(레벨)의 모든 주제를 세로 트리 ↔ 가로 트리로 바꿈 — 예) 오른쪽 트리에서 2단계 주제를 고르고 누르면 2단계 주제들이 각자 부모 아래 한 줄로 늘어섬. 여러 단계의 주제를 함께 고르면 단계마다 바뀌고, 한 번 더 누르면 원래대로 (배치를 새로 고르면 초기화)'],['서식 패널 › 레벨 정렬','같은 레벨 주제들의 왼쪽 끝 / 가운데 / 오른쪽 끝을 한 줄로 맞춤 (좌우로 뻗는 단계에서) — 레벨의 맨 위 주제를 우클릭 드래그로 옮겨 둔 뒤 누르면 그 주제를 기준으로 같은 레벨 전체(와 하위 가지)가 맞춰져요. 자동을 누르면 맞춤으로 옮겨진 거리가 사라져요. 주제를 둘 이상 선택하고 누르면 지도 전체 대신 선택한 주제만, 그중 맨 위에 있는 주제를 기준으로 왼쪽 끝/가운데/오른쪽 끝을 맞춰요(자동은 선택한 주제의 맞춤 이동만 풀어요) — 선택한 주제를 우클릭하면 메뉴에도 있어요'],['서식 패널 › 주제 모양 › 카테고리 너비 일치 · 개별항목 너비 적용','주제 하나를 선택하고 누르면 그 주제가 속한 카테고리(같은 단계)의 모든 주제 너비를 가장 넓은 주제에 맞춰 통일 / 각자 글자 너비로 되돌림'],['서식 패널 › 지도 › 레벨 간격 · 이 단계','‘전체’ 칸 = 모든 단계의 기본 간격(px) / 주제를 하나 선택하고 ‘이 단계’의 − 입력 ＋를 쓰면 그 단계(카테고리)와 위 단계 사이 간격만 따로 조정(같은 단계 전체에 적용, ↺로 되돌림)'],['⚙ 설정 › 기본 최대 폭 · 서식 › 최대 폭','기본은 제한 없음(글자가 한 줄로 길게 이어짐) — 줄바꿈하고 싶으면 설정에서 기본 최대 폭을 줄이거나, 주제를 선택해 서식의 최대 폭·크기 손잡이로 폭을 정하세요'],['서식 패널 › 부모 정렬','부모를 하위 주제 묶음의 가운데(기본) / 첫 번째 하위 주제와 같은 줄(위쪽 맞춤) / 마지막 하위 주제와 같은 줄(아래쪽 맞춤)에 맞춤 (좌우로 뻗는 단계에서)'],
     ['<kbd>F2</kbd> · 더블클릭','주제 글 편집 (편집 중 <kbd>Enter</kbd> 확정, <kbd>Shift</kbd>+<kbd>Enter</kbd> 줄바꿈, <kbd>Esc</kbd> 취소) — 글 일부를 드래그로 선택하면 주제 바로 위에 뜨는 서식 툴바(글꼴·크기·굵게·기울임·밑줄·취소선·글자색·배경색·서식 지우기)로 선택한 글자에만 서식을 줄 수 있고, 정렬은 주제 전체에 적용됩니다'],
     ['<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> · 툴바 ＋ 중심주제','독립된 중심 주제를 하나 더 만듭니다(오른쪽 끝에 자동 배치). 빈 곳 우클릭 → “여기에 중심 주제 추가”로 원하는 자리에도 가능'],['중심 주제 좌클릭 끌기','트리 전체가 따라 움직이고, 다른 주제 위에 놓으면 그 하위로 합쳐집니다 (우클릭 → “중심 주제로 분리”는 반대 동작)'],['<kbd>Delete</kbd>','선택한 주제 삭제 (중심 주제는 2개 이상일 때만, 마지막 하나는 지울 수 없음)'],['<kbd>Space</kbd>','접기 / 펼치기'],['<kbd>←↑↓→</kbd>','주제 사이 이동'],['<kbd>Alt</kbd>+<kbd>↑↓</kbd>','형제 사이에서 순서 바꾸기'],['<kbd>Alt</kbd>+<kbd>→</kbd> / <kbd>←</kbd>','한 단계 아래로 / 위로 (들여쓰기 / 내어쓰기)'],
     ['<kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd>','복사 / 잘라내기 / 붙여넣기 (여러 줄 텍스트·이미지도 붙여넣기)'],['<kbd>Ctrl</kbd>+<kbd>D</kbd>','복제'],['<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd>','실행 취소 / 다시 실행'],
@@ -33325,6 +33366,7 @@ function nodeMenu(){
     {t:'레벨 건너뛰기 설정',dis:isRoot,sub:[0,1,2,3].map(k=>({t:k?k+'단계 건너뛰기':'없음(바로 아래 레벨)',on:(n&&n.sk||0)===k,f:()=>setSkip(null,k)}))},
     {t:'트리변경 — '+flipLabel(),dis:doc.settings.layout==='radial',f:()=>flipTree()},
     {t:'자유 이동 해제 (원래 자리로)',dis:!selIds().some(id=>hasFree(node(id))),f:()=>resetFree()},
+    selIds().filter(id=>P.has(id)).length>1?{t:'선택한 주제 정렬 (맨 위 주제 기준)',sub:[['left','왼쪽 맞춤'],['center','가운데 맞춤'],['right','오른쪽 맞춤'],['auto','맞춤 이동 풀기']].map(a=>({t:a[1],f:()=>alignSelTo(a[0])}))}:null,
     {t:'연결 부위 기본으로',dis:!selIds().some(id=>node(id)&&(node(id).ps||node(id).os)),f:()=>resetPortSide()},
     {t:'새 중심 주제 추가',k:'Ctrl+Shift+Enter',f:()=>addRoot()},
     {t:'중심 주제로 분리',dis:isRoot,f:()=>detachToRoot(primary)},
@@ -33366,7 +33408,7 @@ function bgMenu(w){
   return (ro?[]:[{t:'여기에 중심 주제 추가',f:()=>addRoot(w)},'-',{t:'붙여넣기',k:'Ctrl+V',f:()=>pasteFromClipboard(doc.root.id)},{t:'모두 선택',k:'Ctrl+A',f:()=>selectAll()},'-']).concat([
     {t:'전체 펼치기',f:()=>setCollapseLevel(99)},{t:'1단계까지만 보기',f:()=>setCollapseLevel(1)},{t:'2단계까지만 보기',f:()=>setCollapseLevel(2)},'-',
     {t:'화면에 맞추기',k:'Ctrl+0',f:()=>fitView()},{t:'중심 주제로 이동',k:'Home',f:()=>{ selectOnly(doc.root.id); centerOn(doc.root.id,true); }}
-  ]).concat(ro?[]:['-',{t:'부모 정렬',sub:P_ALIGNS.map(a=>({t:a[1],on:(doc.settings.pAlign||'center')===a[0],f:()=>setPAlign(a[0])}))},{t:'같은 레벨 정렬',sub:LV_ALIGNS.map(a=>({t:a[1],on:(doc.settings.lvAlign||'auto')===a[0],f:()=>setLvAlign(a[0])}))},{t:'트리변경 모두 되돌리기',dis:!(doc.settings.lvFlip&&doc.settings.lvFlip.length),f:()=>resetFlips()},{t:'자유 이동한 주제 모두 원래 자리로',dis:!anyFree(),f:()=>resetFree(null,true)},{t:'연결선 마디 모두 지우기(자동 경로로)',dis:!anyLine(),f:()=>resetLines()},{t:'연결 부위 모두 기본으로',dis:!anyPort(),f:()=>resetPortSides()},{t:'설정…',f:()=>openSettings()}]);
+  ]).concat(ro?[]:['-',{t:'부모 정렬',sub:P_ALIGNS.map(a=>({t:a[1],on:(doc.settings.pAlign||'center')===a[0],f:()=>setPAlign(a[0])}))},{t:selIds().filter(id=>P.has(id)).length>1?'같은 레벨 정렬 — 선택한 주제(맨 위 기준)':'같은 레벨 정렬',sub:LV_ALIGNS.map(a=>({t:a[1],on:selIds().filter(id=>P.has(id)).length<2&&(doc.settings.lvAlign||'auto')===a[0],f:()=>lvAlignAct(a[0])}))},{t:'트리변경 모두 되돌리기',dis:!(doc.settings.lvFlip&&doc.settings.lvFlip.length),f:()=>resetFlips()},{t:'자유 이동한 주제 모두 원래 자리로',dis:!anyFree(),f:()=>resetFree(null,true)},{t:'연결선 마디 모두 지우기(자동 경로로)',dis:!anyLine(),f:()=>resetLines()},{t:'연결 부위 모두 기본으로',dis:!anyPort(),f:()=>resetPortSides()},{t:'설정…',f:()=>openSettings()}]);
 }
 function pasteFromClipboard(tid){
   if(isRO()) return;
@@ -33492,7 +33534,12 @@ function syncTb(){
     const fr=tq('[data-a=flip-reset]'); if(fr) fr.disabled=!(S.lvFlip&&S.lvFlip.length);
     const lo=tq('[data-f=layout]'); if(lo) [...lo.options].forEach(o=>{ const l=LAYOUTS.find(x=>x[0]===o.value); if(l){ const t=l[1]+((S.lvFlip&&S.lvFlip.length&&o.value===S.layout)?' · 트리변경 '+S.lvFlip.join(','):''); if(o.textContent!==t) o.textContent=t; } });
     if(lo){ const t='배치 방식'+((S.lvFlip&&S.lvFlip.length)?' — 트리변경한 단계: '+S.lvFlip.join('·')+' (서식 패널 › 트리변경 › 되돌리기)':''); if(lo.title!==t) lo.title=t; } }
-  LV_ALIGNS.forEach(a=>{ const b=tq('[data-a=lva-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.lvAlign||'auto')===a[0]); b.disabled=!horiz&&a[0]!=='auto'; } });
+  { const nsel=selIds().filter(id=>P.has(id)).length, multi=nsel>1, LVT={left:'왼쪽 끝',center:'가운데',right:'오른쪽 끝'};   /* 주제를 둘 이상 선택하면 이 버튼들은 선택한 주제만(맨 위 주제 기준) 맞춤 */
+    LV_ALIGNS.forEach(a=>{ const b=tq('[data-a=lva-'+a[0]+']'); if(b){
+      if(b.dataset.t0==null) b.dataset.t0=b.title;
+      b.classList.toggle('on',!multi&&(S.lvAlign||'auto')===a[0]); b.disabled=!multi&&!horiz&&a[0]!=='auto';
+      const t=multi?(a[0]==='auto'?'선택한 '+nsel+'개 주제의 맞춤 이동을 풀어요 (지도 전체 레벨 정렬은 그대로)':'선택한 '+nsel+'개 주제 중 맨 위에 있는 주제의 '+LVT[a[0]]+'에 나머지를 맞춰요 — 지도 전체 레벨 정렬은 바뀌지 않아요'):b.dataset.t0;
+      if(b.title!==t) b.title=t; } }); }
   P_ALIGNS.forEach(a=>{ const b=tq('[data-a=pa-'+a[0]+']'); if(b){ b.classList.toggle('on',(S.pAlign||'center')===a[0]); b.disabled=!pal&&a[0]!=='center'; } });
   { const hg=tq('[data-f=hgap]'); if(hg&&document.activeElement!==hg) hg.value=String(S.hgap);
     const lg=tq('[data-f=lvg]'), lh=tq('[data-lgh]'), gds=flipLevelsOfSel();
@@ -33626,7 +33673,7 @@ function act(a,btn){
       ['[data-f=lvg]','[data-f=hgap]'].forEach(q=>{ const e=tq(q); if(e&&document.activeElement===e) e.blur(); });   /* 입력칸이 포커스를 쥐고 있으면 syncTb 가 값을 안 바꾸므로 먼저 풂 */
       if(a==='lvg-dec') stepLevelGap(-4); else if(a==='lvg-inc') stepLevelGap(4); else if(a==='lvg-reset') setLevelGap(null,null); else resetLevelGaps();
       break;
-    case 'lva-auto': case 'lva-left': case 'lva-center': case 'lva-right': setLvAlign(a.slice(4)); break;
+    case 'lva-auto': case 'lva-left': case 'lva-center': case 'lva-right': lvAlignAct(a.slice(4)); break;
     case 'lvw-match': matchLevelWidth(); break; case 'lvw-auto': autoLevelWidth(); break;
     case 'pa-center': case 'pa-top': case 'pa-bottom': setPAlign(a.slice(3)); break;
     case 'note': if(!primary) toast('먼저 주제를 선택하세요.'); else openNote(primary); break;
@@ -33891,7 +33938,7 @@ window.MM={
   fit(){ fitView(); },
   isReadOnly:isRO,
   _dbg:{get doc(){ return doc; },get P(){ return P; },get I(){ return I; },get view(){ return view; },get sel(){ return sel; },get selEdge(){ return selEdge; },get LVG(){ return LVG; },get editing(){ return editing; },els,idx:()=>idx,
-        api:{setLevelGap,stepLevelGap,setGlobalGap,resetLevelGaps,levelGapOf,gapH,gapV,matchLevelWidth,autoLevelWidth,levelGroups,naturalW,flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary,readRich,cleanRuns,rtHtml,ftPlace,resetFree,applyFree,hasFree,anyFree,slotXs,alignLevelsToHead,portSide,groupSide,portIcons,setPortSide,setOutSide,resetOutSide,resetInSide,resetLinePort,linePortSet,resetPortSide,resetPortSides,anyPort,minBendPath,portIconInfo,updatePortHandle,sidePt,routeOv,routeOf,cleanPts,polyD,selectLine,addJoint,delJoint,resetLine,resetLines,anyLine,lineMenu}}
+        api:{setLevelGap,stepLevelGap,setGlobalGap,resetLevelGaps,levelGapOf,gapH,gapV,matchLevelWidth,autoLevelWidth,levelGroups,naturalW,flipTree,resetFlips,flipLevelsOfSel,flipLabel,arrOf,flipSet,layoutGen,addRoot,detachToRoot,setSkip,stepSkip,setLvAlign,setPAlign,inheritStyle,updateHandles,openContextFor,setEdit,placePopups,copyFormat,pasteFormat,selectBranch,selectSameLevel,zoomToNode,addChildOf,addSiblingOf,insertParentOf,deleteSel,moveNodes,copyNodes,duplicateSel,undo,redo,selectOnly,toggleCollapse,setCollapseLevel,applyStyle,startEdit,endEdit,fitView,toggleFull,exportPng,parseOutline,replaceWithOutline,openSearch,runSearch,toggleStyle,navigate,node,zoomBy,pasteText,copySel,openSettings,showHelp,toggleRelMode,relPick,applyAttr,render,computeLayout,THEMES,sanitize,openNote,toggleBoundary,readRich,cleanRuns,rtHtml,ftPlace,resetFree,applyFree,hasFree,anyFree,slotXs,alignLevelsToHead,alignSelTo,lvAlignAct,portSide,groupSide,portIcons,setPortSide,setOutSide,resetOutSide,resetInSide,resetLinePort,linePortSet,resetPortSide,resetPortSides,anyPort,minBendPath,portIconInfo,updatePortHandle,sidePt,routeOv,routeOf,cleanPts,polyD,selectLine,addJoint,delJoint,resetLine,resetLines,anyLine,lineMenu}}
 };
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>init()); else init();
 })();
