@@ -31589,7 +31589,7 @@ function updateHud(){
   if(!hud) return;
   let total=0; walkAll(()=>total++);
   const st=$('mmStatus'); if(st){ const un=unsavedMm(); st.textContent='주제 '+total+'개'+(un?' · 저장 전':''); st.title=un?'💾 Save 하지 않은 수정이 있어요 — 창을 닫거나 다른 날짜의 리포트를 불러오면 사라지고, 다시 열면 마지막으로 저장한 상태로 돌아옵니다':''; }
-  hud.textContent=editMode?'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · 좌드래그 범위 선택 · 빈 곳 우드래그·두 손가락 스크롤 화면 이동 · 주제 우드래그 자유 이동(Shift: 가로·세로 직선) · 연결선 클릭 꺾임 편집(2px 자석, Alt: 끄기) · 주제 선택 후 빨간 ↔ 끌기 연결 부위 변경 · 우클릭 메뉴 · Ctrl+휠·핀치 확대/축소':'';   /* 보기 모드에서는 깔끔하게 비움 */
+  hud.textContent='';   /* 편집 화면 아래쪽 사용법 안내 문구는 표시하지 않음(2026-10-11 요청) — 사용법은 ⋯ › 도움말에 있음. 예전 문구: 'Tab 하위 · Enter 형제 · F2 편집 · Delete 삭제 · 좌드래그 범위 선택 · … · 우클릭 메뉴 · Ctrl+휠·핀치 확대/축소' */
 }
 /* ───────── 선택 ───────── */
 function selIds(){ return [...sel].filter(id=>idx.has(id)); }
