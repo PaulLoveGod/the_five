@@ -1671,8 +1671,15 @@ body #mindmapSection .mm-search input,body #mindmapSection .mm-v input{pointer-e
 #mindmapSection.mm-editing.mm-insp-off>.mm-insp{display:none}
 #mindmapSection.mm-editing.mm-insp-inside>.mm-insp{right:8px;top:44px;bottom:8px}
 #mindmapSection.mm-full>.mm-fp{position:fixed;z-index:9600}
-#mindmapSection.mm-full.mm-editing>.mm-tb{left:8px;bottom:auto;top:44px;max-width:calc(100vw - 16px)}
-#mindmapSection.mm-full.mm-editing>.mm-insp{right:8px;left:auto;top:96px;bottom:8px}
+/* 확대 보기 + 편집 — 툴바는 화면 맨 위 줄에, 서식 패널은 왼쪽 열에 지도(카드) 바깥으로 붙임: 지도를 가리지 않고 지도가 나머지 전부를 차지(🎨 서식을 끄면 왼쪽 열도 지도가 됨).
+   툴바 높이(줄바꿈에 따라 변함)는 JS(dockSync)가 --mm-tbh 로 알려 줌. 팝업 이동(드래그)은 이 모드에서 쓰지 않음 */
+#mindmapSection.mm-full.mm-editing>.mm-tb{left:0;right:0;top:0;bottom:auto;width:auto;max-width:none;padding:4px 8px;border-width:0 0 1px;border-radius:0;box-shadow:none;transform:none!important}
+#mindmapSection.mm-full.mm-editing>.mm-insp{left:0;right:auto;top:var(--mm-tbh,40px);bottom:0;width:252px;border-width:0 1px 0 0;border-radius:0;box-shadow:none;transform:none!important}
+#mindmapSection.mm-full.mm-editing>.card{top:var(--mm-tbh,40px)}
+#mindmapSection.mm-full.mm-editing:not(.mm-insp-off)>.card{left:252px}
+#mindmapSection.mm-full.mm-editing>.mm-tb .mm-fp-grip{display:none}
+#mindmapSection.mm-full.mm-editing>.mm-insp>.mm-fp-hd{cursor:default;border-radius:0;height:38px;box-sizing:border-box}   /* 오른쪽 지도 카드 제목 줄(38px)과 높이를 맞춤 */
+#mindmapSection.mm-full.mm-editing>.mm-insp>.mm-fp-hd>span:first-child,#mindmapSection.mm-full.mm-editing>.mm-insp>.mm-fp-hd>small{display:none}
 #mindmapSection .mm-fp-hd{cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}
 #mindmapSection .mm-tb .mm-fp-grip{width:16px;height:26px;display:inline-flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;flex-shrink:0;margin-right:2px}
 #mindmapSection .mm-tb .mm-fp-grip:hover{color:#475569}
@@ -32555,7 +32562,7 @@ function ftPlace(){
   tb.style.display='flex'; tb.style.right='auto'; tb.style.width='auto';
   const w=tb.offsetWidth||440, h=tb.offsetHeight||34, vw=document.documentElement.clientWidth||innerWidth;
   const bar=fsMode?null:document.querySelector('.main-btn-bar');   /* 확대 보기에서는 메뉴바가 카드 뒤에 가려져 있음 */
-  const top0=(bar&&getComputedStyle(bar).display!=='none')?Math.max(0,bar.getBoundingClientRect().bottom):0;
+  const top0=fsMode?Math.max(0,stage.getBoundingClientRect().top):((bar&&getComputedStyle(bar).display!=='none')?Math.max(0,bar.getBoundingClientRect().bottom):0);   /* 확대 보기: 위쪽에 도킹된 툴바·제목 줄을 가리지 않게 지도 윗변까지만 */
   let top=r.top-h-8;
   if(top<top0) top=r.bottom+8;
   top=Math.max(top0,Math.min(top,innerHeight-h-2));
@@ -34105,7 +34112,7 @@ function toggleFull(force){
   fsMode=want; closeMenus();
   section.classList.toggle('mm-full',fsMode); document.body.classList.toggle('mm-fs',fsMode);
   section.querySelectorAll('[data-a=full]').forEach(b=>{ const sq=b.classList.contains('sq'); b.innerHTML=fsMode?(sq?'✕':'✕ 닫기'):(sq?'⛶':'⛶ 확대 보기'); });
-  updateCtl(); placePopups(); applyPopPos();
+  updateCtl(); dockSync(); placePopups(); applyPopPos();
   setTimeout(()=>{ fitView(); },60);
   stage.focus({preventScroll:true}); syncTb();
 }
@@ -34244,7 +34251,7 @@ function setEdit(on){
   }
   editMode=on;
   if(on) editStartMt=doc?doc.mt:0;
-  syncEditUi();
+  syncEditUi(); dockSync();
   if(!on){
     sel.clear(); primary=null; selRel=null; selEdge=null;
     if(doc&&doc.mt!==editStartMt&&typeof window.saveNow==='function'){ try{ window.saveNow(); }catch(_){} }
@@ -34267,7 +34274,13 @@ function revealPopups(){
   const r=tbEl.getBoundingClientRect(); if(!r.height) return;
   if(r.top<56) window.scrollBy(0,r.top-56);
 }
-/* 팝업 이동 — 손잡이(data-drag)를 끌어 옮기고, 위치는 모드(바깥/안쪽/확대 보기)별로 기억, 더블클릭하면 원래 자리 */
+/* 확대 보기 + 편집 — 툴바가 화면 맨 위 줄에 붙으므로(CSS) 그 높이(줄바꿈에 따라 변함)를 --mm-tbh 로 알려, 서식 패널·지도 카드가 그 아래에서 시작하게 함 */
+function dockSync(){
+  if(!section||!tbEl) return;
+  if(fsMode&&editMode){ const h=Math.ceil(tbEl.getBoundingClientRect().height); if(h>0&&section.style.getPropertyValue('--mm-tbh')!==h+'px') section.style.setProperty('--mm-tbh',h+'px'); }
+  else if(section.style.getPropertyValue('--mm-tbh')) section.style.removeProperty('--mm-tbh');
+}
+/* 팝업 이동 — 손잡이(data-drag)를 끌어 옮기고, 위치는 모드(바깥/안쪽)별로 기억, 더블클릭하면 원래 자리 (확대 보기에서는 위·왼쪽에 도킹되어 이동하지 않음) */
 const LS_POP='BTMMindmapPopPos';
 const popMode=()=>fsMode?'F':(section.classList.contains('mm-insp-inside')?'I':'O');
 function loadPos(){ try{ const o=JSON.parse(localStorage.getItem(LS_POP)||'{}'); return o&&typeof o==='object'?o:{}; }catch(_){ return {}; } }
@@ -34283,11 +34296,11 @@ function clampPop(el,vertical){   /* 손잡이가 화면 밖으로 사라지지 
 function applyPopPos(){
   if(!tbEl||!inspEl) return;
   const all=loadPos(), m=popMode();
-  [['tb',tbEl],['insp',inspEl]].forEach(([name,el])=>{ setPopPos(el,(all[m]&&all[m][name])||{x:0,y:0}); clampPop(el,false); });
+  [['tb',tbEl],['insp',inspEl]].forEach(([name,el])=>{ if(fsMode){ setPopPos(el,{x:0,y:0}); return; } setPopPos(el,(all[m]&&all[m][name])||{x:0,y:0}); clampPop(el,false); });
 }
 function initPopDrag(){
   section.addEventListener('pointerdown',e=>{
-    const h=e.target.closest&&e.target.closest('[data-drag]'); if(!h||e.button!==0) return;
+    const h=e.target.closest&&e.target.closest('[data-drag]'); if(!h||e.button!==0||fsMode) return;
     const name=h.dataset.drag, el=name==='tb'?tbEl:inspEl; e.preventDefault();
     const st=el._pos||{x:0,y:0}, sx=e.clientX, sy=e.clientY;
     try{ h.setPointerCapture(e.pointerId); }catch(_){}
@@ -34296,7 +34309,7 @@ function initPopDrag(){
     h.addEventListener('pointermove',mv); h.addEventListener('pointerup',up); h.addEventListener('pointercancel',up);
   });
   section.addEventListener('dblclick',e=>{
-    const h=e.target.closest&&e.target.closest('[data-drag]'); if(!h) return;
+    const h=e.target.closest&&e.target.closest('[data-drag]'); if(!h||fsMode) return;
     const name=h.dataset.drag, el=name==='tb'?tbEl:inspEl; setPopPos(el,{x:0,y:0}); savePos(popMode(),name,{x:0,y:0});
   });
 }
@@ -34372,10 +34385,11 @@ function init(){
   });
   document.addEventListener('pointerdown',e=>{ if(!(e.target.closest&&e.target.closest('.mm-menu,.mm-pop,[data-a=more],[data-a=expand],[data-a=skip],[data-a=prio],[data-a=prog],[data-a=icon],[data-a^=c-]'))) closeMenus(); },true);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&fsMode&&!document.querySelector('.mm-dlg-wrap,.mm-menu,.mm-pop')&&!(e.target.closest&&e.target.closest('.mm-search'))) toggleFull(false); });
-  window.addEventListener('resize',()=>{ closeMenus(); placePopups(); ftPlace(); });
+  window.addEventListener('resize',()=>{ closeMenus(); dockSync(); placePopups(); ftPlace(); });
   const vbFloat=()=>section.classList.toggle('mm-vbf',section.clientWidth<580);   /* 보기 막대가 제목 줄에 들어갈 폭인가 */
   vbFloat();
   if(typeof ResizeObserver!=='undefined') new ResizeObserver(()=>{ vbFloat(); placePopups(); }).observe(section);
+  if(typeof ResizeObserver!=='undefined') new ResizeObserver(()=>dockSync()).observe(tbEl);   /* 확대 보기 + 편집에서 툴바가 줄바꿈으로 높이가 바뀌면 지도 카드·서식 패널 위치도 따라감 */
   window.addEventListener('scroll',closeMenus,true);
   if(typeof ResizeObserver!=='undefined'){
     let _rt=0;
