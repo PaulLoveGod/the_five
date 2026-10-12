@@ -1257,6 +1257,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
   padding:5px 10px;
   white-space:nowrap;flex-shrink:0;
 }
+#dibResetBtn:hover{background:rgba(255,255,255,.3)!important}   /* Daily Inbody Check [Reset] */
 /* Snowball 테이블 (행 높이 고정·균등 — 카드 resize와 무관) */
 /* cqw 단위로 폰트 자동 축소: sbCard를 inline-size 컨테이너로 등록 */
 #sbCard{ container-type:inline-size; }
@@ -3144,8 +3145,8 @@ body.mm-fs{overflow:hidden}
         style="width:100%;padding:10px 12px;font-size:16px;border:2px solid #e2e8f0;border-radius:8px;box-sizing:border-box;color:#1e293b;cursor:pointer"
         onfocus="this.style.borderColor='#1e40af'" onblur="this.style.borderColor='#e2e8f0'"/>
       <div style="margin-top:10px;padding:10px 12px;background:#fefce8;border-radius:8px;font-size:11px;color:#92400e;line-height:1.6">
-        🗑️ <b>초기화:</b> 오늘의 말씀, 묵상노트, 감사/간구, Footprints, 시황분석, 산업/테마분석, Daily Inbody Check<br>
-        ✅ <b>유지:</b> 포트폴리오, 경제일정, 지수, 매매일지, 총자산 등 나머지 전체
+        🗑️ <b>초기화:</b> 오늘의 말씀, 묵상노트, 감사/간구, Footprints, 시황분석, 산업/테마분석<br>
+        ✅ <b>유지:</b> Daily Inbody Check(이미지·글), 포트폴리오, 경제일정, 지수, 매매일지, 총자산 등 나머지 전체
       </div>
     </div>
     <!-- 버튼 -->
@@ -3477,7 +3478,7 @@ body.mm-fs{overflow:hidden}
           <div class="routine-right-top">
             <!-- Daily Inbody Check -->
             <div id="dibCard" class="routine-sub-card" style="flex:1;height:240px;">
-              <div class="routine-sub-hdr"><span id="stid-dib" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ Daily Inbody Check</span></div>
+              <div class="routine-sub-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span id="stid-dib" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="min-width:0;overflow:hidden;text-overflow:ellipsis">■ Daily Inbody Check</span><button id="dibResetBtn" type="button" class="pdf-export-hide" onclick="resetDibContent()" title="본문의 이미지와 입력한 글을 모두 삭제합니다" style="flex-shrink:0;height:16px;padding:0 8px;font-size:10px;font-weight:700;line-height:14px;font-family:inherit;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.45);border-radius:3px;cursor:pointer">Reset</button></div>
               <div id="dibContent" class="rich-editor" contenteditable="true" placeholder="인바디 결과를 붙여넣기(Ctrl+V)하세요."
                 style="flex:1;min-height:0;border:none;border-radius:0;resize:none;box-sizing:border-box;"
                 onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
@@ -12223,6 +12224,16 @@ async function loadData(){
 }
 
 /* ─────────── ACTIONS ─────────── */
+/* Daily Inbody Check [Reset] — 본문의 이미지와 입력한 글을 모두 삭제(2026-10-12). 확인 뒤 비우고 바로 자동저장(저장해 둔 Archive 의 옛 리포트는 그대로) */
+function resetDibContent(){
+  const el=g('dibContent'); if(!el) return;
+  if(!el.querySelector('img') && !(el.innerText||'').trim()){ _showToast('dibResetToast','Daily Inbody Check 가 이미 비어 있습니다'); return; }
+  if(!confirm('Daily Inbody Check 의 이미지와 입력한 글을 모두 삭제할까요?')) return;
+  el.innerHTML='';
+  if(typeof _ftEditor!=='undefined' && _ftEditor===el) _savedRange=null;   /* 지워진 노드를 가리키는 옛 선택 범위 정리 */
+  saveData();
+  _showToast('dibResetToast','Daily Inbody Check 를 비웠습니다');
+}
 function createNewReport(){
   const modal = document.getElementById('newReportModal');
   const datePick = document.getElementById('newReportDatePick');
@@ -12270,6 +12281,9 @@ async function confirmNewReport(){
   const _scrDate = cur.reportDate || '';
   let _mmCarry = cur.mindmap;
   if(_prevArc && _prevArc.data && _prevArc.data.mindmap && !(_scrDate >= _prevArc.date && _scrDate < selectedDate)) _mmCarry = _prevArc.data.mindmap;
+  /* Daily Inbody Check — 이미지·글을 새 리포트로 이어받음(2026-10-12 요청 — 예전엔 비웠음). 화면이 가장 최근 리포트(저장돼 있거나 아직 저장 전인 새 리포트)면 화면의 내용을
+     (Reset 으로 비워 뒀다면 비운 채로), 지난 리포트를 보고 있었다면 가장 최근에 저장된 리포트의 내용을 씀 — 포트폴리오·매매일지 등 다른 이월 항목이 '최신 archive 기준'인 것과 같은 원칙 */
+  const _dibCarry = (!allArcs.length || (cur.reportDate||'') >= allArcs[0].date) ? (cur.dibContent||'') : (_latestArcData.dibContent||'');
   const fresh = {
     ...cur,
     mindmap: _mmCarry,
@@ -12300,8 +12314,8 @@ async function confirmNewReport(){
     },
     /* Key-Word: 초기화 */
     keyWord:'',
-    /* Daily Inbody Check: 이전 이미지/내용 초기화 */
-    dibContent:'',
+    /* Daily Inbody Check: 이미지·글 이어받음(위 _dibCarry) — 비우려면 제목 오른쪽 [Reset] */
+    dibContent:_dibCarry,
     investorStatusNote:_sstDef.investorStatusNoteBody,
     /* 섹션 제목: 관리 패널 기본값으로 리셋 */
     sectionTitles: _sstDef,
@@ -12723,7 +12737,8 @@ const _RPT_MEMO_SECS=[
   ]},
 ];
 
-/* 리포트 제목: "YYYYMMDD (요일)_[The FIVE]_제목" — copyReportTitle()과 동일한 규칙 */
+/* 리포트 제목(메모장에 저장되는 '리포트 본문' 메모의 제목): "YYYYMMDD (요일)_[The FIVE]_제목".
+   ※ 상단 제목 복사 버튼 copyReportTitle() 은 2026-10-12 부터 '_[The FIVE]' 없이 "YYYYMMDD (요일)_제목" 을 복사함 — 이 함수는 요청 범위 밖이라 그대로(두 규칙이 달라짐) */
 function _composeReportTitle(reportDate){
   const date=reportDate||gv('reportDate')||todayStr();
   const ymd=date.replace(/-/g,'');
@@ -24722,7 +24737,7 @@ async function copyReportTitle(){
   const ymd   = date.replace(/-/g,'');
   const dow   = _getDayStr(date);
   const title = (g('reportTitleText')?.innerText||'').trim().replace(/^[『「『]/,'').replace(/[』」』]$/,'').trim();
-  const text  = `${ymd} ${dow}_[The FIVE]_${title}`;
+  const text  = `${ymd} ${dow}_${title}`;   /* 2026-10-12: '_[The FIVE]' 는 붙이지 않음(요청) — 예전 형식 "YYYYMMDD (요일)_[The FIVE]_제목" */
   try{
     await navigator.clipboard.writeText(text);
   }catch(e){
