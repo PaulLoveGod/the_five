@@ -12224,11 +12224,10 @@ async function loadData(){
 }
 
 /* ─────────── ACTIONS ─────────── */
-/* Daily Inbody Check [Reset] — 본문의 이미지와 입력한 글을 모두 삭제(2026-10-12). 확인 뒤 비우고 바로 자동저장(저장해 둔 Archive 의 옛 리포트는 그대로) */
+/* Daily Inbody Check [Reset] — 본문의 이미지와 입력한 글을 모두 삭제(2026-10-12). 동의(확인) 팝업 없이 누르면 바로 비우고 곧바로 자동저장(저장해 둔 Archive 의 옛 리포트는 그대로) */
 function resetDibContent(){
   const el=g('dibContent'); if(!el) return;
   if(!el.querySelector('img') && !(el.innerText||'').trim()){ _showToast('dibResetToast','Daily Inbody Check 가 이미 비어 있습니다'); return; }
-  if(!confirm('Daily Inbody Check 의 이미지와 입력한 글을 모두 삭제할까요?')) return;
   el.innerHTML='';
   if(typeof _ftEditor!=='undefined' && _ftEditor===el) _savedRange=null;   /* 지워진 노드를 가리키는 옛 선택 범위 정리 */
   saveData();
