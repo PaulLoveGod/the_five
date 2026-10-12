@@ -1372,7 +1372,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-tab-btn:hover:not(.active){background:#c4ccda}
 #aiTabBody{border:none;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0;background:#e0f2fe;color:#0369a1;transition:background .12s,color .12s;letter-spacing:.1px}
 #aiTabBody:hover,#aiTabBody.active{background:#bae6fd;color:#0284c7}
-#aiBodyDropdown{position:absolute;top:calc(100% + 4px);right:0;z-index:500;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:6px 0;min-width:300px;max-height:70vh;overflow-y:auto;display:none}
+#aiBodyDropdown{position:absolute;top:calc(100% + 4px);right:0;z-index:500;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:6px 0;min-width:300px;max-height:min(80vh,calc(95vh - 110px));overflow-y:auto;display:none}
 .ai-body-dd-row{display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid #f1f5f9}
 .ai-body-dd-row:last-child{border-bottom:none}
 .ai-body-dd-row.ai-body-dd-current{background:#e0f2fe}
@@ -3616,10 +3616,10 @@ body.mm-fs{overflow:hidden}
           onclick="toggleHeatmapManual()">Manual</button>
         <button id="hmCaptureBtn" class="btn mobile-keep"
           style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4e3d7a;border:none;border-radius:3px;font-weight:700;color:#fff"
-          onclick="captureHeatmapSection()" title="히트맵 전체 캡쳐 후 고해상도 이미지로 붙여넣기 — 화면 공유 허용은 🔄 업데이트를 누를 때 받습니다(허용돼 있어야 캡쳐됩니다)">📸 캡쳐</button>
+          onclick="captureHeatmapSection()" title="히트맵 전체 캡쳐 후 고해상도 이미지로 붙여넣기 — 화면 공유 허용은 🔄 업데이트(또는 UPDATE ALL)를 누를 때 받습니다(허용돼 있어야 캡쳐됩니다)">📸 캡쳐</button>
         <button id="heatmapBtn" class="btn mobile-keep"
           style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#f97316;border:none;border-radius:3px;font-weight:700;color:#fff"
-          onclick="confirmHeatmapUpdate()" title="히트맵 업데이트 — 이때 화면 공유(이 탭)를 허용하면 📸 캡쳐를 쓸 수 있습니다">🔄 업데이트</button>
+          onclick="confirmHeatmapUpdate()" title="히트맵 업데이트 — 이때 화면 공유(이 탭)를 허용하면 📸 캡쳐를 쓸 수 있습니다(이미 공유 중이면 묻지 않습니다)">🔄 업데이트</button>
       </span>
     </div>
     <div class="card-body" style="padding:6px;flex:1;display:flex;flex-direction:column">
@@ -24583,7 +24583,8 @@ function _hmStreamIsLive(){
   return !!(t&&t.readyState==='live');
 }
 /* [2026-10-11] 화면 공유 허용 창은 📸 캡쳐가 아니라 S&P 🔄 업데이트를 누를 때 띄움(_hmAskShare) — 📸 캡쳐는 이미 허용된 스트림으로 캡쳐만 하고,
-   허용이 없으면(처음이거나 브라우저의 '공유 중지'를 눌렀을 때) 새로 묻지 않고 안내만 함 */
+   허용이 없으면(처음이거나 브라우저의 '공유 중지'를 눌렀을 때) 새로 묻지 않고 안내만 함.
+   [2026-10-12] UPDATE ALL 도 시작할 때 같은 허용을 받음. 둘 다 이미 공유 중이면(_hmStreamIsLive) 창 없이 바로 진행 */
 async function _hmAskShare(){
   if(_hmStreamIsLive()) return true;
   if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia) return false;
@@ -24629,7 +24630,7 @@ async function captureHeatmapSection(){
   }
   /* 캡쳐 버튼은 캡쳐만 — 화면 공유 허용 창은 🔄 업데이트에서 이미 띄웠음. 허용된 스트림이 없으면 새로 묻지 않고 안내 */
   if(!_hmStreamIsLive()){
-    alert('화면 공유가 허용되어 있지 않아 캡쳐할 수 없습니다.\n먼저 🔄 업데이트를 누른 뒤, 나타나는 창에서 이 탭의 화면 공유를 허용해 주세요.\n(한 번 허용하면 이 페이지를 열어 두는 동안은 📸 캡쳐가 바로 진행됩니다)');
+    alert('화면 공유가 허용되어 있지 않아 캡쳐할 수 없습니다.\n먼저 🔄 업데이트(또는 UPDATE ALL)를 누른 뒤, 나타나는 창에서 이 탭의 화면 공유를 허용해 주세요.\n(한 번 허용하면 이 페이지를 열어 두는 동안은 📸 캡쳐가 바로 진행됩니다)');
     return;
   }
   const origText=btn?.textContent||'📸 캡쳐';
@@ -24757,10 +24758,14 @@ function _showVpnConfirm(cb){
     modal.style.display='flex';
   }
 }
-function confirmHeatmapUpdate(){ _showVpnConfirm(async()=>{ await _hmAskShare(); updateHeatmap(); }); }   /* VPN 확인 후 → 화면 공유 허용(📸 캡쳐용, 이미 허용돼 있으면 건너뜀) → 업데이트 */
+/* S&P 🔄 업데이트 — VPN 확인 창 없이 바로: 화면 공유 허용(📸 캡쳐용 — 이미 공유 중이면 묻지 않고 건너뜀) → 업데이트.
+   getDisplayMedia 는 클릭(사용자 활성화) 안에서 동기적으로 불러야 하므로 _hmAskShare() 를 첫 await 앞에서 바로 호출한다(2026-10-12 VPN 창 제거) */
+async function confirmHeatmapUpdate(){ await _hmAskShare(); updateHeatmap(); }
+/* UPDATE ALL — VPN 확인('네' 클릭) → 화면 공유 허용(이미 공유 중이면 묻지 않고 건너뜀 · 취소해도 진행) → 전체 업데이트.
+   허용 창은 '네' 클릭 안에서 동기적으로 띄움(2026-10-12 추가 — S&P 업데이트와 같은 허용이라 한 번 받으면 이후 📸 캡쳐·두 버튼 모두 다시 묻지 않음) */
 function confirmUpdateAll(){
   if(_isUpdatingAll){ updateAll(); return; }   /* 진행 중이면 STOP — 확인 불필요 */
-  _showVpnConfirm(()=>updateAll());
+  _showVpnConfirm(async()=>{ await _hmAskShare(); updateAll(); });
 }
 
 /* ── 공용 토스트 ── */
@@ -29527,6 +29532,9 @@ Rules:
       {label:'My Technical Analysis With AI',         id:'technicalAnalysis'},
       {label:'My Trading Strategy With AI Navigator', id:'tradingStrategy'},
     ]},
+    {group:'MindMap',items:[   /* 텍스트 = 지도 전체의 들여쓰기 개요(MM.outlineText), 캡쳐 = 지도 전체 PNG(MM.capturePng) — 화면 글(innerText)이 아니라 MindMap 전용으로 처리 */
+      {label:'MindMap',id:'mindmapSection',isCur:()=>_eid===_MM_EID,tt:'마인드맵 전체를 들여쓰기 개요 텍스트로 왼쪽 참고자료에 가져옵니다',ti:'마인드맵 전체(화면 확대·이동과 무관)를 이미지로 첨부합니다'},
+    ]},
   ];
 
   window._toggleBodyDropdown=function(ev){
@@ -29541,7 +29549,7 @@ Rules:
       const eid=s.idFn?s.idFn():s.id;
       if(!eid||!g(eid)) return;
       const row=document.createElement('div');
-      row.className='ai-body-dd-row'+(s.current?' ai-body-dd-current':'')+(tree?' ai-body-dd-indent':'');
+      row.className='ai-body-dd-row'+((s.current||(s.isCur&&s.isCur()))?' ai-body-dd-current':'')+(tree?' ai-body-dd-indent':'');
       if(tree){
         const t=document.createElement('span'); t.className='ai-body-dd-tree'; t.textContent=tree;
         row.appendChild(t);
@@ -29551,6 +29559,7 @@ Rules:
       txtBtn.onclick=()=>{ _fetchSectionText(eid,s.label); dd.style.display='none'; btn&&btn.classList.remove('active'); };
       const imgBtn=document.createElement('button'); imgBtn.className='ai-body-dd-btn ai-body-dd-img'; imgBtn.textContent='📷 캡쳐';
       imgBtn.onclick=()=>{ _fetchSectionImage(eid,s.label); dd.style.display='none'; btn&&btn.classList.remove('active'); };
+      if(s.tt) txtBtn.title=s.tt; if(s.ti) imgBtn.title=s.ti;
       row.append(lbl,txtBtn,imgBtn); list.appendChild(row);
     };
     _BODY_SECS.forEach(entry=>{
@@ -29570,6 +29579,15 @@ Rules:
   };
 
   window._fetchSectionText=function(eid,label){
+    /* MindMap: 화면 글(innerText)이 아니라 지도 구조를 들여쓰기 개요로 — AI 의 MindMap 개요 형식·'개요 가져오기'와 같은 형식 */
+    if(eid==='mindmapSection'){
+      const ot=(window.MM&&typeof MM.outlineText==='function')?MM.outlineText():'';
+      if(!ot.trim()){ _showToast('_aiBodyToast','MindMap 에 가져올 내용이 없어요'); return; }
+      g('aiLeftContent').textContent=ot;
+      _setLeftMode('text');
+      _pendingImages=[]; _renderImgStrip();
+      return;
+    }
     const el=g(eid); if(!el) return;
     const txt=(el.innerText||el.textContent||'').trim();
     const dataImgs=[...el.querySelectorAll('img')].filter(i=>i.src.startsWith('data:image/'));
@@ -29593,6 +29611,11 @@ Rules:
       /* ── technicalAnalysis: 차트 캔버스가 떠 있으면 tsCaptureChart와 동일 로직 ── */
       if(eid==='technicalAnalysis' && typeof window._tsGetCaptureDataUrl==='function'){
         dataUrl=window._tsGetCaptureDataUrl();
+      }
+
+      /* ── MindMap: 지도 전체(화면 확대·이동과 무관, 편집 도구·선택 표시 제외)를 MM 자체 렌더러로 — 안 되면 아래 html2canvas ── */
+      if(!dataUrl&&eid==='mindmapSection'&&window.MM&&typeof MM.capturePng==='function'){
+        try{ dataUrl=await MM.capturePng(); }catch(_){ dataUrl=null; }
       }
 
       /* ── 그 외 섹션 or 텍스트박스 모드: html2canvas ── */
@@ -34138,8 +34161,10 @@ function newBlank(){
   if(isRO()) return;
   dialog('🆕 새 마인드맵','현재 마인드맵을 지우고 빈 마인드맵으로 시작합니다. (실행 취소 Ctrl+Z로 되돌릴 수 있습니다.)',[{t:'취소'},{t:'새로 시작',pri:1,f:()=>{ replaceWithOutline([{t:'중심 주제',c:[]}]); setTimeout(()=>startEdit(doc.root.id,{all:true}),30); }}]);
 }
-async function exportPng(){
-  const b=bounds(); if(!b) return;
+/* 지도 전체(내용 영역 + 여백 32px)를 SVG(foreignObject)로 그려 canvas 로 — 'PNG 이미지로 저장'과 AI 팝업 '본문 → MindMap → 캡쳐'가 함께 씀.
+   max=긴 변 목표 px, lo/hi=배율 하한·상한. canvas 변환에 실패하면 cv 는 null(저장 쪽이 svgStr 로 SVG 파일을 대신 만듦). 지도에 내용이 없으면 null */
+async function renderMapCanvas(max,lo,hi){
+  const b=bounds(); if(!b) return null;
   const pad=32, W=Math.ceil(b.w+pad*2), H=Math.ceil(b.h+pad*2);
   const cl=world.cloneNode(true);
   cl.style.cssText='position:absolute;left:0;top:0;width:0;height:0;transform:translate('+(pad-b.x)+'px,'+(pad-b.y)+'px)';
@@ -34150,17 +34175,34 @@ async function exportPng(){
   const ff=getComputedStyle(stage).fontFamily||BASE_FONT;
   const xhtml='<div xmlns="http://www.w3.org/1999/xhtml" id="mindmapSection" style="position:relative;width:'+W+'px;height:'+H+'px;overflow:hidden;background:'+theme().bg+';font-family:'+ff.replace(/"/g,"'")+'"><style><![CDATA['+css+']]></style><div class="mm-stage" style="position:absolute;left:0;top:0;width:'+W+'px;height:'+H+'px;overflow:hidden;background:transparent;cursor:default">'+new XMLSerializer().serializeToString(cl)+'</div></div>';
   const svgStr='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'"><foreignObject x="0" y="0" width="'+W+'" height="'+H+'">'+xhtml+'</foreignObject></svg>';
-  const sc=Math.max(1,Math.min(3,4000/Math.max(W,H)));
+  const sc=Math.max(lo,Math.min(hi,max/Math.max(W,H)));
   try{
     const img=new Image();
     await new Promise((res,rej)=>{ img.onload=res; img.onerror=()=>rej(new Error('img')); img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgStr); });
     const cv=document.createElement('canvas'); cv.width=Math.round(W*sc); cv.height=Math.round(H*sc);
     const cx=cv.getContext('2d'); cx.fillStyle=theme().bg; cx.fillRect(0,0,cv.width,cv.height); cx.scale(sc,sc); cx.drawImage(img,0,0,W,H);
-    const blob=await new Promise((res,rej)=>cv.toBlob(b2=>b2?res(b2):rej(new Error('blob')),'image/png'));
+    return {cv,svgStr};
+  }catch(err){ return {cv:null,svgStr}; }
+}
+async function exportPng(){
+  const r=await renderMapCanvas(4000,1,3); if(!r) return;
+  try{
+    if(!r.cv) throw new Error('canvas');
+    const blob=await new Promise((res,rej)=>r.cv.toBlob(b2=>b2?res(b2):rej(new Error('blob')),'image/png'));
     saveBlob(blob,'mindmap_'+ymd()+'.png'); toast('PNG 이미지로 저장했습니다.');
   }catch(err){
-    saveBlob(new Blob([svgStr],{type:'image/svg+xml'}),'mindmap_'+ymd()+'.svg'); toast('PNG 변환에 실패해 SVG 파일로 저장했습니다.');
+    saveBlob(new Blob([r.svgStr],{type:'image/svg+xml'}),'mindmap_'+ymd()+'.svg'); toast('PNG 변환에 실패해 SVG 파일로 저장했습니다.');
   }
+}
+/* AI 팝업 '본문 → MindMap → 📷 캡쳐': 지도 전체(화면 확대·이동·선택·편집 도구와 무관)를 PNG data URL 로. 긴 변 2000px 안팎 — AI 가 읽기에 충분하고 첨부 용량이 과하지 않게. 실패·빈 지도면 null */
+async function capturePng(){
+  try{ const r=await renderMapCanvas(2000,0.5,2); return r&&r.cv?r.cv.toDataURL('image/png'):null; }catch(_){ return null; }
+}
+/* AI 팝업 '본문 → MindMap → 텍스트': 지도 전체(모든 중심 주제)를 들여쓰기 개요 텍스트로 — '📋 개요 텍스트 복사'와 같은 형식(AI 가 만드는 MindMap 개요·'개요 가져오기'와도 같음). 메모·링크 같은 부가 정보는 넣지 않음 */
+function outlineText(){
+  if(!doc) return '';
+  const lines=[], add=(n,depth)=>{ lines.push('  '.repeat(depth)+String(tr(n.t)).replace(/\s*\n\s*/g,' ')); n.c.forEach(c=>add(c,depth+1)); };   /* tr(): 번역 보기에선 화면에 보이는 번역문 */
+  doc.roots.forEach(n=>add(n,0)); return lines.join('\n');
 }
 /* PDF·이미지 저장(html2canvas)용 — 복제 문서의 연결선 SVG(#mmSvg)를 그릴 내용이 다 들어가는 크기로 손질.
    평소 이 SVG 는 1×1px(overflow:visible)라서 html2canvas 가 SVG 를 그 크기의 이미지로만 그려 연결선이 저장물에서 사라졌음 → viewBox·크기를 내용 영역(여백 40px)으로 맞춤.
@@ -34872,7 +34914,7 @@ function setTranslation(map){
   if(autoFit) fitView();
 }
 window.MM={
-  init, load, flush, serialize, serializeSaved, markSaved, hasUnsaved:()=>unsavedMm(), titleChanged, setEdit, toggleEdit, openOutline, prepareClone, setTranslation, translatableTexts, isTranslated:()=>!!XL,
+  init, load, flush, serialize, serializeSaved, markSaved, hasUnsaved:()=>unsavedMm(), titleChanged, setEdit, toggleEdit, openOutline, prepareClone, setTranslation, translatableTexts, isTranslated:()=>!!XL, outlineText, capturePng,
   isEditing(){ return editMode; }, canEdit(){ return !permRO(); },
   refresh(){ if(stage){ measure(true); render(); } },
   fit(){ fitView(); },
