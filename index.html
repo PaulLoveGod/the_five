@@ -26579,7 +26579,7 @@ function _applyNewReportQuotes(dateStr){
    이미지 리사이즈 (rich-editor 내 이미지 클릭 → 핸들 표시)
 ═══════════════════════════════════════════════════════ */
 function _initImgResize(){
-  let _ov=null, _img=null, _drag=null;
+  let _ov=null, _img=null, _drag=null, _wtb=null;
   const H=[
     {id:'nw',cx:0,  cy:0,  cur:'nw-resize'},
     {id:'n', cx:50, cy:0,  cur:'n-resize'},
@@ -26595,14 +26595,63 @@ function _initImgResize(){
     if(!_ov||!_img) return;
     const r=_img.getBoundingClientRect();
     Object.assign(_ov.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+    if(_wtb){   /* 글 감싸기 버튼줄: 이미지 위쪽(자리가 없으면 아래쪽), 오른쪽 배치 이미지는 오른쪽 끝에 맞춤 */
+      const rt=_wrapOf(_img)==='right';
+      _wtb.style.top=(r.top<40?(r.height+6):-32)+'px';
+      _wtb.style.left=rt?'auto':'0'; _wtb.style.right=rt?'0':'auto';
+    }
+  }
+
+  /* ── 글 감싸기 (2026-10-13): 이미지를 왼쪽/오른쪽에 띄워(float) 이미지 옆 빈자리에 글이 들어가게 ──
+     · 이미지를 누르면 위쪽에 [글 감싸기 ▤◧ ◨▤ ▭] 버튼이 뜸 — 왼쪽=이미지 왼쪽·글 오른쪽 / 오른쪽=이미지 오른쪽·글 왼쪽 / 해제=예전처럼 한 줄 단독
+     · 세로형(높이>너비) 이미지를 붙여넣으면 자동으로 왼쪽 배치(옆 자리가 있으면 바로 글을 쓸 수 있게). 가로형·예전에 넣은 이미지는 그대로(버튼으로 직접 선택)
+     · 줄 폭의 절반 넘게 차지하는 큰 이미지에 왼쪽/오른쪽을 누르면 옆에 글 자리가 생기도록 글칸 안쪽 폭의 약 42%로 줄임(비율 유지) */
+  const _WI={
+    left:'<svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><rect x="1" y="1" width="7" height="12" rx="1" fill="currentColor"/><path d="M11 2.5h8M11 5.5h8M11 8.5h8M11 11.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>',
+    right:'<svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><rect x="12" y="1" width="7" height="12" rx="1" fill="currentColor"/><path d="M1 2.5h8M1 5.5h8M1 8.5h8M1 11.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>',
+    none:'<svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path d="M1 1.5h18M1 4h18M1 12.5h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="6" y="6" width="8" height="4.5" rx="1" fill="currentColor"/></svg>'
+  };
+  const _WLBL={left:'이미지 왼쪽 · 글 오른쪽',right:'이미지 오른쪽 · 글 왼쪽',none:'글 감싸기 해제 (이미지를 한 줄 단독으로)'};
+  const _wrapOf=img=>img.style.float==='left'?'left':(img.style.float==='right'?'right':'none');
+  function _setWrap(img,mode){
+    if(mode==='left'||mode==='right'){
+      const ed=img.closest('.rich-editor')||img.closest('#qtBibleDisplay');
+      if(ed){   /* 줄 폭의 절반 넘게 차지하면 글 쓸 옆자리가 없으므로 안쪽 폭의 약 42%로 줄임 — 바꾸기 전의 렌더 크기로 비율 계산 */
+        const cs=getComputedStyle(ed), inner=ed.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0);
+        const r=img.getBoundingClientRect();
+        if(inner>0&&r.width>inner*0.55){ const w=Math.round(inner*0.42); img.style.width=w+'px'; img.style.height=Math.round(w*(r.height/(r.width||1)))+'px'; }
+      }
+      img.style.float=mode; img.style.margin=(mode==='left')?'0 12px 6px 0':'0 0 6px 12px';
+    } else { img.style.float=''; img.style.margin=''; }
+  }
+  function _syncWrapTb(){
+    if(!_wtb||!_img) return;
+    const cur=_wrapOf(_img);
+    _wtb.querySelectorAll('button').forEach(b=>{ const on=b.dataset.m===cur; b.style.background=on?'#2563eb':'transparent'; b.style.color=on?'#fff':'#e2e8f0'; });
+  }
+  function _buildWrapTb(){
+    if(document.body.classList.contains('guest-mode')||document.querySelector('#report-root.published-mode')) return;   /* 읽기 전용(게스트·잠금)에서는 배치를 못 바꿈 */
+    _wtb=document.createElement('div');
+    _wtb.style.cssText='position:absolute;left:0;top:-32px;display:flex;align-items:center;gap:2px;padding:3px 6px;background:rgba(15,23,42,.92);border-radius:7px;box-shadow:0 2px 10px rgba(0,0,0,.4);pointer-events:all;white-space:nowrap;z-index:2';
+    const lb=document.createElement('span'); lb.textContent='글 감싸기';
+    lb.style.cssText='font:700 10px/1 "Malgun Gothic","Noto Sans KR",sans-serif;color:#cbd5e1;margin-right:4px';
+    _wtb.appendChild(lb);
+    ['left','right','none'].forEach(m=>{
+      const b=document.createElement('button'); b.type='button'; b.dataset.m=m; b.title=_WLBL[m]; b.setAttribute('aria-label',_WLBL[m]); b.innerHTML=_WI[m];
+      b.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:26px;height:20px;padding:0;border:none;border-radius:4px;background:transparent;color:#e2e8f0;cursor:pointer';
+      b.onmousedown=e=>{ e.preventDefault(); e.stopPropagation(); };   /* 글칸의 포커스·캐럿을 뺏지 않게 */
+      b.onclick=e=>{ e.stopPropagation(); if(!_img) return; _setWrap(_img,m); _pos(); _syncWrapTb(); if(typeof saveData==='function') saveData(); };
+      _wtb.appendChild(b);
+    });
+    _ov.appendChild(_wtb); _syncWrapTb();
   }
 
   function _show(img){
     _hide();
     _img=img;
-    img.style.outline='2px solid #1e40af';
+    img.style.outline='';   /* 선택 테두리는 오버레이가 그림 — 이미지에 인라인으로 두면 크기·배치를 바꿀 때의 자동저장에 섞여 저장본에 파란 테두리가 남았음(예전 저장본에 남은 것도 여기서 지움) */
     _ov=document.createElement('div');
-    _ov.style.cssText='position:fixed;z-index:10000;pointer-events:none;box-sizing:border-box;';
+    _ov.style.cssText='position:fixed;z-index:10000;pointer-events:none;box-sizing:border-box;outline:2px solid #1e40af;';
     H.forEach(h=>{
       const d=document.createElement('div');
       d.dataset.h=h.id;
@@ -26621,6 +26670,7 @@ function _initImgResize(){
     _zb.onmousedown=e=>e.stopPropagation();
     _zb.onclick=e=>{ e.stopPropagation(); if(_img&&typeof _showImgLightbox==='function') _showImgLightbox(_img.src); };
     _ov.appendChild(_zb);
+    _buildWrapTb();
     document.body.appendChild(_ov);
     _pos();
   }
@@ -26628,7 +26678,7 @@ function _initImgResize(){
   function _hide(){
     if(_img){_img.style.outline='';_img=null;}
     if(_ov){_ov.remove();_ov=null;}
-    _drag=null;
+    _wtb=null; _drag=null;
   }
 
   /* 이미지 클릭 → 핸들 표시 */
@@ -26711,6 +26761,12 @@ function _initImgResize(){
     const reader=new FileReader();
     reader.onload=ev=>{
       const img=document.createElement('img');
+      /* 세로형(높이>너비) 이미지는 불러온 뒤 자동으로 왼쪽 배치 — 오른쪽 빈자리에 바로 글을 쓸 수 있게(글 감싸기). 가로형은 예전처럼 한 줄 단독 */
+      img.onload=()=>{
+        if(img.naturalHeight>img.naturalWidth){ img.style.float='left'; img.style.margin='0 12px 6px 0'; }
+        if(_img===img){ _pos(); _syncWrapTb(); }
+        if(typeof saveData==='function') saveData();
+      };
       img.src=ev.target.result;
       img.style.cssText='max-width:100%;height:auto;display:inline-block;vertical-align:bottom;';
       const sel=window.getSelection();
