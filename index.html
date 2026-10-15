@@ -1691,6 +1691,55 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 #aiPrincipleEditorWrap{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0}
 #aiInputToolbar{display:flex;align-items:center;gap:2px;padding:3px 0;flex-wrap:wrap}
 #aiPresetModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:10020;align-items:center;justify-content:center}
+/* ── AI Stock Radar 📜 History 팝업 — AI 팝업(#aiChatInner)과 같은 크기·구조, 날짜 목록과 본문이 각각 따로 스크롤 ── */
+.air-n{display:inline-block;min-width:14px;height:14px;line-height:14px;margin-left:5px;padding:0 4px;border-radius:7px;background:rgba(255,255,255,.92);color:#92400e;font-size:9px;font-weight:800;text-align:center;box-sizing:border-box;vertical-align:1px}
+.air-n:empty{display:none}
+#aiRadarHistModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:10012;align-items:center;justify-content:center;padding:10px;outline:none}
+#aiRadarHistInner{background:#fff;border-radius:14px;width:min(1326px,98vw);height:min(910px,95vh);box-shadow:0 8px 50px rgba(0,0,0,.38);display:flex;flex-direction:column;overflow:hidden}
+#airHead{background:linear-gradient(135deg,#78350f,#b45309);color:#fff;padding:11px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+#airTitle{font-weight:700;font-size:14px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#airCount{flex-shrink:0;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:rgba(255,255,255,.22);white-space:nowrap}
+#airSearch{margin-left:auto;flex:0 1 260px;width:auto;min-width:100px;height:28px;box-sizing:border-box;border:1px solid rgba(255,255,255,.45);border-radius:7px;background:rgba(255,255,255,.96);color:#1e293b;font-size:12px;padding:0 9px;outline:none;font-family:inherit;pointer-events:auto!important}
+#airSearch:focus{box-shadow:0 0 0 2px rgba(253,230,138,.75)}
+#airClose{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;opacity:.8;flex-shrink:0}
+#airClose:hover{opacity:1}
+#airBody{display:flex;flex:1;min-height:0}
+#airList{width:330px;flex-shrink:0;min-height:0;overflow-y:auto;overscroll-behavior:contain;background:#fafaf9;border-right:1px solid #e7e5e4}
+#airDetail{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:#fff}
+.air-mon{position:sticky;top:0;z-index:1;padding:7px 14px 6px;font-size:10.5px;font-weight:800;color:#78350f;background:#fef3c7;border-bottom:1px solid #fde68a;letter-spacing:.3px}
+.air-it{padding:9px 14px 9px 12px;border-bottom:1px solid #eeece9;border-left:3px solid transparent;cursor:pointer;transition:background .12s}
+.air-it:hover{background:#fffbeb}
+.air-it.on{background:#fef3c7;border-left-color:#b45309}
+.air-it-top{display:flex;align-items:center;flex-wrap:wrap;gap:3px 6px;font-size:12.5px;color:#1e293b}
+.air-it-top b{font-weight:800}
+.air-dow{font-size:11px;color:#a8a29e}
+.air-chip{font-size:9.5px;font-weight:700;line-height:1.5;padding:0 6px;border-radius:8px;white-space:nowrap}
+.air-chip.ai{background:#ede9fe;color:#6d28d9}
+.air-chip.cur{background:#dcfce7;color:#15803d}
+.air-chip.same{background:#f1f5f9;color:#64748b}
+.air-chip.img{background:#e0f2fe;color:#0369a1}
+.air-it-prev{margin-top:3px;font-size:11px;line-height:1.45;color:#78716c;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
+.air-dh{flex-shrink:0;display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:11px 20px;border-bottom:1px solid #e7e5e4;background:#fffbeb}
+.air-dt{font-size:15px;font-weight:800;color:#78350f;white-space:nowrap}
+.air-dm{font-size:11px;color:#92400e;opacity:.85}
+.air-da{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
+.air-btn{height:26px;padding:0 10px;border:1px solid #fcd34d;border-radius:6px;background:#fff;color:#92400e;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
+.air-btn:hover:not(:disabled){background:#fef3c7}
+.air-btn:disabled{opacity:.4;cursor:default}
+.air-db{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px 22px 26px;font-size:13.5px;line-height:1.75;color:#1e293b;white-space:pre-wrap;word-break:break-word}
+.air-db img{max-width:100%;height:auto}
+.air-db mark{background:#fde68a;color:inherit;border-radius:2px;padding:0 1px}
+.air-empty{text-align:center;color:#a8a29e;font-size:12px;line-height:1.9;padding:46px 18px}
+#airFoot{flex-shrink:0;padding:8px 18px;border-top:1px solid #e7e5e4;background:#fafaf9;font-size:11px;line-height:1.6;color:#78716c}
+#airFoot b{color:#92400e}
+@media(max-width:760px){
+  #airHead{flex-wrap:wrap;padding:9px 12px;gap:6px 8px}
+  #airSearch{flex:1 1 100%;order:5;margin-left:0}
+  #airBody{flex-direction:column}
+  #airList{width:auto;height:34%;border-right:none;border-bottom:1px solid #e7e5e4}
+  .air-dh{padding:9px 12px}
+  .air-db{padding:12px 14px 20px}
+}
 /* ── 자막 서버 시작 알림 ── */
 #srvNotif{display:none;position:fixed;bottom:24px;right:24px;background:#1e293b;color:#e2e8f0;padding:13px 16px;border-radius:13px;font-size:12px;z-index:99999;box-shadow:0 4px 28px rgba(0,0,0,.55);align-items:center;gap:10px;max-width:320px;animation:_srvIn .3s ease}
 @keyframes _srvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -2493,6 +2542,8 @@ body.mm-fs{overflow:hidden}
           <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarReportChk" style="width:14px;height:14px;cursor:pointer;accent-color:#d97706">📅 REPORT 반영<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 오늘 리포트(시황·테마·전략) 참고</span></label>
           <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarWlChk" style="width:14px;height:14px;cursor:pointer;accent-color:#0f766e">⭐ 관심종목 반영<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 현재 관심종목 목록 참고</span></label>
           <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarPfChk" style="width:14px;height:14px;cursor:pointer;accent-color:#7c3aed">💼 포트폴리오 반영<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 현재 보유종목 목록 참고</span></label>
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarHistChk" style="width:14px;height:14px;cursor:pointer;accent-color:#b45309">📜 History 반영<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 날짜별 과거 전략과 비교해 일관성 있게</span></label>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:-2px 0 0 21px;font-size:11px;color:#64748b">참고할 최근 기록<select id="aiRadarHistN" style="font-size:11px;padding:2px 4px;border:1px solid #e2e8f0;border-radius:5px;color:#1e293b;background:#fff;cursor:pointer"><option value="3">3건</option><option value="5">5건</option><option value="7">7건</option><option value="10">10건</option><option value="15">15건</option><option value="20">20건</option></select><span style="color:#94a3b8;font-size:10px">(저장 전 현재 본문도 함께 전달 · 기록은 📜 History 버튼에서 확인)</span></div>
         </div>
       </div>
     </div>
@@ -2500,6 +2551,23 @@ body.mm-fs{overflow:hidden}
       <button onclick="saveAiRadarTarget()" style="flex:1;padding:9px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💾 저장만</button>
       <button onclick="runAiRadarTargetNow()" style="flex:2;padding:9px;background:#4f46e5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🎯 저장 후 검색 실행</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════ AI Stock Radar — 날짜별 전략 History 팝업 (AI 팝업과 같은 크기 · 날짜 목록과 본문이 각각 스크롤) ═══════ -->
+<div id="aiRadarHistModal" tabindex="-1" onmousedown="_airBackdrop(event)" onclick="_airBackdrop(event)" onkeydown="_airKey(event)">
+  <div id="aiRadarHistInner">
+    <div id="airHead">
+      <span id="airTitle">📜 AI Stock Radar — 전략 History</span>
+      <span id="airCount"></span>
+      <input id="airSearch" class="mobile-keep" type="search" placeholder="🔍 종목·키워드·날짜 검색" autocomplete="off" spellcheck="false" oninput="_airSearch(this.value)">
+      <button id="airClose" class="mobile-keep" onclick="closeAiRadarHistory()" title="닫기 (Esc)">✕</button>
+    </div>
+    <div id="airBody" onclick="_airClick(event)">
+      <div id="airList"></div>
+      <div id="airDetail"></div>
+    </div>
+    <div id="airFoot"></div>
   </div>
 </div>
 
@@ -3990,6 +4058,7 @@ body.mm-fs{overflow:hidden}
           <div class="section-label">
             <span id="stid-ai-stock-radar" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">📡 AI Stock Radar</span>
             <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
+              <button class="btn sm pdf-export-hide" id="aiRadarHistBtn" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#b45309;border:none;border-radius:3px;font-weight:700" onclick="openAiRadarHistory()" title="날짜별 전략 History 조회 — 💾 Save 할 때마다 그 날짜의 전략이 쌓이고, 📡 업데이트 때 AI 가 참고합니다">📜 History<span class="air-n"></span></button>
               <button class="btn sm" id="aiRadarTargetBtn" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4f46e5;border:none;border-radius:3px;font-weight:700" onclick="openAiRadarTargetModal()" title="검색 조건 설정">🎯 Target</button>
               <button class="btn sm" id="aiRadarUpdateBtn" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700" onclick="runAiRadarSearch()" title="저장된 조건으로 즉시 재조회">📡 업데이트</button>
               <button class="ai-btn" onclick="openAIChat('aiStockRadar','AI Stock Radar')" title="AI 어시스턴트 열기">✨</button>
@@ -5871,7 +5940,7 @@ const _AI_RADAR_KEY='BTMAiRadarSettings';
 function _loadAiRadarSettings(){
   /* web 기본값 true — "지금 HOT한 종목"을 실시간 데이터 없이 조사하는 건 의미가 없으므로
      (미설정 시 최초 1회만 적용되고, 이후 사용자가 저장한 값이 항상 우선함) */
-  const def={prompt:'',web:true,report:false,wl:false,pf:false};
+  const def={prompt:'',web:true,report:false,wl:false,pf:false,hist:true,histN:5};   /* hist: 📜 History 반영(날짜별 과거 전략을 AI 에 넘김, 기본 켬) · histN: 참고할 최근 기록 수 */
   try{ return {...def, ...JSON.parse(localStorage.getItem(_AI_RADAR_KEY)||'{}')}; }catch(e){ return def; }
 }
 function _saveAiRadarSettingsObj(s){ try{ localStorage.setItem(_AI_RADAR_KEY,JSON.stringify(s)); }catch(e){} }
@@ -5893,6 +5962,7 @@ function openAiRadarTargetModal(){
   const chk=(id,v)=>{ const el=g(id); if(el) el.checked=!!v; };
   chk('aiRadarWebChk',cfg.web); chk('aiRadarReportChk',cfg.report);
   chk('aiRadarWlChk',cfg.wl);   chk('aiRadarPfChk',cfg.pf);
+  chk('aiRadarHistChk',cfg.hist); { const hn=g('aiRadarHistN'); if(hn) hn.value=String(_airN(cfg)); }
   const psel=g('aiRadarProviderSelect'); if(psel) psel.value=_getAiRadarProvider();
   const m=g('aiRadarTargetModal'); if(m) m.style.display='flex';
 }
@@ -5905,6 +5975,8 @@ function _collectAiRadarForm(){
     report:!!(g('aiRadarReportChk')?.checked),
     wl:!!(g('aiRadarWlChk')?.checked),
     pf:!!(g('aiRadarPfChk')?.checked),
+    hist:!!(g('aiRadarHistChk')?.checked),
+    histN:parseInt(g('aiRadarHistN')?.value)||5,
   };
 }
 function saveAiRadarTarget(){
@@ -5941,6 +6013,11 @@ async function runAiRadarSearch(silent){
       if(names) prompt+='\n\n[참고 - 현재 보유종목]\n'+names;
     }
 
+    /* 📜 History 반영 — 날짜별 과거 전략(Archive)과 현재 본문 + 활용 지침을 시스템 프롬프트로 전달.
+       사용자 글(prompt)에 넣으면 그 글 전체가 Tavily 웹 검색어가 되어 검색이 깨지므로 sendAIMessage({extraSys})로만 넘김 */
+    let hist=null;
+    if(cfg.hist){ try{ hist=await _aiRadarHistContext(cfg); }catch(e){ console.warn('[AI Radar] History 읽기 실패:',e); } }
+
     /* AI 채팅 파이프라인은 그대로 재사용하되, 팝업 자체는 화면에 보이지 않게 처리
        (기존 sendAIMessage/_applyToEditor 로직과 무관하게 visibility만 숨김 — 내부 동작엔 영향 없음) */
     openAIChat('aiStockRadar','AI Stock Radar');
@@ -5953,12 +6030,13 @@ async function runAiRadarSearch(silent){
     }
     const inp=g('aiUserInput'); if(inp) inp.innerText=prompt;
 
-    await window.sendAIMessage();
+    await window.sendAIMessage(hist?{extraSys:hist.ctx}:undefined);
 
     const applyWrap=g('aiApplyBtnWrap');
     const ok=!!(applyWrap && applyWrap.style.display==='block');
     if(ok){
       window._applyToEditor('overwrite');
+      if(hist&&typeof _showMainToast==='function') _showMainToast('📡 업데이트 완료 · 📜 History 참고: '+hist.label);
       /* _applyToEditor가 1.4초 뒤 자체적으로 closeAIChat() 호출 → 그 전에 visibility를 복원하면
          숨겨뒀던 팝업이 그 찰나에 다시 보이므로, 완전히 닫힐 때까지 기다렸다가 복원한다 */
       await new Promise(r=>setTimeout(r,1500));
@@ -5977,6 +6055,236 @@ async function runAiRadarSearch(silent){
     if(modal) modal.style.visibility='';
   }
 }
+
+/* ── AI Stock Radar: 날짜별 전략 History (2026-10-15) ──
+   💾 Save(archiveReport)는 그 리포트 날짜의 Archive 기록에 aiStockRadar 본문을 함께 저장한다. 같은 내용을 따로 한 번 더 저장하지 않고
+   Archive 의 날짜별 기록을 그대로 History 로 읽는다 — 저장 즉시 반영되고, 예전 기록도 처음부터 보이며, 백업·복원·삭제도 Archive 와 늘 일치.
+   · 📜 History 버튼 → AI 팝업과 같은 크기의 팝업(날짜 목록 + 본문 보기 + 검색, 각각 스크롤)
+   · 📡 업데이트 때 최근 기록 + 현재 본문을 시스템 프롬프트로 AI 에 넘겨(Target 의 'History 반영') 과거 판단과 비교하며 일관성 있는 전략을 만들게 함.
+     ※ 사용자 글에 붙이지 않는 이유: sendAIMessage 가 사용자 글 전체를 Tavily 웹 검색어로 쓰기 때문(길어지면 검색이 깨짐) */
+let _airList=[], _airSel='', _airQ='', _airPickSet=new Set(), _airDown=false;
+const _airEsc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* 본문(HTML) → 개행 보존 글. 기본 본문('ㆍ')·글머리뿐인 칸은 '비어 있음'으로 봄 */
+function _airText(html){ return _richToText(html||'').replace(/[ \t ]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim(); }
+function _airDefBody(){ try{ return _airText((_sstGetManaged()||{}).aiStockRadarBody||''); }catch(_){ return ''; } }
+function _airBlank(text,def){ return !text.replace(/[ㆍ·•\s]/g,'')||(!!def&&text===def); }
+function _airCurText(){   /* 지금 Radar 본문 — 번역 화면(영/중)에선 박스에 번역문이 보이므로 저장되는 쪽인 한국어 원본(_koSnapshot)을 씀 */
+  const ko=(typeof _btmLang!=='undefined'&&_btmLang!=='ko'&&_koSnapshot&&_koSnapshot.fields&&typeof _koSnapshot.fields.aiStockRadar==='string')?_koSnapshot.fields.aiStockRadar:null;
+  const c=_airText(ko!==null?ko:gv('aiStockRadar')); return _airBlank(c,_airDefBody())?'':c;
+}
+function _airN(cfg){ return Math.max(1,Math.min(30,parseInt(cfg&&cfg.histN)||5)); }
+
+/* Archive 의 날짜별 기록에서 Radar 본문이 있는 것만 — 날짜 내림차순(최신이 맨 앞) */
+async function _airEntries(){
+  const def=_airDefBody(), out=[];
+  (await getAllArchives()).forEach(r=>{
+    const html=(r&&r.data&&r.data.aiStockRadar)||'', text=_airText(html), blank=_airBlank(text,def), img=/<img[\s>]/i.test(html);
+    if(blank&&!img) return;
+    out.push({date:r.date,html,text:blank?'':text,img,at:r.archivedAt||''});
+  });
+  out.forEach((e,i)=>{ const o=out[i+1]; e.same=!!(e.text&&o&&o.text===e.text); });   /* 바로 이전(더 오래된) 기록과 본문이 같음 = 고치지 않고 저장만 한 날 */
+  return out;
+}
+
+/* AI 에 넘길 과거 기록 고르기 — 최신순 list 에서: 현재 본문과 같은 것은 건너뛰고(현재 본문이 따로 들어감), 바로 앞에 고른 것과 본문이 같은 것은 날짜만 합쳐서, 글이 있는 최근 n건 */
+function _airPickForAi(list,n,curText){
+  const out=[]; let last=curText||'';
+  for(const e of list){
+    if(!e.text) continue;
+    if(e.text===last){ if(out.length&&out[out.length-1].text===e.text) out[out.length-1].also.push(e.date); continue; }
+    if(out.length>=n) break;
+    out.push({date:e.date,text:e.text,also:[]}); last=e.text;
+  }
+  return out;                                                                       /* 최신순 */
+}
+
+const _AIR_RULES=`[과거 이력 활용 지침 — 이번 AI Stock Radar 결과를 만들 때 반드시 따를 것]
+1. 위 이력은 '그날의 판단'을 적어 둔 기록일 뿐 현재의 사실이 아닙니다. 현재 시세·뉴스·이슈·지표는 반드시 [실시간 웹 조회 데이터]로 새로 확인하고, 이력에 적힌 가격·수치·이동평균 위치를 지금 값처럼 쓰지 마세요. 이번 웹 데이터로 확인되지 않는 과거 종목·이슈는 "현재 데이터로 확인 불가"라고 밝히고, 이력만으로 지금 상태를 단정하지 마세요.
+2. 이력과 오늘의 실시간 상황을 종목·테마별로 비교하세요. 이전 판단의 근거가 아직 유효한지(유지·약화·소멸), 그 사이 무엇이 달라졌는지(가격·추세·뉴스·수급·일정)를 먼저 파악하고, 이전에 제시한 진입·보유·손절·목표 조건이 지금 가격 기준으로 충족됐는지·이탈했는지도 점검한 뒤 전략을 세우세요.
+3. 일관성: 근거가 그대로이면 이전 판단(추천 종목·비중·대응 방향)을 유지하고, 일시적 등락이나 단발성 뉴스만으로 번복하지 마세요. 판단을 바꿀 때는 무엇이 달라져서 바꾸는지 구체적인 근거를 함께 적으세요.
+4. 실효성: 이력을 그대로 베끼지 말고 오늘의 상황에 맞게 갱신하세요. 실행 시점이 지났거나 조건이 바뀐 이전 제안은 폐기·수정하고, 지금 실행할 행동(진입·보유·비중 조절·관망·손절)과 그 기준 가격·조건을 구체적으로 제시하세요.
+5. 결과의 맨 끝에 '과거 대비 변화'를 2~4줄로 덧붙이세요 — 유지한 판단 / 바뀐 판단과 그 이유 / 새로 추가한 판단. (사용자의 [검색 조건]에 결과 형식이 정해져 있으면 그 형식을 우선하고, 이 요약만 마지막에 짧게 붙입니다.)`;
+
+/* 📡 업데이트가 AI 에 시스템 프롬프트로 넘길 History 블록(+활용 지침). 넘길 게 없으면 null */
+async function _aiRadarHistContext(cfg){
+  const cur=_airCurText();
+  const picks=_airPickForAi(await _airEntries(),_airN(cfg),cur).reverse();         /* 오래된 → 최근 */
+  if(!picks.length&&!cur) return null;
+  const t0=new Date(); t0.setHours(0,0,0,0);
+  const ago=ds=>{ const p=ds.split('-'), k=Math.round((t0-new Date(+p[0],+p[1]-1,+p[2]))/864e5); return k>0?' · '+k+'일 전':k===0?' · 오늘':''; };
+  const cap=Math.max(1500,Math.min(4000,Math.floor(15000/Math.max(1,picks.length))));
+  const cut=(s,m)=>s.length>m?s.slice(0,m)+'\n…(이하 생략)':s;
+  const blocks=picks.map(e=>'■ '+e.date+' '+_getDayStr(e.date)+ago(e.date)+(e.also.length?' (같은 내용이 '+e.also.slice().reverse().join(', ')+' 에도 저장돼 있음)':'')+'\n'+cut(e.text,cap));
+  if(cur) blocks.push('■ 현재 Radar 본문 — 가장 최근 판단 (저장 전 수정 포함)\n'+cut(cur,4000));
+  return {
+    ctx:'[AI Stock Radar 과거 전략 이력 — 이 리포트에 날짜별로 저장된 이전 전략 (오래된 것 → 최근 순, 날짜는 리포트 기준일)]\n'+blocks.join('\n\n')+'\n\n'+_AIR_RULES,
+    label:[picks.length?'과거 '+picks.length+'건':'', cur?'현재 본문':''].filter(Boolean).join(' + ')
+  };
+}
+
+/* ── 📜 History 팝업 ── */
+async function openAiRadarHistory(){
+  const m=g('aiRadarHistModal'); if(!m) return;
+  _airQ=''; _airList=[]; _airSel='';
+  const si=g('airSearch'); if(si) si.value='';
+  g('airList').innerHTML='<div class="air-empty">불러오는 중…</div>';
+  g('airDetail').innerHTML=''; g('airCount').textContent='';
+  m.style.display='flex'; m.focus();
+  try{ _airList=await _airEntries(); }catch(e){ console.warn('[AI Radar] History 읽기 실패:',e); }
+  const cfg=_loadAiRadarSettings();
+  _airPickSet=new Set(cfg.hist?_airPickForAi(_airList,_airN(cfg),_airCurText()).map(p=>p.date):[]);
+  _airSel=_airList.length?_airList[0].date:'';
+  _airRender();
+  const sp=document.querySelector('#aiRadarHistBtn .air-n'); if(sp) sp.textContent=_airList.length||'';
+}
+function closeAiRadarHistory(){ const m=g('aiRadarHistModal'); if(m) m.style.display='none'; }
+/* 바깥(어두운 배경)을 눌러 닫기 — 글을 드래그하다 바깥에서 손을 떼도 닫히지 않게 누르기·떼기 둘 다 배경일 때만 */
+function _airBackdrop(ev){
+  if(ev.target!==g('aiRadarHistModal')){ _airDown=false; return; }
+  if(ev.type==='mousedown') _airDown=true;
+  else if(_airDown){ _airDown=false; closeAiRadarHistory(); }
+}
+function _airKey(ev){
+  if(ev.key==='Escape'){
+    ev.preventDefault();
+    if(ev.target&&ev.target.id==='airSearch'&&ev.target.value){ ev.target.value=''; _airSearch(''); } else closeAiRadarHistory();
+    return;
+  }
+  if(ev.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) return;
+  if(ev.key==='ArrowDown'||ev.key==='ArrowUp'){ ev.preventDefault(); _airStep(ev.key==='ArrowDown'?1:-1); }
+}
+function _airSearch(v){ _airQ=v||''; _airRender(); }
+function _airTerms(){ return _airQ.toLowerCase().split(/\s+/).filter(Boolean); }
+function _airVisible(){
+  const T=_airTerms();
+  return T.length?_airList.filter(e=>{ const hay=(e.date+' '+e.text).toLowerCase(); return T.every(t=>hay.indexOf(t)>=0); }):_airList;
+}
+/* 목록 미리보기 — 검색 중이면 처음 일치한 곳 둘레를 보여 줌 */
+function _airSnip(e,T){
+  const flat=(e.text||(e.img?'(이미지)':'')).replace(/\s+/g,' ');
+  const i=T.length?flat.toLowerCase().indexOf(T[0]):-1, s=i>28?i-28:0;
+  return (s?'…':'')+flat.slice(s,s+110);
+}
+function _airRender(){
+  const L=g('airList'); if(!L) return;
+  const v=_airVisible(), T=_airTerms();
+  g('airCount').textContent=T.length?(v.length+' / '+_airList.length+'건'):(_airList.length+'건');
+  if(!v.length){
+    L.innerHTML='<div class="air-empty">'+(_airList.length?'검색 결과가 없어요.':'아직 저장된 전략이 없어요.<br>Radar 본문을 작성하고 <b>💾 Save</b> 하면<br>그 날짜의 전략이 이곳에 쌓여요.')+'</div>';
+    g('airDetail').innerHTML='<div class="air-empty">'+(_airList.length?'검색어를 바꾸거나 지워 보세요.':'📡 업데이트로 만든 전략도 Save 하면 날짜별로 기록됩니다.')+'</div>';
+    _airFoot(); return;
+  }
+  if(!v.some(e=>e.date===_airSel)) _airSel=v[0].date;
+  const cur=_airCurText(), cnt={};
+  v.forEach(e=>{ const k=e.date.slice(0,7); cnt[k]=(cnt[k]||0)+1; });
+  let h='', mon='';
+  v.forEach(e=>{
+    const k=e.date.slice(0,7);
+    if(k!==mon){ mon=k; h+='<div class="air-mon">'+k.slice(0,4)+'년 '+(+k.slice(5))+'월 · '+cnt[k]+'건</div>'; }
+    const chips=(e.text&&e.text===cur?'<span class="air-chip cur" title="지금 Radar 본문과 같은 내용이에요">📝 현재 본문</span>':_airPickSet.has(e.date)?'<span class="air-chip ai" title="다음 📡 업데이트 때 AI 가 참고하는 기록이에요">🤖 AI 참고</span>':'')
+      +(e.same?'<span class="air-chip same" title="바로 이전 기록과 본문이 같아요(고치지 않고 저장만 한 날)">＝ 이전과 동일</span>':'')
+      +(e.img?'<span class="air-chip img" title="이미지가 들어 있어요">🖼</span>':'');
+    h+='<div class="air-it'+(e.date===_airSel?' on':'')+'" data-d="'+e.date+'"><div class="air-it-top"><b>'+e.date.slice(5)+'</b><span class="air-dow">'+_getDayStr(e.date)+'</span>'+chips+'</div><div class="air-it-prev">'+_airEsc(_airSnip(e,T))+'</div></div>';
+  });
+  L.innerHTML=h;
+  _airShowDetail(); _airFoot();
+  const on=L.querySelector('.air-it.on'); if(on) on.scrollIntoView({block:'nearest'});
+}
+function _airShowDetail(){
+  const D=g('airDetail'); if(!D) return;
+  const e=_airList.find(x=>x.date===_airSel); if(!e){ D.innerHTML=''; return; }
+  const v=_airVisible(), i=v.findIndex(x=>x.date===_airSel), at=e.at?new Date(e.at):null, z=n=>String(n).padStart(2,'0');
+  const meta=[at&&!isNaN(at)?'저장 '+at.getFullYear()+'-'+z(at.getMonth()+1)+'-'+z(at.getDate())+' '+z(at.getHours())+':'+z(at.getMinutes()):'', e.text?e.text.length.toLocaleString('ko-KR')+'자':'', e.img?'이미지 포함':''].filter(Boolean).join(' · ');
+  D.innerHTML='<div class="air-dh"><span class="air-dt">'+e.date+' '+_getDayStr(e.date)+'</span>'
+    +(_airPickSet.has(e.date)?'<span class="air-chip ai" title="다음 📡 업데이트 때 AI 가 참고하는 기록이에요">🤖 AI 참고</span>':'')
+    +'<span class="air-dm">'+_airEsc(meta)+'</span>'
+    +'<span class="air-da"><button class="air-btn mobile-keep" data-a="older"'+(v[i+1]?'':' disabled')+' title="이전(더 오래된) 기록 · ↓">◀ 이전</button>'
+    +'<button class="air-btn mobile-keep" data-a="newer"'+(i>0?'':' disabled')+' title="다음(더 최근) 기록 · ↑">다음 ▶</button>'
+    +'<button class="air-btn mobile-keep" data-a="copy"'+(e.text?'':' disabled')+' title="이 날짜의 전략을 글로 복사">📋 복사</button></span></div>'
+    +'<div class="air-db" id="airDb"></div>';
+  const db=g('airDb'); db.innerHTML=_airSafeHtml(e.html); _airMark(db,_airTerms());
+}
+function _airSelect(d,scroll){
+  if(!d) return;
+  _airSel=d;
+  const L=g('airList');
+  L.querySelectorAll('.air-it.on').forEach(x=>x.classList.remove('on'));
+  const el=[...L.querySelectorAll('.air-it')].find(x=>x.getAttribute('data-d')===d);
+  if(el){ el.classList.add('on'); if(scroll) el.scrollIntoView({block:'nearest'}); }
+  _airShowDetail();
+}
+function _airStep(d){ const v=_airVisible(), i=v.findIndex(e=>e.date===_airSel), n=v[i+d]; if(n) _airSelect(n.date,true); }
+function _airClick(ev){
+  const it=ev.target.closest&&ev.target.closest('.air-it');
+  if(it){ _airSelect(it.getAttribute('data-d')); return; }
+  const b=ev.target.closest&&ev.target.closest('[data-a]'); if(!b||b.disabled) return;
+  const a=b.getAttribute('data-a');
+  if(a==='older') _airStep(1); else if(a==='newer') _airStep(-1); else if(a==='copy') _airCopy();
+}
+function _airCopy(){
+  const e=_airList.find(x=>x.date===_airSel); if(!e||!e.text) return;
+  const done=()=>{ if(typeof _showMainToast==='function') _showMainToast('📋 '+e.date+' 전략을 복사했어요'); };
+  const fb=()=>{ const ta=document.createElement('textarea'); ta.value=e.text; ta.style.cssText='position:fixed;left:-9999px;top:0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(_){} ta.remove(); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(e.text).then(done,fb); return; } }catch(_){}
+  fb();
+}
+function _airFoot(){
+  const f=g('airFoot'); if(!f) return;
+  const cfg=_loadAiRadarSettings();
+  f.innerHTML='💡 <b>💾 Save</b> 할 때마다 그 날짜의 Radar 전략이 기록돼요.&nbsp; '+(cfg.hist
+    ?'🤖 표시된 기록(최근 '+_airN(cfg)+'건)과 현재 본문은 <b>📡 업데이트</b> 때 AI 에 전달돼, 과거 판단과 비교하며 전략을 만들어요. <span style="opacity:.8">(↑↓ 키로 이동 · Esc 닫기)</span>'
+    :'⚠️ <b>🎯 Target › History 반영</b>이 꺼져 있어서 📡 업데이트 때 AI 가 이 기록을 참고하지 않아요.');
+}
+/* 저장된 본문(HTML)을 팝업에 그릴 때 — 스크립트·이벤트 속성·위험한 주소를 걷어 내서(가져온 백업에 무엇이 들어 있어도) 안전하게 */
+function _airSafeHtml(html){
+  const t=document.createElement('template'); t.innerHTML=html||'';
+  t.content.querySelectorAll('script,style,iframe,frame,object,embed,link,meta,base,form,input,textarea,select,button,svg,math,audio,video,source').forEach(n=>n.remove());
+  t.content.querySelectorAll('*').forEach(el=>{
+    [...el.attributes].forEach(a=>{
+      const k=a.name.toLowerCase();
+      if(k.startsWith('on')||k==='id'||k==='class'||k==='contenteditable'||k==='srcdoc'||k==='formaction'||((k==='href'||k==='src'||k==='xlink:href'||k==='action')&&/^\s*(javascript|vbscript|data:text\/html)/i.test(a.value))) el.removeAttribute(a.name);
+    });
+    if(el.tagName==='A'){ el.setAttribute('target','_blank'); el.setAttribute('rel','noopener noreferrer'); }
+  });
+  return t.innerHTML;
+}
+/* 검색어(들)에 일치하는 글자를 <mark> 로 칠하고 첫 일치 위치로 스크롤 */
+function _airMark(root,T){
+  if(!T.length) return;
+  const re=new RegExp(T.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'gi');
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT), nodes=[]; let n;
+  while((n=w.nextNode())) nodes.push(n);
+  nodes.forEach(n=>{
+    const s=n.nodeValue; re.lastIndex=0;
+    let m=re.exec(s); if(!m) return;
+    const f=document.createDocumentFragment(); let last=0;
+    while(m){
+      if(m.index>last) f.appendChild(document.createTextNode(s.slice(last,m.index)));
+      const mk=document.createElement('mark'); mk.textContent=m[0]; f.appendChild(mk); last=m.index+m[0].length;
+      m=re.exec(s);
+    }
+    if(last<s.length) f.appendChild(document.createTextNode(s.slice(last)));
+    n.parentNode.replaceChild(f,n);
+  });
+  const first=root.querySelector('mark');
+  if(first) root.scrollTop=Math.max(0,first.getBoundingClientRect().top-root.getBoundingClientRect().top+root.scrollTop-root.clientHeight/3);
+}
+
+/* History 버튼의 기록 건수 — 시작할 때(Archive 가 다 올라온 뒤)와 💾 Save 직후 갱신 */
+async function _airBadge(){
+  const sp=document.querySelector('#aiRadarHistBtn .air-n'); if(!sp) return;
+  try{ sp.textContent=(await _airEntries()).length||''; }catch(_){}
+}
+let _airBadgeT=0;
+function _airBadgeSoon(){ clearTimeout(_airBadgeT); _airBadgeT=setTimeout(_airBadge,300); }   /* Archive 가 바뀔 때마다(_arcSave/_arcPutOne/_arcDelOne/_arcClearAll) 부름 — 한꺼번에 여러 건 바뀌어도 한 번만 계산 */
+/* 💾 Save 직후(archiveReport) — Archive 기록이 곧 History 라 따로 저장할 건 없고, 건수만 갱신 + 이번 Save 에 Radar 전략이 들어갔는지 알려 줌 */
+function _airOnSaved(html){
+  const ok=!_airBlank(_airText(html),_airDefBody())||/<img[\s>]/i.test(html||'');
+  _airBadge();
+  return ok;
+}
+window.addEventListener('load',()=>{ _airBadge(); });
 
 /* ── AI 기술적 분석: 차트 이미지를 vision AI로 보내 지지선/저항선/추세선을 자동으로 그림 ── */
 /* AI 차트 분석 — 선택 가능한 분석 방식별 지시문 (JSON 스키마는 공통, 방식마다 관련 필드만 채우게 유도) */
@@ -12450,11 +12758,13 @@ function _arcFlushIDB(newMap){
 function _arcSave(map){
   _arcFlushIDB(map);
   _arcCache={...map};
+  try{ _airBadgeSoon(); }catch(_){}   /* 📜 AI Stock Radar History 버튼의 기록 건수 */
 }
 
 /* 단일 레코드 upsert */
 function _arcPutOne(record){
   _arcCache[record.date]=record;
+  try{ _airBadgeSoon(); }catch(_){}   /* 📜 AI Stock Radar History 버튼의 기록 건수 */
   if(!_arcDB) return;
   let tx;
   try{ tx=_arcDB.transaction(_ARC_STORE,'readwrite'); _arcWatch(tx); tx.objectStore(_ARC_STORE).put(record); }
@@ -12464,6 +12774,7 @@ function _arcPutOne(record){
 /* 단일 레코드 삭제 */
 function _arcDelOne(date){
   delete _arcCache[date];
+  try{ _airBadgeSoon(); }catch(_){}   /* 📜 AI Stock Radar History 버튼의 기록 건수 */
   if(!_arcDB) return;
   try{ _arcDB.transaction(_ARC_STORE,'readwrite').objectStore(_ARC_STORE).delete(date); }
   catch(e){ console.error('IDB delete',e); }
@@ -12472,6 +12783,7 @@ function _arcDelOne(date){
 /* 전체 초기화 */
 function _arcClearAll(){
   _arcCache={};
+  try{ _airBadgeSoon(); }catch(_){}   /* 📜 AI Stock Radar History 버튼의 기록 건수 */
   if(!_arcDB){ localStorage.removeItem(ARC_KEY); return; }
   try{ _arcDB.transaction(_ARC_STORE,'readwrite').objectStore(_ARC_STORE).clear(); }
   catch(e){ console.error('IDB clear',e); }
@@ -12849,7 +13161,9 @@ async function archiveReport(isPublish=false, auto=false){   /* auto: 다른 날
     /* pfDonutImg/summaryChartImg는 archive 상세보기 전용(applyData가 복원하지 않음) — SK에 실어봤자
        용량만 커지고 쓰이지 않으므로 빼고 저장 */
     try{ const _sk={...data}; delete _sk.pfDonutImg; delete _sk.summaryChartImg; _skWrite(JSON.stringify(_sk)); }catch(e){}
-    _showMainToast('✅ 저장됨!');
+    /* 📜 AI Stock Radar 전략 History — 위 Archive 기록(날짜별)이 곧 History 라 따로 저장할 건 없고, History 버튼의 건수만 갱신 + 이번 Save 에 Radar 전략이 들어갔는지 알림에 함께 표시 */
+    let _airSaved=false; try{ _airSaved=(typeof _airOnSaved==='function')&&_airOnSaved(data.aiStockRadar); }catch(_){}
+    _showMainToast(_airSaved?'✅ 저장됨! · 📜 Radar 전략 History 기록 ('+date+')':'✅ 저장됨!');
     /* 저장 후 autoFiveCount 갱신 (다음 번호 표시) */
     initAutoFiveCount();
     /* SAVE(💾) 클릭 시에만 — 리포트 날짜의 메모장에 본문 종합 TEXT 저장 (Publish는 제외) */
@@ -30088,7 +30402,7 @@ Rules:
   }
 
   /* ── 메시지 전송 ── */
-  window.sendAIMessage=async function(){
+  window.sendAIMessage=async function(opts){   /* opts.extraSys: 시스템 프롬프트 끝에 덧붙일 글(AI Stock Radar 📡 업데이트의 History 블록) — 사용자 글이 아니라서 웹 검색어에 안 들어감 */
     if(_busy) return;
     const input=g('aiUserInput');
     const inputHtml=_normalizeFontTags(input.innerHTML);
@@ -30129,6 +30443,7 @@ Rules:
         principles.map((p,i)=>`${i+1}. [${p.name}]\n${_stripHtml(p.body)}`).join('\n\n'))
       :'';
     const webSection=webCtx?('\n\n[실시간 웹 조회 데이터 — Tavily·Finnhub]\n'+webCtx):'';
+    const extraSys=(opts&&typeof opts.extraSys==='string'&&opts.extraSys)?('\n\n'+opts.extraSys):'';
     const reportRangeChecked=g('aiReportRangeCheck')&&g('aiReportRangeCheck').checked&&_reportRangeMode;
     const reportRangeCtx=reportRangeChecked?('\n\n'+_getArchiveRangeContext()):'';
 
@@ -30165,7 +30480,7 @@ Rules:
 ${_todayForAI} — 반드시 이 날짜를 "현재 시점"으로 삼아 답변하세요. 당신의 학습 데이터 시점을 현재로 착각해 과거(예: 학습 컷오프 무렵) 정보를 "최신"·"최근"이라고 답하지 마세요. 실시간 정보가 필요한데 아래 [실시간 웹 조회 데이터]가 없거나 불충분하면, 추측하지 말고 그 사실을 답변에 명시하세요.
 
 [현재 참고 자료]
-${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${fmtCtx}
+${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${fmtCtx}
 
 [요청 처리 기본 원칙]
 사용자가 요청에서 다른 대상을 특별히 지정하지 않는 한, 위 [현재 참고 자료]를 요청의 기본 처리 대상으로 삼으세요. "요약해줘", "다듬어줘", "분석해줘", "이어서 써줘", "정리해줘" 처럼 대상을 명시하지 않은 요청은 모두 [현재 참고 자료]에 대한 요청으로 간주하고 그 내용을 바탕으로 답하세요. [현재 참고 자료]가 "(없음)"이 아닌 이상, 처리할 대상이 없다고 답하지 마세요.
