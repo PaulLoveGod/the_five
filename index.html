@@ -1629,6 +1629,61 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-user-ref .ai-ref-t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;opacity:.92;word-break:break-word}
 .ai-ref-flash{animation:_aiRefFlash 1.6s ease-out 1}
 @keyframes _aiRefFlash{0%,40%{box-shadow:0 0 0 3px rgba(79,70,229,.85)}100%{box-shadow:0 0 0 3px rgba(79,70,229,0)}}
+/* ── AI 인포그래픽 (2026-10-16): 머리줄 🎨 버튼+패널, 결과물 상자(.ai-viz-box) = 미리보기 이미지 + 붙여넣기·복사·저장·크게 + 스타일·너비·상승색 ──
+      이미지 만들기는 BTMViz(VIZ-JS 블록). 상자는 .ai-result-box 의 한 종류라 '결과물 #N' 번호·↪ 참조가 그대로 동작 */
+#aiVizToggle{height:24px;padding:0 10px;font-size:10.5px;border:1px solid #f9a8d4;background:transparent;border-radius:12px;color:#be185d;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s}
+#aiVizToggle:hover,#aiVizToggle.active{background:#fce7f3}
+#aiVizPanel{display:none;flex-shrink:0;border-bottom:1px solid #fbcfe8;background:#fff7fb;padding:9px 11px 10px;flex-direction:column;gap:8px;max-height:230px;overflow-y:auto}
+#aiVizPanel .avp-h{display:flex;align-items:flex-start;gap:8px;font-size:11px;font-weight:800;color:#9d174d}
+#aiVizPanel .avp-h>span{flex-shrink:0;line-height:1.5}
+#aiVizPanel .avp-h small{flex:1;min-width:0;font-weight:600;color:#a8738a;font-size:10.5px;line-height:1.5}
+#aiVizPanel .avp-x{flex-shrink:0;border:none;background:transparent;color:#a8738a;font-size:13px;cursor:pointer;padding:0 4px;line-height:1.4}
+#aiVizPanel .avp-x:hover{color:#be185d}
+.avp-rc{display:flex;flex-wrap:wrap;gap:6px}
+.avp-rc button{height:26px;padding:0 11px;border:1px solid #f9a8d4;border-radius:13px;background:#fff;color:#9d174d;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
+.avp-rc button:hover{background:#fce7f3}
+.avp-pf{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:10.5px}
+.ai-viz-ol{font-weight:800;color:#7c5a6b;font-size:10.5px}
+.ai-viz-sws{display:inline-flex;align-items:center;gap:5px}
+.ai-viz-sw{width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cbd5e1;cursor:pointer;padding:0;flex-shrink:0}
+.ai-viz-sw.on{box-shadow:0 0 0 2px #4f46e5}
+.ai-viz-seg{display:inline-flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;background:#fff}
+.ai-viz-seg button{height:20px;padding:0 8px;border:none;border-right:1px solid #e2e8f0;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;cursor:pointer}
+.ai-viz-seg button:last-child{border-right:none}
+.ai-viz-seg button.on{background:#4f46e5;color:#fff}
+.ai-viz-box{border-color:#ec4899}
+.ai-viz-box>.ai-result-label{background:linear-gradient(135deg,#be185d,#7c3aed)}
+.ai-viz-box .ai-result-content{background:#fff;padding:8px 8px 9px;color:#1e293b}
+.ai-msg:has(>.ai-viz-box){max-width:96%}
+.ai-viz-stage{position:relative;border-radius:10px;overflow:hidden;background:#f1f5f9;border:1px solid #e2e8f0;line-height:0;min-height:64px}
+.ai-viz-img{display:block;width:100%;height:auto;cursor:zoom-in}
+.ai-viz-img:not([src]){display:none}
+.ai-viz-ph{display:none;padding:26px 12px;text-align:center;line-height:1.6;font-size:11.5px;color:#64748b}
+.ai-viz-box[data-state=busy] .ai-viz-ph,.ai-viz-box[data-state=error] .ai-viz-ph{display:block}
+.ai-viz-box[data-state=busy] .ai-viz-img{opacity:.4}
+.ai-viz-stage:has(.ai-viz-img[src]) .ai-viz-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0;background:rgba(255,255,255,.55);font-weight:700}
+.ai-viz-box[data-state=error] .ai-viz-ph{color:#b91c1c;background:#fef2f2}
+.ai-viz-note{margin-top:5px;font-size:10.5px;color:#b45309;line-height:1.45}
+.ai-viz-raw{margin-top:6px;font-size:10.5px;color:#64748b}
+.ai-viz-raw pre{margin:4px 0 0;max-height:120px;overflow:auto;padding:6px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;white-space:pre-wrap;word-break:break-all;font-size:10px;line-height:1.45}
+.ai-viz-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;position:relative}
+.ai-viz-b{height:26px;padding:0 11px;border:1px solid #c7d2fe;border-radius:7px;background:#fff;color:#4338ca;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
+.ai-viz-b:hover{background:#eef2ff}
+.ai-viz-b:disabled{opacity:.45;cursor:default}
+.ai-viz-b.pri{background:#4f46e5;border-color:#4f46e5;color:#fff}
+.ai-viz-b.pri:hover{background:#4338ca}
+.ai-viz-b.pri:disabled:hover{background:#4f46e5}
+.ai-viz-split{display:inline-flex;position:relative}
+.ai-viz-split .ai-viz-b:first-child{border-radius:7px 0 0 7px}
+.ai-viz-split .ai-viz-b:first-child:last-child{border-radius:7px}
+.ai-viz-split .ai-viz-b.caret{border-radius:0 7px 7px 0;border-left:1px solid rgba(255,255,255,.4);padding:0 8px}
+.ai-viz-menu{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:30;min-width:220px;background:#fff;border:1px solid #c7d2fe;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.2);padding:4px}
+.ai-viz-menu.open{display:block}
+.ai-viz-menu button{display:block;width:100%;text-align:left;border:none;background:transparent;border-radius:6px;padding:6px 9px;font-size:11px;font-weight:600;color:#334155;cursor:pointer;white-space:nowrap}
+.ai-viz-menu button:hover{background:#eef2ff;color:#4338ca}
+.ai-viz-menu button:disabled{opacity:.4;cursor:default}
+.ai-viz-menu button:disabled:hover{background:transparent;color:#334155}
+.ai-viz-opts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding-top:7px;border-top:1px dashed #e2e8f0}
 #aiInputFmtBar{border-color:#cbd5e1;background:#f8fafc;margin-top:4px}
 #aiUserInput{flex:1;border:1px solid #cbd5e1;border-radius:8px;padding:7px 10px;font-size:12.5px;font-family:inherit;outline:none;min-height:42px;max-height:220px;line-height:1.5;color:#1e293b;min-width:0;overflow-y:auto;word-break:break-word}
 #aiUserInput:focus{border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,.14)}
@@ -29055,26 +29110,32 @@ async function _fetchClaudeBalance(){
 
   /* ── 어시스턴트 버블 최종 렌더링 (설명 + 결과물 구분) ── */
   function _renderAssistantBubble(div, rawText){
-    const {explain, result}=_parseResult(rawText);
+    const _vs=_vizSplit(rawText);   /* <INFOGRAPHIC> 명세는 글 처리에서 빼고 따로 그림 상자로 (인포그래픽이 없으면 _vs.text === rawText) */
+    const {explain, result}=_parseResult(_vs.text);
     div.innerHTML='';
     div.style.whiteSpace='normal';
-    if(result){
+    if(result||_vs.vizs.length){
       /* 설명 영역 */
       if(explain){
         const exDiv=document.createElement('div');
         exDiv.className='ai-explain-text'; exDiv.innerHTML=_md2html(explain);
         div.appendChild(exDiv);
       }
+      /* 인포그래픽 상자 — 이미지로 그려 보여 주고 붙여넣기·복사·저장 */
+      _vs.vizs.slice(0,_VIZ_MAX).forEach(v=>div.appendChild(_vizMakeBox(v,true)));
       /* 결과물 박스 */
-      const box=document.createElement('div'); box.className='ai-result-box';
-      const lbl=document.createElement('div'); lbl.className='ai-result-label';
-      lbl.innerHTML=_resLabelHtml(_eid,true);   /* 제목(+번호) + 오른쪽 '↪ 참조' 버튼 */
-      box.setAttribute('data-src',(_eid===_MM_EID)?_mmOutlineFromReply(rawText):result);   /* '↪ 참조'가 AI 에게 돌려줄 원문 — 화면용(새니타이즈·엔티티 변환된 DOM)이 아니라 AI 가 쓴 그대로 */
-      const cnt=document.createElement('div'); cnt.className='ai-result-content';
-      if(_eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(rawText); }   /* MindMap: 개요 텍스트(들여쓰기 = 단계) 그대로 */
-      else cnt.innerHTML=_lastResult||_sanitizeResultHtml(result);
-      box.appendChild(lbl); box.appendChild(cnt);
-      div.appendChild(box);
+      if(result){
+        const box=document.createElement('div'); box.className='ai-result-box';
+        const lbl=document.createElement('div'); lbl.className='ai-result-label';
+        lbl.innerHTML=_resLabelHtml(_eid,true);   /* 제목(+번호) + 오른쪽 '↪ 참조' 버튼 */
+        box.setAttribute('data-src',(_eid===_MM_EID)?_mmOutlineFromReply(rawText):result);   /* '↪ 참조'가 AI 에게 돌려줄 원문 — 화면용(새니타이즈·엔티티 변환된 DOM)이 아니라 AI 가 쓴 그대로 */
+        const cnt=document.createElement('div'); cnt.className='ai-result-content';
+        if(_eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(rawText); }   /* MindMap: 개요 텍스트(들여쓰기 = 단계) 그대로 */
+        else cnt.innerHTML=_lastResult||_sanitizeResultHtml(result);
+        box.appendChild(lbl); box.appendChild(cnt);
+        div.appendChild(box);
+      }
+      _vizHydrate(div);
     } else {
       /* RESULT 태그 없으면 전체를 설명으로 표시 — 결과물 상자가 없으니 말풍선 아래에 '↪ 답변 참조' 줄을 붙임 */
       div.innerHTML=_md2html(rawText);
@@ -29205,6 +29266,7 @@ Rules:
 
   /* 현재 채팅 세션을 editorId별로 저장 (왼쪽 패널 포함) */
   function _saveChatSession(){
+    _vizCloseMenus();   /* 열려 있던 붙여넣기 위치 메뉴가 저장본에 남지 않게 */
     const key=_eid??'';
     _chatStore[key]={
       hist:[..._hist],
@@ -29236,8 +29298,8 @@ Rules:
     const _b2=g('aiApplyBtn'); if(_b2) _b2.textContent=_applyLabel;
     [_b1,_b2].forEach(b=>{ if(b) b.title=(editorId===_MM_EID)?"MindMap 의 '개요 가져오기' 창을 열어 내용을 채워 넣습니다":''; });
     /* Preset / Principle 패널 닫힌 상태로 리셋 */
-    ['aiPresetPanel','aiPrinciplePanel'].forEach(id=>{ const el=g(id); if(el) el.style.display='none'; });
-    ['aiPresetToggle','aiPrincipleToggle'].forEach(id=>{ const el=g(id); if(el) el.classList.remove('active'); });
+    ['aiPresetPanel','aiPrinciplePanel','aiVizPanel'].forEach(id=>{ const el=g(id); if(el) el.style.display='none'; });
+    ['aiPresetToggle','aiPrincipleToggle','aiVizToggle'].forEach(id=>{ const el=g(id); if(el) el.classList.remove('active'); });
     _selPIdx=-1; _selPrIdx=-1;
     /* 체크박스 항상 해제 상태로 초기화 */
     ['aiSelectAllCheck','aiMemoCheck','aiWebCheck','aiPrincipleCheck','aiReportRangeCheck'].forEach(id=>{ const cb=g(id); if(cb) cb.checked=false; });
@@ -29256,6 +29318,7 @@ Rules:
       _lastResult=saved.lastResult;
       _attachedFile=saved.attachedFile||null;
       g('aiMessages').innerHTML=saved.html;
+      _vizHydrate(g('aiMessages'));   /* 닫을 때 아직 그리던 중이던 인포그래픽 상자를 다시 그림(이미 그려진 것은 이미지가 그대로 복원됨) */
       g('aiApplyBtnWrap').style.display=saved.applyVisible?'block':'none';
       if(saved.applyDlgVisible){
         g('aiApplyDlg').style.display='flex';
@@ -29714,10 +29777,14 @@ Rules:
   };
 
   window._applyToEditor=function(mode){
-    if(!_lastResult&&!_lastReply) return;
+    const vizImgs=_vizImgsOfLast();   /* 마지막 답변의 인포그래픽 이미지 — 있으면 글과 함께 반영 */
+    if(!_lastResult&&!_lastReply&&!vizImgs.length) return;
     if(_eid===_MM_EID){ _sendToMindmap(_mmOutlineFromReply(_lastReply)); return; }
     const el=_eid?g(_eid):null;
-    if(!el){ _saveResultToMemo(_lastResult||_md2html(_lastReply),true); return; }
+    const imgHtml=vizImgs.map(i=>_vizImgBlockHtml(i.src,i.alt,i.w)).join('');
+    /* 인포그래픽이 있는 답변에서 <RESULT> 가 없으면 설명 글은 채팅용 분석 멘트 — 본문에는 이미지만 반영(글도 넣으려면 AI 에게 본문용 글을 따로 요청 → <RESULT>) */
+    const _txtHtml=_lastResult||((vizImgs.length||!_lastReply)?'':_md2html(_lastReply));
+    if(!el){ _saveResultToMemo(_txtHtml+imgHtml,true); return; }
 
     /* mode 미지정: 항상 덮어쓰기/이어쓰기 선택 다이얼로그 표시 */
     if(!mode){
@@ -29726,8 +29793,9 @@ Rules:
       return;
     }
 
-    const rawHtml=_lastResult||_md2html(_lastReply);
-    const editorHtml=_toEditorBlocks(rawHtml);
+    const rawHtml=_lastResult||(vizImgs.length?'':_md2html(_lastReply));
+    let editorHtml=(rawHtml||!imgHtml)?_toEditorBlocks(rawHtml):'';   /* 글 없이 그림만이면 빈 줄 블록을 안 붙임 */
+    if(imgHtml) editorHtml+=(editorHtml?'<div><br></div>':'')+imgHtml+'<div><br></div>';
     if(mode==='append'){
       const existingHtml=(el.innerHTML||'').trim();
       /* 이어쓰기: 텍스트 또는 이미지가 있으면 기존 콘텐츠(이미지 포함) 보존 후 추가 */
@@ -29801,7 +29869,7 @@ Rules:
     const pp=g('aiPresetPanel'), pt=g('aiPresetToggle');
     const open=pp.style.display==='flex';
     /* 다른 패널 닫기 */
-    if(!open){ g('aiPrinciplePanel').style.display='none'; g('aiPrincipleToggle').classList.remove('active'); }
+    if(!open){ g('aiPrinciplePanel').style.display='none'; g('aiPrincipleToggle').classList.remove('active'); _vizPanelClose(); }
     pp.style.display=open?'none':'flex';
     pt.classList.toggle('active',!open);
     if(!open) _renderPresetList();
@@ -29929,7 +29997,7 @@ Rules:
     const pp=g('aiPrinciplePanel'), pt=g('aiPrincipleToggle');
     const open=pp.style.display==='flex';
     /* 다른 패널 닫기 */
-    if(!open){ g('aiPresetPanel').style.display='none'; g('aiPresetToggle').classList.remove('active'); }
+    if(!open){ g('aiPresetPanel').style.display='none'; g('aiPresetToggle').classList.remove('active'); _vizPanelClose(); }
     pp.style.display=open?'none':'flex';
     pt.classList.toggle('active',!open);
     if(!open) _renderPrincipleList();
@@ -31143,11 +31211,12 @@ Rules:
   /* [↪ 참조] 클릭 — 결과물 상자 머리줄 버튼(k='r') 또는 일반 답변 아래 줄 버튼(k='a')에서 호출 */
   window._refFromBtn=function(btn){
     const box=btn.closest('.ai-result-box'), row=box?null:btn.closest('.ai-ans-row');
+    const isViz=!!(box&&box.classList.contains('ai-viz-box'));   /* 인포그래픽 상자 — AI 에게 줄 원문은 명세(JSON), 칩 미리보기는 제목 */
     let k,anchor,srcEl,src,h=0;
     if(box){
       k='r'; anchor=box; srcEl=box.querySelector('.ai-result-content'); if(!srcEl) return;
       const raw=box.getAttribute('data-src');   /* 렌더 때 붙여 둔 AI 원문 — 서식(굵게·색 등) HTML 그대로라 고쳐 쓸 때 서식을 이어감. MindMap 은 들여쓰기 개요 글 */
-      if(raw!=null){ src=raw; h=(_eid===_MM_EID)?0:1; }
+      if(raw!=null){ src=raw; h=(isViz||_eid===_MM_EID)?0:1; }
       else if(_eid===_MM_EID) src=srcEl.textContent||'';
       else { src=srcEl.innerHTML.replace(/&amp;/g,'&'); h=1; }   /* 원문 속성이 없을 때만 화면 DOM 으로 대신 */
     } else if(row){
@@ -31156,9 +31225,9 @@ Rules:
       const raw=bub.getAttribute('data-src');
       src=(raw!=null)?raw:_refPlain(bub.innerHTML);
     } else return;
-    const sel=_refSelText(srcEl), part=(sel&&sel.replace(/\s+/g,'')!==(srcEl.innerText||srcEl.textContent||'').replace(/\s+/g,''))?1:0;   /* 전부를 선택했으면 '일부'가 아니라 전체 */
+    const sel=isViz?'':_refSelText(srcEl), part=(sel&&sel.replace(/\s+/g,'')!==(srcEl.innerText||srcEl.textContent||'').replace(/\s+/g,''))?1:0;   /* 전부를 선택했으면 '일부'가 아니라 전체 */
     if(part){ src=sel; h=0; }
-    const plain=(h?_refPlain(src):src).replace(/[*#`]/g,'').replace(/\s+/g,' ').trim();   /* 칩 미리보기용 한 줄 — 마크다운 기호는 뺌 */
+    const plain=(isViz?('🎨 '+(box.getAttribute('data-title')||'인포그래픽')):(h?_refPlain(src):src)).replace(/[*#`]/g,'').replace(/\s+/g,' ').trim();   /* 칩 미리보기용 한 줄 — 마크다운 기호는 뺌 */
     if(!plain){ _showToast('_ahToast','참조할 내용이 없어요','rgba(180,83,9,.93)'); return; }
     src=src.replace(/\n{3,}/g,'\n\n').trim();
     const no=g('aiMessages')&&g('aiMessages').contains(anchor)?[...g('aiMessages').querySelectorAll(k==='a'?'.ai-ans-row':'.ai-result-box')].indexOf(anchor)+1:0;
@@ -31171,6 +31240,391 @@ Rules:
     if(_pendingRefs.length>=_REF_MAX){ _showToast('_ahToast','참조는 한 번에 '+_REF_MAX+'개까지 가져올 수 있어요','rgba(180,83,9,.93)'); return; }
     _pendingRefs.push({k,part,no,label:_refLabel(k,no,part),src,h,prev:plain.slice(0,140)});
     _renderRefStrip(); _focusInputEnd();
+  };
+
+  /* ═══ AI 인포그래픽 (2026-10-16) ═══════════════════════════════════════════════
+     AI 가 왼쪽 참고 자료를 분석한 뒤 <INFOGRAPHIC>{명세 JSON}</INFOGRAPHIC> 로 답하면 → 답변 말풍선 안에 '결과물 상자'(.ai-viz-box)로 이미지(PNG)를 그려 보여 주고
+     [📝 본문에 붙여넣기]·[📋 복사]·[💾 저장]·[🔍 크게] + 스타일·너비·상승색 바꾸기를 제공. (이미지 만들기·보안은 BTMViz — 'VIZ-JS' 블록이 맡음)
+     · 이 쪽이 하는 일 = 명세 해석(BTMViz.parse/normalize) → 그리기(BTMViz.render). AI 가 쓴 글은 전부 '글'로만 들어가 HTML 로 해석되지 않으므로 별도 새니타이저가 필요 없음.
+     · 채팅이 innerHTML 로 저장·복원되므로(_saveChatSession) 상자의 상태는 전부 data-* 에 둠: data-spec(정규화된 명세) · data-theme/w/ud(보기 설정) · data-state(busy|ready|error) ·
+       data-src(↪ 참조가 AI 에게 돌려줄 원문) · data-title. 이미지는 상자 안 <img class="ai-viz-img"> 의 dataURL 이 곧 붙여넣을 PNG. 버튼은 인라인 onclick → 전역 _vizAct.
+     · 상자는 .ai-result-box 의 한 종류 — '결과물 #N' 번호와 ↪ 참조가 그대로 동작(참조하면 AI 에게 명세 원문이 가서 '색 바꿔줘' 같은 수정 요청이 가능). */
+  const _VIZ_RE=/<INFOGRAPHIC\b[^>]*>([\s\S]*?)<\/INFOGRAPHIC\s*>/gi;
+  const _VIZ_MAX=4;   /* 한 답변에서 그리는 인포그래픽 수 */
+  const _VIZ_KW=/인포\s*그래픽|infographic|카드\s*뉴스|시각화|시각\s*자료|비주얼|도식|다이어그램|포스터|(?:이미지|그림|도표|차트|그래프|타임라인|흐름도|로드맵|슬라이드)\S{0,2}\s*(?:만들|그려|그리|생성|제작|변환)|(?:이미지|그림|도표|차트|그래프|타임라인|흐름도|로드맵|슬라이드|카드)(?:로|으로)\s*(?:만들|그려|그리|생성|제작|변환|정리|요약|표현|보여)/i;
+  const _VIZ_RECIPES=[
+    {ic:'📊',t:'핵심 요약 한 장',p:'왼쪽 참고 자료의 주요 내용을 분석해서, 핵심 메시지·중요한 수치·시사점이 한눈에 보이는 인포그래픽 한 장으로 만들어줘.'},
+    {ic:'🔢',t:'핵심 수치 카드',p:'참고 자료에서 중요한 숫자·지표를 뽑아 핵심 수치 카드와 간단한 차트 중심의 인포그래픽으로 만들어줘.'},
+    {ic:'📈',t:'차트 중심',p:'참고 자료의 숫자 데이터를 분석해서 가장 알맞은 차트(막대·선·도넛)로 시각화한 인포그래픽을 만들어줘.'},
+    {ic:'🧭',t:'흐름·단계',p:'참고 자료의 절차·인과관계·전략을 단계별 흐름도 형태의 인포그래픽으로 만들어줘.'},
+    {ic:'🗓',t:'타임라인',p:'참고 자료의 내용을 시간 순서로 정리한 타임라인 인포그래픽으로 만들어줘.'},
+    {ic:'🆚',t:'비교·장단점',p:'참고 자료의 내용을 강세·약세(또는 장점·단점)로 나눠 비교하는 인포그래픽으로 만들어줘.'},
+    {ic:'💬',t:'말씀·명언 카드',p:'참고 자료에서 가장 마음에 남는 핵심 문장을 골라, 짧은 묵상 한 줄과 함께 보여 주는 카드 이미지로 만들어줘.'},
+    {ic:'🗂',t:'카드뉴스 3장',p:'참고 자료를 분석해서 표지(핵심 한 줄)·핵심 포인트·결론, 이렇게 3장으로 이루어진 카드뉴스를 인포그래픽 3개로 만들어줘.'},
+  ];
+
+  /* 답변 원문 → 글(인포그래픽 블록 제외) + 인포그래픽 블록들 [{body,raw,truncated?}] */
+  function _vizSplit(raw){
+    raw=String(raw==null?'':raw);
+    const vizs=[];
+    let text=raw.replace(_VIZ_RE,(m,body)=>{ vizs.push({body,raw:m}); return '\n\n'; });
+    const i=text.search(/<INFOGRAPHIC\b/i);   /* 닫는 태그 없이 끊긴 마지막 블록 */
+    if(i>=0){ const tail=text.slice(i); vizs.push({body:tail.replace(/^<INFOGRAPHIC\b[^>]*>/i,''),raw:tail,truncated:true}); text=text.slice(0,i); }
+    if(!vizs.length){   /* 태그 없이 ```json … "blocks" … ``` 만 온 경우(태그를 빼먹는 모델 대비) */
+      text=text.replace(/```(?:json|JSON)?\s*([\s\S]*?)```/g,(m,body)=>{ if(!/"blocks"\s*:/.test(body)) return m; vizs.push({body,raw:m}); return '\n\n'; });
+    }
+    text=text.replace(/```[a-zA-Z]*\s*```/g,'');   /* 인포그래픽을 코드펜스로 감싸 보냈다면 걷어내고 남은 빈 펜스 */
+    return {text:text.replace(/\n{3,}/g,'\n\n').trim(),vizs};
+  }
+  function _vizTitleOf(v){ try{ return BTMViz.normalize(BTMViz.parse(v.body)).spec.title||''; }catch(e){ return ''; } }
+
+  /* 스트리밍 중에는 긴 JSON 이 우르르 보이지 않게 '구성하는 중…' 한 줄로 — 원문은 raw 에 보관(중단 시 부분 답변으로 사용) */
+  function _vizStreamView(t){
+    if(!/<INFOGRAPHIC/i.test(t)) return t;
+    let n=0;
+    t=t.replace(_VIZ_RE,()=>'\n🎨 인포그래픽 '+(++n)+' 구성 완료\n');
+    const i=t.search(/<INFOGRAPHIC\b/i);
+    if(i>=0) t=t.slice(0,i)+'\n🎨 인포그래픽 '+(n+1)+' 구성하는 중… ('+(t.length-i).toLocaleString()+'자)';
+    return t;
+  }
+  function _vizStreamTarget(div){   /* _stream* 함수는 target.textContent 에 '쓰기만' 하므로 가로채서 보기용 글만 말풍선에 */
+    const o={raw:''};
+    Object.defineProperty(o,'textContent',{get(){ return o.raw; },set(v){ o.raw=v; div.textContent=_vizStreamView(v); },enumerable:true});
+    return o;
+  }
+
+  /* 이번 요청에 인포그래픽 규칙을 시스템 프롬프트에 넣을지 — 요청 글에 시각화 말이 있거나, 참조·이전 답변에 인포그래픽이 있을 때(수정 요청 대응) */
+  function _vizWanted(txt,refs){
+    if(_eid===_MM_EID||!window.BTMViz) return false;
+    if(_VIZ_KW.test(txt||'')) return true;
+    if((refs||[]).some(r=>/<INFOGRAPHIC/i.test(r.src||''))) return true;
+    return _hist.some(m=>m.role==='assistant'&&typeof m.content==='string'&&/<INFOGRAPHIC/i.test(m.content));
+  }
+  function _vizRules(){
+    return `
+
+[인포그래픽(이미지) 제작 규칙 — 사용자가 인포그래픽·이미지·그림·카드뉴스·도표·차트·시각화를 요청했거나, 앞서 만든 <INFOGRAPHIC> 을 고쳐 달라는 경우에만 적용]
+이 앱은 당신이 쓴 명세(JSON)를 받아 인포그래픽 이미지(PNG)로 그려 주고, 사용자가 그 이미지를 리포트 본문에 붙여넣습니다. HTML·SVG·마크다운 표·코드블록으로 그림을 직접 그리지 말고 아래 형식만 쓰세요.
+1) 먼저 일반 글로 '분석'을 3~6줄로 짧게 적습니다 — 핵심 메시지 2~4개, 가장 중요한 수치, 왜 이런 구성으로 만들었는지. 이 글은 채팅창에만 보이고 이미지에는 들어가지 않습니다. 사용자가 본문용 글도 달라고 한 경우가 아니면 <RESULT> 로 감싸지 마세요.
+2) 그다음 <INFOGRAPHIC> 와 </INFOGRAPHIC> 사이에 JSON 하나만 씁니다(코드펜스 \`\`\`·주석 금지, 큰따옴표만 사용). 여러 장이면 장마다 태그를 따로 씁니다(최대 ${_VIZ_MAX}장).
+3) 이미지에 들어갈 글자는 모두 JSON 안에 있어야 합니다. 기본 언어는 한국어(자료가 영어면 용어는 원문 병기).
+
+[명세 형식]
+{"title":"제목(30자 안팎)","subtitle":"부제(선택)","tag":"분류·날짜 같은 작은 꼬리표(선택)","icon":"이모지 1개(선택)","theme":"ocean|forest|sunset|royal|wine|slate|midnight 중 내용에 어울리는 것(선택)","blocks":[…블록들…],"footer":"출처·유의사항(선택)"}
+
+[블록 종류 — 위에서 아래로 쌓입니다. 내용에 맞는 것만 3~8개 고르세요]
+- {"type":"stats","title":"","items":[{"label":"S&P 500","value":"5,412","delta":"+1.2%","note":"사상 최고치"}]}  핵심 수치 카드 2~4개. delta 앞의 +/- 로 상승(빨강)/하락(파랑) 색이 자동 결정되고, "tone":"up|down|good|bad|warn|neutral" 로 직접 지정할 수도 있음
+- {"type":"points","title":"","cols":1,"items":[{"icon":"📈","head":"짧은 제목","text":"한두 문장 설명"}]}  핵심 포인트·요약(icon 은 선택, 없으면 번호). cols 는 1 또는 2
+- {"type":"bar","title":"","unit":"%","orient":"h","items":[{"label":"기술","value":3.2}]}  항목별 크기 비교·순위(orient "h" 가로 / "v" 세로). value 는 숫자, 음수 가능(상승 빨강/하락 파랑 자동)
+- {"type":"line","title":"","unit":"","labels":["10/7","10/8"],"series":[{"name":"S&P","data":[5290,5310]}]}  시간에 따른 추이(점 2~24개, 최대 3계열)
+- {"type":"donut","title":"","center":"100%","items":[{"label":"주식","value":60}]}  구성비·비중(최대 8개)
+- {"type":"timeline","title":"","items":[{"date":"10/22","head":"이벤트","text":"설명"}]}  시간 순 일정(최대 8개)
+- {"type":"steps","title":"","items":[{"head":"1단계","text":"설명"}]}  절차·인과·전략 흐름(최대 8개)
+- {"type":"table","title":"","headers":["종목","PER","수익률"],"rows":[["삼성전자","12.4","+8.2%"]],"highlight":2}  비교표(6열·12행 이내, highlight 는 강조할 열 번호(0부터))
+- {"type":"compare","title":"","columns":[{"head":"강세 요인","tone":"up","items":["…"]},{"head":"약세 요인","tone":"down","items":["…"]}]}  2~3열 비교(장단점·강약)
+- {"type":"quote","text":"인용문·말씀","source":"출처"}  말씀·명언 카드
+- {"type":"callout","tone":"info","icon":"💡","head":"한 줄 결론","text":"설명"}  강조 박스(tone: info|good|warn|bad) — 결론·주의에 사용
+- {"type":"gauge","title":"","value":68,"min":0,"max":100,"label":"탐욕","caption":"설명"}  지수·점수 계기판
+- {"type":"tags","title":"","items":["키워드"]} · {"type":"text","title":"","paragraphs":["문단"]} · {"type":"heading","text":"구역 제목"}
+
+[작성 원칙]
+- 숫자는 [현재 참고 자료]·사용자 입력·웹 조회 데이터에 실제로 있는 것만 쓰세요. 없는 수치를 지어내거나 어림해 차트를 만들지 마세요. 수치가 부족하면 bar·line 대신 points·timeline·steps·compare 로 구성하고, 추정치에는 '(추정)'을 붙이세요.
+- 글은 짧게: head 는 20자 안팎, text 는 60자 안팎(최대 120자), label 은 10자 안팎. 이모지는 icon 에만 쓰고 글 안에는 쓰지 마세요.
+- 보통 첫 블록은 stats(핵심 수치) 또는 points(핵심 요약), 마지막은 callout(결론·주의)으로 마무리하고, 같은 종류 블록을 반복하지 마세요.
+- 수정 요청(색·문구·항목 추가/삭제 등)이면 바뀐 부분만이 아니라 완성된 JSON 전체를 <INFOGRAPHIC> 로 다시 내세요. 참조한 인포그래픽이 있으면 그 JSON 을 바탕으로 고치세요.
+- 인포그래픽을 요청하지 않은 질문에는 이 형식을 쓰지 말고 평소처럼 답하세요.
+- 사진·일러스트 같은 '그림 자체'는 만들 수 없습니다. 그런 요청이면 가장 가까운 인포그래픽(예: 말씀·명언 카드)으로 대신 만들고, 그 사실을 분석 글에 한 줄로 알려 주세요.
+
+[출력 예시 — 형식만 참고하고, 내용·수치는 반드시 이번 자료에서 가져오세요]
+핵심은 ① 금리 인하 기대 ② 기술주 주도 ③ 단기 과열 신호입니다. 수치는 카드·막대로, 해석은 포인트로 구성했어요.
+
+<INFOGRAPHIC>
+{"title":"이번 주 미국 증시","subtitle":"금리 인하 기대 속 기술주 주도 상승","tag":"시황 분석","icon":"📈","theme":"ocean","blocks":[{"type":"stats","items":[{"label":"S&P 500","value":"5,412","delta":"+1.2%"},{"label":"나스닥","value":"17,640","delta":"+1.8%"}]},{"type":"bar","title":"섹터별 등락률","unit":"%","items":[{"label":"기술","value":3.2},{"label":"에너지","value":-1.4}]},{"type":"callout","tone":"warn","head":"체크포인트","text":"FOMC 의사록 공개 전까지 변동성에 유의"}],"footer":"출처: 제공된 자료"}
+</INFOGRAPHIC>`;
+  }
+
+  /* ── 보기 설정(스타일·너비·상승색) — 마지막 선택을 기억해 새 인포그래픽에 적용 ── */
+  const _VIZ_WIDTHS=[480,640,800];
+  function _vizPrefs(){
+    let p={}; try{ p=JSON.parse(localStorage.getItem('BTMVizPrefs')||'{}')||{}; }catch(e){}
+    const th=(p.theme==='auto'||(window.BTMViz&&BTMViz.THEMES[p.theme]))?p.theme:'auto';
+    return {theme:th,w:_VIZ_WIDTHS.includes(+p.w)?+p.w:640,ud:p.ud==='us'?'us':'kr'};
+  }
+  function _vizSavePrefs(patch){
+    const p=Object.assign(_vizPrefs(),patch);
+    try{ localStorage.setItem('BTMVizPrefs',JSON.stringify(p)); }catch(e){}
+    return p;
+  }
+  function _vizSrcOf(spec){   /* ↪ 참조·AI 문맥으로 돌려줄 원문 — 빈 값은 빼서 짧게 */
+    return '<INFOGRAPHIC>\n'+JSON.stringify(spec,(k,v)=>(v===''||v==null||(Array.isArray(v)&&!v.length&&k!=='blocks'))?undefined:v)+'\n</INFOGRAPHIC>';
+  }
+  function _vizSwatches(cur,fn){
+    const T=BTMViz.THEMES;
+    return ['auto'].concat(Object.keys(T)).map(k=>'<button type="button" class="ai-viz-sw mobile-keep'+(k===cur?' on':'')+'" data-k="'+k+'" title="'+(k==='auto'?'AI 추천 — 내용에 맞춰 AI가 고름':T[k].label)+'" aria-label="'+(k==='auto'?'AI 추천':T[k].label)+'" style="background:'+(k==='auto'?'conic-gradient(#2563eb,#16a34a,#f97316,#7c3aed,#be185d,#2563eb)':'linear-gradient(135deg,'+T[k].p1+','+T[k].p2+')')+'" onclick="'+fn+'"></button>').join('');
+  }
+  function _vizSegs(items,cur,fn){   /* items: [[값,라벨,title?]] */
+    return '<span class="ai-viz-seg">'+items.map(it=>'<button type="button" class="mobile-keep'+(String(it[0])===String(cur)?' on':'')+'" data-v="'+it[0]+'"'+(it[2]?' title="'+it[2]+'"':'')+' onclick="'+fn+'">'+it[1]+'</button>').join('')+'</span>';
+  }
+  function _vizOptsHtml(p){
+    return '<span class="ai-viz-ol">스타일</span><span class="ai-viz-sws">'+_vizSwatches(p.theme,"_vizAct(this,'theme',this.dataset.k)")+'</span>'
+      +'<span class="ai-viz-ol">너비</span>'+_vizSegs([[480,'480','좁게 (모바일·카드뉴스)'],[640,'640','보통 (리포트 본문 폭)'],[800,'800','넓게']],p.w,"_vizAct(this,'width',this.dataset.v)")
+      +'<span class="ai-viz-ol">상승색</span>'+_vizSegs([['kr','빨강↑','한국식 — 상승 빨강 · 하락 파랑'],['us','초록↑','미국식 — 상승 초록 · 하락 빨강']],p.ud,"_vizAct(this,'ud',this.dataset.v)");
+  }
+
+  /* ── 상자 만들기(DOM) — live: 채팅창(붙여넣기·참조·스타일 바꾸기 포함) / false: 기록 조회 패널(보기·복사·저장만) ── */
+  function _vizMakeBox(v,live){
+    const Z=window.BTMViz;
+    const box=document.createElement('div'); box.className='ai-result-box ai-viz-box';
+    let spec=null, err='', warn=[];
+    if(!Z) err='인포그래픽 모듈을 불러오지 못했어요 — 페이지를 새로고침해 주세요.';
+    else{
+      try{ const n=Z.normalize(Z.parse(v.body)); spec=n.spec; warn=n.warn||[]; }
+      catch(e){ err=(v.truncated?'답변이 도중에 끊겨 ':'')+'인포그래픽 명세를 해석하지 못했어요 — '+(e&&e.message||e); }
+    }
+    const lbl=document.createElement('div'); lbl.className='ai-result-label';
+    lbl.innerHTML='<span class="ai-res-t">🎨 인포그래픽<span class="ai-res-no"></span> — '+_ahEsc(spec?spec.title:'만들지 못했어요')+'</span>'+(live?_REF_BTN:'');
+    const cnt=document.createElement('div'); cnt.className='ai-result-content ai-viz-body';
+    const stage=document.createElement('div'); stage.className='ai-viz-stage';
+    const img=document.createElement('img'); img.className='ai-viz-img'; img.setAttribute('alt',spec?spec.title:'인포그래픽'); img.setAttribute('onclick',"_vizAct(this,'zoom')"); img.title='클릭하면 크게 봅니다';
+    const ph=document.createElement('div'); ph.className='ai-viz-ph';
+    stage.appendChild(img); stage.appendChild(ph); cnt.appendChild(stage);
+    if(spec){
+      const pf=_vizPrefs();
+      box.setAttribute('data-title',spec.title);
+      box.setAttribute('data-ai-theme',spec.theme||'');
+      box.setAttribute('data-theme',pf.theme); box.setAttribute('data-w',pf.w); box.setAttribute('data-ud',pf.ud);
+      if(pf.theme!=='auto') spec.theme=pf.theme;
+      box.setAttribute('data-spec',JSON.stringify(spec));
+      box.setAttribute('data-src',_vizSrcOf(spec));
+      box.setAttribute('data-state','busy');
+      ph.textContent='🎨 인포그래픽 이미지를 만드는 중…';
+      if(warn.length){ const n=document.createElement('div'); n.className='ai-viz-note'; n.textContent='⚠ 일부 항목('+warn.length+'개)은 형식이 맞지 않아 건너뛰었어요.'; cnt.appendChild(n); }
+      const sec=!!_eid;
+      const bar=document.createElement('div'); bar.className='ai-viz-bar';
+      bar.innerHTML=(live
+        ?'<span class="ai-viz-split"><button type="button" class="ai-viz-b pri mobile-keep" data-r="paste" onclick="_vizAct(this,\'paste\',\'end\')" title="'+(sec?'이 섹션 본문 맨 끝에 이미지로 붙여넣습니다 (오른쪽 ▾ 로 위치 선택)':'오늘 메모장에 새 메모로 저장합니다')+'">'+(sec?'📝 본문에 붙여넣기':'📝 메모장에 저장')+'</button>'
+          +(sec?'<button type="button" class="ai-viz-b pri caret mobile-keep" onclick="_vizAct(this,\'menu\')" title="붙여넣을 위치 고르기" aria-label="붙여넣을 위치 고르기">▾</button>'
+          +'<div class="ai-viz-menu"><button type="button" class="mobile-keep" onclick="_vizAct(this,\'paste\',\'end\')">⬇ 본문 맨 끝에 (이어쓰기)</button><button type="button" class="mobile-keep" onclick="_vizAct(this,\'paste\',\'start\')">⬆ 본문 맨 위에</button><button type="button" class="mobile-keep" data-r="caret" onclick="_vizAct(this,\'paste\',\'caret\')">↳ 커서가 있던 줄 아래에</button><button type="button" class="mobile-keep" onclick="_vizAct(this,\'paste\',\'replace\')">♻ 본문 전체를 이것으로 바꾸기</button></div>':'')+'</span>'
+        :'')
+        +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'copy\')" title="이미지를 클립보드에 복사 — 다른 곳에 Ctrl+V 로 붙여넣기">📋 복사</button>'
+        +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'save\')" title="PNG 파일로 저장">💾 저장</button>'
+        +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'zoom\')" title="크게 보기">🔍 크게</button>';
+      cnt.appendChild(bar);
+      if(live){ const o=document.createElement('div'); o.className='ai-viz-opts'; o.innerHTML=_vizOptsHtml(pf); cnt.appendChild(o); }
+    } else {
+      box.setAttribute('data-state','error');
+      box.setAttribute('data-src',v.raw||v.body||'');
+      ph.textContent='⚠ '+err;
+      const rawTxt=String(v.body||'').trim();
+      if(rawTxt){ const d=document.createElement('details'); d.className='ai-viz-raw'; const s=document.createElement('summary'); s.textContent='AI 가 보낸 원문 보기'; const pre=document.createElement('pre'); pre.textContent=rawTxt.slice(0,3000); d.appendChild(s); d.appendChild(pre); cnt.appendChild(d); }
+      if(live){ const bar=document.createElement('div'); bar.className='ai-viz-bar'; bar.innerHTML='<span class="ai-viz-note" style="margin:0">위쪽 [↪ 참조]를 눌러 “형식을 고쳐서 다시 만들어줘”라고 요청할 수 있어요.</span>'; cnt.appendChild(bar); }
+    }
+    box.appendChild(lbl); box.appendChild(cnt);
+    return box;
+  }
+
+  /* ── 그리기 ── */
+  function _vizBtnsEnable(box,on){ box.querySelectorAll('.ai-viz-bar [data-r="paste"],.ai-viz-bar .caret').forEach(b=>{ b.disabled=!on; }); }
+  function _vizFail(box,msg){
+    box.setAttribute('data-state','error');
+    const ph=box.querySelector('.ai-viz-ph'); if(ph) ph.textContent='⚠ 이미지를 만들지 못했어요 — '+msg;
+    const img=box.querySelector('.ai-viz-img'); if(img) img.removeAttribute('src');
+    _vizBtnsEnable(box,false);
+    if(!box.querySelector('.ai-viz-retry')){ const b=document.createElement('button'); b.type='button'; b.className='ai-viz-b ai-viz-retry mobile-keep'; b.textContent='↺ 다시 그리기'; b.setAttribute('onclick',"_vizAct(this,'retry')"); const bar=box.querySelector('.ai-viz-bar'); if(bar) bar.appendChild(b); }
+  }
+  let _vizQ=Promise.resolve();   /* 한 번에 하나씩 그림(기록 상세처럼 여러 장이 한꺼번에 생길 때 무거워지지 않게) */
+  function _vizRenderBox(box){
+    const tok=(box._tok=(box._tok||0)+1);
+    const ph=box.querySelector('.ai-viz-ph');
+    box.setAttribute('data-state','busy'); if(ph) ph.textContent='🎨 인포그래픽 이미지를 만드는 중…';
+    _vizBtnsEnable(box,false);
+    const rt=box.querySelector('.ai-viz-retry'); if(rt) rt.remove();
+    _vizQ=_vizQ.then(()=>_vizDoRender(box,tok)).catch(()=>{});
+    return _vizQ;
+  }
+  async function _vizDoRender(box,tok){
+    if(tok!==box._tok) return;   /* 그새 더 새 요청(스타일 연속 변경)이 생겼으면 건너뜀 */
+    const img=box.querySelector('.ai-viz-img');
+    let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ _vizFail(box,'명세를 읽지 못했어요'); return; }
+    const th=box.getAttribute('data-theme')||'auto';
+    try{
+      const r=await BTMViz.render(spec,{theme:th==='auto'?(box.getAttribute('data-ai-theme')||spec.theme||'ocean'):th,width:+box.getAttribute('data-w')||640,ud:box.getAttribute('data-ud')||'kr',scale:2});
+      if(tok!==box._tok) return;   /* 그리는 사이 더 새로운 요청이 있으면 이 결과는 버림 */
+      img.setAttribute('data-w',r.width); img.setAttribute('data-h',r.height);
+      const area=g('aiMessages'), first=!img.getAttribute('src');
+      const nearBottom=first&&!!area&&box.isConnected&&area.contains(box)&&(area.scrollHeight-area.scrollTop-area.clientHeight<120);   /* 새로 생긴 상자를 보고 있던 중이면 */
+      img.src=r.dataUrl;
+      box.setAttribute('data-state','ready'); _vizBtnsEnable(box,true);
+      if(nearBottom){   /* 이미지가 자리를 차지한 뒤, 이미지 윗부분부터 보이게(버튼은 스크롤해서) — 아니면 위쪽이 화면 밖으로 밀려남 */
+        try{ await img.decode(); }catch(e){}
+        if(tok===box._tok&&area.contains(box)) area.scrollTop=Math.max(0,box.getBoundingClientRect().top-area.getBoundingClientRect().top+area.scrollTop-8);
+      }
+    }catch(e){ if(tok!==box._tok) return; _vizFail(box,(e&&e.message)||String(e)); }
+  }
+  function _vizHydrate(root){   /* 아직 그림이 없는 상자(방금 만든 것·복원 도중 멈춘 것)를 그림 */
+    (root||document).querySelectorAll('.ai-viz-box[data-state="busy"],.ai-viz-box[data-state="ready"]').forEach(b=>{
+      const im=b.querySelector('.ai-viz-img'); if(im&&!im.getAttribute('src')&&b.getAttribute('data-spec')) _vizRenderBox(b);
+    });
+    (root||document).querySelectorAll('.ai-viz-undo').forEach(u=>{ const b=u.closest('.ai-viz-box'); if(!b||!b._paste) u.remove(); });   /* 팝업을 닫았다 열어 복원된 상자엔 붙여넣기 기록(JS 변수)이 없으므로 죽은 취소 버튼은 치움 */
+  }
+  function _vizPngOk(s){ return typeof s==='string'&&s.length>100&&/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(s); }
+
+  /* ── 상자 버튼들 ── */
+  function _vizCloseMenus(){ document.querySelectorAll('.ai-viz-menu.open').forEach(m=>m.classList.remove('open')); }
+  document.addEventListener('click',e=>{ if(!(e.target.closest&&e.target.closest('.ai-viz-split'))) _vizCloseMenus(); });
+  window._vizAct=function(el,act,arg){
+    const box=el&&el.closest&&el.closest('.ai-viz-box'); if(!box) return;
+    if(act!=='menu') _vizCloseMenus();
+    if(act==='paste') _vizPaste(box,arg||'end');
+    else if(act==='menu'){ const m=box.querySelector('.ai-viz-menu'); const was=m&&m.classList.contains('open'); _vizCloseMenus(); if(m&&!was){ const r=(typeof _savedRange!=='undefined')?_savedRange:null; const eEl=_eid?g(_eid):null; const cb=m.querySelector('[data-r="caret"]'); if(cb) cb.disabled=!(r&&eEl&&eEl.contains(r.commonAncestorContainer)); m.style.left=''; m.style.right=''; m.classList.add('open'); if(m.getBoundingClientRect().right>window.innerWidth-6){ m.style.left='auto'; m.style.right='0'; } try{ m.scrollIntoView({block:'nearest'}); }catch(e){} } }
+    else if(act==='copy') _vizCopy(box);
+    else if(act==='save') _vizSave(box);
+    else if(act==='zoom') _vizZoom(box);
+    else if(act==='retry') _vizRenderBox(box);
+    else if(act==='undo') _vizUndoPaste(box);
+    else if(act==='theme'||act==='width'||act==='ud') _vizSetOpt(box,act,arg);
+  };
+  function _vizSetOpt(box,k,v){
+    let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ return; }
+    if(k==='theme'){
+      if(v!=='auto'&&!BTMViz.THEMES[v]) return;
+      box.setAttribute('data-theme',v); _vizSavePrefs({theme:v});
+      spec.theme=(v==='auto')?(box.getAttribute('data-ai-theme')||''):v;   /* 직접 고른 스타일은 명세에도 적어 둠 — 이후 AI 에게 고쳐 달라고 할 때 같은 모양이 유지됨 */
+      box.setAttribute('data-spec',JSON.stringify(spec)); box.setAttribute('data-src',_vizSrcOf(spec));
+    } else if(k==='width'){
+      const w=+v; if(!_VIZ_WIDTHS.includes(w)) return;
+      box.setAttribute('data-w',w); _vizSavePrefs({w});
+    } else if(k==='ud'){
+      const u=(v==='us')?'us':'kr'; box.setAttribute('data-ud',u); _vizSavePrefs({ud:u});
+    }
+    const p={theme:box.getAttribute('data-theme'),w:+box.getAttribute('data-w'),ud:box.getAttribute('data-ud')};
+    const o=box.querySelector('.ai-viz-opts'); if(o) o.innerHTML=_vizOptsHtml(p);
+    _vizRenderBox(box);
+  }
+  function _vizImgStyle(w){ return 'width:'+(+w||640)+'px;max-width:100%;height:auto;display:inline-block;vertical-align:bottom;'; }
+  function _vizImgBlockHtml(src,alt,w){ return _vizPngOk(src)?'<div><img src="'+src+'" alt="'+_ahEsc(alt||'인포그래픽')+'" style="'+_vizImgStyle(w)+'"></div>':''; }
+  function _vizPaste(box,where){
+    const img=box.querySelector('.ai-viz-img'), src=img&&img.getAttribute('src');
+    if(box.getAttribute('data-state')!=='ready'||!_vizPngOk(src)){ _showToast('_ahToast','이미지를 아직 만드는 중이에요 — 잠시 뒤에 눌러 주세요','rgba(180,83,9,.93)'); return; }
+    const alt=box.getAttribute('data-title')||'인포그래픽', w=+img.getAttribute('data-w')||640;
+    const el=_eid?g(_eid):null;
+    if(!el){ _saveResultToMemo(_vizImgBlockHtml(src,alt,w),true); return; }   /* 섹션 없이 연 채팅 — '본문에 반영'처럼 오늘 메모장에 새 메모로 저장하고 메모장을 엶 */
+    const mk=()=>{ const d=document.createElement('div'), im=document.createElement('img'); im.src=src; im.alt=alt; im.style.cssText=_vizImgStyle(w); d.appendChild(im); return d; };
+    const blank=()=>{ const d=document.createElement('div'); d.appendChild(document.createElement('br')); return d; };
+    let spot='맨 끝에', after=null, prevHtml=null;
+    const ins=[];   /* 이번에 넣은 노드들 — [↶ 붙인 것 취소]가 걷어냄 */
+    const mkI=()=>{ const n=mk(); ins.push(n); return n; }, blI=()=>{ const n=blank(); ins.push(n); return n; };
+    if(where==='replace'){
+      if(!confirm('이 섹션 본문 전체를 이 인포그래픽으로 바꿀까요?\n(기존 글과 이미지는 사라집니다 — 붙인 뒤 [↶ 붙인 것 취소]로 되돌릴 수 있어요)')) return;
+      prevHtml=el.innerHTML;
+      el.innerHTML=''; el.appendChild(mkI()); el.appendChild(blI()); spot='전체를 바꿔';
+    } else if(where==='start'){
+      const first=el.firstChild; el.insertBefore(mkI(),first); el.insertBefore(blI(),first); spot='맨 위에';
+    } else {
+      let ref=null, done=false;
+      if(where==='caret'){
+        const r=(typeof _savedRange!=='undefined')?_savedRange:null;
+        if(r&&el.contains(r.commonAncestorContainer)){   /* 커서가 있던 줄(맨 위 블록) 바로 아래 */
+          if(r.startContainer===el) ref=el.childNodes[r.startOffset]||null;
+          else{ let n=r.startContainer; while(n&&n.parentNode!==el) n=n.parentNode; ref=n?n.nextSibling:null; }
+          after=mkI(); el.insertBefore(after,ref); if(!ref) el.appendChild(blI());
+          spot='커서 아래 줄에'; done=true;
+        } else _showToast('_ahToast','커서 위치 정보가 없어 맨 끝에 붙였어요','rgba(180,83,9,.93)');
+      }
+      if(!done){
+        const has=!!(el.innerText||el.textContent||'').trim()||!!el.querySelector('img');
+        if(has) el.appendChild(blI());
+        el.appendChild(mkI()); el.appendChild(blI());
+      }
+    }
+    el.dispatchEvent(new Event('input',{bubbles:true}));   /* innerHTML·DOM 직접 조작은 input 이벤트가 없어 그림자 상태(tsChartNoteBody 등)가 안 따라옴 — _applyToEditor 와 같은 이유 */
+    if(typeof _ftEditor!=='undefined'&&_ftEditor===el) _savedRange=null;
+    if(after){ try{ const nr=document.createRange(); nr.setStartAfter(after); nr.collapse(true); _savedRange=nr; }catch(e){} }   /* 이어서 또 붙이면 방금 붙인 것 아래로 */
+    if(typeof saveData==='function') saveData();
+    el.style.outline='2px solid #10b981'; setTimeout(()=>{ el.style.outline=''; },1400);
+    box.setAttribute('data-pasted','1');
+    box._paste={el,nodes:ins,prevHtml};
+    const pb=box.querySelector('.ai-viz-split [data-r="paste"]'); if(pb) pb.textContent='✓ 붙여넣음 · 한 번 더';
+    if(!box.querySelector('.ai-viz-undo')){ const u=document.createElement('button'); u.type='button'; u.className='ai-viz-b ai-viz-undo mobile-keep'; u.textContent='↶ 붙인 것 취소'; u.title='방금 본문에 붙인 이미지를 걷어냅니다'; u.setAttribute('onclick',"_vizAct(this,'undo')"); const sp=box.querySelector('.ai-viz-split'); if(sp) sp.insertAdjacentElement('afterend',u); }
+    _showToast('_ahToast','📝 ‘'+_ahSecName()+'’ 본문 '+spot+' 붙여넣었어요 — 팝업을 닫으면 확인할 수 있어요','rgba(21,128,61,.93)');
+  }
+  function _vizUndoPaste(box){
+    const p=box._paste;
+    if(!p||!p.el||!p.el.isConnected){ _showToast('_ahToast','되돌릴 붙여넣기 기록이 없어요','rgba(180,83,9,.93)'); const u0=box.querySelector('.ai-viz-undo'); if(u0) u0.remove(); return; }
+    if(p.prevHtml!=null) p.el.innerHTML=p.prevHtml;
+    else p.nodes.forEach(n=>{ if(n.parentNode===p.el) p.el.removeChild(n); });
+    p.el.dispatchEvent(new Event('input',{bubbles:true}));
+    _savedRange=null;
+    if(typeof saveData==='function') saveData();
+    box._paste=null; box.removeAttribute('data-pasted');
+    const u=box.querySelector('.ai-viz-undo'); if(u) u.remove();
+    const pb=box.querySelector('.ai-viz-split [data-r="paste"]'); if(pb) pb.textContent=_eid?'📝 본문에 붙여넣기':'📝 메모장에 저장';
+    _showToast('_ahToast','↶ 붙인 이미지를 걷어냈어요','rgba(30,58,95,.93)');
+  }
+  async function _vizCopy(box){
+    const img=box.querySelector('.ai-viz-img'), src=img&&img.getAttribute('src');
+    if(!_vizPngOk(src)){ _showToast('_ahToast','이미지를 아직 만드는 중이에요','rgba(180,83,9,.93)'); return; }
+    try{
+      if(!navigator.clipboard||!window.ClipboardItem) throw new Error('이 브라우저는 이미지 복사를 지원하지 않아요');
+      const blob=await (await fetch(src)).blob();
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      _showToast('_ahToast','📋 이미지를 복사했어요 — 원하는 곳에 Ctrl+V 로 붙여넣으세요','rgba(21,128,61,.93)');
+    }catch(e){ _showToast('_ahToast','복사하지 못했어요 — [💾 저장]을 이용해 주세요','rgba(185,28,28,.93)'); }
+  }
+  async function _vizSave(box){
+    const img=box.querySelector('.ai-viz-img'), src=img&&img.getAttribute('src');
+    if(!_vizPngOk(src)){ _showToast('_ahToast','이미지를 아직 만드는 중이에요','rgba(180,83,9,.93)'); return; }
+    try{
+      const blob=await (await fetch(src)).blob();
+      const url=URL.createObjectURL(blob), a=document.createElement('a'), d=new Date();
+      const ymd=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+      const nm=(box.getAttribute('data-title')||'인포그래픽').replace(/[\\\/:*?"<>|\s]+/g,'_').slice(0,40);
+      a.href=url; a.download='인포그래픽_'+nm+'_'+ymd+'.png'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),4000);
+      _showToast('_ahToast','💾 PNG 로 저장했어요','rgba(21,128,61,.93)');
+    }catch(e){ _showToast('_ahToast','저장하지 못했어요','rgba(185,28,28,.93)'); }
+  }
+  function _vizZoom(box){
+    const img=box.querySelector('.ai-viz-img'), src=img&&img.getAttribute('src'); if(!_vizPngOk(src)) return;
+    if(typeof _showImgLightbox==='function') _showImgLightbox(src);   /* 메모 이미지와 같은 확대 창(z-index 99999 — AI 팝업 위) */
+  }
+  /* 마지막 답변 말풍선의 완성된 인포그래픽 이미지들 — 아래쪽 [📝 본문에 반영]이 글과 함께 넣음(DOM 에서 읽으므로 팝업을 닫았다 열어도 동작) */
+  function _vizImgsOfLast(){
+    const area=g('aiMessages'); if(!area) return [];
+    const bubs=area.querySelectorAll('.ai-msg.assistant'), last=bubs[bubs.length-1]; if(!last) return [];
+    return [...last.querySelectorAll('.ai-viz-box[data-state="ready"]')].map(b=>{
+      const im=b.querySelector('.ai-viz-img');
+      return {src:im&&im.getAttribute('src'),alt:b.getAttribute('data-title')||'인포그래픽',w:+(im&&im.getAttribute('data-w'))||640};
+    }).filter(i=>_vizPngOk(i.src));
+  }
+
+  /* ── 🎨 인포그래픽 패널(머리줄 버튼) — 유형을 누르면 요청 문구가 입력창에 채워짐 + 스타일·너비·상승색 기본값 ── */
+  function _vizPanelClose(){ const p=g('aiVizPanel'), t=g('aiVizToggle'); if(p) p.style.display='none'; if(t) t.classList.remove('active'); }
+  function _vizRenderPanel(){
+    const rc=g('aiVizRecipes'), pf=g('aiVizPrefs'); if(!rc||!pf||!window.BTMViz) return;
+    rc.innerHTML=_VIZ_RECIPES.map((r,i)=>'<button type="button" class="mobile-keep" onclick="_vizRecipe('+i+')" title="'+_ahEsc(r.p)+'">'+r.ic+' '+_ahEsc(r.t)+'</button>').join('');
+    const p=_vizPrefs();
+    pf.innerHTML='<span class="ai-viz-ol">기본 스타일</span><span class="ai-viz-sws">'+_vizSwatches(p.theme,"_vizPanelPref('theme',this.dataset.k)")+'</span>'
+      +'<span class="ai-viz-ol">너비</span>'+_vizSegs([[480,'480'],[640,'640'],[800,'800']],p.w,"_vizPanelPref('w',this.dataset.v)")
+      +'<span class="ai-viz-ol">상승색</span>'+_vizSegs([['kr','빨강↑'],['us','초록↑']],p.ud,"_vizPanelPref('ud',this.dataset.v)");
+  }
+  window._toggleVizPanel=function(){
+    const p=g('aiVizPanel'), t=g('aiVizToggle'); if(!p) return;
+    if(p.style.display==='flex'){ _vizPanelClose(); return; }
+    ['aiPresetPanel','aiPrinciplePanel'].forEach(id=>{ const e=g(id); if(e) e.style.display='none'; });
+    ['aiPresetToggle','aiPrincipleToggle'].forEach(id=>{ const e=g(id); if(e) e.classList.remove('active'); });
+    _vizRenderPanel(); p.style.display='flex'; if(t) t.classList.add('active');
+  };
+  window._vizPanelPref=function(k,v){
+    if(k==='theme') _vizSavePrefs({theme:v}); else if(k==='w') _vizSavePrefs({w:+v}); else if(k==='ud') _vizSavePrefs({ud:v});
+    _vizRenderPanel();
+  };
+  window._vizRecipe=function(i){
+    const r=_VIZ_RECIPES[i]; if(!r) return;
+    const inp=g('aiUserInput'); if(!inp) return;
+    if(!(inp.innerText||'').trim()) inp.textContent=r.p;
+    else{ inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(r.p)); }   /* 쓰던 글이 있으면 지우지 않고 아래에 덧붙임 */
+    _vizPanelClose(); _focusInputEnd();
   };
 
   /* ── 말풍선 ── */
@@ -31260,6 +31714,9 @@ Rules:
     밸류에이션
 </RESULT>`:'';
 
+    /* 인포그래픽(이미지) 요청이면 명세 형식 규칙을 덧붙임 — 요청 글·참조·이전 답변에 근거가 있을 때만(평소 요청의 토큰·동작은 그대로) */
+    const _vizBlock=_vizWanted(txt,refs)?_vizRules():'';
+
     /* 이번 메시지에 참조한 AI 답변이 있으면 '기본 대상 = [현재 참고 자료]' 규칙보다 그 참조가 우선 */
     const _refRule=refs.length?'\n단, 이번 사용자 메시지에 [참조한 AI 답변]이 있으면 그 참조 내용이 요청의 처리 대상입니다. 이 경우 [현재 참고 자료]는 필요할 때만 보조로 쓰고, 참조한 결과물을 고쳐 쓰거나 이어 쓰라는 요청이면 본문에 반영될 최종 결과물을 아래 [답변 형식 규칙]대로 <RESULT>와 </RESULT> 사이에 작성하세요.':'';
 
@@ -31291,7 +31748,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
 · S&P 500은 전일 대비 1.2% 상승하며 5,400선을 돌파했습니다.
 </RESULT>
 
-단순 질문·대화·설명만 요청하는 경우에는 <RESULT> 태그를 사용하지 않아도 됩니다.${_mmRules}
+단순 질문·대화·설명만 요청하는 경우에는 <RESULT> 태그를 사용하지 않아도 됩니다.${_mmRules}${_vizBlock}
 위 내용을 참고하여 사용자 요청에 한국어로 답변하세요.`;
 
     /* 파일 첨부 + 입력창 이미지 처리 */
@@ -31318,42 +31775,44 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     _hist.push({role:'user',content:userContent});
     const aDiv=_addBubble('assistant','');
     aDiv.classList.add('ai-stream-cursor');
+    const _tgt=_vizStreamTarget(aDiv);   /* 스트리밍 글은 여기로 — 인포그래픽 명세(긴 JSON)는 '구성하는 중…' 한 줄로만 보이고 원문은 _tgt.raw 에 */
     _abortCtrl=new AbortController();
     _busy=true;
     g('aiSendWrap').style.display='none';
     g('aiStopWrap').style.display='';
     try{
       const reply = _provider.startsWith('deepseek')
-        ? await _streamDeepSeek(key,sys,_hist,aDiv,_abortCtrl.signal,_provider==='deepseek-pro')
+        ? await _streamDeepSeek(key,sys,_hist,_tgt,_abortCtrl.signal,_provider==='deepseek-pro')
         : _provider.startsWith('gemini')
-        ? await _streamGemini(key,sys,_hist,aDiv,_abortCtrl.signal,_provider==='gemini-pro')
+        ? await _streamGemini(key,sys,_hist,_tgt,_abortCtrl.signal,_provider==='gemini-pro')
         : _provider.startsWith('chatgpt')
-        ? await _streamChatGPT(key,sys,_hist,aDiv,_abortCtrl.signal,_provider==='chatgpt-pro')
-        : await _stream(key,sys,_hist,aDiv,_abortCtrl.signal);
+        ? await _streamChatGPT(key,sys,_hist,_tgt,_abortCtrl.signal,_provider==='chatgpt-pro')
+        : await _stream(key,sys,_hist,_tgt,_abortCtrl.signal);
       if(reply){
-        _hist.push({role:'assistant',content:reply});
-        _lastReply=reply;
-        const {result}=_parseResult(reply);
+        _hist.push({role:'assistant',content:reply});   /* AI 문맥·기록엔 원문 그대로(인포그래픽 명세 포함 — 수정 요청 때 AI 가 이전 명세를 봄) */
+        const _vs=_vizSplit(reply);
+        _lastReply=_vs.text;   /* '본문에 반영'의 글 쪽 원본 — 인포그래픽 명세는 빼고(그림은 상자의 이미지로 따로 반영) */
+        const {result}=_parseResult(_lastReply);
         const _san=result?_sanitizeResultHtml(result):'';
         _lastResult=_san;
         _renderAssistantBubble(aDiv,reply);
         g('aiApplyBtnWrap').style.display='block';
         _ahSave(_ahU,reply,false);
         /* 보유종목 메모 자동 저장: 메인 응답 완료 후 Haiku로 종목별 내용 추출 */
-        if(memoChecked) _autoSaveStockMemos(reply);
+        if(memoChecked&&_vs.text) _autoSaveStockMemos(_vs.text);
       }
     }catch(e){
       if(e.name==='AbortError'){
-        const partial=(aDiv.textContent||'').trim();
+        const partial=((_tgt&&_tgt.raw)||aDiv.textContent||'').trim();   /* 보이는 글이 아니라 받은 원문 */
         if(partial){
-          _lastReply=partial;
-          const {result}=_parseResult(partial);
+          _lastReply=_vizSplit(partial).text;
+          const {result}=_parseResult(_lastReply);
           const _san=result?_sanitizeResultHtml(result):'';
           _lastResult=_san;
           _renderAssistantBubble(aDiv,partial);
           if(partial) g('aiApplyBtnWrap').style.display='block';
           _ahSave(_ahU,partial,true);
-          if(memoChecked) _autoSaveStockMemos(partial);
+          if(memoChecked&&_lastReply) _autoSaveStockMemos(_lastReply);
         } else {
           aDiv.remove();
         }
@@ -31638,15 +32097,18 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     try{ const d=new DOMParser().parseFromString(String(h||'').replace(/<br\s*\/?>/gi,'\n').replace(/<\/(?:div|p|li)>/gi,'\n'),'text/html'); return d.body?d.body.textContent:''; }
     catch(e){ return String(h||'').replace(/<[^>]+>/g,' '); }
   }
-  function _ahPlain(raw){   /* 목록 미리보기용: <RESULT>·HTML·마크다운 기호를 걷어낸 한 줄 */
-    const {explain,result}=_parseResult(raw||'');
+  function _ahPlain(raw){   /* 목록 미리보기용: <RESULT>·HTML·마크다운 기호·인포그래픽 명세를 걷어낸 한 줄 */
+    const vs=_vizSplit(raw||'');
+    const {explain,result}=_parseResult(vs.text);
     let t=(explain||'')+(result?' '+_ahText(result):'');
-    if(!t.trim()) t=_ahText(raw||'');
+    if(!t.trim()) t=_ahText(vs.text||'');
+    if(vs.vizs.length) t=(t.trim()?t.trim()+' ':'')+'🎨 인포그래픽 '+vs.vizs.length+'장';
     return t.replace(/[*#`]/g,'').replace(/\s+/g,' ').trim();
   }
-  function _ahReadable(raw){   /* 복사용: 설명 + 결과물(HTML 은 글로) */
-    const {explain,result}=_parseResult(raw||'');
-    const t=[explain,result?_ahText(result).trim():''].filter(Boolean).join('\n\n').trim();
+  function _ahReadable(raw){   /* 복사용: 설명 + 결과물(HTML 은 글로) + 인포그래픽은 제목만 */
+    const vs=_vizSplit(raw||'');
+    const {explain,result}=_parseResult(vs.text);
+    const t=[explain,result?_ahText(result).trim():'',...vs.vizs.map(v=>'[🎨 인포그래픽'+(_vizTitleOf(v)?': '+_vizTitleOf(v):'')+']')].filter(Boolean).join('\n\n').trim();
     return t||String(raw||'');
   }
   function _ahThumb(url){   /* data URL 이미지 → 작은 JPEG 썸네일 (실패하면 null) */
@@ -31807,19 +32269,24 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     return (q+h)||'<div class="ai-user-txt">[이미지]</div>';
   }
   /* 답변 말풍선 안쪽 — _renderAssistantBubble 과 같은 모양(설명 + 결과물 상자)이되 현재 대화의 _lastResult 를 건드리지 않음 */
-  function _ahRenderReply(div,raw,eid,withRef){   /* withRef: 채팅창에 이어 그릴 때만 '↪ 참조' 버튼(결과물 상자 머리줄 / 일반 답변 아래 줄) */
-    const {explain,result}=_parseResult(raw||'');
+  function _ahRenderReply(div,raw,eid,withRef){   /* withRef: 채팅창에 이어 그릴 때만 '↪ 참조' 버튼(결과물 상자 머리줄 / 일반 답변 아래 줄) + 인포그래픽의 붙여넣기·스타일 바꾸기 */
+    const vs=_vizSplit(raw||'');
+    const {explain,result}=_parseResult(vs.text);
     div.style.whiteSpace='normal';
-    if(!result){ div.innerHTML=_md2html(raw||''); if(withRef){ div.setAttribute('data-src',raw||''); _addAnsRow(div); } return; }
+    if(!result&&!vs.vizs.length){ div.innerHTML=_md2html(raw||''); if(withRef){ div.setAttribute('data-src',raw||''); _addAnsRow(div); } return; }
     if(explain){ const ex=document.createElement('div'); ex.className='ai-explain-text'; ex.innerHTML=_md2html(explain); div.appendChild(ex); }
-    const box=document.createElement('div'); box.className='ai-result-box';
-    const lbl=document.createElement('div'); lbl.className='ai-result-label';
-    lbl.innerHTML=_resLabelHtml(eid,!!withRef);
-    if(withRef) box.setAttribute('data-src',(eid===_MM_EID)?_mmOutlineFromReply(raw):result);
-    const cnt=document.createElement('div'); cnt.className='ai-result-content';
-    if(eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(raw); }
-    else cnt.innerHTML=_sanitizeResultHtml(result);
-    box.appendChild(lbl); box.appendChild(cnt); div.appendChild(box);
+    vs.vizs.slice(0,_VIZ_MAX).forEach(v=>div.appendChild(_vizMakeBox(v,!!withRef)));
+    if(result){
+      const box=document.createElement('div'); box.className='ai-result-box';
+      const lbl=document.createElement('div'); lbl.className='ai-result-label';
+      lbl.innerHTML=_resLabelHtml(eid,!!withRef);
+      if(withRef) box.setAttribute('data-src',(eid===_MM_EID)?_mmOutlineFromReply(raw):result);
+      const cnt=document.createElement('div'); cnt.className='ai-result-content';
+      if(eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(raw); }
+      else cnt.innerHTML=_sanitizeResultHtml(result);
+      box.appendChild(lbl); box.appendChild(cnt); div.appendChild(box);
+    }
+    _vizHydrate(div);
   }
   async function _ahRenderDetail(tok){
     const o=await _ahGetBoth(_ahView.id);
@@ -31897,7 +32364,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
         _ahRenderReply(_addBubble('assistant',''),m.text,eid,true); last=m.text||'';
       }
     });
-    _lastReply=last; const pr=_parseResult(last); _lastResult=pr.result?_sanitizeResultHtml(pr.result):'';
+    _lastReply=_vizSplit(last).text; const pr=_parseResult(_lastReply); _lastResult=pr.result?_sanitizeResultHtml(pr.result):'';
     g('aiApplyBtnWrap').style.display=last?'block':'none'; g('aiApplyDlg').style.display='none'; g('aiApplyBtn').style.display='';
     _sessId=id;
     _aiHistClose(); area.scrollTop=area.scrollHeight; g('aiUserInput').focus();
@@ -31936,6 +32403,757 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
   });
 })();
 </script>
+
+<!-- VIZ-JS-BEGIN -->
+<script id="vizScript">
+/* ═══ BTMViz — AI 인포그래픽 렌더러 (2026-10-16) ═══════════════════════════════════════════════════════
+   AI 가 낸 명세(JSON)  →  parse/normalize(허용 필드만 걸러 새 객체로)  →  buildHtml(HTML/CSS 문자열)
+   →  격리된 iframe 에서 높이 측정  →  SVG <foreignObject>  →  canvas  →  PNG(dataURL)
+   · 보안: AI 가 쓴 글은 전부 esc() 를 거친 '글'로만 들어가고 HTML 로 해석되지 않음 — 태그·속성·스타일·URL 을 AI 가 정할 수 없음
+     (색은 테마 표에 있는 값 또는 #rrggbb 검증값만, 숫자는 Number 로만). 측정용 iframe 은 sandbox(스크립트 불가)이고,
+     최종 변환은 <img>(SVG 이미지) 안에서만 일어나 스크립트·외부 불러오기가 원천적으로 불가능함.
+   · 이미지·외부 폰트는 쓰지 않음(이모지·시스템 글꼴만) — 그래서 오프라인에서도 동작.
+   · 공개 API: BTMViz.parse(text) · normalize(obj) · render(spec,{theme,width,ud,scale}) · THEMES · WIDTHS · demo()
+   · 수정 요령: 이 블록(표식 VIZ-JS-BEGIN~END)만 고치면 됨. 블록 종류를 더하려면 BLOCKS 표 + normBlock 별칭 + CSS 를 함께. */
+window.BTMViz=(function(){
+'use strict';
+
+/* ── 테마 ─────────────────────────────────────────────────────────────────────────────────────── */
+const THEMES={
+  ocean:   {label:'오션',     p1:'#1e3a5f',p2:'#2563eb',bg:'#f1f5fb',card:'#ffffff',ink:'#16213a',ink2:'#3b4863',mute:'#6b7790',line:'#e1e7f0',track:'#e8edf5',tint:'#eaf1ff',dark:0},
+  forest:  {label:'포레스트', p1:'#14532d',p2:'#16a34a',bg:'#f1f8f3',card:'#ffffff',ink:'#14281c',ink2:'#38503f',mute:'#6a8072',line:'#dfece3',track:'#e6f1e9',tint:'#e8f7ee',dark:0},
+  sunset:  {label:'선셋',     p1:'#9a3412',p2:'#f97316',bg:'#fdf6f0',card:'#ffffff',ink:'#2a1a12',ink2:'#5a3f31',mute:'#8f7565',line:'#f3e4d8',track:'#f6e9dd',tint:'#fff1e6',dark:0},
+  royal:   {label:'로열',     p1:'#4c1d95',p2:'#7c3aed',bg:'#f6f3fd',card:'#ffffff',ink:'#201436',ink2:'#473a63',mute:'#7b6f96',line:'#e8e1f6',track:'#ece6f8',tint:'#f0eafe',dark:0},
+  wine:    {label:'와인',     p1:'#6b3245',p2:'#be185d',bg:'#fbf4f6',card:'#ffffff',ink:'#2a1520',ink2:'#593443',mute:'#8f6f7c',line:'#f1e1e7',track:'#f4e6eb',tint:'#fdeaf1',dark:0},
+  slate:   {label:'슬레이트', p1:'#0f172a',p2:'#475569',bg:'#f1f5f9',card:'#ffffff',ink:'#0f172a',ink2:'#334155',mute:'#64748b',line:'#e2e8f0',track:'#e8edf3',tint:'#eef2f7',dark:0},
+  midnight:{label:'미드나잇', p1:'#1e3a8a',p2:'#6366f1',bg:'#0b1220',card:'#131c2e',ink:'#e8eef9',ink2:'#c1ccdf',mute:'#8d9bb5',line:'#222e46',track:'#1c2740',tint:'#18233b',dark:1},
+};
+const WIDTHS=[480,640,800];
+const FONT_STACK="'Malgun Gothic','맑은 고딕','Noto Sans KR','Apple SD Gothic Neo','Segoe UI','Segoe UI Emoji','Apple Color Emoji',sans-serif";
+
+/* 상승/하락/좋음/주의/나쁨 색 — 기본은 한국식(상승=빨강, 하락=파랑, 이 앱의 --up/--down 과 같음). ud:'us' 면 상승=초록, 하락=빨강 */
+function statusColors(T,ud){
+  const d=!!T.dark;
+  const red=d?'#ff6b61':'#d92d20', blue=d?'#6aa3ff':'#2563eb', green=d?'#34d399':'#16a34a', amber=d?'#fbbf24':'#d97706';
+  return ud==='us'
+    ?{up:green,down:red,good:green,bad:red,warn:amber,info:blue}
+    :{up:red,down:blue,good:green,bad:red,warn:amber,info:blue};
+}
+
+/* ── 글·숫자 정리 ───────────────────────────────────────────────────────────────────────────────── */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function stripLone(s){   /* 짝 없는 서로게이트(XML 에서 깨짐) 제거 — 정상 이모지(쌍)는 그대로 */
+  let o='';
+  for(let i=0;i<s.length;i++){
+    const c=s.charCodeAt(i);
+    if(c>=0xD800&&c<=0xDBFF){ const d=s.charCodeAt(i+1); if(d>=0xDC00&&d<=0xDFFF){ o+=s[i]+s[i+1]; i++; } }
+    else if(!(c>=0xDC00&&c<=0xDFFF)) o+=s[i];
+  }
+  return o;
+}
+function clean(s,max,multi){   /* AI 가 쓴 글 한 조각을 안전한 한 줄(multi 면 줄바꿈 허용)로 */
+  if(s==null) return '';
+  if(typeof s==='number') s=String(s);
+  if(typeof s!=='string') return '';
+  s=s.replace(/<br\s*\/?>/gi,'\n').replace(/<\/?[a-z][^>]*>/gi,'')            /* 섞여 들어온 태그는 글로도 남기지 않음 */
+     .replace(/\*\*(.+?)\*\*/gs,'$1').replace(/__(.+?)__/gs,'$1').replace(/`([^`]*)`/g,'$1')
+     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f￾￿]/g,'')
+     .replace(/\r/g,'');
+  s=stripLone(s);
+  s=multi?s.split('\n').map(l=>l.replace(/[ \t]+/g,' ').trim()).join('\n').replace(/\n{3,}/g,'\n\n').trim()
+         :s.replace(/\s+/g,' ').trim();
+  if(max){ const a=Array.from(s); if(a.length>max) s=a.slice(0,max-1).join('').trimEnd()+'…'; }
+  return s;
+}
+const NUM_RE=/^\s*([+\-−–]?)\s*[$₩€¥£]?\s*(\d[\d,]*(?:\.\d+)?|\.\d+)\s*(?:[%a-zA-Z가-힣]{0,6})\s*$/;
+function num(v){
+  if(typeof v==='number') return isFinite(v)?v:NaN;
+  if(typeof v!=='string') return NaN;
+  const m=NUM_RE.exec(v); if(!m) return NaN;
+  const n=parseFloat(m[2].replace(/,/g,'')); return (m[1]==='-'||m[1]==='−'||m[1]==='–')?-n:n;
+}
+function fmt(v,unit,plus){
+  if(!isFinite(v)) return '';
+  const a=Math.abs(v);
+  let s=a>=1000?a.toLocaleString('en-US',{maximumFractionDigits:2}):String(Number(a.toFixed(a<10?2:(a<100?1:0))));
+  const sign=v<0?'-':(plus&&v>0?'+':'');
+  unit=unit||'';
+  return /^[$₩€¥£]$/.test(unit)?sign+unit+s:sign+s+unit;
+}
+function hexOk(c){ return typeof c==='string'&&/^#[0-9a-fA-F]{6}$/.test(c.trim())?c.trim().toLowerCase():''; }
+function mix(hex,base,a){   /* hex 를 base 위에 a(0~1) 만큼 섞은 불투명 #rrggbb */
+  const f=h=>{ h=h.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; };
+  const c=f(hex), b=f(base);
+  return '#'+c.map((v,i)=>('0'+Math.round(b[i]*(1-a)+v*a).toString(16)).slice(-2)).join('');
+}
+function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+function pick(o,keys){ if(!o||typeof o!=='object') return undefined; for(const k of keys){ if(o[k]!=null&&o[k]!=='') return o[k]; } return undefined; }
+function arr(a,max){ return Array.isArray(a)?a.slice(0,max):[]; }
+function firstChars(s,n){ return Array.from(clean(s,0)).slice(0,n).join(''); }
+
+const TONES=new Set(['up','down','good','bad','warn','info','neutral']);
+const TONE_ALIAS={positive:'good',pos:'good',green:'good',success:'good',negative:'bad',neg:'bad',risk:'bad',danger:'bad',error:'bad',red:'bad',warning:'warn',caution:'warn',yellow:'warn',orange:'warn',amber:'warn',blue:'info',key:'info',primary:'info',acc:'info',accent:'info',note:'info',flat:'neutral',none:'neutral',gray:'neutral',grey:'neutral',rise:'up',increase:'up',gain:'up',fall:'down',decrease:'down',loss:'down',bull:'up',bear:'down'};
+function toneOf(t){ if(t==null) return ''; const k=String(t).trim().toLowerCase(); if(TONES.has(k)) return k; return TONE_ALIAS[k]||''; }
+function toneByText(s){   /* "+1.2%" "▲ 3" → up, "-0.8%" "▼" → down */
+  s=String(s||'').trim(); if(/^[+▲△⬆↑]/.test(s)) return 'up'; if(/^[-−–▼▽⬇↓]/.test(s)) return 'down'; return '';
+}
+
+/* ── JSON 관대한 해석 ───────────────────────────────────────────────────────────────────────────── */
+function repairJson(s){   // 문자열 안의 진짜 줄바꿈·탭 이스케이프, 줄/블록 주석·꼬리 쉼표 제거, 스마트 따옴표(“ ”)로 연 문자열 복구
+  let out='', inStr=false, esc_=false, smart=false;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(inStr){
+      if(esc_){ out+=c; esc_=false; continue; }
+      if(c==='\\'){ out+=c; esc_=true; continue; }
+      if(c==='"'&&!smart){   // 닫는 따옴표인가? 다음(공백 뒤) 글자가 구조 문자(, } ] :)이거나 끝이면 닫는 것 — 아니면 글 안의 따옴표이므로 이스케이프
+        let j=i+1; while(j<s.length&&/\s/.test(s[j])) j++;
+        if(j>=s.length||',}]:'.indexOf(s[j])>=0){ inStr=false; out+=c; } else out+='\\"';
+        continue;
+      }
+      if(smart&&(c==='”'||c==='“')){ inStr=false; smart=false; out+='"'; continue; }
+      if(c==='"'&&smart){ out+='\\"'; continue; }
+      if(c==='\n'||c==='\r'){ out+='\\n'; continue; }
+      if(c==='\t'){ out+='\\t'; continue; }
+      out+=c; continue;
+    }
+    if(c==='"'){ inStr=true; smart=false; out+=c; continue; }
+    if(c==='“'||c==='”'){ inStr=true; smart=true; out+='"'; continue; }
+    if(c==='/'&&s[i+1]==='/'){ while(i<s.length&&s[i]!=='\n') i++; continue; }
+    if(c==='/'&&s[i+1]==='*'){ i+=2; while(i<s.length&&!(s[i]==='*'&&s[i+1]==='/')) i++; i++; continue; }
+    out+=c;
+  }
+  return out.replace(/,(\s*[}\]])/g,'$1');
+}
+function parse(text){   /* <INFOGRAPHIC> 안의 글 → 객체. 코드펜스·앞뒤 군더더기 허용. 실패하면 Error */
+  let s=String(text==null?'':text).replace(/^﻿/,'').trim();
+  const fence=/```(?:json|JSON)?\s*([\s\S]*?)```/.exec(s); if(fence) s=fence[1].trim();
+  const a=s.indexOf('{'), b=s.lastIndexOf('}');
+  const a2=s.indexOf('['), b2=s.lastIndexOf(']');
+  if(a<0&&a2<0) throw new Error('JSON 을 찾을 수 없어요');
+  const useArr=(a<0)||(a2>=0&&a2<a&&b2>b);
+  s=useArr?s.slice(a2,b2+1):s.slice(a,b+1);
+  try{ return JSON.parse(s); }catch(e1){
+    try{ return JSON.parse(repairJson(s)); }catch(e2){
+      let m=String(e1&&e1.message||e1); throw new Error('JSON 형식 오류 — '+m.slice(0,120));
+    }
+  }
+}
+
+/* ── 정규화: 알려진 필드만, 길이·개수 제한, 별칭 흡수 ──────────────────────────────────────────── */
+const TYPE_ALIAS={
+  stats:'stats',stat:'stats',kpi:'stats',metrics:'stats',metric:'stats',numbers:'stats',indicators:'stats',
+  points:'points',point:'points',insights:'points',insight:'points',keypoints:'points',bullets:'points',list:'points',cards:'points',summary:'points',features:'points',
+  bar:'bar',bars:'bar',barchart:'bar',column:'bar',columns:'bar',columnchart:'bar',ranking:'bar',rank:'bar',hbar:'bar',
+  line:'line',lines:'line',linechart:'line',trend:'line',area:'line',areachart:'line',timeseries:'line',
+  donut:'donut',doughnut:'donut',pie:'donut',piechart:'donut',share:'donut',composition:'donut',allocation:'donut',
+  timeline:'timeline',history:'timeline',events:'timeline',schedule:'timeline',calendar:'timeline',
+  steps:'steps',step:'steps',flow:'steps',process:'steps',roadmap:'steps',flowchart:'steps',procedure:'steps',
+  table:'table',matrix:'table',grid:'table',datatable:'table',
+  compare:'compare',comparison:'compare',versus:'compare',vs:'compare',proscons:'compare',pros_cons:'compare','pros-cons':'compare',swot:'compare',
+  quote:'quote',verse:'quote',saying:'quote',blockquote:'quote',scripture:'quote',
+  callout:'callout',alert:'callout',highlight:'callout',tip:'callout',warning:'callout',notice:'callout',keymessage:'callout',conclusion:'callout',
+  tags:'tags',tag:'tags',chips:'tags',keywords:'tags',keyword:'tags',hashtags:'tags',
+  gauge:'gauge',meter:'gauge',score:'gauge',dial:'gauge',
+  text:'text',paragraph:'text',paragraphs:'text',body:'text',description:'text',
+  heading:'heading',divider:'heading',section:'heading',header:'heading',subtitle:'heading',
+};
+const T_=(b)=>clean(pick(b,['title','heading','name','label','header']),40);
+const SUB_=(b)=>clean(pick(b,['sub','subtitle','caption','desc','description']),60);
+function itemsOf(b,max){ return arr(pick(b,['items','data','list','values','entries','rows','points','cards']),max); }
+function strItems(a,max,len){ return arr(a,max).map(x=>clean(typeof x==='object'&&x?pick(x,['text','label','name','title','head','value']):x,len)).filter(Boolean); }
+
+const NORM={
+  stats(b){
+    const items=itemsOf(b,8).map(it=>{
+      if(typeof it!=='object'||!it) return null;
+      const n=num(pick(it,['value','v','amount','number','figure']));
+      const rawV=pick(it,['value','v','amount','number','figure']);
+      const unit=clean(pick(it,['unit']),4);
+      let value=(typeof rawV==='number'&&isFinite(rawV))?fmt(rawV,unit):clean(rawV,16);
+      if(!value) return null;
+      const delta=clean(pick(it,['delta','change','diff','chg','pct','rate']),14);
+      let tone=toneOf(pick(it,['tone','color','status','trend','direction']))||toneByText(delta);
+      return {label:clean(pick(it,['label','name','title','head','key']),24),value,delta,tone,note:clean(pick(it,['note','desc','description','text','sub','caption']),50),icon:firstChars(pick(it,['icon','emoji']),2)};
+    }).filter(Boolean);
+    return items.length?{type:'stats',title:T_(b),cols:clamp(parseInt(b.cols,10)||0,0,4),items}:null;
+  },
+  points(b){
+    const items=itemsOf(b,10).map(it=>{
+      if(typeof it==='string') return {icon:'',head:clean(it,60),text:''};
+      if(!it||typeof it!=='object') return null;
+      const head=clean(pick(it,['head','title','heading','label','name','key']),44), text=clean(pick(it,['text','desc','description','body','detail','content','note','sub']),170);
+      if(!head&&!text) return null;
+      return {icon:firstChars(pick(it,['icon','emoji']),2),head,text};
+    }).filter(Boolean);
+    return items.length?{type:'points',title:T_(b),cols:(parseInt(b.cols,10)===2)?2:1,items}:null;
+  },
+  bar(b){
+    const orient=/^v/i.test(String(pick(b,['orient','orientation','direction'])||''))||/^column/i.test(String(b.type||''))?'v':'h';
+    const items=itemsOf(b,orient==='v'?10:14).map(it=>{
+      if(!it||typeof it!=='object') return null;
+      const v=num(pick(it,['value','v','y','amount','count','pct']));
+      if(!isFinite(v)) return null;
+      const dispRaw=pick(it,['display','text','valueLabel','fmt']);
+      return {label:clean(pick(it,['label','name','x','title','key','category']),22),value:v,display:clean(dispRaw,14),tone:toneOf(pick(it,['tone','color','status']))};
+    }).filter(Boolean);
+    return items.length?{type:'bar',title:T_(b),sub:SUB_(b),unit:clean(b.unit,4),orient,signed:b.signed===true||b.signed==='true',items}:null;
+  },
+  line(b){
+    let labels=arr(pick(b,['labels','x','xs','categories','dates']),24).map(x=>clean(x,10));
+    let series=arr(pick(b,['series','lines','datasets']),3).map((s,i)=>{
+      if(!s||typeof s!=='object') return null;
+      const data=arr(pick(s,['data','values','y','ys']),24).map(x=>{ const n=num(x); return isFinite(n)?n:null; });
+      if(data.filter(x=>x!=null).length<2) return null;
+      return {name:clean(pick(s,['name','label','title']),16),data};
+    }).filter(Boolean);
+    if(!series.length){   /* items:[{label,value}] 한 줄짜리 */
+      const its=itemsOf(b,24).map(it=>it&&typeof it==='object'?{l:clean(pick(it,['label','x','name','date']),10),v:num(pick(it,['value','y','v']))}:null).filter(it=>it&&isFinite(it.v));
+      if(its.length>=2){ labels=its.map(i=>i.l); series=[{name:'',data:its.map(i=>i.v)}]; }
+    }
+    if(!series.length) return null;
+    const n=Math.max(...series.map(s=>s.data.length));
+    while(labels.length<n) labels.push('');
+    labels=labels.slice(0,n);
+    series.forEach(s=>{ while(s.data.length<n) s.data.push(null); s.data=s.data.slice(0,n); });
+    return {type:'line',title:T_(b),sub:SUB_(b),unit:clean(b.unit,4),labels,series};
+  },
+  donut(b){
+    let items=itemsOf(b,10).map(it=>{
+      if(!it||typeof it!=='object') return null;
+      const v=num(pick(it,['value','v','amount','share','pct','percent']));
+      if(!isFinite(v)||v<=0) return null;
+      return {label:clean(pick(it,['label','name','title','key','category']),20),value:v,display:clean(pick(it,['display','text']),12)};
+    }).filter(Boolean);
+    if(items.length>8){ const rest=items.slice(7), sum=rest.reduce((s,i)=>s+i.value,0); items=items.slice(0,7).concat([{label:'기타',value:sum,display:''}]); }
+    return items.length?{type:'donut',title:T_(b),sub:SUB_(b),unit:clean(b.unit,4),center:clean(pick(b,['center','centerLabel','total']),10),centerSub:clean(pick(b,['centerSub','centerCaption','centerNote']),14),items}:null;
+  },
+  timeline(b){
+    const items=itemsOf(b,8).map(it=>{
+      if(typeof it==='string') return {date:'',head:clean(it,50),text:''};
+      if(!it||typeof it!=='object') return null;
+      const head=clean(pick(it,['head','title','heading','event','name','label']),48), text=clean(pick(it,['text','desc','description','body','detail','note']),150);
+      if(!head&&!text) return null;
+      return {date:clean(pick(it,['date','time','when','period','day','year','x']),16),head,text};
+    }).filter(Boolean);
+    return items.length?{type:'timeline',title:T_(b),items}:null;
+  },
+  steps(b){
+    const items=itemsOf(b,8).map(it=>{
+      if(typeof it==='string') return {icon:'',head:clean(it,40),text:''};
+      if(!it||typeof it!=='object') return null;
+      const head=clean(pick(it,['head','title','heading','label','name','step']),36), text=clean(pick(it,['text','desc','description','body','detail','note']),110);
+      if(!head&&!text) return null;
+      return {icon:firstChars(pick(it,['icon','emoji']),2),head,text};
+    }).filter(Boolean);
+    return items.length?{type:'steps',title:T_(b),items}:null;
+  },
+  table(b){
+    let headers=arr(pick(b,['headers','columns','header','cols']),6).map(h=>clean(typeof h==='object'&&h?pick(h,['label','name','title','head','text']):h,18));
+    const rows=arr(pick(b,['rows','data','items']),12).map(r=>{
+      if(r&&!Array.isArray(r)&&typeof r==='object'){
+        const vals=pick(r,['values','cells','data']);
+        r=Array.isArray(vals)?[pick(r,['label','name','title','key'])].concat(vals):Object.values(r);
+      }
+      if(!Array.isArray(r)) return null;
+      return r.slice(0,6).map(c=>{
+        if(c&&typeof c==='object') return {t:clean(pick(c,['t','text','value','label','v']),26),tone:toneOf(pick(c,['tone','color','status']))};
+        return {t:clean(c,26),tone:''};
+      });
+    }).filter(r=>r&&r.length);
+    if(!rows.length) return null;
+    const cols=Math.max(headers.length,...rows.map(r=>r.length));
+    headers=headers.slice(0,cols); while(headers.length&&headers.length<cols) headers.push('');
+    rows.forEach(r=>{ while(r.length<cols) r.push({t:'',tone:''}); });
+    const hl=parseInt(b.highlight,10);
+    return {type:'table',title:T_(b),headers:headers.some(Boolean)?headers:[],rows,highlight:(hl>=0&&hl<cols)?hl:-1,signed:b.signed!==false};
+  },
+  compare(b){
+    let cols=arr(pick(b,['columns','sides','items','groups']),3);
+    if(!cols.length||!cols.some(c=>c&&typeof c==='object')){
+      cols=[];
+      const L=pick(b,['left','pros','positive','bull','strengths']), R=pick(b,['right','cons','negative','bear','weaknesses']);
+      if(L!=null) cols.push({head:clean(pick(b,['leftTitle','prosTitle'])||'장점',20),tone:'good',items:L});
+      if(R!=null) cols.push({head:clean(pick(b,['rightTitle','consTitle'])||'단점',20),tone:'bad',items:R});
+    }
+    const out=cols.map((c,i)=>{
+      if(!c||typeof c!=='object') return null;
+      const items=strItems(pick(c,['items','points','list','bullets','texts']),6,80);
+      const head=clean(pick(c,['head','title','heading','label','name']),24);
+      if(!head&&!items.length) return null;
+      return {head,tone:toneOf(pick(c,['tone','color','status']))||(i===0?'info':(i===1?'warn':'neutral')),items};
+    }).filter(Boolean);
+    return out.length?{type:'compare',title:T_(b),columns:out}:null;
+  },
+  quote(b){
+    const text=clean(pick(b,['text','quote','content','body','verse','message']),240,true);
+    return text?{type:'quote',text,source:clean(pick(b,['source','author','by','ref','reference','from']),40)}:null;
+  },
+  callout(b){
+    const head=clean(pick(b,['head','title','heading','label']),40), text=clean(pick(b,['text','desc','description','body','content','message']),220);
+    if(!head&&!text) return null;
+    const tone=toneOf(pick(b,['tone','color','status','level']))||(/^warning$/i.test(String(b.type))?'warn':'info');
+    return {type:'callout',tone,icon:firstChars(pick(b,['icon','emoji']),2),head,text};
+  },
+  tags(b){
+    const items=strItems(itemsOf(b,16),16,18);
+    return items.length?{type:'tags',title:T_(b),items}:null;
+  },
+  gauge(b){
+    const value=num(pick(b,['value','score','v','current']));
+    if(!isFinite(value)) return null;
+    let min=num(pick(b,['min','from','low'])), max=num(pick(b,['max','to','high']));
+    if(!isFinite(min)) min=0; if(!isFinite(max)||max<=min) max=min+100;
+    const zones=arr(b.zones,6).map(z=>z&&typeof z==='object'?{to:num(pick(z,['to','max','upto','value'])),color:hexOk(pick(z,['color','colour']))}:null).filter(z=>z&&isFinite(z.to)&&z.to>min&&z.to<=max).sort((a,c)=>a.to-c.to);
+    return {type:'gauge',title:T_(b),value,min,max,unit:clean(b.unit,4),label:clean(pick(b,['label','status','verdict']),16),caption:clean(pick(b,['caption','desc','description','text','note']),70),zones};
+  },
+  text(b){
+    let paras=pick(b,['paragraphs','items','lines']);
+    paras=Array.isArray(paras)?paras.map(p=>clean(typeof p==='object'&&p?pick(p,['text','content']):p,260,true)).filter(Boolean).slice(0,5):[];
+    if(!paras.length){ const t=clean(pick(b,['text','content','body','description','summary']),600,true); if(t) paras=t.split(/\n{2,}/).slice(0,5); }
+    return paras.length?{type:'text',title:T_(b),paragraphs:paras,align:/^(center|right)$/i.test(String(b.align||''))?String(b.align).toLowerCase():''}:null;
+  },
+  heading(b){
+    const text=clean(pick(b,['text','title','heading','label','name']),40);
+    return text?{type:'heading',text}:null;
+  },
+};
+function normBlock(b){
+  if(!b||typeof b!=='object') return null;
+  const rawType=String(pick(b,['type','kind','t','chart','block'])||'').trim().toLowerCase().replace(/[\s_]+/g,'');
+  let type=TYPE_ALIAS[rawType]||TYPE_ALIAS[rawType.replace(/chart$/,'')]||'';
+  if(!type){   /* 종류를 안 썼거나 모르는 종류 — 내용 모양으로 추정 */
+    if(Array.isArray(b.series)) type='line'; else if(Array.isArray(b.headers)||Array.isArray(b.rows)) type='table'; else if(Array.isArray(b.columns)) type='compare';
+    else if(Array.isArray(b.items)) type=b.items.some(i=>i&&typeof i==='object'&&num(pick(i,['value','v']))>=0&&pick(i,['value','v'])!=null&&pick(i,['label','name'])!=null)?'bar':'points';
+    else if(b.text||b.content) type='text'; else return null;
+  }
+  if(/^(columns?|columnchart)$/.test(rawType)&&type==='bar') b=Object.assign({},b,{orient:'v'});
+  try{ return NORM[type](b); }catch(e){ return null; }
+}
+function normalize(raw){
+  let o=raw;
+  if(Array.isArray(o)) o={blocks:o};
+  if(!o||typeof o!=='object') throw new Error('명세가 비어 있어요');
+  let blocks=pick(o,['blocks','sections','content','items','body','elements']);
+  if(!Array.isArray(blocks)) blocks=[];
+  const warn=[];
+  const out=[];
+  blocks.slice(0,18).forEach((b,i)=>{ const nb=normBlock(b); if(nb) out.push(nb); else warn.push('블록 '+(i+1)+' 을(를) 해석하지 못해 건너뛰었어요'); });
+  const title=clean(pick(o,['title','headline','name','heading']),60);
+  if(!out.length&&!title) throw new Error('그릴 내용(blocks)이 없어요');
+  const th=String(pick(o,['theme','style','palette'])||'').trim().toLowerCase();
+  return {spec:{
+    title:title||'인포그래픽',
+    subtitle:clean(pick(o,['subtitle','sub','summary','tagline','description']),110),
+    tag:clean(pick(o,['tag','kicker','label','category','eyebrow']),36),
+    icon:firstChars(pick(o,['icon','emoji']),2),
+    theme:THEMES[th]?th:'',
+    footer:clean(pick(o,['footer','source','sources','note','disclaimer']),150),
+    blocks:out,
+  },warn};
+}
+
+/* ── 렌더용 CSS (정적 — 테마 값은 루트의 인라인 CSS 변수로) ───────────────────────────────────────── */
+const CSS=`
+.v-root,.v-root *{box-sizing:border-box;margin:0;padding:0}
+.v-root{font-family:${FONT_STACK};color:var(--ink);background:var(--bg);line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;overflow:hidden;border-radius:18px;position:relative}
+.v-root svg{display:block;max-width:100%;overflow:visible}
+.v-hd{position:relative;overflow:hidden;color:#fff;background:linear-gradient(135deg,var(--p1) 0%,var(--p2) 100%);padding:26px 28px 24px}
+.v-hd:before{content:'';position:absolute;right:-50px;top:-70px;width:210px;height:210px;border-radius:50%;background:rgba(255,255,255,.10)}
+.v-hd:after{content:'';position:absolute;right:70px;bottom:-96px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07)}
+.v-hd>*{position:relative;z-index:1}
+.v-tag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.2px;background:rgba(255,255,255,.2);padding:3px 11px;border-radius:20px;margin-bottom:11px}
+.v-hd h1{font-size:26px;line-height:1.28;font-weight:800;letter-spacing:-.4px}
+.v-hd.hi h1{padding-right:56px}
+.v-hd p{margin-top:9px;font-size:14px;line-height:1.55;opacity:.92}
+.v-ic{position:absolute;right:26px;top:22px;font-size:42px;line-height:1;z-index:1}
+.v-bd{padding:18px 20px 22px;display:flex;flex-direction:column;gap:14px}
+.v-ft{padding:0 24px 20px;font-size:11px;line-height:1.55;color:var(--mute)}
+.v-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.v-t{display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:800;color:var(--ink);margin-bottom:13px;line-height:1.35}
+.v-t:before{content:'';flex:none;width:4px;height:15px;border-radius:2px;background:linear-gradient(180deg,var(--p2),var(--p1));align-self:center}
+.v-t small{font-size:11.5px;font-weight:600;color:var(--mute)}
+.v-ttl-o{margin:2px 0 -4px 2px}
+.v-sg{display:grid;gap:10px}
+.v-st{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--tc);border-radius:12px;padding:12px 14px 13px;min-width:0}
+.v-st .l{font-size:12px;font-weight:700;color:var(--mute);line-height:1.35}
+.v-st .v{font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-top:4px;color:var(--ink)}
+.v-st .d{font-size:13px;font-weight:800;margin-top:3px;color:var(--tc)}
+.v-st .n{font-size:11.5px;color:var(--mute);margin-top:5px;line-height:1.4}
+.v-pl{display:grid;gap:14px 18px}
+.v-pi{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.v-pi .bx{flex:none;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1}
+.v-pi .bx.em{background:var(--tint);font-size:19px}
+.v-pi .h{font-size:14.5px;font-weight:800;line-height:1.38}
+.v-pi .x{font-size:13px;color:var(--ink2);margin-top:2px;line-height:1.62}
+.v-br{display:flex;flex-direction:column;gap:10px}
+.v-bi{display:flex;align-items:center;gap:10px}
+.v-bi .bl{flex:none;font-size:12.5px;font-weight:700;line-height:1.3}
+.v-bi .tr{flex:1;min-width:0;height:14px;border-radius:7px;background:var(--track);position:relative;overflow:hidden}
+.v-bi .fl{position:absolute;top:0;bottom:0;border-radius:7px}
+.v-bi .ax{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--mute);opacity:.55}
+.v-bi .vl{flex:none;min-width:54px;text-align:right;font-size:12.5px;font-weight:800}
+.v-vb{display:flex;align-items:stretch;gap:0}
+.v-vb .cl{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;padding:0 3px}
+.v-vb .pl{width:100%;position:relative;display:flex;flex-direction:column;align-items:center}
+.v-vb .pos{justify-content:flex-end}
+.v-vb .neg{justify-content:flex-start}
+.v-vb .bar{width:62%;max-width:44px;min-width:10px}
+.v-vb .pos .bar{border-radius:7px 7px 2px 2px}
+.v-vb .neg .bar{border-radius:2px 2px 7px 7px}
+.v-vb .vv{font-size:11.5px;font-weight:800;line-height:16px;height:16px;white-space:nowrap}
+.v-vb .lb{font-size:11.5px;font-weight:700;color:var(--ink2);text-align:center;line-height:1.3;margin-top:6px;width:100%}
+.v-vb .base{height:2px;background:var(--line);margin:0 -3px;align-self:stretch}
+.v-tl{position:relative;padding-left:24px}
+.v-tl:before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--p2),var(--line))}
+.v-ti{position:relative;padding-bottom:15px}
+.v-ti:last-child{padding-bottom:0}
+.v-ti:before{content:'';position:absolute;left:-24px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--card);border:3px solid var(--p2)}
+.v-ti .dt{font-size:11.5px;font-weight:800;color:var(--p2);letter-spacing:.2px}
+.v-ti .h{font-size:14px;font-weight:800;line-height:1.4}
+.v-ti .x{font-size:13px;color:var(--ink2);line-height:1.6;margin-top:1px}
+.v-sr{display:flex;align-items:stretch;gap:0}
+.v-sr+.v-sr{margin-top:10px}
+.v-sp{flex:1 1 0;min-width:0;background:var(--tint);border:1px solid var(--line);border-radius:12px;padding:12px}
+.v-sp .n{width:24px;height:24px;border-radius:50%;background:var(--p2);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:7px;line-height:1}
+.v-sp .h{font-size:13.5px;font-weight:800;line-height:1.38}
+.v-sp .x{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-top:3px}
+.v-sa{flex:none;width:24px;display:flex;align-items:center;justify-content:center;color:var(--p2);font-weight:800;font-size:22px;line-height:1}
+.v-tb{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.v-tb th{background:var(--tint);color:var(--ink);font-weight:800;text-align:left;padding:8px 10px;border-bottom:2px solid var(--p2);font-size:12.5px;line-height:1.35}
+.v-tb td{padding:8px 10px;border-bottom:1px solid var(--line);line-height:1.45;vertical-align:top}
+.v-tb tr:last-child td{border-bottom:none}
+.v-tb td:first-child{font-weight:800}
+.v-tb .r{text-align:right}
+.v-tb .hl{background:var(--tint)}
+.v-cp{display:grid;gap:12px}
+.v-cc{border-radius:12px;padding:13px 14px;border:1px solid var(--line);border-top:3px solid var(--tc);background:var(--card);min-width:0}
+.v-cc .h{font-size:14px;font-weight:800;color:var(--tc);margin-bottom:7px;line-height:1.35}
+.v-cc ul{list-style:none}
+.v-cc li{position:relative;padding-left:14px;font-size:13px;line-height:1.55;color:var(--ink2)}
+.v-cc li+li{margin-top:5px}
+.v-cc li:before{content:'';position:absolute;left:1px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--tc)}
+.v-qt{position:relative;background:linear-gradient(135deg,var(--tint),var(--card));border:1px solid var(--line);border-radius:16px;padding:22px 26px 18px;text-align:center}
+.v-qt:before{content:'\\201C';position:absolute;left:16px;top:-6px;font-size:68px;line-height:1;font-weight:800;color:var(--p2);opacity:.28;font-family:Georgia,serif}
+.v-qt .q{font-size:17px;font-weight:700;line-height:1.7;color:var(--ink);letter-spacing:-.2px;white-space:pre-line}
+.v-qt .s{margin-top:11px;font-size:12.5px;font-weight:700;color:var(--p2)}
+.v-co{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:14px 16px;border:1px solid var(--cb);border-left:5px solid var(--tc);background:var(--cbg)}
+.v-co .ci{flex:none;font-size:22px;line-height:1.2}
+.v-co .h{font-size:14.5px;font-weight:800;color:var(--tc);line-height:1.4}
+.v-co .x{font-size:13px;color:var(--ink2);line-height:1.62;margin-top:2px}
+.v-tg{display:flex;flex-wrap:wrap;gap:8px}
+.v-tg span{font-size:12.5px;font-weight:800;color:var(--p2);background:var(--tint);border:1px solid var(--line);padding:5px 12px;border-radius:20px;line-height:1.3}
+.v-tx p{font-size:13.5px;line-height:1.75;color:var(--ink2);white-space:pre-line}
+.v-tx p+p{margin-top:9px}
+.v-hh{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:800;color:var(--p2);letter-spacing:.6px}
+.v-hh:before,.v-hh:after{content:'';flex:1;height:1px;background:var(--line)}
+.v-dn{display:flex;align-items:center;gap:18px}
+.v-dn .lg{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.v-dn .li{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.3}
+.v-dn .sw{flex:none;width:10px;height:10px;border-radius:3px}
+.v-dn .nm{flex:1;min-width:0;font-weight:700}
+.v-dn .pc{flex:none;font-weight:800;color:var(--ink)}
+.v-dn.st{flex-direction:column;align-items:stretch}
+.v-lgd{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:8px;font-size:12px;font-weight:700}
+.v-lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.v-gg{display:flex;flex-direction:column;align-items:center}
+.v-gg .cap{font-size:12.5px;color:var(--ink2);text-align:center;line-height:1.5;margin-top:2px;max-width:92%}
+`;
+
+/* ── 블록 → HTML ────────────────────────────────────────────────────────────────────────────────── */
+function niceScale(min,max,want){
+  if(min===max){ if(min===0){ max=1; } else { const d=Math.abs(min)*0.1||1; min-=d; max+=d; } }
+  const span=max-min, raw=span/Math.max(1,want), p=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/p;
+  const step=(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p;
+  const lo=Math.floor(min/step)*step, hi=Math.ceil(max/step)*step, ticks=[];
+  for(let v=lo;v<=hi+step*1e-6;v+=step) ticks.push(Math.round(v/step)*step);
+  return {min:lo,max:hi,ticks};
+}
+function axisFmt(v){ const a=Math.abs(v); return a>=1000?v.toLocaleString('en-US',{maximumFractionDigits:0}):String(Number(v.toFixed(a<1?2:1))); }
+
+function makeCtx(spec,opt){
+  const T=THEMES[opt.theme]||THEMES.ocean, W=clamp(parseInt(opt.width,10)||640,360,1000), S=statusColors(T,opt.ud);
+  const cat=[T.p2,'#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899','#64748b'];
+  return {T,W,S,ud:opt.ud,cat,narrow:W<560,iw:W-40-36-2,seq:0};
+}
+function toneColor(tone,c){
+  const S=c.S;
+  switch(tone){ case 'up':return S.up; case 'down':return S.down; case 'good':return S.good; case 'bad':return S.bad; case 'warn':return S.warn; case 'info':return c.T.p2; default:return c.T.mute; }
+}
+function toneBg(color,c){ return mix(color,c.T.card,c.T.dark?0.2:0.09); }
+function title(b,c,outside){
+  if(!b.title) return '';
+  return '<div class="v-t'+(outside?' v-ttl-o':'')+'">'+esc(b.title)+(b.sub?'<small>'+esc(b.sub)+'</small>':'')+'</div>';
+}
+function card(inner){ return '<div class="v-card">'+inner+'</div>'; }
+
+const BLOCKS={
+  stats(b,c){
+    const n=b.items.length;
+    let cols=b.cols||(n<=3?n:(n===4?4:(n<=6?3:4)));
+    cols=Math.min(cols,c.narrow?(n===3?3:2):4);
+    const tiles=b.items.map(it=>{
+      const tone=it.tone||'';
+      const tc=tone?toneColor(tone,c):c.T.p2;
+      const dTone=it.tone||toneByText(it.delta)||'';
+      const dc=dTone?toneColor(dTone,c):c.T.mute;
+      let delta=it.delta;
+      if(delta&&!/^[▲▼△▽⬆⬇↑↓]/.test(delta)&&(dTone==='up'||dTone==='down')) delta=(dTone==='up'?'▲ ':'▼ ')+delta.replace(/^[+\-−–]\s*/,'');
+      const L=Array.from(it.value).length, fs=L<=7?26:(L<=10?22:(L<=13?19:16));
+      return '<div class="v-st" style="--tc:'+tc+'">'
+        +(it.label||it.icon?'<div class="l">'+(it.icon?esc(it.icon)+' ':'')+esc(it.label)+'</div>':'')
+        +'<div class="v" style="font-size:'+fs+'px">'+esc(it.value)+'</div>'
+        +(delta?'<div class="d" style="color:'+dc+'">'+esc(delta)+'</div>':'')
+        +(it.note?'<div class="n">'+esc(it.note)+'</div>':'')
+        +'</div>';
+    }).join('');
+    return title(b,c,true)+'<div class="v-sg" style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+tiles+'</div>';
+  },
+  points(b,c){
+    const cols=c.narrow?1:b.cols;
+    const rows=b.items.map((it,i)=>{
+      const em=!!it.icon;
+      return '<div class="v-pi"><div class="bx'+(em?' em':'')+'">'+(em?esc(it.icon):(i+1))+'</div><div style="min-width:0;flex:1">'
+        +(it.head?'<div class="h">'+esc(it.head)+'</div>':'')+(it.text?'<div class="x">'+esc(it.text)+'</div>':'')+'</div></div>';
+    }).join('');
+    return card(title(b,c)+'<div class="v-pl" style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+rows+'</div>');
+  },
+  bar(b,c){
+    const vals=b.items.map(i=>i.value), mn=Math.min(0,...vals), mx=Math.max(0,...vals), span=(mx-mn)||1;
+    const signed=b.signed||mn<0;
+    const colorOf=(it,i)=>{
+      if(it.tone) return toneColor(it.tone,c);
+      if(signed) return it.value>=0?c.S.up:c.S.down;
+      return c.T.p2;
+    };
+    const label=it=>it.display||fmt(it.value,b.unit,signed);
+    if(b.orient==='v'){
+      const H=150, lab=16, usable=H-lab;
+      const posH=mn<0?Math.round(usable*(mx/span)):usable, negH=mn<0?usable-posH:0;
+      const cols=b.items.map((it,i)=>{
+        const col=colorOf(it,i), v=it.value;
+        const bh=Math.max(2,Math.round(Math.abs(v)/span*usable));
+        const top=v>=0
+          ?'<div class="pl pos" style="height:'+(posH+lab)+'px"><div class="vv" style="color:'+col+'">'+esc(label(it))+'</div><div class="bar" style="height:'+bh+'px;background:'+col+'"></div></div>'
+          :'<div class="pl pos" style="height:'+(posH+lab)+'px"></div>';
+        const bottom=mn<0?(v<0
+          ?'<div class="pl neg" style="height:'+(negH+lab)+'px"><div class="bar" style="height:'+bh+'px;background:'+col+'"></div><div class="vv" style="color:'+col+'">'+esc(label(it))+'</div></div>'
+          :'<div class="pl neg" style="height:'+(negH+lab)+'px"></div>'):'';
+        return '<div class="cl">'+top+'<div class="base"></div>'+bottom+(it.label?'<div class="lb">'+esc(it.label)+'</div>':'')+'</div>';
+      }).join('');
+      return card(title(b,c)+'<div class="v-vb">'+cols+'</div>');
+    }
+    const lw=Math.round(clamp(Math.max(...b.items.map(i=>Array.from(i.label).length))*12.5+6,50,c.iw*0.34));
+    const zero=(-mn/span)*100;
+    const rows=b.items.map((it,i)=>{
+      const col=colorOf(it,i), w=Math.abs(it.value)/span*100, left=it.value>=0?zero:zero-w;
+      return '<div class="v-bi"><div class="bl" style="width:'+lw+'px">'+esc(it.label)+'</div>'
+        +'<div class="tr">'+(mn<0?'<div class="ax" style="left:'+zero.toFixed(2)+'%"></div>':'')
+        +'<div class="fl" style="left:'+left.toFixed(2)+'%;width:'+(w===0?0:Math.max(w,0.8)).toFixed(2)+'%;background:'+col+'"></div></div>'
+        +'<div class="vl" style="color:'+col+'">'+esc(label(it))+'</div></div>';
+    }).join('');
+    return card(title(b,c)+'<div class="v-br">'+rows+'</div>');
+  },
+  line(b,c){
+    const lastStr=b.series.map(s=>{ let v=null; for(let i=s.data.length-1;i>=0;i--){ if(s.data[i]!=null){ v=s.data[i]; break; } } return fmt(v,b.unit); });
+    const W=c.iw, H=196, L=46, R=clamp(Math.max(...lastStr.map(t=>Array.from(t).length))*7.6+20,30,100), Tp=14, Bt=28, pw=W-L-R, ph=H-Tp-Bt;
+    const all=[].concat(...b.series.map(s=>s.data.filter(x=>x!=null)));
+    const sc=niceScale(Math.min(...all),Math.max(...all),4);
+    const n=b.labels.length, X=i=>L+(n===1?pw/2:i*pw/(n-1)), Y=v=>Tp+ph-(v-sc.min)/((sc.max-sc.min)||1)*ph;
+    const id='ga'+(c.seq++);
+    let g='';
+    sc.ticks.forEach(t=>{ const y=Y(t).toFixed(1); g+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="'+c.T.line+'" stroke-width="1"/><text x="'+(L-8)+'" y="'+(+y+4)+'" text-anchor="end" font-size="11" fill="'+c.T.mute+'">'+esc(axisFmt(t))+'</text>'; });
+    const every=Math.max(1,Math.ceil(n/7));
+    b.labels.forEach((lb,i)=>{ if(lb&&(i%every===0||i===n-1)&&!(i!==n-1&&n-1-i<every&&n>7&&i%every===0&&(n-1-i)<Math.ceil(every/2+0.01))) g+='<text x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="'+(i===0&&n>1?'start':(i===n-1&&n>1?'end':'middle'))+'" font-size="11" fill="'+c.T.mute+'">'+esc(lb)+'</text>'; });
+    const ends=[];   /* 계열 끝 값 라벨 — 아래에서 겹치지 않게 간격을 벌려 그림 */
+    let defs='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+c.cat[0]+'" stop-opacity="0.28"/><stop offset="100%" stop-color="'+c.cat[0]+'" stop-opacity="0.02"/></linearGradient></defs>';
+    b.series.forEach((s,si)=>{
+      const col=c.cat[si%c.cat.length];
+      const pts=[]; s.data.forEach((v,i)=>{ if(v!=null) pts.push([X(i),Y(v),v,i]); });
+      if(si===0&&pts.length>1){ g+='<path d="M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')+' L'+pts[pts.length-1][0].toFixed(1)+' '+(Tp+ph)+' L'+pts[0][0].toFixed(1)+' '+(Tp+ph)+' Z" fill="url(#'+id+')"/>'; }
+      g+='<polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>';
+      if(pts.length<=14) pts.forEach(p=>{ g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.2" fill="'+c.T.card+'" stroke="'+col+'" stroke-width="2"/>'; });
+      const lp=pts[pts.length-1];
+      g+='<circle cx="'+lp[0].toFixed(1)+'" cy="'+lp[1].toFixed(1)+'" r="5" fill="'+col+'" stroke="'+c.T.card+'" stroke-width="2"/>';
+      ends.push({x:lp[0],y:lp[1],t:esc(fmt(lp[2],b.unit)),col});
+    });
+    ends.sort((a,c2)=>a.y-c2.y);
+    for(let i=1;i<ends.length;i++) if(ends[i].y-ends[i-1].y<15) ends[i].y=ends[i-1].y+15;
+    const lowest=Tp+ph+4; if(ends.length&&ends[ends.length-1].y>lowest){ const up=ends[ends.length-1].y-lowest; ends.forEach(e=>{ e.y-=up; }); }
+    ends.forEach(e=>{ g+='<text x="'+(e.x+9).toFixed(1)+'" y="'+(e.y+4).toFixed(1)+'" text-anchor="start" font-size="12" font-weight="800" fill="'+e.col+'">'+e.t+'</text>'; });
+    const legend=b.series.some(s=>s.name)?'<div class="v-lgd">'+b.series.map((s,si)=>s.name?'<span><i style="background:'+c.cat[si%c.cat.length]+'"></i>'+esc(s.name)+'</span>':'').join('')+'</div>':'';
+    return card(title(b,c)+legend+'<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+defs+g+'</svg>');
+  },
+  donut(b,c){
+    const total=b.items.reduce((s,i)=>s+i.value,0), S=156, R=58, SW=26, C=2*Math.PI*R, cx=S/2;
+    let off=0, segs='';
+    b.items.forEach((it,i)=>{
+      const frac=it.value/total, len=Math.max(0,frac*C-(b.items.length>1?2.4:0));
+      segs+='<circle cx="'+cx+'" cy="'+cx+'" r="'+R+'" fill="none" stroke="'+c.cat[i%c.cat.length]+'" stroke-width="'+SW+'" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cx+')"/>';
+      off+=frac*C;
+    });
+    const ctr=b.center||'';
+    const mid=(ctr?'<text x="'+cx+'" y="'+(cx+(b.centerSub?2:7))+'" text-anchor="middle" font-size="'+(Array.from(ctr).length>6?17:22)+'" font-weight="800" fill="'+c.T.ink+'">'+esc(ctr)+'</text>':'')
+      +(b.centerSub?'<text x="'+cx+'" y="'+(cx+(ctr?20:5))+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+c.T.mute+'">'+esc(b.centerSub)+'</text>':'');
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+S+'" height="'+S+'" viewBox="0 0 '+S+' '+S+'" style="flex:none">'+segs+mid+'</svg>';
+    const lg='<div class="lg">'+b.items.map((it,i)=>{
+      const pct=it.value/total*100;
+      return '<div class="li"><span class="sw" style="background:'+c.cat[i%c.cat.length]+'"></span><span class="nm">'+esc(it.label)+'</span><span class="pc">'+esc(it.display||(pct<10?pct.toFixed(1):Math.round(pct))+'%')+'</span></div>';
+    }).join('')+'</div>';
+    return card(title(b,c)+'<div class="v-dn'+(c.narrow?' st':'')+'" style="'+(c.narrow?'':'')+'">'+(c.narrow?'<div style="display:flex;justify-content:center">'+svg+'</div>':svg)+lg+'</div>');
+  },
+  timeline(b,c){
+    return card(title(b,c)+'<div class="v-tl">'+b.items.map(it=>'<div class="v-ti">'+(it.date?'<div class="dt">'+esc(it.date)+'</div>':'')+(it.head?'<div class="h">'+esc(it.head)+'</div>':'')+(it.text?'<div class="x">'+esc(it.text)+'</div>':'')+'</div>').join('')+'</div>');
+  },
+  steps(b,c){
+    const n=b.items.length, per=c.narrow?2:(n<=4?n:(n<=6?3:4)), rows=[];
+    for(let i=0;i<n;i+=per) rows.push(b.items.slice(i,i+per));
+    let k=0;
+    const html=rows.map(r=>{
+      const cells=r.map((it,j)=>{
+        k++;
+        return (j?'<div class="v-sa">›</div>':'')+'<div class="v-sp"><div class="n">'+(it.icon?esc(it.icon):k)+'</div>'+(it.head?'<div class="h">'+esc(it.head)+'</div>':'')+(it.text?'<div class="x">'+esc(it.text)+'</div>':'')+'</div>';
+      }).join('');
+      /* 마지막 줄이 모자라면 빈 칸으로 같은 폭 유지 */
+      let pad=''; for(let m=r.length;m<per&&rows.length>1;m++) pad+='<div class="v-sa"></div><div style="flex:1 1 0;min-width:0"></div>';
+      return '<div class="v-sr">'+cells+pad+'</div>';
+    }).join('');
+    return card(title(b,c)+html);
+  },
+  table(b,c){
+    const numLike=s=>/^[+\-−–▲▼]?\s*[$₩€¥£]?\s*[\d,.]+\s*[%a-zA-Z가-힣]{0,3}$/.test(s);
+    const ncol=b.rows[0].map((_,i)=>i>0&&b.rows.every(r=>!r[i].t||numLike(r[i].t))&&b.rows.some(r=>r[i].t));
+    const head=b.headers.length?'<thead><tr>'+b.headers.map((h,i)=>{
+      const cls=[ncol[i]?'r':'',i===b.highlight?'hl':''].filter(Boolean).join(' ');
+      return '<th'+(cls?' class="'+cls+'"':'')+'>'+esc(h)+'</th>';
+    }).join('')+'</tr></thead>':'';
+    const body='<tbody>'+b.rows.map(r=>'<tr>'+r.map((cell,i)=>{
+      let tone=cell.tone; if(!tone&&b.signed&&i>0&&/^[+\-−–▲▼]\s*\d/.test(cell.t)) tone=toneByText(cell.t);
+      const cls=[ncol[i]?'r':'',i===b.highlight?'hl':''].filter(Boolean).join(' ');
+      return '<td'+(cls?' class="'+cls+'"':'')+(tone?' style="color:'+toneColor(tone,c)+';font-weight:800"':'')+'>'+esc(cell.t)+'</td>';
+    }).join('')+'</tr>').join('')+'</tbody>';
+    return card(title(b,c)+'<table class="v-tb">'+head+body+'</table>');
+  },
+  compare(b,c){
+    const cols=c.narrow&&b.columns.length>2?1:b.columns.length;
+    return title(b,c,true)+'<div class="v-cp" style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+b.columns.map(col=>{
+      const tc=toneColor(col.tone,c);
+      return '<div class="v-cc" style="--tc:'+tc+'">'+(col.head?'<div class="h">'+esc(col.head)+'</div>':'')+(col.items.length?'<ul>'+col.items.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>':'')+'</div>';
+    }).join('')+'</div>';
+  },
+  quote(b,c){
+    return '<div class="v-qt"><div class="q">'+esc(b.text)+'</div>'+(b.source?'<div class="s">— '+esc(b.source)+'</div>':'')+'</div>';
+  },
+  callout(b,c){
+    const tc=toneColor(b.tone==='neutral'?'info':b.tone,c);
+    const icon=b.icon||({good:'✅',bad:'🚨',warn:'⚠️',up:'📈',down:'📉',info:'💡',neutral:'💡'}[b.tone]||'💡');
+    return '<div class="v-co" style="--tc:'+tc+';--cb:'+mix(tc,c.T.card,0.35)+';--cbg:'+toneBg(tc,c)+'"><div class="ci">'+esc(icon)+'</div><div style="min-width:0;flex:1">'+(b.head?'<div class="h">'+esc(b.head)+'</div>':'')+(b.text?'<div class="x">'+esc(b.text)+'</div>':'')+'</div></div>';
+  },
+  tags(b,c){
+    return card(title(b,c)+'<div class="v-tg">'+b.items.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>');
+  },
+  gauge(b,c){
+    const W=300, cx=W/2, cy=118, R=102, SW=20, H=cy+(b.label?74:56);
+    const frac=clamp((b.value-b.min)/(b.max-b.min),0,1);
+    const ang=f=>Math.PI*(1+f);   /* 왼쪽(π) → 위 → 오른쪽(2π) */
+    const pt=(f,r)=>[cx+r*Math.cos(ang(f)),cy+r*Math.sin(ang(f))];
+    const sp=b.min+(b.max-b.min);
+    const defZones=[{to:b.min+(b.max-b.min)*0.2,color:c.S.down},{to:b.min+(b.max-b.min)*0.4,color:c.T.dark?'#7ea6e0':'#7aa5f0'},{to:b.min+(b.max-b.min)*0.6,color:c.T.dark?'#8d9bb5':'#a3adbd'},{to:b.min+(b.max-b.min)*0.8,color:c.T.dark?'#f0a07a':'#f59e6b'},{to:b.max,color:c.S.up}];
+    const zones=b.zones.length?b.zones.map(z=>({to:z.to,color:z.color||c.T.p2})):defZones;
+    if(zones[zones.length-1].to<b.max) zones.push({to:b.max,color:zones[zones.length-1].color});
+    let prev=0, arcs='';
+    zones.forEach(z=>{
+      const f2=clamp((z.to-b.min)/(b.max-b.min),0,1); if(f2<=prev) return;
+      const a=pt(prev,R), e=pt(f2,R);
+      arcs+='<path d="M'+a[0].toFixed(2)+' '+a[1].toFixed(2)+' A'+R+' '+R+' 0 0 1 '+e[0].toFixed(2)+' '+e[1].toFixed(2)+'" fill="none" stroke="'+z.color+'" stroke-width="'+SW+'"/>';
+      prev=f2;
+    });
+    const tip=pt(frac,R-SW/2-8);
+    const needle='<line x1="'+cx+'" y1="'+cy+'" x2="'+tip[0].toFixed(2)+'" y2="'+tip[1].toFixed(2)+'" stroke="'+c.T.ink+'" stroke-width="4" stroke-linecap="round"/><circle cx="'+cx+'" cy="'+cy+'" r="9" fill="'+c.T.ink+'"/><circle cx="'+cx+'" cy="'+cy+'" r="3.5" fill="'+c.T.card+'"/>';
+    const ends='<text x="'+(cx-R)+'" y="'+(cy+20)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+c.T.mute+'">'+esc(axisFmt(b.min))+'</text><text x="'+(cx+R)+'" y="'+(cy+20)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+c.T.mute+'">'+esc(axisFmt(b.max))+'</text>';
+    const val='<text x="'+cx+'" y="'+(cy+44)+'" text-anchor="middle" font-size="30" font-weight="800" fill="'+c.T.ink+'">'+esc(fmt(b.value,b.unit))+'</text>'+(b.label?'<text x="'+cx+'" y="'+(cy+66)+'" text-anchor="middle" font-size="14" font-weight="800" fill="'+c.T.p2+'">'+esc(b.label)+'</text>':'');
+    return card(title(b,c)+'<div class="v-gg"><svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+arcs+needle+ends+val+'</svg>'+(b.caption?'<div class="cap">'+esc(b.caption)+'</div>':'')+'</div>');
+  },
+  text(b,c){
+    return card(title(b,c)+'<div class="v-tx"'+(b.align?' style="text-align:'+b.align+'"':'')+'>'+b.paragraphs.map(p=>'<p>'+esc(p)+'</p>').join('')+'</div>');
+  },
+  heading(b,c){ return '<div class="v-hh">'+esc(b.text)+'</div>'; },
+};
+
+function buildHtml(spec,opt){
+  opt=opt||{};
+  const themeKey=THEMES[opt.theme]?opt.theme:(THEMES[spec.theme]?spec.theme:'ocean');
+  const ud=opt.ud==='us'?'us':'kr';
+  const c=makeCtx(spec,{theme:themeKey,width:opt.width,ud});
+  const T=c.T;
+  const vars='--p1:'+T.p1+';--p2:'+T.p2+';--bg:'+T.bg+';--card:'+T.card+';--ink:'+T.ink+';--ink2:'+T.ink2+';--mute:'+T.mute+';--line:'+T.line+';--track:'+T.track+';--tint:'+T.tint;
+  const hd='<div class="v-hd'+(spec.icon?' hi':'')+'">'+(spec.icon?'<div class="v-ic">'+esc(spec.icon)+'</div>':'')+(spec.tag?'<div class="v-tag">'+esc(spec.tag)+'</div>':'')+'<h1>'+esc(spec.title)+'</h1>'+(spec.subtitle?'<p>'+esc(spec.subtitle)+'</p>':'')+'</div>';
+  const body='<div class="v-bd">'+spec.blocks.map(b=>BLOCKS[b.type](b,c)).join('')+'</div>';
+  const ft=spec.footer?'<div class="v-ft">'+esc(spec.footer)+'</div>':'';
+  return {theme:themeKey,width:c.W,css:CSS,html:'<div class="v-root" style="width:'+c.W+'px;'+vars+'">'+hd+body+ft+'</div>'};
+}
+
+/* ── 측정 → PNG ─────────────────────────────────────────────────────────────────────────────────── */
+function docHtml(css,html){ return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:transparent}'+css+'</style></head><body>'+html+'</body></html>'; }
+function measure(css,html,W){   /* 스크립트가 못 도는 sandbox iframe 에서 높이만 잼 — 최종 변환 환경(SVG 이미지)과 같은 격리된 문서라 높이가 일치 */
+  return new Promise((resolve,reject)=>{
+    const f=document.createElement('iframe');
+    f.setAttribute('sandbox','allow-same-origin'); f.setAttribute('aria-hidden','true'); f.tabIndex=-1;
+    f.style.cssText='position:fixed;left:-20000px;top:0;width:'+W+'px;height:300px;border:0;visibility:hidden;pointer-events:none';
+    const done=(fn,v)=>{ clearTimeout(to); try{f.remove();}catch(e){} fn(v); };
+    const to=setTimeout(()=>done(reject,new Error('이미지 크기를 재는 데 시간이 너무 오래 걸렸어요')),8000);
+    f.onload=()=>{
+      try{
+        const r=f.contentDocument.querySelector('.v-root');
+        const h=Math.ceil(r.getBoundingClientRect().height);
+        done(resolve,h);
+      }catch(e){ done(reject,e); }
+    };
+    f.srcdoc=docHtml(css,html);
+    document.body.appendChild(f);
+  });
+}
+function loadImg(url){
+  return new Promise((resolve,reject)=>{
+    const im=new Image();
+    const to=setTimeout(()=>reject(new Error('이미지 변환 시간 초과')),12000);
+    im.onload=()=>{ clearTimeout(to); resolve(im); };
+    im.onerror=()=>{ clearTimeout(to); reject(new Error('이미지 변환에 실패했어요 (렌더링 오류)')); };
+    im.src=url;
+  });
+}
+async function render(spec,opt){
+  opt=opt||{};
+  const built=buildHtml(spec,opt), W=built.width;
+  const h=await measure(built.css,built.html,W);
+  if(!h||h<20) throw new Error('인포그래픽 높이를 잴 수 없었어요');
+  const xhtml='<div xmlns="http://www.w3.org/1999/xhtml"><style>'+built.css+'</style>'+built.html+'</div>';
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+h+'" viewBox="0 0 '+W+' '+h+'"><foreignObject x="0" y="0" width="'+W+'" height="'+h+'">'+xhtml+'</foreignObject></svg>';
+  const img=await loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg));
+  let s=clamp(+opt.scale||2,1,3);
+  const maxSide=14000; if(h*s>maxSide) s=Math.max(1,maxSide/h);
+  const cv=document.createElement('canvas'); cv.width=Math.round(W*s); cv.height=Math.round(h*s);
+  const cx=cv.getContext('2d'); cx.imageSmoothingQuality='high'; cx.scale(s,s); cx.drawImage(img,0,0,W,h);
+  let dataUrl; try{ dataUrl=cv.toDataURL('image/png'); }catch(e){ throw new Error('이미지를 만들지 못했어요 — '+(e&&e.message||e)); }
+  if(!dataUrl||dataUrl.length<200) throw new Error('이미지 데이터가 비어 있어요');
+  return {dataUrl,width:W,height:h,scale:s,theme:built.theme,pxWidth:cv.width,pxHeight:cv.height};
+}
+
+function demo(){
+  return {title:'이번 주 미국 증시 핵심 요약',subtitle:'금리 인하 기대 속에 기술주가 상승을 이끌었습니다',tag:'시황 분석 · 2026.10.16',icon:'📈',theme:'ocean',
+    blocks:[
+      {type:'stats',items:[{label:'S&P 500',value:'5,412',delta:'+1.2%',note:'사상 최고치'},{label:'나스닥',value:'17,640',delta:'+1.8%'},{label:'미 10년물',value:'4.18%',delta:'-0.07%p'},{label:'원/달러',value:'1,352',delta:'-4.5원'}]},
+      {type:'points',title:'핵심 포인트',items:[{icon:'🏦',head:'금리 인하 기대 확산',text:'9월 CPI 둔화로 연내 추가 인하 가능성이 커졌습니다.'},{icon:'💻',head:'기술주 주도 상승',text:'반도체와 AI 관련주가 지수 상승의 대부분을 설명합니다.'},{icon:'⚠️',head:'단기 과열 신호',text:'RSI가 70을 넘어 단기 조정 가능성에 유의해야 합니다.'}]},
+      {type:'bar',title:'섹터별 주간 등락률',unit:'%',items:[{label:'기술',value:3.2},{label:'통신',value:1.9},{label:'금융',value:0.8},{label:'헬스케어',value:-0.6},{label:'에너지',value:-1.4}]},
+      {type:'line',title:'S&P 500 최근 7거래일',labels:['10/07','10/08','10/09','10/10','10/13','10/14','10/15'],series:[{name:'S&P 500',data:[5290,5310,5335,5360,5378,5391,5412]}]},
+      {type:'callout',tone:'warn',head:'체크포인트',text:'다음 주 FOMC 의사록 공개 전까지 변동성 확대에 대비하세요.'},
+    ],footer:'출처: 본문 자료 기준 · 투자 판단의 책임은 본인에게 있습니다.'};
+}
+
+return {THEMES,WIDTHS,parse,normalize,buildHtml,render,demo,_esc:esc,_num:num,_fmt:fmt,_clean:clean};
+})();
+</script>
+<!-- VIZ-JS-END -->
 
 <!-- MM-JS-BEGIN -->
 <script id="mmScript">
@@ -36232,6 +37450,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         <div id="aiPresetsArea">
           <button id="aiPresetToggle" class="mobile-keep" onclick="_togglePresetPanel()">☰ Preset</button>
           <button id="aiPrincipleToggle" class="mobile-keep" onclick="_togglePrinciplePanel()">☰ Principle</button>
+          <button id="aiVizToggle" class="mobile-keep" onclick="_toggleVizPanel()" title="왼쪽 내용을 AI가 분석해 인포그래픽·차트 이미지로 만들고 본문에 붙여넣어요">🎨 인포그래픽</button>
           <label id="aiSelectAllLabel"><input type="checkbox" id="aiSelectAllCheck" class="mobile-keep" onchange="_onSelectAll(this)">모두 선택</label>
           <label id="aiMemoLabel"><input type="checkbox" id="aiMemoCheck" class="mobile-keep">보유종목 메모장 반영</label>
           <label id="aiWebLabel"><input type="checkbox" id="aiWebCheck" class="mobile-keep">웹 조회반영</label>
@@ -36293,6 +37512,12 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
             </div>
           </div>
           <div id="aiPrincipleResizeHandle" onmousedown="_startPrinciplePanelResize(event)"></div>
+        </div>
+        <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
+        <div id="aiVizPanel">
+          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니, 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있어요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-rc" id="aiVizRecipes"></div>
+          <div class="avp-pf" id="aiVizPrefs"></div>
         </div>
         <div id="aiMessages"></div>
         <div id="aiApplyBtnWrap">
