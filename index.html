@@ -1648,9 +1648,33 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .avp-rc{display:flex;flex-wrap:wrap;gap:6px}
 .avp-rc button{height:26px;padding:0 11px;border:1px solid #f9a8d4;border-radius:13px;background:#fff;color:#9d174d;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
 .avp-rc button:hover{background:#fce7f3}
+.avp-rc .avp-chip{display:inline-flex;align-items:center}
+.avp-rc .avp-chip>button:first-child{border-radius:13px 0 0 13px;border-right:none}
+.avp-rc .avp-chip>.avp-del{width:26px;padding:0;border-radius:0 13px 13px 0;color:#be123c;border-color:#fda4af;font-size:10.5px}
+.avp-rc .avp-chip>.avp-del:hover{background:#ffe4e6}
+.avp-rc .avp-add{border-style:dashed;background:transparent}
+.avp-rc .avp-tg{border-color:#c4b5fd;color:#6d28d9}
+.avp-rc .avp-tg:hover{background:#ede9fe}
+.avp-rc .avp-tg.on{background:#6d28d9;border-color:#6d28d9;color:#fff}
+.avp-rc .avp-rs{border-color:#cbd5e1;color:#64748b}
+.avp-rc .avp-rs:hover{background:#f1f5f9}
+.avp-none{font-size:10.5px;color:#a8738a;align-self:center}
+.avp-ed{flex-direction:column;gap:6px;padding:9px 10px;background:#fff;border:1px solid #fbcfe8;border-radius:9px}
+.avp-ed .avp-eh{font-size:11px;font-weight:800;color:#9d174d}
+.avp-ed .avp-er{display:flex;gap:6px;align-items:center}
+.avp-ed input,.avp-ed textarea{border:1px solid #f9a8d4;border-radius:7px;padding:5px 8px;font-size:11.5px;font-family:inherit;color:#1e293b;background:#fff;outline:none;min-width:0}
+.avp-ed input:focus,.avp-ed textarea:focus{border-color:#be185d;box-shadow:0 0 0 2px rgba(190,24,93,.12)}
+.avp-ed #aiVizRcIc{width:56px;flex:none;text-align:center}
+.avp-ed #aiVizRcT{flex:1}
+.avp-ed textarea{resize:vertical;line-height:1.5;min-height:56px}
+.avp-ed .avp-sv,.avp-ed .avp-cn{height:26px;padding:0 16px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
+.avp-ed .avp-sv{border:1px solid #be185d;background:#be185d;color:#fff}
+.avp-ed .avp-sv:hover{background:#9d174d}
+.avp-ed .avp-cn{border:1px solid #cbd5e1;background:#fff;color:#64748b}
+.avp-ed .avp-cn:hover{background:#f1f5f9}
 .avp-pf{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:10.5px}
 .ai-viz-ol{font-weight:800;color:#7c5a6b;font-size:10.5px}
-.ai-viz-sws{display:inline-flex;align-items:center;gap:5px}
+.ai-viz-sws{display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px;max-width:100%}
 .ai-viz-sw{width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cbd5e1;cursor:pointer;padding:0;flex-shrink:0}
 .ai-viz-sw.on{box-shadow:0 0 0 2px #4f46e5}
 .ai-viz-seg{display:inline-flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;background:#fff}
@@ -31276,18 +31300,19 @@ Rules:
   const _VIZ_RE=/<INFOGRAPHIC\b[^>]*>([\s\S]*?)<\/INFOGRAPHIC\s*>/gi;
   const _VIZ_MAX=4;   /* 한 답변에서 그리는 인포그래픽 수 */
   const _VIZ_KW=/인포\s*그래픽|infographic|카드\s*뉴스|표형|보고서형|시각화|시각\s*자료|비주얼|도식|다이어그램|포스터|(?:이미지|그림|도표|차트|그래프|타임라인|흐름도|로드맵|슬라이드)\S{0,2}\s*(?:만들|그려|그리|생성|제작|변환)|(?:이미지|그림|도표|차트|그래프|타임라인|흐름도|로드맵|슬라이드|카드)(?:로|으로)\s*(?:만들|그려|그리|생성|제작|변환|정리|요약|표현|보여)/i;
+  /* 유형(요청 문구) 기본 목록 — k 는 사라지지 않는 열쇠(사용자가 지운 기본 문구를 기억하고, 나중에 새 기본 문구가 생기면 자동 합류시키는 데 씀) */
   const _VIZ_RECIPES=[
-    {ic:'📊',t:'핵심 요약 한 장',p:'왼쪽 참고 자료의 주요 내용을 분석해서, 핵심 메시지·중요한 수치·시사점이 한눈에 보이는 인포그래픽 한 장으로 만들어줘.'},
-    {ic:'🔢',t:'핵심 수치 카드',p:'참고 자료에서 중요한 숫자·지표를 뽑아 핵심 수치 카드와 간단한 차트 중심의 인포그래픽으로 만들어줘.'},
-    {ic:'📈',t:'차트 중심',p:'참고 자료의 숫자 데이터를 분석해서 가장 알맞은 차트(막대·선·도넛)로 시각화한 인포그래픽을 만들어줘.'},
-    {ic:'🧭',t:'흐름·단계',p:'참고 자료의 절차·인과관계·전략을 단계별 흐름도 형태의 인포그래픽으로 만들어줘.'},
-    {ic:'🗓',t:'타임라인',p:'참고 자료의 내용을 시간 순서로 정리한 타임라인 인포그래픽으로 만들어줘.'},
-    {ic:'🆚',t:'비교·장단점',p:'참고 자료의 내용을 강세·약세(또는 장점·단점)로 나눠 비교하는 인포그래픽으로 만들어줘.'},
-    {ic:'💬',t:'말씀·명언 카드',p:'참고 자료에서 가장 마음에 남는 핵심 문장을 골라, 짧은 묵상 한 줄과 함께 보여 주는 카드 이미지로 만들어줘.'},
-    {ic:'🗂',t:'카드뉴스 3장',p:'참고 자료를 분석해서 표지(핵심 한 줄)·핵심 포인트·결론, 이렇게 3장으로 이루어진 카드뉴스를 인포그래픽 3개로 만들어줘.'},
-    {ic:'📋',t:'표형 요약표',p:'참고 자료의 핵심 내용을 표 중심(표형 양식)의 인포그래픽으로 만들어줘. 수치와 항목은 표로 정리하고 헤더는 얇게 해줘.'},
-    {ic:'🧾',t:'보고서형 한 장',p:'참고 자료를 분석해서 보고서처럼 보이는 표형 인포그래픽 한 장으로 만들어줘. 보고서 양식에 한 줄 헤더로 촘촘하게.'},
-    {ic:'⚡',t:'얇은 헤더 요약',p:'참고 자료의 주요 내용을 얇은 헤더의 컴팩트한 인포그래픽 한 장으로 만들어줘.'},
+    {k:'sum',ic:'📊',t:'핵심 요약 한 장',p:'왼쪽 참고 자료의 주요 내용을 분석해서, 핵심 메시지·중요한 수치·시사점이 한눈에 보이는 인포그래픽 한 장으로 만들어줘.'},
+    {k:'num',ic:'🔢',t:'핵심 수치 카드',p:'참고 자료에서 중요한 숫자·지표를 뽑아 핵심 수치 카드와 간단한 차트 중심의 인포그래픽으로 만들어줘.'},
+    {k:'chart',ic:'📈',t:'차트 중심',p:'참고 자료의 숫자 데이터를 분석해서 가장 알맞은 차트(막대·선·도넛)로 시각화한 인포그래픽을 만들어줘.'},
+    {k:'flow',ic:'🧭',t:'흐름·단계',p:'참고 자료의 절차·인과관계·전략을 단계별 흐름도 형태의 인포그래픽으로 만들어줘.'},
+    {k:'time',ic:'🗓',t:'타임라인',p:'참고 자료의 내용을 시간 순서로 정리한 타임라인 인포그래픽으로 만들어줘.'},
+    {k:'vs',ic:'🆚',t:'비교·장단점',p:'참고 자료의 내용을 강세·약세(또는 장점·단점)로 나눠 비교하는 인포그래픽으로 만들어줘.'},
+    {k:'quote',ic:'💬',t:'말씀·명언 카드',p:'참고 자료에서 가장 마음에 남는 핵심 문장을 골라, 짧은 묵상 한 줄과 함께 보여 주는 카드 이미지로 만들어줘.'},
+    {k:'news3',ic:'🗂',t:'카드뉴스 3장',p:'참고 자료를 분석해서 표지(핵심 한 줄)·핵심 포인트·결론, 이렇게 3장으로 이루어진 카드뉴스를 인포그래픽 3개로 만들어줘.'},
+    {k:'tbl',ic:'📋',t:'표형 요약표',p:'참고 자료의 핵심 내용을 표 중심(표형 양식)의 인포그래픽으로 만들어줘. 수치와 항목은 표로 정리하고 헤더는 얇게 해줘.'},
+    {k:'rep',ic:'🧾',t:'보고서형 한 장',p:'참고 자료를 분석해서 보고서처럼 보이는 표형 인포그래픽 한 장으로 만들어줘. 보고서 양식에 한 줄 헤더로 촘촘하게.'},
+    {k:'thin',ic:'⚡',t:'얇은 헤더 요약',p:'참고 자료의 주요 내용을 얇은 헤더의 컴팩트한 인포그래픽 한 장으로 만들어줘.'},
   ];
   /* 양식 세트 — 헤더·문서 틀·표시 형식·표 양식·블록 모양·밀도를 한 번에 정함(색·너비·상승색은 안 건드림). 'auto' = AI 가 정한 값(없으면 기본값) */
   const _VIZ_PRESETS=[
@@ -31352,7 +31377,7 @@ Rules:
 3) 이미지에 들어갈 글자는 모두 JSON 안에 있어야 합니다. 기본 언어는 한국어(자료가 영어면 용어는 원문 병기).
 
 [명세 형식]
-{"title":"제목(30자 안팎)","subtitle":"부제(선택)","tag":"분류·날짜 같은 작은 꼬리표(선택)","icon":"이모지 1개(선택)","theme":"ocean|forest|sunset|royal|wine|slate|midnight|teal|indigo|coral|gold|sky|mono 중 내용에 어울리는 것(선택)","blocks":[…블록들…],"footer":"출처·유의사항(선택)"}
+{"title":"제목(30자 안팎)","subtitle":"부제(선택)","tag":"분류·날짜 같은 작은 꼬리표(선택)","icon":"이모지 1개(선택)","theme":"ocean|forest|sunset|royal|wine|slate|midnight|teal|indigo|coral|gold|sky|mono 중 내용에 어울리는 것(선택)","blocks":[…블록들…]}
 
 [블록 종류 — 위에서 아래로 쌓입니다. 내용에 맞는 것만 3~8개 고르세요]
 - {"type":"stats","title":"","items":[{"label":"S&P 500","value":"5,412","delta":"+1.2%","note":"사상 최고치"}]}  핵심 수치 카드 2~4개. delta 앞의 +/- 로 상승(빨강)/하락(파랑) 색이 자동 결정되고, "tone":"up|down|good|bad|warn|neutral" 로 직접 지정할 수도 있음
@@ -31364,7 +31389,7 @@ Rules:
 - {"type":"steps","title":"","items":[{"head":"1단계","text":"설명"}]}  절차·인과·전략 흐름(최대 8개)
 - {"type":"table","title":"","headers":["종목","PER","수익률"],"rows":[["삼성전자","12.4","+8.2%"]],"highlight":2}  비교표(6열·12행 이내, highlight 는 강조할 열 번호(0부터))
 - {"type":"compare","title":"","columns":[{"head":"강세 요인","tone":"up","items":["…"]},{"head":"약세 요인","tone":"down","items":["…"]}]}  2~3열 비교(장단점·강약)
-- {"type":"quote","text":"인용문·말씀","source":"출처"}  말씀·명언 카드
+- {"type":"quote","text":"인용문·말씀","source":"말한 사람 또는 성경 구절"}  말씀·명언 카드(source 는 인용문에 딸린 사람 이름·성경 구절 표시에만 쓰고, 자료·기사·사이트 같은 출처는 쓰지 않음)
 - {"type":"callout","tone":"info","icon":"💡","head":"한 줄 결론","text":"설명"}  강조 박스(tone: info|good|warn|bad) — 결론·주의에 사용
 - {"type":"gauge","title":"","value":68,"min":0,"max":100,"label":"탐욕","caption":"설명"}  지수·점수 계기판
 - {"type":"tags","title":"","items":["키워드"]} · {"type":"text","title":"","paragraphs":["문단"]} · {"type":"heading","text":"구역 제목"}
@@ -31377,6 +31402,7 @@ Rules:
 - 숫자는 [현재 참고 자료]·사용자 입력·웹 조회 데이터에 실제로 있는 것만 쓰세요. 없는 수치를 지어내거나 어림해 차트를 만들지 마세요. 수치가 부족하면 bar·line 대신 points·timeline·steps·compare 로 구성하고, 추정치에는 '(추정)'을 붙이세요.
 - 글은 짧게: head 는 20자 안팎, text 는 60자 안팎(최대 120자), label 은 10자 안팎. 이모지는 icon 에만 쓰고 글 안에는 쓰지 마세요.
 - 보통 첫 블록은 stats(핵심 수치) 또는 points(핵심 요약), 마지막은 callout(결론·주의)으로 마무리하고, 같은 종류 블록을 반복하지 마세요.
+- 출처는 어떤 형태로도 표기하지 마세요. 이미지의 맨 아래 출처 줄(그런 필드는 없습니다)은 물론이고 '출처:'·'자료:'·'Source:' 같은 표기, 괄호 안 출처, 차트·표 제목 옆 출처, 주석, 링크 주소, '제공된 자료 기준' 같은 문구를 이미지 어디에도 넣지 않습니다. 앞의 '분석' 글에도 출처 표기는 쓰지 않습니다. 이 앱은 출처를 표기하지 않는 설정이며, 요청이 있어도 마찬가지입니다.
 - 수정 요청(색·문구·항목 추가/삭제 등)이면 바뀐 부분만이 아니라 완성된 JSON 전체를 <INFOGRAPHIC> 로 다시 내세요. 참조한 인포그래픽이 있으면 그 JSON 을 바탕으로 고치세요.
 - 인포그래픽을 요청하지 않은 질문에는 이 형식을 쓰지 말고 평소처럼 답하세요.
 - 사진·일러스트 같은 '그림 자체'는 만들 수 없습니다. 그런 요청이면 가장 가까운 인포그래픽(예: 말씀·명언 카드)으로 대신 만들고, 그 사실을 분석 글에 한 줄로 알려 주세요.
@@ -31385,7 +31411,7 @@ Rules:
 핵심은 ① 금리 인하 기대 ② 기술주 주도 ③ 단기 과열 신호입니다. 수치는 카드·막대로, 해석은 포인트로 구성했어요.
 
 <INFOGRAPHIC>
-{"title":"이번 주 미국 증시","subtitle":"금리 인하 기대 속 기술주 주도 상승","tag":"시황 분석","icon":"📈","theme":"ocean","blocks":[{"type":"stats","items":[{"label":"S&P 500","value":"5,412","delta":"+1.2%"},{"label":"나스닥","value":"17,640","delta":"+1.8%"}]},{"type":"bar","title":"섹터별 등락률","unit":"%","items":[{"label":"기술","value":3.2},{"label":"에너지","value":-1.4}]},{"type":"callout","tone":"warn","head":"체크포인트","text":"FOMC 의사록 공개 전까지 변동성에 유의"}],"footer":"출처: 제공된 자료"}
+{"title":"이번 주 미국 증시","subtitle":"금리 인하 기대 속 기술주 주도 상승","tag":"시황 분석","icon":"📈","theme":"ocean","blocks":[{"type":"stats","items":[{"label":"S&P 500","value":"5,412","delta":"+1.2%"},{"label":"나스닥","value":"17,640","delta":"+1.8%"}]},{"type":"bar","title":"섹터별 등락률","unit":"%","items":[{"label":"기술","value":3.2},{"label":"에너지","value":-1.4}]},{"type":"callout","tone":"warn","head":"체크포인트","text":"FOMC 의사록 공개 전까지 변동성에 유의"}]}
 </INFOGRAPHIC>`;
   }
 
@@ -31747,12 +31773,111 @@ Rules:
     }).filter(i=>_vizPngOk(i.src));
   }
 
-  /* ── 🎨 인포그래픽 패널(머리줄 버튼) — 유형을 누르면 요청 문구가 입력창에 채워짐 + 스타일·너비·상승색 기본값 ── */
-  function _vizPanelClose(){ const p=g('aiVizPanel'), t=g('aiVizToggle'); if(p) p.style.display='none'; if(t) t.classList.remove('active'); }
-  let _vizPanelMore=false;
+  /* ── 🎨 인포그래픽 패널(머리줄 버튼) — 유형을 누르면 요청 문구가 입력창에 채워짐(문구는 추가·수정·삭제 가능) + 스타일·너비·상승색 기본값 ── */
+  let _vizPanelMore=false, _vizRcMode=false, _vizRcCur=[];   /* _vizRcMode: 문구 편집 모드 · _vizRcCur: 지금 그려진 문구 목록(눌린 번호가 가리키는 목록) */
+  function _vizPanelClose(){ const p=g('aiVizPanel'), t=g('aiVizToggle'); if(p) p.style.display='none'; if(t) t.classList.remove('active'); _vizRcMode=false; _vizRcClose(); }
+
+  /* 유형(요청 문구) 목록 = 기본 문구 + 사용자가 추가·수정·삭제한 것. 저장: localStorage.BTMVizRecipes = {v:1,list:[{k?,ic,t,p}],hide:[지운 기본 문구의 k]}
+     저장된 게 없으면 기본 목록 그대로. 있으면 저장 목록 + (지운 적 없는데 목록에 없는) 새로 생긴 기본 문구 — 나중에 기본 문구가 늘어도 자동으로 합류 */
+  const _VRK='BTMVizRecipes', _VR_MAX=30;
+  const _vizCut=(s,n)=>Array.from(String(s==null?'':s)).slice(0,n).join('');
+  function _vizHeadG(s,n){   /* 앞 n 글자 — 이모지 하나를 한 글자로 세도록 가능하면 Intl.Segmenter */
+    s=String(s==null?'':s).trim();
+    try{ if(window.Intl&&Intl.Segmenter) return Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(s)).slice(0,n).map(x=>x.segment).join(''); }catch(e){}
+    return _vizCut(s,n);
+  }
+  function _vizRcNorm(r,keepK){   /* 아이콘(이모지 1~2)·이름(24자)·요청 문구(600자) 검증 — 이름·문구가 비면 null */
+    if(!r||typeof r!=='object') return null;
+    const t=_vizCut(String(r.t==null?'':r.t).replace(/\s+/g,' ').trim(),24);
+    const p=_vizCut(String(r.p==null?'':r.p).replace(/\r/g,'').trim(),600);
+    if(!t||!p) return null;
+    const o={ic:_vizHeadG(r.ic,2)||'🎨',t,p};
+    if(keepK&&typeof r.k==='string'&&r.k) o.k=_vizCut(r.k,16);
+    return o;
+  }
+  function _vizRecipes(){
+    let st=null; try{ st=JSON.parse(localStorage.getItem(_VRK)||'null'); }catch(e){}
+    if(!st||typeof st!=='object'||!Array.isArray(st.list)) return _VIZ_RECIPES.map(r=>Object.assign({},r));
+    const out=[]; st.list.forEach(r=>{ const n=_vizRcNorm(r,true); if(n&&out.length<_VR_MAX) out.push(n); });
+    const have=new Set(out.map(r=>r.k).filter(Boolean)), hide=new Set(Array.isArray(st.hide)?st.hide:[]);
+    _VIZ_RECIPES.forEach(r=>{ if(!have.has(r.k)&&!hide.has(r.k)) out.push(Object.assign({},r)); });
+    return out;
+  }
+  function _vizRcPersist(list){   /* 목록에 없는 기본 문구는 '지운 것'(hide)으로 기록 */
+    const hide=_VIZ_RECIPES.filter(d=>!list.some(r=>r.k===d.k)).map(d=>d.k);
+    try{ localStorage.setItem(_VRK,JSON.stringify({v:1,list,hide})); return true; }catch(e){ return false; }
+  }
+  const _vizRcToast=(m,warn)=>_showToast('_ahToast',m,warn?'rgba(180,83,9,.93)':'rgba(21,128,61,.93)');
+  function _vizRcRender(){
+    const rc=g('aiVizRecipes'); if(!rc) return;
+    const list=_vizRcCur=_vizRecipes(), ed=_vizRcMode;
+    let h=list.map((r,i)=>{
+      const lab=_ahEsc(r.ic)+' '+_ahEsc(r.t);
+      return ed
+        ?'<span class="avp-chip"><button type="button" class="mobile-keep" onclick="_vizRcAct(\'edit\','+i+')" title="눌러서 이름·문구 고치기">'+lab+'</button><button type="button" class="avp-del mobile-keep" onclick="_vizRcAct(\'del\','+i+')" title="이 문구 삭제" aria-label="‘'+_ahEsc(r.t)+'’ 삭제">✕</button></span>'
+        :'<button type="button" class="mobile-keep" onclick="_vizRecipe('+i+')" title="'+_ahEsc(r.p)+'">'+lab+'</button>';
+    }).join('');
+    if(!list.length) h+='<span class="avp-none">등록된 문구가 없어요</span>';
+    h+='<button type="button" class="avp-add mobile-keep" onclick="_vizRcAct(\'add\')" title="새 유형(요청 문구)을 추가합니다">＋ 추가</button>'
+      +'<button type="button" class="avp-tg'+(ed?' on':'')+' mobile-keep" onclick="_vizRcAct(\'mode\')" title="'+(ed?'편집을 마치고 문구를 눌러 쓰는 상태로 돌아갑니다':'문구를 눌러 고치거나 ✕ 로 삭제합니다')+'">'+(ed?'✓ 편집 끝':'✏️ 편집')+'</button>';
+    if(ed||!list.length) h+='<button type="button" class="avp-rs mobile-keep" onclick="_vizRcAct(\'reset\')" title="추가·수정·삭제한 것을 모두 버리고 처음 기본 문구로 되돌립니다">↺ 기본 문구로</button>';
+    rc.innerHTML=h;
+  }
+  function _vizRcOpen(i){   /* 아래 편집 칸 열기 — i<0 이면 새 문구 */
+    const ed=g('aiVizRcEd'); if(!ed) return;
+    const r=i>=0?_vizRcCur[i]:null;
+    ed.setAttribute('data-i',String(r?i:-1));
+    g('aiVizRcHd').textContent=r?'✏️ 문구 고치기':'＋ 새 문구 추가';
+    g('aiVizRcIc').value=r?r.ic:''; g('aiVizRcT').value=r?r.t:''; g('aiVizRcP').value=r?r.p:'';
+    ed.style.display='flex';
+    try{ ed.scrollIntoView({block:'nearest'}); }catch(e){}
+    setTimeout(()=>{ const t=g('aiVizRcT'); if(t) t.focus(); },30);
+  }
+  function _vizRcClose(){ const ed=g('aiVizRcEd'); if(ed) ed.style.display='none'; }
+  window._vizRcKey=function(e){   /* 편집 칸 키보드: Esc 닫기 · 이름에서 Enter → 문구 칸 · 문구 칸에서 Ctrl+Enter 저장 (한글 조합 중에는 무시) */
+    if(e.isComposing||e.keyCode===229) return;
+    if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); _vizRcClose(); }
+    else if(e.key==='Enter'){
+      if(e.target.id==='aiVizRcT'||e.target.id==='aiVizRcIc'){ e.preventDefault(); const p=g('aiVizRcP'); if(p) p.focus(); }
+      else if(e.ctrlKey||e.metaKey){ e.preventDefault(); window._vizRcAct('save'); }
+    }
+  };
+  window._vizRcAct=function(act,i){
+    i=(i==null||i==='')?-1:+i;
+    if(act==='mode'){ _vizRcMode=!_vizRcMode; _vizRcClose(); _vizRcRender(); return; }
+    if(act==='cancel'){ _vizRcClose(); return; }
+    if(act==='edit'){ if(_vizRcCur[i]) _vizRcOpen(i); return; }
+    if(act==='add'){
+      if(_vizRcCur.length>=_VR_MAX){ _vizRcToast('문구는 최대 '+_VR_MAX+'개까지 둘 수 있어요 — 안 쓰는 것을 지운 뒤 추가하세요',true); return; }
+      _vizRcOpen(-1); return;
+    }
+    if(act==='del'){
+      const r=_vizRcCur[i]; if(!r) return;
+      if(!confirm('‘'+r.t+'’ 문구를 삭제할까요?\n(처음 문구가 필요해지면 [↺ 기본 문구로]로 다시 불러올 수 있어요)')) return;
+      if(!_vizRcPersist(_vizRcCur.filter((_,j)=>j!==i))){ _vizRcToast('삭제하지 못했어요 — 브라우저 저장 공간을 확인해 주세요',true); return; }
+      _vizRcClose(); _vizRcRender(); _vizRcToast('🗑 ‘'+r.t+'’ 문구를 삭제했어요'); return;
+    }
+    if(act==='reset'){
+      if(!confirm('추가·수정·삭제한 문구를 모두 버리고 처음 기본 문구로 되돌릴까요?')) return;
+      try{ localStorage.removeItem(_VRK); }catch(e){}
+      _vizRcMode=false; _vizRcClose(); _vizRcRender(); _vizRcToast('↺ 기본 문구로 되돌렸어요'); return;
+    }
+    if(act==='save'){
+      const ed=g('aiVizRcEd'); if(!ed||ed.style.display==='none') return;
+      const idx=+ed.getAttribute('data-i');
+      const n=_vizRcNorm({ic:g('aiVizRcIc').value,t:g('aiVizRcT').value,p:g('aiVizRcP').value},false);
+      if(!n){ _vizRcToast('이름과 요청 문구를 모두 입력해 주세요',true); return; }
+      const list=_vizRcCur.slice();
+      if(list.some((r,j)=>j!==idx&&r.t===n.t)){ _vizRcToast('같은 이름이 이미 있어요 — 다른 이름으로 바꿔 주세요',true); return; }
+      if(idx>=0&&list[idx]){ if(list[idx].k) n.k=list[idx].k; list[idx]=n; }
+      else{ if(list.length>=_VR_MAX){ _vizRcToast('문구는 최대 '+_VR_MAX+'개까지 둘 수 있어요',true); return; } list.push(n); }
+      if(!_vizRcPersist(list)){ _vizRcToast('저장하지 못했어요 — 브라우저 저장 공간을 확인해 주세요',true); return; }
+      _vizRcClose(); _vizRcRender(); _vizRcToast(idx>=0?'✅ 문구를 고쳤어요':'✅ 문구를 추가했어요');
+    }
+  };
   function _vizRenderPanel(){
     const rc=g('aiVizRecipes'), pf=g('aiVizPrefs'); if(!rc||!pf||!window.BTMViz) return;
-    rc.innerHTML=_VIZ_RECIPES.map((r,i)=>'<button type="button" class="mobile-keep" onclick="_vizRecipe('+i+')" title="'+_ahEsc(r.p)+'">'+r.ic+' '+_ahEsc(r.t)+'</button>').join('');
+    _vizRcRender();
     const p=_vizPrefs();
     pf.innerHTML='<span class="ai-viz-ol">기본 스타일</span><span class="ai-viz-sws">'+_vizSwatches(p.theme,"_vizPanelPref('theme',this.dataset.k)")+'</span>'
       +'<span class="ai-viz-ol">너비</span>'+_vizSegs([[480,'480'],[640,'640'],[800,'800']],p.w,"_vizPanelPref('w',this.dataset.v)")
@@ -31777,7 +31902,7 @@ Rules:
     _vizRenderPanel();
   };
   window._vizRecipe=function(i){
-    const r=_VIZ_RECIPES[i]; if(!r) return;
+    const r=(_vizRcCur.length?_vizRcCur:_vizRecipes())[i]; if(!r) return;
     const inp=g('aiUserInput'); if(!inp) return;
     if(!(inp.innerText||'').trim()) inp.textContent=r.p;
     else{ inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(r.p)); }   /* 쓰던 글이 있으면 지우지 않고 아래에 덧붙임 */
@@ -32695,6 +32820,16 @@ function stripBad(s){   /* XML 에서 깨지는 글자 제거: 제어문자(탭�
   }
   return o;
 }
+/* 출처 표기는 인포그래픽 어디에도 그리지 않음 — AI 가 '출처: …'·'(출처: …)'·'[Source: …]'·'자료: …' 처럼 이름표를 붙여 쓴 출처 표기는 글에서 걷어냄
+   (이름표 없는 일반 문장·'출처' 라는 낱말만 있는 표 머리 등은 그대로. 영어 Source 는 글머리·괄호 안일 때만) */
+const SRC_BR=/\s*[(（\[［【]\s*(?:자료\s*출처|출처|자료|sources?)\s*[:：][^)）\]］】]*[)）\]］】]/gi;
+const SRC_KO=/[\s\-–—·|,;]*(?:자료\s*)?출처\s*[:：].*$/;
+const SRC_HEAD=/^\s*(?:※\s*)?(?:자료|sources?)\s*[:：].*$/i;
+const SRC_TAIL=/\s*[\-–—·|,;]\s*(?:자료|sources?)\s*[:：].*$/i;   /* ' · 자료: 통계청' 처럼 구분 기호 뒤에 붙은 것 */
+function stripSrc(t){
+  const u=t.replace(SRC_BR,'').replace(SRC_KO,'').replace(SRC_TAIL,'').replace(SRC_HEAD,'');
+  return u===t?t:u.replace(/[\s\-–—·|,;]+$/,'');
+}
 function clean(s,max,multi){   /* AI 가 쓴 글 한 조각을 안전한 한 줄(multi 면 줄바꿈 허용)로 */
   if(s==null) return '';
   if(typeof s==='number') s=String(s);
@@ -32703,8 +32838,8 @@ function clean(s,max,multi){   /* AI 가 쓴 글 한 조각을 안전한 한 줄
      .replace(/\*\*(.+?)\*\*/gs,'$1').replace(/__(.+?)__/gs,'$1').replace(/`([^`]*)`/g,'$1')
      .replace(/\r/g,'');
   s=stripBad(s);
-  s=multi?s.split('\n').map(l=>l.replace(/[ \t]+/g,' ').trim()).join('\n').replace(/\n{3,}/g,'\n\n').trim()
-         :s.replace(/\s+/g,' ').trim();
+  s=multi?s.split('\n').map(l=>{ l=l.replace(/[ \t]+/g,' ').trim(); const u=stripSrc(l); return (l&&!u)?null:u; }).filter(l=>l!==null).join('\n').replace(/\n{3,}/g,'\n\n').trim()   /* 출처 표기뿐이던 줄은 빈 줄도 남기지 않고 통째로 뺌 */
+         :stripSrc(s.replace(/\s+/g,' ').trim());
   if(max){ const a=Array.from(s); if(a.length>max) s=a.slice(0,max-1).join('').trimEnd()+'…'; }
   return s;
 }
@@ -33000,8 +33135,7 @@ function normalize(raw){
     tbl:normOpt(pick(o,['tbl','table_style','tableStyle']),TBLS,ALIAS.tbl),
     bk:normOpt(pick(o,['bk','block_style','blockStyle','pack']),BKS,ALIAS.bk),
     dens:normOpt(pick(o,['dens','density','spacing']),DENS,ALIAS.dens),
-    footer:clean(pick(o,['footer','source','sources','note','disclaimer']),150),
-    blocks:out,
+    blocks:out,   /* 푸터(맨 아래 출처 줄)는 의도적으로 없음 — 인포그래픽에는 어떤 출처도 표기하지 않음 */
   },warn};
 }
 
@@ -33086,7 +33220,6 @@ const CSS=`
 .hd-band.hi .v-hm{padding-right:44px}
 
 .v-bd{padding:calc(18px*var(--s)) calc(20px*var(--s)) calc(22px*var(--s));display:flex;flex-direction:column;gap:calc(14px*var(--s))}
-.v-ft{padding:0 24px calc(20px*var(--s));font-size:11px;line-height:1.55;color:var(--mute)}
 .v-card{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:calc(16px*var(--s)) calc(18px*var(--s))}
 .v-t{display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:800;color:var(--ink);margin-bottom:calc(13px*var(--s));line-height:1.35}
 .v-t:before{content:'';flex:none;width:4px;height:15px;border-radius:2px;background:linear-gradient(180deg,var(--p2),var(--p1));align-self:center}
@@ -33114,7 +33247,6 @@ const CSS=`
 .lay-report .tc .tb-rule th,.lay-panel .tc .tb-rule th{border-top:0}
 .lay-report .tc .tb-rule tr:last-child td,.lay-panel .tc .tb-rule tr:last-child td{border-bottom:0}
 .lay-report .v-ttl-o{margin:0;padding:0 0 4px;border-bottom:2px solid var(--p2);font-size:13.5px}
-.lay-report .v-ft{border-top:1px solid var(--gl);padding:8px 16px calc(14px*var(--s))}
 .lay-report .v-qt{background:var(--tint);border:1px solid var(--gl)}
 .lay-report .v-co{border-top:1px solid var(--cb);border-right:1px solid var(--cb);border-bottom:1px solid var(--cb)}
 
@@ -33131,7 +33263,6 @@ const CSS=`
 .lay-plain .v-qt:before{display:none}
 .lay-plain .v-co{border:0;border-left:4px solid var(--tc);border-radius:0}
 .lay-plain .v-tg span{background:transparent;border:1px solid var(--p2)}
-.lay-plain .v-ft{border-top:1px solid var(--line);margin:0 24px;padding:8px 0 calc(18px*var(--s))}
 .lay-plain .v-ss{background:transparent;border:0;border-top:2px solid var(--p2);border-bottom:1px solid var(--line);border-radius:0;gap:0}
 .lay-plain .v-ss>div{background:transparent}
 
@@ -33712,9 +33843,8 @@ function buildHtml(spec,opt){
     if(useTable(b,c)){ const t=TOTABLE[b.type](b,c); return card(t,tableHtml(t,c),c.tbl==='rows'?'':' tc'); }
     return BLOCKS[b.type](b,c);
   }).join('');
-  const ft=spec.footer?'<div class="v-ft">'+esc(spec.footer)+'</div>':'';
   return {theme:themeKey,width:c.W,css:CSS,res:{lay:c.lay,form:c.form,tbl:c.tbl,head:c.head,bk:c.bk,dens:c.dens},
-    html:'<div class="v-root lay-'+c.lay+' dn-'+c.dens+'" style="width:'+c.W+'px;'+vars+'">'+headerHtml(spec,c)+'<div class="v-bd">'+blocks+'</div>'+ft+'</div>'};
+    html:'<div class="v-root lay-'+c.lay+' dn-'+c.dens+'" style="width:'+c.W+'px;'+vars+'">'+headerHtml(spec,c)+'<div class="v-bd">'+blocks+'</div></div>'};
 }
 
 /* ── 측정 → PNG ─────────────────────────────────────────────────────────────────────────────────── */
@@ -33771,7 +33901,7 @@ function demo(){
       {type:'bar',title:'섹터별 주간 등락률',unit:'%',items:[{label:'기술',value:3.2},{label:'통신',value:1.9},{label:'금융',value:0.8},{label:'헬스케어',value:-0.6},{label:'에너지',value:-1.4}]},
       {type:'line',title:'S&P 500 최근 7거래일',labels:['10/07','10/08','10/09','10/10','10/13','10/14','10/15'],series:[{name:'S&P 500',data:[5290,5310,5335,5360,5378,5391,5412]}]},
       {type:'callout',tone:'warn',head:'체크포인트',text:'다음 주 FOMC 의사록 공개 전까지 변동성 확대에 대비하세요.'},
-    ],footer:'출처: 본문 자료 기준 · 투자 판단의 책임은 본인에게 있습니다.'};
+    ]};
 }
 
 return {THEMES,WIDTHS,OPT,parse,normalize,buildHtml,render,demo,_esc:esc,_num:num,_fmt:fmt,_clean:clean};
@@ -38139,8 +38269,20 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
         <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
         <div id="aiVizPanel">
-          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니, 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
           <div class="avp-rc" id="aiVizRecipes"></div>
+          <div class="avp-ed" id="aiVizRcEd" style="display:none" data-i="-1">
+            <div class="avp-eh" id="aiVizRcHd">＋ 새 문구 추가</div>
+            <div class="avp-er">
+              <input id="aiVizRcIc" class="mobile-keep" maxlength="8" placeholder="🙂" aria-label="아이콘 (이모지)" title="아이콘 — 이모지 한두 개 (비워 두면 🎨)" onkeydown="_vizRcKey(event)">
+              <input id="aiVizRcT" class="mobile-keep" maxlength="24" placeholder="이름 (예: 주간 시황 요약)" aria-label="이름" onkeydown="_vizRcKey(event)">
+            </div>
+            <textarea id="aiVizRcP" class="mobile-keep" rows="3" maxlength="600" placeholder="요청 문구 — 이 유형을 눌렀을 때 입력창에 채워질 글을 쓰세요. (Ctrl+Enter 저장 · Esc 닫기)" aria-label="요청 문구" onkeydown="_vizRcKey(event)"></textarea>
+            <div class="avp-er">
+              <button type="button" class="avp-sv mobile-keep" onclick="_vizRcAct('save')">저장</button>
+              <button type="button" class="avp-cn mobile-keep" onclick="_vizRcAct('cancel')">취소</button>
+            </div>
+          </div>
           <div class="avp-pf" id="aiVizPrefs"></div>
         </div>
         <div id="aiMessages"></div>
