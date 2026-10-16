@@ -1579,7 +1579,8 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 #aiLeftApplyCancelBtn{background:#e2e8f0;color:#475569}
 #aiLeftApplyCancelBtn:hover{background:#cbd5e1}
 .ai-result-box{margin-top:8px;border:1.5px solid #10b981;border-radius:8px;overflow:hidden}
-.ai-result-label{background:#10b981;color:#fff;font-size:10px;font-weight:700;padding:3px 9px;letter-spacing:.3px}
+.ai-result-label{background:#10b981;color:#fff;font-size:10px;font-weight:700;padding:3px 9px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+.ai-res-t{flex:1;min-width:0}
 .ai-result-content{background:#f0fdf4;padding:8px 10px;font-size:12px;color:#065f46;white-space:normal;word-break:break-word;line-height:1.7}
 .ai-result-content ul,.ai-result-content ol{margin:4px 0;padding-left:18px}
 .ai-result-content strong{font-weight:700}
@@ -1591,7 +1592,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-preset-del:hover{opacity:1;color:#dc2626}
 .ai-add-preset{height:24px;padding:0 9px;font-size:10.5px;border:1px dashed #a78bfa;background:transparent;border-radius:20px;color:#7c3aed;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .ai-add-preset:hover{background:#ede9fe}
-#aiMessages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0}
+#aiMessages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0;counter-reset:aiRes aiAns}
 .ai-msg{max-width:88%;padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.65;word-break:break-word;white-space:pre-wrap}
 .ai-msg.user{align-self:flex-end;background:#4f46e5;color:#fff;border-bottom-right-radius:3px}
 .ai-msg.assistant{align-self:flex-start;background:#f1f5f9;color:#1e293b;border-bottom-left-radius:3px;border:1px solid #e2e8f0}
@@ -1601,6 +1602,33 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-msg-undo{width:22px;height:22px;padding:4px;border:none;border-radius:6px;background:transparent;color:#94a3b8;cursor:pointer;line-height:0;transition:background .12s,color .12s}
 .ai-msg-undo:hover{background:#eef2ff;color:#4f46e5}
 .ai-msg-undo svg{width:14px;height:14px;display:block}
+/* ── 결과물·답변 '↪ 참조' (2026-10-16): 결과물 상자 머리줄 / 일반 답변 아래의 버튼 → 입력창 위 참조 칩(#aiRefStrip) → 보낸 말풍선 안 인용 블록(.ai-user-ref)
+      번호(#1,#2…)는 CSS 카운터(#aiMessages 안의 순서)라 세션을 innerHTML로 저장·복원해도 항상 DOM 순서와 일치 — JS는 같은 순서(querySelectorAll 인덱스)로 번호를 구함 ── */
+#aiMessages .ai-res-no::before,#aiHistBody .ai-res-no::before{counter-increment:aiRes;content:' #' counter(aiRes)}
+#aiMessages .ai-ans-no::before{counter-increment:aiAns;content:' #' counter(aiAns)}
+.ai-ref-btn{flex-shrink:0;height:16px;padding:0 9px;border:1px solid rgba(255,255,255,.7);border-radius:8px;background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;line-height:14px;letter-spacing:0;white-space:nowrap;cursor:pointer;transition:background .12s,color .12s}
+.ai-ref-btn:hover{background:#fff;color:#047857}
+.ai-ans-row{align-self:flex-start;display:flex;margin:-5px 0 0 2px}
+.ai-ans-btn{height:22px;padding:0 8px;border:none;border-radius:6px;background:transparent;color:#94a3b8;font-size:10.5px;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .12s,color .12s}
+.ai-ans-btn:hover{background:#eef2ff;color:#4f46e5}
+#aiRefStrip{display:none;flex-direction:column;gap:4px;padding:6px 8px 5px;border:1px solid #c7d2fe;border-bottom:none;border-radius:8px 8px 0 0;background:#f5f3ff;max-height:104px;overflow-y:auto}
+.ai-ref-chip{display:flex;align-items:center;gap:6px;min-width:0;flex-shrink:0;padding:3px 3px 3px 8px;background:#fff;border:1px solid #c7d2fe;border-left:3px solid #6366f1;border-radius:6px;font-size:11px;line-height:1.4;cursor:pointer;transition:background .12s}
+.ai-ref-chip:hover{background:#eef2ff}
+.ai-ref-chip.nolink{cursor:default}
+.ai-ref-chip>b{flex-shrink:0;font-weight:800;color:#4338ca;white-space:nowrap}
+.ai-ref-chip>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#64748b}
+.ai-ref-chip>button{flex-shrink:0;width:18px;height:18px;padding:0;border:none;border-radius:50%;background:transparent;color:#94a3b8;font-size:11px;line-height:18px;text-align:center;cursor:pointer}
+.ai-ref-chip>button:hover{background:#fee2e2;color:#dc2626}
+.ai-ref-chip.dup{animation:_aiRefDup .55s ease}
+@keyframes _aiRefDup{0%,100%{background:#fff}40%{background:#ddd6fe}}
+.ai-user-ref{display:block;margin:0 0 5px;padding:4px 8px;border-left:3px solid rgba(255,255,255,.8);border-radius:5px;background:rgba(255,255,255,.17);font-size:11px;line-height:1.45;white-space:normal;text-align:left;cursor:pointer;transition:background .12s}
+.ai-user-ref:hover{background:rgba(255,255,255,.27)}
+.ai-user-ref.static{cursor:default}
+.ai-user-ref.static:hover{background:rgba(255,255,255,.17)}
+.ai-user-ref .ai-ref-h{display:block;font-size:10.5px;font-weight:800}
+.ai-user-ref .ai-ref-t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;opacity:.92;word-break:break-word}
+.ai-ref-flash{animation:_aiRefFlash 1.6s ease-out 1}
+@keyframes _aiRefFlash{0%,40%{box-shadow:0 0 0 3px rgba(79,70,229,.85)}100%{box-shadow:0 0 0 3px rgba(79,70,229,0)}}
 #aiInputFmtBar{border-color:#cbd5e1;background:#f8fafc;margin-top:4px}
 #aiUserInput{flex:1;border:1px solid #cbd5e1;border-radius:8px;padding:7px 10px;font-size:12.5px;font-family:inherit;outline:none;min-height:42px;max-height:220px;line-height:1.5;color:#1e293b;min-width:0;overflow-y:auto;word-break:break-word}
 #aiUserInput:focus{border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,.14)}
@@ -1637,7 +1665,7 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ah-btn.pri:hover{background:#4338ca}
 .ah-btn.dng{color:#b91c1c;border-color:#fecaca}
 .ah-btn.dng:hover{background:#fee2e2}
-#aiHistBody{flex:1;min-height:0;overflow-y:auto;padding:8px 11px 14px;background:#fff}
+#aiHistBody{flex:1;min-height:0;overflow-y:auto;padding:8px 11px 14px;background:#fff;counter-reset:aiRes}
 #aiHistFoot{flex-shrink:0;display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:6px 11px;border-top:1px solid #e2e8f0;background:#fafafe;font-size:10.5px;color:#64748b;min-height:34px;box-sizing:border-box}
 #aiHistFoot:empty{display:none}
 #aiHistFoot>span{flex:1 1 150px;min-width:0}
@@ -28784,6 +28812,7 @@ async function _fetchClaudeBalance(){
   let _mode='text'; /* 'text'|'url'|'file' */
   let _attachedFile=null; /* {type,data,mimeType,name} */
   let _pendingImages=[]; /* [{data,mimeType,name,url}] — 입력창에 붙여넣기/첨부한 이미지 */
+  let _pendingRefs=[]; /* [{k:'r'|'a',part,no,label,src,h,prev}] — 결과물·답변의 '↪ 참조'로 입력창 위에 가져온 내용(보낼 때 AI 에게 함께 전달) */
   let _pendingAudioFile=null; /* File — 왼쪽 패널에 기존 내용이 있을 때 덮어쓰기/이어쓰기 확인 대기 중인 음성 파일 */
   let _lastReply='', _lastResult='';
   let _abortCtrl=null;
@@ -29039,15 +29068,18 @@ async function _fetchClaudeBalance(){
       /* 결과물 박스 */
       const box=document.createElement('div'); box.className='ai-result-box';
       const lbl=document.createElement('div'); lbl.className='ai-result-label';
-      lbl.textContent=(_eid===_MM_EID)?'📋 결과물 — MindMap 개요 가져오기에 반영되는 내용':'📋 결과물 — 본문에 반영되는 내용';
+      lbl.innerHTML=_resLabelHtml(_eid,true);   /* 제목(+번호) + 오른쪽 '↪ 참조' 버튼 */
+      box.setAttribute('data-src',(_eid===_MM_EID)?_mmOutlineFromReply(rawText):result);   /* '↪ 참조'가 AI 에게 돌려줄 원문 — 화면용(새니타이즈·엔티티 변환된 DOM)이 아니라 AI 가 쓴 그대로 */
       const cnt=document.createElement('div'); cnt.className='ai-result-content';
       if(_eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(rawText); }   /* MindMap: 개요 텍스트(들여쓰기 = 단계) 그대로 */
       else cnt.innerHTML=_lastResult||_sanitizeResultHtml(result);
       box.appendChild(lbl); box.appendChild(cnt);
       div.appendChild(box);
     } else {
-      /* RESULT 태그 없으면 전체를 설명으로 표시 */
+      /* RESULT 태그 없으면 전체를 설명으로 표시 — 결과물 상자가 없으니 말풍선 아래에 '↪ 답변 참조' 줄을 붙임 */
       div.innerHTML=_md2html(rawText);
+      div.setAttribute('data-src',rawText);
+      _addAnsRow(div);
     }
   }
   const _gp=()=>{try{return JSON.parse(localStorage.getItem(PK)||'[]');}catch(e){return[];}};
@@ -29254,6 +29286,7 @@ Rules:
     }
     g('aiUrlAppendDlg').style.display='none';
     g('aiUserInput').innerHTML='';
+    _pendingRefs=[]; _renderRefStrip();   /* 참조 칩은 그 채팅의 DOM 을 가리키므로 다른 섹션·다시 열기로 이어지지 않게 */
     g('aiSendBtn').disabled=false;
     g('aiChatModal').style.display='flex';
     _ahBadge();
@@ -29267,13 +29300,13 @@ Rules:
     if(_busy){ if(_abortCtrl) _abortCtrl.abort(); }
     _saveChatSession();
     g('aiChatModal').style.display='none';
-    _eid='';_hist=[];_attachedFile=null;_pendingImages=[];_lastReply='';_lastResult='';_abortCtrl=null;_sessId='';
+    _eid='';_hist=[];_attachedFile=null;_pendingImages=[];_pendingRefs=[];_renderRefStrip();_lastReply='';_lastResult='';_abortCtrl=null;_sessId='';
     _aiHistClose();
   };
 
   /* ↺ 채팅만 초기화 (왼쪽 패널 유지) */
   window._clearChatHistory=function(){
-    _hist=[];_lastReply='';_lastResult='';_pendingImages=[];_renderImgStrip();
+    _hist=[];_lastReply='';_lastResult='';_pendingImages=[];_renderImgStrip();_pendingRefs=[];_renderRefStrip();
     g('aiMessages').innerHTML='';
     g('aiApplyBtnWrap').style.display='none';
     const key=_eid??'';
@@ -29284,7 +29317,7 @@ Rules:
 
   /* + 새 대화: 왼쪽 패널 + 채팅 모두 초기화 */
   window._createNewChat=function(){
-    _hist=[];_lastReply='';_lastResult='';_attachedFile=null;_pendingImages=[];_renderImgStrip();
+    _hist=[];_lastReply='';_lastResult='';_attachedFile=null;_pendingImages=[];_renderImgStrip();_pendingRefs=[];_renderRefStrip();
     g('aiMessages').innerHTML='';
     g('aiApplyBtnWrap').style.display='none';
     delete _chatStore[_eid??''];
@@ -30939,60 +30972,206 @@ Rules:
     return out;
   }
 
-  /* ── <font color> → <span style="color:"> 정규화 (Chrome execCommand foreColor 대응) ── */
-  function _normalizeFontTags(html){
-    if(!html||!/<font\b/i.test(html)) return html;
-    const _szMap={'1':'10px','2':'13px','3':'16px','4':'18px','5':'24px','6':'32px','7':'48px'};
-    const tmp=document.createElement('div');
-    tmp.innerHTML=html;
-    tmp.querySelectorAll('font').forEach(f=>{
-      const sp=document.createElement('span');
-      const c=f.getAttribute('color');
-      if(c) sp.style.color=c;
-      const bg=f.getAttribute('bgcolor');
-      if(bg) sp.style.backgroundColor=bg;
-      const sz=f.getAttribute('size');
-      if(sz) sp.style.fontSize=_szMap[sz.trim()]||sz;
-      while(f.firstChild) sp.appendChild(f.firstChild);
-      f.parentNode.replaceChild(sp,f);
-    });
-    return tmp.innerHTML;
+  /* ── 비활성 문서에서 HTML 파싱 (2026-10-16 보안 수정) ──
+     document.createElement('div').innerHTML=html 은 '살아 있는' document 에서 파싱하므로 <img src=x onerror=…> 의 onerror 가 걸러내기 전(파싱 단계)에 이미 실행됨.
+     document.implementation.createHTMLDocument() 는 브라우징 컨텍스트가 없는 비활성 문서 — 스크립트·이벤트 핸들러가 돌지 않고 이미지·iframe 도 불러오지 않음.
+     파싱한 노드는 이 문서(doc) 안에서만 다루고(새 노드·조각도 doc.createXxx) live document 로 옮기지 않음 — 입양(adopt)되는 순간 <img> 가 로딩을 시작하므로. 결과는 문자열(innerHTML)로만 내보냄. */
+  function _inertDoc(html){
+    const doc=document.implementation.createHTMLDocument('');
+    doc.body.innerHTML=html;
+    return doc;
   }
 
-  /* ── AI RESULT HTML 새니타이저 (b/i/u/s/span[color/bg] 만 허용) ── */
+  /* ── <font color> → <span style="color:"> 정규화 (Chrome execCommand foreColor 대응) ── */
+  const _FONT_SZ={'1':'10px','2':'13px','3':'16px','4':'18px','5':'24px','6':'32px','7':'48px'};
+  function _fontToSpan(doc,f){   /* <font color/bgcolor/size> 한 개 → 그 값을 style 로 가진 새 <span> (내용은 안 옮김) */
+    const sp=doc.createElement('span');
+    const c=f.getAttribute('color');
+    if(c) sp.style.color=c;
+    const bg=f.getAttribute('bgcolor');
+    if(bg) sp.style.backgroundColor=bg;
+    const sz=f.getAttribute('size');
+    if(sz) sp.style.fontSize=_FONT_SZ[sz.trim()]||sz;
+    return sp;
+  }
+  function _normalizeFontTags(html){
+    if(!html||!/<font\b/i.test(html)) return html;
+    const doc=_inertDoc(html);
+    doc.body.querySelectorAll('font').forEach(f=>{
+      const sp=_fontToSpan(doc,f);
+      while(f.firstChild) sp.appendChild(f.firstChild);
+      f.replaceWith(sp);
+    });
+    return doc.body.innerHTML;
+  }
+
+  /* ── AI RESULT HTML 새니타이저 (허용: b/strong/i/em/u/s/strike/span[color·background-color·font-size]/br/p/div[text-align]/ul/ol/li) ──
+     원본 트리를 고쳐 쓰지 않고, 비활성 문서(_inertDoc) 안에 허용된 태그만 '새로 지어' 담음 (2026-10-16 보안 수정):
+     · 허용 태그 = 속성이 없는 새 요소 + (span/div/p 만) 걸러낸 style — onmouseover·id·class 같은 속성은 옮겨 오지 않음
+     · 허용되지 않는 태그(a/img/iframe/svg/table 등)는 껍데기만 벗기고 안쪽(글·허용 태그)은 같은 규칙으로 계속 검사 — <span><a><iframe srcdoc> 처럼 중첩돼도 걸러짐
+     · <font color/bgcolor/size> 는 <span style> 로 바꿔 담음 (_fontToSpan)
+     · 순회할 땐 Node/Element.prototype 의 원래 getter 로 읽음(_nodeGet) — <form><input name=firstChild> 처럼 name 으로 속성을 덮어쓰는(clobbering) 요소가 있어도 순회가 꼬이지 않게 */
+  const _SAN_TAGS=new Set(['b','strong','i','em','u','s','strike','span','br','p','div','ul','ol','li']);
+  const _SAN_NS='http://www.w3.org/1999/xhtml';
+  const _SAN_SPAN=/^(color|background-color|font-size)\s*:/i, _SAN_BLOCK=/^text-align\s*:/i;
+  const _nodeGet=(n,k)=>Reflect.get(Element.prototype,k,n);
+  function _keepDecls(st,re){   /* style 문자열에서 re 에 맞는 선언만 남김 — 색·크기·정렬 값엔 필요 없는 따옴표·꺾쇠·역슬래시·url()/expression() 이 든 선언은 버림 */
+    return st.split(';').filter(s=>re.test(s.trim())&&!/[<>"'\\]|url\s*\(|expression\s*\(/i.test(s)).join(';');
+  }
+  function _sanShell(doc,n){   /* 원본 요소 n 이 허용 태그면 속성 없는 새 요소(+걸러낸 style)를, 아니면 null */
+    if(_nodeGet(n,'namespaceURI')!==_SAN_NS) return null;   /* svg/math 등 다른 이름공간 요소는 이름이 같아도 허용 안 함 */
+    let tag=_nodeGet(n,'localName'), src=n, el;
+    if(tag==='font'){ el=src=_fontToSpan(doc,n); tag='span'; }
+    else if(_SAN_TAGS.has(tag)) el=doc.createElement(tag);
+    else return null;
+    const re=tag==='span'?_SAN_SPAN:(tag==='div'||tag==='p')?_SAN_BLOCK:null;
+    if(re){
+      const safe=_keepDecls(src.getAttribute('style')||'',re);
+      if(safe) el.setAttribute('style',safe); else el.removeAttribute('style');
+    }
+    return el;
+  }
   function _sanitizeResultHtml(html){
     if(!html) return '';
-    html=_normalizeFontTags(html);
-    const tmp=document.createElement('div');
-    tmp.innerHTML=html;
-    const allowed=['b','strong','i','em','u','s','strike','span','br','p','div','ul','ol','li'];
-    function walk(node){
-      if(node.nodeType===3) return;
-      const tag=(node.tagName||'').toLowerCase();
-      if(!allowed.includes(tag)){
-        const frag=document.createDocumentFragment();
-        while(node.firstChild) frag.appendChild(node.firstChild);
-        node.parentNode?.replaceChild(frag,node);
-        return;
+    const doc=_inertDoc(html), out=doc.createElement('div');
+    (function copy(src,dst){
+      for(let n=_nodeGet(src,'firstChild');n;n=_nodeGet(n,'nextSibling')){
+        const type=_nodeGet(n,'nodeType');
+        if(type===3){ dst.appendChild(doc.createTextNode(n.data)); continue; }
+        if(type!==1) continue;   /* 주석 등은 버림 */
+        const el=_sanShell(doc,n);
+        if(el){ dst.appendChild(el); copy(n,el); }
+        else copy(n,dst);
       }
-      if(tag==='span'){
-        const st=node.getAttribute('style')||'';
-        const safe=st.split(';').filter(s=>/^(color|background-color|font-size)\s*:/i.test(s.trim())).join(';');
-        if(safe) node.setAttribute('style',safe); else node.removeAttribute('style');
-      } else if(tag==='div'||tag==='p'){
-        const st=node.getAttribute('style')||'';
-        const safe=st.split(';').filter(s=>/^text-align\s*:/i.test(s.trim())).join(';');
-        if(safe) node.setAttribute('style',safe); else node.removeAttribute('style');
-        node.removeAttribute('class');
-      } else { node.removeAttribute('style'); node.removeAttribute('class'); }
-      Array.from(node.childNodes).forEach(walk);
-    }
-    Array.from(tmp.childNodes).forEach(walk);
-    return tmp.innerHTML;
+    })(doc.body,out);
+    return out.innerHTML;
   }
 
   /* 보낸 메시지 말풍선 아래에 붙는 ↩ 되돌리기 아이콘 (클릭 → _restoreUserMsg) */
-  const _UNDO_ROW='<div class="ai-msg-actions"><button class="ai-msg-undo mobile-keep" onclick="_restoreUserMsg(this)" title="입력창으로 되돌리기 (메시지·이미지 그대로)" aria-label="입력창으로 되돌리기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button></div>';
+  const _UNDO_ROW='<div class="ai-msg-actions"><button class="ai-msg-undo mobile-keep" onclick="_restoreUserMsg(this)" title="입력창으로 되돌리기 (메시지·이미지·참조 그대로)" aria-label="입력창으로 되돌리기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button></div>';
+
+  /* ═══ 결과물·답변 참조 (2026-10-16) ═══════════════════════════════════════════════
+     결과물 상자 머리줄(결과물 상자가 없는 일반 답변은 말풍선 아래 줄)의 [↪ 참조] → 그 내용을 입력창 위 칩(#aiRefStrip)으로 가져옴 →
+     요청을 써서 보내면 AI 에게 '[참조한 AI 답변]' 블록과 함께 전달되고, 보낸 말풍선엔 인용 블록(.ai-user-ref)으로 남음 — 특정 결과물에 대한 추가 요청용.
+     · 원본은 늘 DOM 에서 읽음 — 채팅이 innerHTML 로 저장·복원(_saveChatSession)되므로 JS 변수·리스너에 두면 팝업을 닫았다 열 때 죽음. 버튼·인용은 인라인 onclick → 전역 함수.
+     · 결과물(또는 답변) 안의 글자를 드래그해 선택한 뒤 [↪ 참조]를 누르면 선택한 부분(일부)만 가져옴.
+     · 참조 객체 {k:'r'(결과물)|'a'(답변), part:선택한 일부인지, no:그 종류의 번호(#N, 0=원본 없음), label, src:AI 에게 줄 내용(결과물은 서식 HTML), h:src 가 HTML 인지, prev:한 줄 미리보기}
+     · 번호 = #aiMessages 안의 순서(CSS 카운터와 같은 순서) — 원본 찾기(_refGo)·중복 판별도 이 순서 기준 */
+  const _REF_MAX=5;   /* 한 번에 가져올 수 있는 참조 수 */
+  const _REF_BTN='<button type="button" class="ai-ref-btn mobile-keep" onmousedown="event.preventDefault()" onclick="_refFromBtn(this)" title="이 결과물을 입력창 위에 참조로 가져옵니다 — 이 결과물에 대해 추가로 요청할 수 있어요&#10;(결과물 안의 글자를 드래그해 선택한 뒤 누르면 선택한 부분만 가져와요)" aria-label="이 결과물을 입력창에 참조로 가져오기">↪ 참조</button>';
+  const _ANS_ROW='<div class="ai-ans-row"><button type="button" class="ai-ans-btn mobile-keep" onmousedown="event.preventDefault()" onclick="_refFromBtn(this)" title="이 답변을 입력창 위에 참조로 가져옵니다 — 이 답변에 대해 추가로 요청할 수 있어요&#10;(답변 안의 글자를 드래그해 선택한 뒤 누르면 선택한 부분만 가져와요)" aria-label="이 답변을 입력창에 참조로 가져오기">↪ 답변<span class="ai-ans-no"></span> 참조</button></div>';
+  /* 결과물 상자 머리줄 안쪽 — 제목(+CSS 카운터 번호) / 오른쪽 '↪ 참조'(withRef). 번호는 #aiMessages 안에서만 보임(기록 조회 패널 등은 번호 없음) */
+  function _resLabelHtml(eid,withRef){
+    return '<span class="ai-res-t">📋 결과물<span class="ai-res-no"></span> — '+((eid===_MM_EID)?'MindMap 개요 가져오기에 반영되는 내용':'본문에 반영되는 내용')+'</span>'+(withRef?_REF_BTN:'');
+  }
+  /* 결과물 상자 없는 일반 답변 말풍선 바로 뒤에 '↪ 답변 #N 참조' 줄 */
+  function _addAnsRow(div){ if(div&&div.parentNode&&div.classList&&div.classList.contains('ai-msg')) div.insertAdjacentHTML('afterend',_ANS_ROW); }
+  function _refPlain(h){ return _ahText(h).replace(/\u00a0/g,' '); }   /* HTML → 줄바꿈이 살아 있는 글 */
+  function _refSelText(el){   /* el 안에서 사용자가 드래그해 선택한 글(없거나 el 밖이면 '') */
+    try{
+      const sel=window.getSelection(); if(!sel||!sel.rangeCount||sel.isCollapsed) return '';
+      const r=sel.getRangeAt(0);
+      if(!el.contains(r.startContainer)||!el.contains(r.endContainer)) return '';
+      return sel.toString().replace(/\u00a0/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+    }catch(e){ return ''; }
+  }
+  function _refLabel(k,no,part){ return (k==='a'?'답변':'결과물')+(no?' #'+no:'')+(part?' (일부)':''); }
+  function _refTarget(k,no){   /* 참조한 원본 — 결과물은 결과물 상자, 답변은 그 말풍선(번호 줄 바로 앞 형제) */
+    const area=g('aiMessages'); if(!area||!no) return null;
+    const t=area.querySelectorAll(k==='a'?'.ai-ans-row':'.ai-result-box')[no-1]; if(!t) return null;
+    return k==='a'?(t.previousElementSibling||null):t;
+  }
+  function _refGo(k,no){   /* 원본으로 스크롤 + 잠깐 강조 */
+    const t=_refTarget(k,no), area=g('aiMessages');
+    if(!t||!area){ _showToast('_ahToast','참조한 원본을 이 대화에서 찾을 수 없어요','rgba(180,83,9,.93)'); return; }
+    const dy=t.getBoundingClientRect().top-area.getBoundingClientRect().top;
+    const calm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    area.scrollTo({top:Math.max(0,area.scrollTop+dy-14),behavior:calm?'auto':'smooth'});
+    t.classList.remove('ai-ref-flash'); void t.offsetWidth; t.classList.add('ai-ref-flash');
+    setTimeout(()=>t.classList.remove('ai-ref-flash'),1700);
+  }
+  /* 보낸 말풍선 안 인용 블록 — live=false 는 기록 조회 패널용(원본 이동·복원 데이터 없음) */
+  function _refQuoteHtml(refs,live){
+    return (refs||[]).map(r=>'<div class="ai-user-ref'+(live?'':' static')+'"'
+      +(live?' data-k="'+(r.k==='a'?'a':'r')+'" data-no="'+(+r.no||0)+'" data-part="'+(r.part?1:0)+'" data-h="'+(r.h?1:0)+'" data-label="'+_ahEsc(r.label)+'" data-src="'+_ahEsc(r.src)+'"'+(r.no?' onclick="_refJump(this)" title="클릭하면 참조한 원본으로 이동해요"':''):'')
+      +'><span class="ai-ref-h">↪ '+_ahEsc(r.label)+'</span><span class="ai-ref-t">'+_ahEsc(r.prev||'')+'</span></div>').join('');
+  }
+  function _refFromQuoteEl(el){   /* 보낸 말풍선의 인용 블록 → 참조 객체 (↩ 되돌리기가 칩으로 되살림) */
+    const src=el.getAttribute('data-src'); if(src==null) return null;
+    return {k:el.getAttribute('data-k')==='a'?'a':'r',part:el.getAttribute('data-part')==='1'?1:0,no:+el.getAttribute('data-no')||0,label:el.getAttribute('data-label')||'',src,h:el.getAttribute('data-h')==='1'?1:0,prev:(el.querySelector('.ai-ref-t')||{}).textContent||''};
+  }
+  /* AI 에게 줄 '참조한 AI 답변' 블록 — 요청 글 앞에 붙임. 시스템 프롬프트의 '기본 대상 = 현재 참고 자료' 규칙보다 이 참조가 우선임을 명시 */
+  function _refPrompt(refs){
+    if(!refs||!refs.length) return '';
+    return '[참조한 AI 답변 '+refs.length+'개 — 사용자가 앞서 나온 AI 답변·결과물(이 대화 또는 이전 대화) 중 이번 요청과 관련된 것을 직접 골라 가져왔습니다. 아래 [이번 요청]은 다른 대상을 따로 말하지 않는 한 [현재 참고 자료]가 아니라 이 참조 내용에 대한 것입니다.'+(refs.some(r=>r.part)?" '(일부)'는 그 결과물·답변 중 사용자가 선택한 부분만 가져왔다는 뜻입니다.":'')+']\n\n'
+      +refs.map((r,i)=>'[참조 '+(i+1)+' — '+r.label+']\n'+r.src+'\n[/참조 '+(i+1)+']').join('\n\n');
+  }
+  function _refCompose(refs,txt){ return (refs&&refs.length)?_refPrompt(refs)+(txt?'\n\n[이번 요청]\n'+txt:''):txt; }
+  /* 입력창 + 위쪽 칩/이미지 줄이 한 덩어리로 보이게 모서리 맞춤 */
+  function _syncAttach(){
+    const hasR=_pendingRefs.length>0, hasI=_pendingImages.length>0;
+    const inp=g('aiUserInput'), is=g('aiImgPreviewStrip');
+    if(inp) inp.style.borderRadius=(hasR||hasI)?'0 0 8px 8px':'8px';
+    if(is) is.style.borderRadius=hasR?'0':'8px 8px 0 0';
+  }
+  function _focusInputEnd(){
+    const inp=g('aiUserInput'); if(!inp) return;
+    inp.focus();
+    try{ const r=document.createRange(); r.selectNodeContents(inp); r.collapse(false); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(e){}
+    inp.scrollTop=inp.scrollHeight;
+  }
+  /* 입력창 위 참조 칩 줄 그리기 — 칩이 생기고 사라져 채팅 영역 높이가 바뀌어도 맨 아래를 보고 있었다면 그대로 맨 아래 유지 */
+  function _renderRefStrip(){
+    const strip=g('aiRefStrip'), inp=g('aiUserInput'), area=g('aiMessages'); if(!strip) return;
+    const atBottom=!!area&&(area.scrollHeight-area.scrollTop-area.clientHeight<48);
+    if(inp&&inp._phDef==null) inp._phDef=inp.getAttribute('placeholder')||'';
+    if(!_pendingRefs.length){
+      strip.style.display='none'; strip.innerHTML='';
+      if(inp&&inp._phDef!=null) inp.setAttribute('placeholder',inp._phDef);
+    } else {
+      strip.style.display='flex';
+      strip.innerHTML=_pendingRefs.map((r,i)=>'<div class="ai-ref-chip'+(r.no?'':' nolink')+'"'+(r.no?' onclick="_refChipJump('+i+')" title="클릭하면 참조한 원본으로 이동해요"':'')+'><b>↪ '+_ahEsc(r.label)+'</b><span>'+_ahEsc(r.prev||'')+'</span><button type="button" class="mobile-keep" onclick="event.stopPropagation();_removeRef('+i+')" title="참조 빼기" aria-label="참조 빼기">✕</button></div>').join('');
+      if(inp) inp.setAttribute('placeholder','참조한 내용에 대한 요청을 입력하세요… (Enter 전송 / Shift+Enter 줄바꿈)');
+    }
+    _syncAttach();
+    strip.scrollTop=strip.scrollHeight;   /* 칩이 많아 줄이 스크롤될 때 방금 가져온 칩이 보이게 */
+    if(atBottom&&area) area.scrollTop=area.scrollHeight;
+  }
+  window._removeRef=function(i){ if(i<0||i>=_pendingRefs.length) return; _pendingRefs.splice(i,1); _renderRefStrip(); _focusInputEnd(); };
+  window._refChipJump=function(i){ const r=_pendingRefs[i]; if(r) _refGo(r.k,r.no); };
+  window._refJump=function(el){ _refGo(el.getAttribute('data-k')==='a'?'a':'r',+el.getAttribute('data-no')||0); };
+  /* [↪ 참조] 클릭 — 결과물 상자 머리줄 버튼(k='r') 또는 일반 답변 아래 줄 버튼(k='a')에서 호출 */
+  window._refFromBtn=function(btn){
+    const box=btn.closest('.ai-result-box'), row=box?null:btn.closest('.ai-ans-row');
+    let k,anchor,srcEl,src,h=0;
+    if(box){
+      k='r'; anchor=box; srcEl=box.querySelector('.ai-result-content'); if(!srcEl) return;
+      const raw=box.getAttribute('data-src');   /* 렌더 때 붙여 둔 AI 원문 — 서식(굵게·색 등) HTML 그대로라 고쳐 쓸 때 서식을 이어감. MindMap 은 들여쓰기 개요 글 */
+      if(raw!=null){ src=raw; h=(_eid===_MM_EID)?0:1; }
+      else if(_eid===_MM_EID) src=srcEl.textContent||'';
+      else { src=srcEl.innerHTML.replace(/&amp;/g,'&'); h=1; }   /* 원문 속성이 없을 때만 화면 DOM 으로 대신 */
+    } else if(row){
+      const bub=row.previousElementSibling; if(!bub||!bub.classList.contains('ai-msg')) return;
+      k='a'; anchor=row; srcEl=bub;
+      const raw=bub.getAttribute('data-src');
+      src=(raw!=null)?raw:_refPlain(bub.innerHTML);
+    } else return;
+    const sel=_refSelText(srcEl), part=(sel&&sel.replace(/\s+/g,'')!==(srcEl.innerText||srcEl.textContent||'').replace(/\s+/g,''))?1:0;   /* 전부를 선택했으면 '일부'가 아니라 전체 */
+    if(part){ src=sel; h=0; }
+    const plain=(h?_refPlain(src):src).replace(/[*#`]/g,'').replace(/\s+/g,' ').trim();   /* 칩 미리보기용 한 줄 — 마크다운 기호는 뺌 */
+    if(!plain){ _showToast('_ahToast','참조할 내용이 없어요','rgba(180,83,9,.93)'); return; }
+    src=src.replace(/\n{3,}/g,'\n\n').trim();
+    const no=g('aiMessages')&&g('aiMessages').contains(anchor)?[...g('aiMessages').querySelectorAll(k==='a'?'.ai-ans-row':'.ai-result-box')].indexOf(anchor)+1:0;
+    const di=_pendingRefs.findIndex(r=>r.k===k&&r.no===no&&!!r.part===!!part&&r.src===src);
+    if(di>=0){   /* 이미 가져온 것 — 중복 추가 대신 그 칩을 잠깐 반짝임 */
+      _renderRefStrip(); const chip=g('aiRefStrip').children[di];
+      if(chip){ chip.classList.remove('dup'); void chip.offsetWidth; chip.classList.add('dup'); }
+      _focusInputEnd(); return;
+    }
+    if(_pendingRefs.length>=_REF_MAX){ _showToast('_ahToast','참조는 한 번에 '+_REF_MAX+'개까지 가져올 수 있어요','rgba(180,83,9,.93)'); return; }
+    _pendingRefs.push({k,part,no,label:_refLabel(k,no,part),src,h,prev:plain.slice(0,140)});
+    _renderRefStrip(); _focusInputEnd();
+  };
 
   /* ── 말풍선 ── */
   function _addBubble(role,text,html){
@@ -31011,19 +31190,24 @@ Rules:
     const _hasHtmlFmt=/<[bius]>|<strong>|<em>|<span style="|<div style="text-align/i.test(inputHtml);
     const fmtCtx=_hasHtmlFmt?`\n\n[사용자 입력 HTML 서식 템플릿 — RESULT 작성 시 아래 HTML 구조·태그를 그대로 유지하고 텍스트 내용만 실제 내용으로 교체하세요]\n${inputHtml}`:'';
     const txt=(input.innerText||input.textContent||'').trim();
-    if(!txt&&!_pendingImages.length) return;
+    if(!txt&&!_pendingImages.length){
+      if(_pendingRefs.length){ _showToast('_ahToast','참조한 내용에 대해 어떤 요청을 할지 입력해 주세요','rgba(180,83,9,.93)'); _focusInputEnd(); }   /* 참조만 있고 요청 글이 없으면 보내지 않음 */
+      return;
+    }
     const _provNames={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'};
     const key=_provider.startsWith('deepseek')?localStorage.getItem(AK_DS):_provider.startsWith('gemini')?localStorage.getItem(AK_GM):_provider.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK);
     if(!key){ _addBubble('error','❌ '+(_provNames[_provider]||'Claude')+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.'); return; }
     input.innerHTML='';
-    /* AI 대화 기록(🕘): 보내는 순간의 섹션·세션·AI 와 질문(글·서식·이미지·첨부파일명)을 확정해 둠 — 답변이 끝나면 _ahSave 로 한 쌍을 저장 */
-    const _ahU=_ahBegin({text:txt,html:_hasHtmlFmt?inputHtml:'',imgs:_pendingImages.map(i=>i.url),att:(_attachedFile&&_hist.length===0)?(_attachedFile.name||'첨부파일'):''});
-    /* 사용자 말풍선 — 이미지 썸네일 포함. ↩ 되돌리기(_restoreUserMsg)가 이 DOM에서 본문·이미지를 읽어가므로 클래스로 구분해 둠 */
+    const refs=_pendingRefs; _pendingRefs=[]; _renderRefStrip();   /* 가져온 참조는 이 메시지에 실려 감 — 칩은 비우고 아래 말풍선의 인용 블록으로 남김 */
+    /* AI 대화 기록(🕘): 보내는 순간의 섹션·세션·AI 와 질문(글·서식·이미지·첨부파일명·참조)을 확정해 둠 — 답변이 끝나면 _ahSave 로 한 쌍을 저장 */
+    const _ahU=_ahBegin({text:txt,html:_hasHtmlFmt?inputHtml:'',imgs:_pendingImages.map(i=>i.url),att:(_attachedFile&&_hist.length===0)?(_attachedFile.name||'첨부파일'):'',refs});
+    /* 사용자 말풍선 — 이미지 썸네일 포함. ↩ 되돌리기(_restoreUserMsg)가 이 DOM에서 본문·이미지·참조를 읽어가므로 클래스로 구분해 둠 */
     let _bubbleHtml='<div class="ai-user-txt">'+inputHtml+'</div>';
     if(_pendingImages.length){
       const thumbs=_pendingImages.map(img=>`<img class="ai-user-img" src="${img.url}" style="max-height:60px;max-width:80px;border-radius:4px;margin:1px 3px 2px 0;vertical-align:middle;object-fit:cover">`).join('');
       _bubbleHtml=thumbs+(txt?'<div class="ai-user-txt" style="margin-top:4px">'+(inputHtml||txt)+'</div>':'');
     }
+    if(refs.length) _bubbleHtml=_refQuoteHtml(refs,true)+_bubbleHtml;   /* 참조한 결과물·답변은 글 위에 인용 블록으로 */
     _addBubble('user',txt||'[이미지]',_bubbleHtml).insertAdjacentHTML('afterend',_UNDO_ROW);
     g('aiApplyBtnWrap').style.display='none';
 
@@ -31076,6 +31260,9 @@ Rules:
     밸류에이션
 </RESULT>`:'';
 
+    /* 이번 메시지에 참조한 AI 답변이 있으면 '기본 대상 = [현재 참고 자료]' 규칙보다 그 참조가 우선 */
+    const _refRule=refs.length?'\n단, 이번 사용자 메시지에 [참조한 AI 답변]이 있으면 그 참조 내용이 요청의 처리 대상입니다. 이 경우 [현재 참고 자료]는 필요할 때만 보조로 쓰고, 참조한 결과물을 고쳐 쓰거나 이어 쓰라는 요청이면 본문에 반영될 최종 결과물을 아래 [답변 형식 규칙]대로 <RESULT>와 </RESULT> 사이에 작성하세요.':'';
+
     const sys=`당신은 BTM 투자 리포트 작성을 돕는 AI 어시스턴트입니다.
 
 [오늘 날짜]
@@ -31085,7 +31272,7 @@ ${_todayForAI} — 반드시 이 날짜를 "현재 시점"으로 삼아 답변�
 ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${fmtCtx}
 
 [요청 처리 기본 원칙]
-사용자가 요청에서 다른 대상을 특별히 지정하지 않는 한, 위 [현재 참고 자료]를 요청의 기본 처리 대상으로 삼으세요. "요약해줘", "다듬어줘", "분석해줘", "이어서 써줘", "정리해줘" 처럼 대상을 명시하지 않은 요청은 모두 [현재 참고 자료]에 대한 요청으로 간주하고 그 내용을 바탕으로 답하세요. [현재 참고 자료]가 "(없음)"이 아닌 이상, 처리할 대상이 없다고 답하지 마세요.
+사용자가 요청에서 다른 대상을 특별히 지정하지 않는 한, 위 [현재 참고 자료]를 요청의 기본 처리 대상으로 삼으세요. "요약해줘", "다듬어줘", "분석해줘", "이어서 써줘", "정리해줘" 처럼 대상을 명시하지 않은 요청은 모두 [현재 참고 자료]에 대한 요청으로 간주하고 그 내용을 바탕으로 답하세요. [현재 참고 자료]가 "(없음)"이 아닌 이상, 처리할 대상이 없다고 답하지 마세요.${_refRule}
 
 [답변 형식 규칙]
 사용자가 본문에 직접 들어갈 결과물(문장, 분석 글 등)을 요청하면, 반드시 아래 형식을 따르세요.
@@ -31111,6 +31298,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     let userContent;
     const imgParts=_pendingImages.map(img=>({type:'image',source:{type:'base64',media_type:img.mimeType,data:img.data}}));
     _pendingImages=[];_renderImgStrip();
+    const aiTxt=_refCompose(refs,txt);   /* 참조한 AI 답변 블록 + 이번 요청 (참조가 없으면 txt 그대로) — 웹 검색어(txt)와 말풍선·기록엔 요청 글만 */
     if(_attachedFile && _hist.length===0){
       let filePart;
       if(_attachedFile.type==='image'){
@@ -31120,11 +31308,11 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
       } else {
         filePart={type:'text',text:`[첨부파일: ${_attachedFile.name}]\n\n${_attachedFile.data}\n\n---\n`};
       }
-      userContent=[filePart,...imgParts,...(txt?[{type:'text',text:txt}]:[])];
+      userContent=[filePart,...imgParts,...(aiTxt?[{type:'text',text:aiTxt}]:[])];
     } else if(imgParts.length){
-      userContent=[...imgParts,...(txt?[{type:'text',text:txt}]:[])];
+      userContent=[...imgParts,...(aiTxt?[{type:'text',text:aiTxt}]:[])];
     } else {
-      userContent=txt;
+      userContent=aiTxt;
     }
 
     _hist.push({role:'user',content:userContent});
@@ -31334,16 +31522,15 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
 
   function _renderImgStrip(){
     const strip=g('aiImgPreviewStrip');
-    const inp=g('aiUserInput');
     if(!strip) return;
     if(!_pendingImages.length){
       strip.style.display='none'; strip.innerHTML='';
-      if(inp) inp.style.borderRadius='8px';
+      _syncAttach();   /* 입력창·이미지 줄 모서리 (위쪽 참조 칩 줄이 있으면 그것과 이어 붙임) */
       return;
     }
     strip.style.display='flex';
     strip.innerHTML=_pendingImages.map((img,i)=>`<div class="ai-img-thumb"><img src="${img.url}" alt="img${i}"><button class="ai-img-thumb-del mobile-keep" onclick="_removeImgFromInput(${i})" title="삭제">✕</button></div>`).join('');
-    if(inp) inp.style.borderRadius='0 0 8px 8px';
+    _syncAttach();
   }
 
   window._removeImgFromInput=function(i){ _pendingImages.splice(i,1); _renderImgStrip(); };
@@ -31360,11 +31547,13 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
       const m=src.match(/^data:([^;]+);base64,(.+)$/); if(!m) return;
       imgs.push({data:m[2],mimeType:m[1],name:`이미지_${i+1}`,url:src});
     });
+    const refs=[...bub.querySelectorAll(':scope > .ai-user-ref')].map(_refFromQuoteEl).filter(Boolean);   /* 참조한 결과물·답변(인용 블록) */
     const inp=g('aiUserInput');
-    /* 작성 중인 글·첨부 이미지가 있으면 덮어쓰기 전에 확인 */
-    if(((inp.innerText||'').trim()||inp.querySelector('img')||_pendingImages.length) && !confirm('작성 중인 내용이 있습니다.\n이 메시지로 바꿀까요?')) return;
+    /* 작성 중인 글·첨부 이미지·참조가 있으면 덮어쓰기 전에 확인 */
+    if(((inp.innerText||'').trim()||inp.querySelector('img')||_pendingImages.length||_pendingRefs.length) && !confirm('작성 중인 내용이 있습니다.\n이 메시지로 바꿀까요?')) return;
     inp.innerHTML=html;
     _pendingImages=imgs; _renderImgStrip();
+    _pendingRefs=refs; _renderRefStrip();
     inp.focus();
     const range=document.createRange();
     range.selectNodeContents(inp); range.collapse(false);
@@ -31494,7 +31683,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     const now=Date.now(), o=await _ahGetBoth(u.sid);
     let meta=o.meta, body=o.body;
     if(!meta||!body){ meta={id:u.sid,eid:u.eid,label:u.label,created:u.t,updated:now,n:0,title:'',last:'',provider:u.prov}; body={id:u.sid,msgs:[]}; }
-    body.msgs.push({r:'u',t:u.t,text:u.text||'',html:u.html||'',imgs,nimg:(u.imgs||[]).length,att:u.att||''});
+    body.msgs.push(Object.assign({r:'u',t:u.t,text:u.text||'',html:u.html||'',imgs,nimg:(u.imgs||[]).length,att:u.att||''},(u.refs&&u.refs.length)?{refs:u.refs}:null));   /* refs: 이 질문에 '↪ 참조'로 가져온 결과물·답변(없으면 키 자체를 안 만듦) */
     body.msgs.push({r:'a',t:now,text:reply,prov:u.prov,partial:partial?1:0});
     meta.n=body.msgs.filter(m=>m.r==='u').length; meta.updated=now; meta.provider=u.prov; meta.label=u.label||meta.label;
     if(!meta.title) meta.title=((u.text||'').replace(/\s+/g,' ').trim()||((u.imgs||[]).length?'[이미지]':'(내용 없음)')).slice(0,80);
@@ -31605,25 +31794,28 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     foot.innerHTML='<span>총 '+list.length+'개'+(q?' (검색 결과)':'')+' · 이 브라우저에 저장돼요 (섹션당 최근 '+_AH_MAX+'개)</span>'
       +(rows.length?'<button class="ah-btn dng mobile-keep" data-ah="delall" style="margin-left:auto">🗑 '+(all?'전체':'이 섹션')+' 기록 모두 삭제</button>':'');
   }
-  /* 보낸 글 말풍선 안쪽 HTML — 썸네일(클래스 ah-thumb: ↩ 되돌리기가 원본 이미지로 착각하지 않게 ai-user-img 가 아님) + 첨부파일 + 글 */
-  function _ahUserHtml(m){
+  /* 보낸 글 말풍선 안쪽 HTML — 참조 인용 블록 + 썸네일(클래스 ah-thumb: ↩ 되돌리기가 원본 이미지로 착각하지 않게 ai-user-img 가 아님) + 첨부파일 + 글
+     live=true: 채팅창(#aiMessages)에 이어서 그리는 말풍선(인용 블록이 원본 이동·↩ 되돌리기 데이터를 가짐) / 기본(false): 기록 조회 패널의 읽기 전용 */
+  function _ahUserHtml(m,live){
+    const q=_refQuoteHtml(m.refs,!!live);   /* 인용 블록은 자기 아래 여백(margin-bottom)이 있어 글의 margin-top 계산(h)에서 뺌 */
     let h='';
     (m.imgs||[]).forEach(src=>{ if(/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+$/i.test(src)) h+='<img class="ah-thumb" src="'+src+'">'; });
     if(m.nimg&&!(m.imgs||[]).length) h+='<span class="ah-note">🖼 이미지 '+m.nimg+'장</span> ';
     if(m.att) h+='<div class="ah-note">📎 '+_ahEsc(m.att)+'</div>';
     const txt=m.html?_sanitizeResultHtml(m.html):_ahEsc(m.text||'');
     if(txt) h+='<div class="ai-user-txt"'+(h?' style="margin-top:4px"':'')+'>'+txt+'</div>';
-    return h||'<div class="ai-user-txt">[이미지]</div>';
+    return (q+h)||'<div class="ai-user-txt">[이미지]</div>';
   }
   /* 답변 말풍선 안쪽 — _renderAssistantBubble 과 같은 모양(설명 + 결과물 상자)이되 현재 대화의 _lastResult 를 건드리지 않음 */
-  function _ahRenderReply(div,raw,eid){
+  function _ahRenderReply(div,raw,eid,withRef){   /* withRef: 채팅창에 이어 그릴 때만 '↪ 참조' 버튼(결과물 상자 머리줄 / 일반 답변 아래 줄) */
     const {explain,result}=_parseResult(raw||'');
     div.style.whiteSpace='normal';
-    if(!result){ div.innerHTML=_md2html(raw||''); return; }
+    if(!result){ div.innerHTML=_md2html(raw||''); if(withRef){ div.setAttribute('data-src',raw||''); _addAnsRow(div); } return; }
     if(explain){ const ex=document.createElement('div'); ex.className='ai-explain-text'; ex.innerHTML=_md2html(explain); div.appendChild(ex); }
     const box=document.createElement('div'); box.className='ai-result-box';
     const lbl=document.createElement('div'); lbl.className='ai-result-label';
-    lbl.textContent=(eid===_MM_EID)?'📋 결과물 — MindMap 개요 가져오기에 반영되는 내용':'📋 결과물 — 본문에 반영되는 내용';
+    lbl.innerHTML=_resLabelHtml(eid,!!withRef);
+    if(withRef) box.setAttribute('data-src',(eid===_MM_EID)?_mmOutlineFromReply(raw):result);
     const cnt=document.createElement('div'); cnt.className='ai-result-content';
     if(eid===_MM_EID){ cnt.style.whiteSpace='pre-wrap'; cnt.style.tabSize='2'; cnt.textContent=_mmOutlineFromReply(raw); }
     else cnt.innerHTML=_sanitizeResultHtml(result);
@@ -31671,14 +31863,16 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
   }
   function _ahCopyAll(){
     const lines=[];
-    _ahMsgs.forEach(m=>{ lines.push((m.r==='u'?'■ 질문':'■ 답변')+' ('+_ahHM(m.t)+')'); lines.push(m.r==='a'?_ahReadable(m.text):((m.att?'[첨부파일: '+m.att+'] ':'')+(m.nimg?'[이미지 '+m.nimg+'장] ':'')+(m.text||''))); lines.push(''); });
+    _ahMsgs.forEach(m=>{ lines.push((m.r==='u'?'■ 질문':'■ 답변')+' ('+_ahHM(m.t)+')'); (m.refs||[]).forEach(r=>lines.push('[참조: '+r.label+'] '+(r.prev||''))); lines.push(m.r==='a'?_ahReadable(m.text):((m.att?'[첨부파일: '+m.att+'] ':'')+(m.nimg?'[이미지 '+m.nimg+'장] ':'')+(m.text||''))); lines.push(''); });
     _ahCopy(lines.join('\n').trim());
   }
   function _ahToInput(i){
     const m=_ahMsgs[i]; if(!m||m.r!=='u') return;
     const inp=g('aiUserInput');
-    if(((inp.innerText||'').trim()||inp.querySelector('img')||_pendingImages.length)&&!confirm('작성 중인 내용이 있습니다.\n이 메시지로 바꿀까요?')) return;
+    if(((inp.innerText||'').trim()||inp.querySelector('img')||_pendingImages.length||_pendingRefs.length)&&!confirm('작성 중인 내용이 있습니다.\n이 메시지로 바꿀까요?')) return;
     inp.innerHTML=m.html?_sanitizeResultHtml(m.html):_ahEsc(m.text||'').replace(/\n/g,'<br>');
+    /* 그 질문에 참조가 있었으면 칩으로 되살림 — 기록의 번호(#N)는 지금 채팅창의 순서와 무관하므로 번호·원본 이동은 빼고 '이전 대화'로 표시 */
+    _pendingRefs=(m.refs||[]).map(r=>Object.assign({},r,{no:0,label:String(r.label||'').replace(/\s*#\d+/,'')+' · 이전 대화'})); _renderRefStrip();
     _aiHistClose(); inp.focus();
     const r=document.createRange(); r.selectNodeContents(inp); r.collapse(false);
     const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
@@ -31696,11 +31890,11 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
       if(m.r==='u'){
         const notes=[]; if(m.att) notes.push('첨부파일: '+m.att); if(m.nimg) notes.push('이미지 '+m.nimg+'장');
         let c=m.text||''; if(notes.length) c+=(c?'\n':'')+'['+notes.join(' · ')+' — 기록에는 원본이 없어 문맥에서 빠짐]';
-        _hist.push({role:'user',content:c||'(내용 없음)'});
-        _addBubble('user',m.text||'[이미지]',_ahUserHtml(m)).insertAdjacentHTML('afterend',_UNDO_ROW);
+        _hist.push({role:'user',content:_refCompose(m.refs,c)||'(내용 없음)'});   /* 참조가 있던 질문은 보낼 때와 같은 '참조한 AI 답변' 블록을 다시 붙여 AI 문맥을 그대로 복원 */
+        _addBubble('user',m.text||'[이미지]',_ahUserHtml(m,true)).insertAdjacentHTML('afterend',_UNDO_ROW);
       } else {
         _hist.push({role:'assistant',content:m.text||''});
-        _ahRenderReply(_addBubble('assistant',''),m.text,eid); last=m.text||'';
+        _ahRenderReply(_addBubble('assistant',''),m.text,eid,true); last=m.text||'';
       }
     });
     _lastReply=last; const pr=_parseResult(last); _lastResult=pr.result?_sanitizeResultHtml(pr.result):'';
@@ -36112,6 +36306,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
         <div id="aiInputArea">
           <div id="aiResizeHandle" onmousedown="_startResize(event)"></div>
+          <div id="aiRefStrip"></div>
           <div id="aiImgPreviewStrip"></div>
           <div id="aiInputRow">
             <div id="aiUserInput" contenteditable="true" placeholder="메시지 입력… (Enter 전송 / Shift+Enter 줄바꿈 / 이미지 Ctrl+V)" onfocus="ftFocus(this)" onblur="ftBlur()" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMessage();}"></div>
