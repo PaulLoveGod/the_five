@@ -1715,6 +1715,13 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-viz-menu button:disabled:hover{background:transparent;color:#334155}
 .ai-viz-opts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding-top:7px;border-top:1px dashed #e2e8f0}
 /* 양식 고르기(🎛) — 양식 세트 + 헤더·문서 양식·표시 형식·표 양식·블록 모양·밀도 (그림 단추) */
+.ai-viz-lgw{display:inline-flex;position:relative}
+.ai-viz-b.lg{border-color:#bae6fd;color:#0369a1}
+.ai-viz-b.lg:hover{background:#f0f9ff}
+.ai-viz-b.lg:disabled{opacity:.75;cursor:progress}
+.ai-viz-lgm{min-width:0;width:max-content;max-width:210px}
+.ai-viz-lgh{padding:5px 9px 6px;font-size:10.5px;font-weight:600;color:#64748b;line-height:1.45;white-space:normal}
+.ai-viz-lgm button{font-size:12px}
 .ai-viz-b.ed{border-color:#c7d2fe}
 .ai-viz-box[data-ed="1"] .ai-viz-b.ed{background:#eef2ff;border-color:#818cf8;color:#3730a3}
 .ai-viz-box[data-ed="1"] .ai-viz-b.ed::after{content:' ●';color:#be185d;font-size:9px}
@@ -12488,8 +12495,8 @@ async function _btmApiCall(provider, apiKey, system, userContent, debugLabel){
 
 /* JSON 방식: payload를 통째로 번역시키고 응답 JSON을 파싱. 일시 오류·JSON 깨짐이면 같은 요청을 재시도.
    반환: {ok:true,data} | {ok:false,fatal,reason} (예외를 던지지 않음 — 호출자가 단계적으로 대응) */
-async function _btmCallTranslateChunk(provider, apiKey, langName, payload, debugLabel){
-  const system=_btmTranslateSysPrompt(langName), user=JSON.stringify(payload);
+async function _btmCallTranslateChunk(provider, apiKey, langName, payload, debugLabel, sysOverride){   /* sysOverride: 기본 번역 프롬프트 대신 쓸 system(인포그래픽 다국어 생성이 씀) */
+  const system=sysOverride||_btmTranslateSysPrompt(langName), user=JSON.stringify(payload);
   let last={ok:false, fatal:false, reason:'알 수 없는 오류'};
   for(let attempt=1; attempt<=_BTM_XLATE_MAX_ATTEMPTS; attempt++){
     const tag=debugLabel+(attempt>1?' (재시도 '+(attempt-1)+')':'');
@@ -12586,7 +12593,7 @@ function _btmAcceptField(job, id, val){
    failed: {id:사유} — 끝내 번역을 못 받은 필드(호출자가 기존 값 유지/한국어 폴백) */
 async function _btmRunJob(provider, apiKey, job){
   if(job.kind==='meta'||job.kind==='mm'){
-    const r=await _btmCallTranslateChunk(provider, apiKey, job.langName, job.payload, job.label);
+    const r=await _btmCallTranslateChunk(provider, apiKey, job.langName, job.payload, job.label, job.sys);
     return {job, response:r.ok?r.data:null, failed:{}, metaReason:r.ok?null:r.reason};
   }
   const src=job.payload.fields, got={}, failed={}; let anyOk=false, fatal=false;
@@ -29246,7 +29253,7 @@ async function _fetchClaudeBalance(){
   }
 
   /* ── 어시스턴트 버블 최종 렌더링 (설명 + 결과물 구분) ── */
-  function _renderAssistantBubble(div, rawText){
+  function _renderAssistantBubble(div, rawText, vz){   /* vz: (선택) 인포그래픽 상자별 보기 설정 {열쇠:설정} — 번역본이 원본 상자의 색·양식을 이어받게 할 때 */
     const _vs=_vizSplit(rawText);   /* <INFOGRAPHIC> 명세는 글 처리에서 빼고 따로 그림 상자로 (인포그래픽이 없으면 _vs.text === rawText) */
     const {explain, result}=_parseResult(_vs.text);
     div.innerHTML='';
@@ -29259,7 +29266,7 @@ async function _fetchClaudeBalance(){
         div.appendChild(exDiv);
       }
       /* 인포그래픽 상자 — 이미지로 그려 보여 주고 붙여넣기·복사·저장 */
-      _vs.vizs.slice(0,_VIZ_MAX).forEach(v=>div.appendChild(_vizMakeBox(v,true)));
+      _vs.vizs.slice(0,_VIZ_MAX).forEach(v=>div.appendChild(_vizMakeBox(v,true,vz)));
       /* 결과물 박스 */
       if(result){
         const box=document.createElement('div'); box.className='ai-result-box';
@@ -31662,6 +31669,8 @@ Rules:
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'save\')" title="PNG 파일로 저장">💾 저장</button>'
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'zoom\')" title="크게 보기">🔍 크게</button>'
         +(live?'<button type="button" class="ai-viz-b ed mobile-keep" data-r="ed" onclick="_vizAct(this,\'ed\')" title="인포그래픽 안의 글(제목·항목·표 칸 등)을 직접 고칩니다 — 숫자 차트의 값·색·모양은 그대로">✏️ 수정</button>':'')
+        +(live?'<span class="ai-viz-lgw"><button type="button" class="ai-viz-b lg mobile-keep" data-r="lg" aria-haspopup="true" onclick="_vizAct(this,\'lg\')" title="이 인포그래픽의 글을 영어·중국어로 번역해, 같은 구성·색·숫자의 새 인포그래픽을 만듭니다">🌐 다국어 생성 ▾</button>'
+          +'<div class="ai-viz-menu ai-viz-lgm"><div class="ai-viz-lgh">같은 구성·색·숫자에 글만 번역해 새 인포그래픽을 만들어요</div><button type="button" class="mobile-keep" data-l="en" onclick="_vizAct(this,\'lgo\',\'en\')">영어 · English</button><button type="button" class="mobile-keep" data-l="zh" onclick="_vizAct(this,\'lgo\',\'zh\')">중국어 · 中文</button></div></span>':'')
         +(live?'<button type="button" class="ai-viz-b rc mobile-keep" data-r="rc" aria-expanded="false" onclick="_vizAct(this,\'rc\')" title="유형(핵심 요약·타임라인·비교 등) 버튼을 눌러 이 인포그래픽을 다른 유형으로 바꿔 다시 만듭니다">🔄 유형 바꾸기 ▾</button>':'');
       cnt.appendChild(bar);
       if(live){
@@ -31729,17 +31738,21 @@ Rules:
       const im=b.querySelector('.ai-viz-img'); if(im&&!im.getAttribute('src')&&b.getAttribute('data-spec')) _vizRenderBox(b);
     });
     (root||document).querySelectorAll('.ai-viz-box[data-rc="1"]').forEach(b=>_vizBoxRcRender(b));   /* 열려 있던 유형 버튼 줄은 지금의 목록으로 다시 */
+    (root||document).querySelectorAll('.ai-viz-bar [data-r="lg"]').forEach(b=>{ b.disabled=false; b.textContent='🌐 다국어 생성 ▾'; });   /* 번역 도중 팝업을 닫아 '번역 중'인 채 저장된 버튼 복구(진행 상태는 JS 변수라 복원되지 않음) */
+    (root||document).querySelectorAll('.ai-viz-lgm.open').forEach(m=>m.classList.remove('open'));
     (root||document).querySelectorAll('.ai-viz-undo').forEach(u=>{ const b=u.closest('.ai-viz-box'); if(!b||!b._paste) u.remove(); });   /* 팝업을 닫았다 열어 복원된 상자엔 붙여넣기 기록(JS 변수)이 없으므로 죽은 취소 버튼은 치움 */
   }
   function _vizPngOk(s){ return typeof s==='string'&&s.length>100&&/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(s); }
 
   /* ── 상자 버튼들 ── */
   function _vizCloseMenus(){ document.querySelectorAll('.ai-viz-menu.open').forEach(m=>m.classList.remove('open')); }
-  document.addEventListener('click',e=>{ if(!(e.target.closest&&e.target.closest('.ai-viz-split'))) _vizCloseMenus(); });
+  document.addEventListener('click',e=>{ if(!(e.target.closest&&e.target.closest('.ai-viz-split,.ai-viz-lgw'))) _vizCloseMenus(); });
   window._vizAct=function(el,act,arg){
     const box=el&&el.closest&&el.closest('.ai-viz-box'); if(!box) return;
-    if(act!=='menu') _vizCloseMenus();
+    if(act!=='menu'&&act!=='lg') _vizCloseMenus();
     if(act==='paste') _vizPaste(box,arg||'end');
+    else if(act==='lg'){ const m=box.querySelector('.ai-viz-lgm'); const was=m&&m.classList.contains('open'); _vizCloseMenus(); if(m&&!was){ _vzMenuMark(box); m.style.left=''; m.style.right=''; m.classList.add('open'); _vzMenuFit(m); try{ m.scrollIntoView({block:'nearest'}); }catch(e){} } }
+    else if(act==='lgo') _vizTranslate(box,arg);
     else if(act==='menu'){ const m=box.querySelector('.ai-viz-menu'); const was=m&&m.classList.contains('open'); _vizCloseMenus(); if(m&&!was){ const r=(typeof _savedRange!=='undefined')?_savedRange:null; const eEl=_eid?g(_eid):null; const cb=m.querySelector('[data-r="caret"]'); if(cb) cb.disabled=!(r&&eEl&&eEl.contains(r.commonAncestorContainer)); m.style.left=''; m.style.right=''; m.classList.add('open'); if(m.getBoundingClientRect().right>window.innerWidth-6){ m.style.left='auto'; m.style.right='0'; } try{ m.scrollIntoView({block:'nearest'}); }catch(e){} } }
     else if(act==='copy') _vizCopy(box);
     else if(act==='save') _vizSave(box);
@@ -31901,7 +31914,7 @@ Rules:
           const w=E('label','vzed-f'+((f.multi||f.wide)?' wide':'')+(f.sm?' sm':''));
           w.appendChild(E('span','vzed-fl',f.label));
           const inp=f.multi?E('textarea'):E('input'); if(f.multi) inp.rows=f.rows||2; else inp.type='text';
-          inp.className='mobile-keep'; inp.maxLength=(f.sm&&f.cap===2)?8:f.cap; inp.value=f.value; inp.setAttribute('data-fi',String(idx));
+          inp.className='mobile-keep'; inp.maxLength=(f.sm&&f.cap===2)?8:f.cap*(_vzE.mul||1); inp.value=f.value; inp.setAttribute('data-fi',String(idx));   /* 영어 인포그래픽은 글자 수 제한이 두 배(렌더러 clean 과 같음) */
           if(f.ph) inp.placeholder=f.ph; if(f.tip) inp.title=f.tip;
           inp.addEventListener('input',_vzEdInput);
           w.appendChild(inp); row.appendChild(w);
@@ -31941,7 +31954,7 @@ Rules:
   function _vzEdOpen(box){
     let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ return; }
     const m=g('aiVizEdModal'); if(!m||!window.BTMViz) return;
-    _vzE={box,work:JSON.parse(JSON.stringify(spec)),init:null,secs:null,fields:[],tok:0,timer:0};
+    _vzE={box,work:JSON.parse(JSON.stringify(spec)),init:null,secs:null,fields:[],tok:0,timer:0,mul:(BTMViz.scriptOf(spec)==='en')?2:1};
     _vzE.secs=_vzEdFields(_vzE.work); _vzE.init=JSON.stringify(_vzE.work);
     g('aiVizEdTitle').textContent='✏️ 인포그래픽 글 수정 — '+(spec.title||'');
     const im=box.querySelector('.ai-viz-img'); g('aiVizEdImg').src=(im&&im.getAttribute('src'))||'';
@@ -31993,6 +32006,124 @@ Rules:
   function _vizHistPutSpec(box,spec){
     const sid=_sessId, vk=box&&box.getAttribute('data-vk'); if(!sid||!vk) return;
     _ahQ=_ahQ.then(()=>_ahPatchVzs(sid,vk,spec)).catch(e=>{ console.warn('[AI 대화 기록] 고친 인포그래픽 글을 저장하지 못했어요:',e&&e.message||e); });
+  }
+  /* ═══ 인포그래픽 다국어 생성 (2026-10-17) ═══════════════════════════════════════════════
+     상자의 [🌐 다국어 생성 ▾] → 영어 / 중국어 고르기 → 이 인포그래픽(고친 글 포함)의 '글'만 번역해 같은 구성·색·양식·숫자의 새 인포그래픽을 만듦.
+     · 번역은 AI 에게 인포그래픽을 다시 그리게 하지 않고 글 조각만 번역시킴(명세 속 문자열 잎 = 수정 창의 칸과 같은 목록) → 블록·숫자·색·양식이 그대로라 '동일한' 결과가 보장되고 토큰도 적게 듦.
+       호출 계층은 리포트의 '🌐 다국어 생성'(번역)과 같은 것: _btmRunJobQueue → _btmCallTranslateChunk → _btmApiCall — 재시도·백오프·JSON 복구·공급자 4종, AI 공급자는 관리 › AI 공급자의 '다국어 생성' 설정을 따름.
+       프롬프트만 인포그래픽용(_vzTrSys — 원본이 한국어·영어·중국어 어느 쪽이든 번역, 숫자·단위·고유명사·약어 유지)으로 sys 를 넘겨 바꿈.
+     · 결과는 새 답변으로 채팅에 붙음(이전 것은 그대로): 사용자 말풍선(+원본 인용) → 번역된 명세를 담은 답변 → 같은 상자. _hist·기록(🕘)에도 한 쌍으로 저장돼 이어서 대화·새로고침 뒤에도 그대로.
+       새 상자의 보기 설정(색·너비·양식)은 원본 상자 것을 이어받음(_renderAssistantBubble 의 vz). 번역 중엔(_vzTrAct) 메시지 보내기·이어서 대화를 막아 AI 문맥의 질문·답변 순서가 꼬이지 않게 함. */
+  const _VZ_LANGS={en:{name:'English',label:'영어'},zh:{name:'Simplified Chinese',label:'중국어'}};
+  let _vzTrAct=false;
+  const _vzHangul=s=>(String(s||'').match(/[가-힣]/g)||[]).length;
+  const _vzNorm=s=>String(s==null?'':s).replace(/\s+/g,' ').trim();
+  function _vzTrSys(langName){
+    return 'Translate the text strings of an infographic into '+langName+'.\n'
+      +'The input is a JSON object {"infographic":[ ...strings... ]}. The strings are short titles, labels, table cells and sentences shown inside an infographic image. Their source language is usually Korean, but may be English or Chinese.\n'
+      +'Rules:\n'
+      +'- Respond with ONLY raw JSON of the form {"infographic":{"<original string>":"<translation>", ...}}: every input string must appear exactly once as a key (copy the key character-for-character) with its translation as the value. No prose, no markdown code fences.\n'
+      +'- Write natural, concise '+langName+' of about the same visual length as the original (the text must fit inside cards, chart labels and table cells).\n'
+      +'- Keep numbers, units, percent signs, currency symbols, tickers, product and company names, acronyms (e.g. AI, FOMC, S&P 500), emoji and symbols exactly as they are. Do not alter text that is already in '+langName+'.\n'
+      +'- Do not add explanations, notes or source citations.';
+  }
+  function _vzFlat(spec){ const out=[]; _vzEdFields(spec).forEach(s=>s.groups.forEach(gr=>gr.fields.forEach(f=>out.push(f)))); return out; }
+  function _vzChunks(texts){   /* 응답이 잘리지 않게 작은 묶음(40개·2000자 이하)으로 */
+    const chunks=[]; let cur=[], len=0;
+    texts.forEach(t=>{ if(cur.length&&(cur.length>=40||len+t.length>2000)){ chunks.push(cur); cur=[]; len=0; } cur.push(t); len+=t.length; });
+    if(cur.length) chunks.push(cur);
+    return chunks;
+  }
+  /* 글 조각들을 번역 → {map:{원문:번역문}, missing:[못 받은 원문], reason}. 못 받은 것(누락·번역이 비었거나 한글이 그대로 남음)은 한 번 더 요청 */
+  async function _vzTranslateTexts(provider,apiKey,L,texts,srcLang,onProgress){
+    const sys=_vzTrSys(L.name), map=Object.create(null); let reason='';
+    const bad=(t,v)=>{ if(typeof v!=='string'||!v.trim()) return true; return srcLang==='ko'&&_vzHangul(v)>=Math.max(1,_vzHangul(t)*0.5); };
+    let pending=texts.slice();
+    for(let pass=1;pass<=2&&pending.length;pass++){
+      const chunks=_vzChunks(pending);
+      const jobs=chunks.map((c,i)=>({lang:'ig',langName:L.name,kind:'mm',payload:{infographic:c},sys,label:'인포그래픽→'+L.name+' '+(i+1)+'/'+chunks.length+(pass>1?' (누락분)':'')}));
+      const results=await _btmRunJobQueue(provider,apiKey,jobs,(d,t)=>{ if(pass===1&&onProgress) onProgress(d,t); },null);
+      results.forEach(r=>{
+        const resp=r.response&&r.response.infographic;
+        if(!resp||typeof resp!=='object'){ if(!r.response&&r.metaReason) reason=r.metaReason; return; }
+        const nm=Object.create(null); Object.keys(resp).forEach(k=>{ nm[_vzNorm(k)]=resp[k]; });
+        (r.job.payload.infographic||[]).forEach(t=>{ const v=(typeof resp[t]==='string')?resp[t]:nm[_vzNorm(t)]; if(!bad(t,v)) map[t]=String(v).trim(); });
+      });
+      pending=pending.filter(t=>!(t in map));
+      if(!Object.keys(map).length) break;   /* 하나도 못 받았으면 다시 보내도 같음(키·네트워크 문제) */
+    }
+    return {map,missing:pending,reason};
+  }
+  function _vzApplyMap(spec,map){   /* 명세 복사본의 글 칸마다 번역문을 넣음(구조·숫자·양식은 그대로) */
+    const out=JSON.parse(JSON.stringify(spec)); let n=0;
+    _vzFlat(out).forEach(f=>{ const v=map[f.value]; if(typeof v==='string'){ const p=_vzAt(out,f.path.slice(0,-1)); if(p!=null){ p[f.path[f.path.length-1]]=v; n++; } } });
+    return {spec:out,count:n};
+  }
+  function _vizRefOf(box){   /* [↪ 참조]를 누른 것과 같은 참조 객체(칩 없이) */
+    const area=g('aiMessages'), title=box.getAttribute('data-title')||'인포그래픽';
+    const no=(area&&area.contains(box))?[...area.querySelectorAll('.ai-result-box')].indexOf(box)+1:0;
+    return {k:'r',part:0,no,label:_refLabel('r',no,0),src:box.getAttribute('data-src')||'',h:0,prev:('🎨 '+title).slice(0,140)};
+  }
+  /* 번역 결과를 채팅에 한 쌍(사용자 말풍선 + 번역본 답변)으로 붙이고 _hist·기록에 저장 — 정상 전송·답변 흐름이 하는 일과 같음 */
+  function _vzPostExchange(srcBox,L,spec2,nMissing){
+    const srcTitle=srcBox.getAttribute('data-title')||'인포그래픽';
+    const ref=_vizRefOf(srcBox);
+    const uText='🌐 ‘'+srcTitle+'’ 인포그래픽을 '+L.label+'로 번역해 같은 구성으로 만들어줘.';
+    const lead='🌐 ‘'+srcTitle+'’ 인포그래픽을 '+L.label+' 버전으로 만들었어요. 구성·숫자·색·양식은 그대로이고 글만 번역했어요.'+(nMissing?' (번역하지 못한 '+nMissing+'개 글은 원문 그대로예요 — ✏️ 수정에서 고칠 수 있어요.)':'');
+    const reply=lead+'\n\n'+_vizSrcOf(spec2);
+    _addBubble('user',uText,_refQuoteHtml([ref],true)+'<div class="ai-user-txt">'+_ahEsc(uText)+'</div>').insertAdjacentHTML('afterend',_UNDO_ROW);
+    const _ahU=_ahBegin({text:uText,html:'',imgs:[],att:'',refs:[ref]});
+    _hist.push({role:'user',content:uText});
+    const aDiv=_addBubble('assistant','');
+    _hist.push({role:'assistant',content:reply});
+    const vs=_vizSplit(reply); _lastReply=vs.text; _lastResult='';
+    const vz={}; if(vs.vizs[0]) vz[_vizKey(vs.vizs[0].body)]=_vizBoxOpt(srcBox);   /* 원본 상자의 색·너비·양식을 이어받게 */
+    _renderAssistantBubble(aDiv,reply,vz);
+    g('aiApplyBtnWrap').style.display='block';
+    _ahSave(_ahU,reply,false,_vizStates(aDiv));
+    return aDiv;
+  }
+  function _vzMenuFit(m){   /* 메뉴가 채팅 영역(#aiMessages — 폰 폭에선 좁음) 밖으로 잘리지 않게: 기본은 버튼 왼쪽 맞춤 → 오른쪽을 넘으면 오른쪽 맞춤 → 그래도 왼쪽을 넘으면 영역 안으로 밀어 넣음 */
+    const ar=(g('aiMessages')||document.body).getBoundingClientRect();
+    const lo=Math.max(ar.left,0)+6, hi=Math.min(ar.right,window.innerWidth)-6;
+    let r=m.getBoundingClientRect();
+    if(r.right>hi){ m.style.left='auto'; m.style.right='0'; r=m.getBoundingClientRect(); }
+    if(r.left<lo){ const wr=m.parentElement.getBoundingClientRect(); m.style.right='auto'; m.style.left=(lo-wr.left)+'px'; }
+  }
+  function _vzMenuMark(box){   /* 이미 그 언어인 인포그래픽이면 그 언어 항목은 눌리지 않게 */
+    let cur='ko'; try{ cur=BTMViz.scriptOf(JSON.parse(box.getAttribute('data-spec'))); }catch(e){}
+    box.querySelectorAll('.ai-viz-lgm button').forEach(b=>{ const same=(b.getAttribute('data-l')===cur); b.disabled=same; b.title=same?'이미 이 언어의 인포그래픽이에요':''; });
+  }
+  async function _vizTranslate(box,lang){
+    const L=_VZ_LANGS[lang]; if(!L||!window.BTMViz||box._trBusy) return;
+    if(_busy||_vzTrAct){ _vizRcToast(_vzTrAct?'다른 인포그래픽을 번역하는 중이에요 — 끝난 뒤에 눌러 주세요':'AI가 답변하는 중이에요 — 끝난 뒤에 눌러 주세요',true); return; }
+    let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ return; }
+    const srcLang=BTMViz.scriptOf(spec);
+    if(srcLang===lang){ _vizRcToast('이미 '+L.label+' 인포그래픽이에요'); return; }
+    const has=srcLang==='ko'?(v=>/[가-힣]/.test(v)):(srcLang==='zh'?(v=>/[一-龥]/.test(v)):(v=>/[A-Za-z]/.test(v)));
+    const texts=[...new Set(_vzFlat(spec).map(f=>f.value).filter(has))];   /* 원본 언어의 글자가 있는 조각만 번역 대상 — 숫자·기호·이모지, 이미 영어인 약어(WTI 등)는 그대로 */
+    if(!texts.length){ _vizRcToast('번역할 글이 없어요',true); return; }
+    const provider=_getBtmLangGenProvider();
+    const pName={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'}[provider]||'Claude';
+    const apiKey=provider.startsWith('deepseek')?localStorage.getItem(AK_DS):provider.startsWith('gemini')?localStorage.getItem(AK_GM):provider.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK);
+    if(!apiKey){ alert('먼저 관리 메뉴 > 🧩 AI 공급자에서 '+pName+' API Key를 설정하세요.\n(인포그래픽 다국어 생성은 \'다국어 생성\'에 지정한 AI 공급자를 씁니다)'); return; }
+    const eid0=_eid, sid0=_sessId, btn=box.querySelector('[data-r="lg"]'), setLbl=t=>{ if(btn) btn.textContent=t; };
+    box._trBusy=true; _vzTrAct=true; if(btn) btn.disabled=true;
+    setLbl('🌐 '+L.label+' 번역 중…');
+    try{
+      const r=await _vzTranslateTexts(provider,apiKey,L,texts,srcLang,(d,t)=>setLbl('🌐 '+L.label+' 번역 중 '+d+'/'+t));
+      if(!Object.keys(r.map).length){ _vizRcToast('번역하지 못했어요'+(r.reason?' — '+r.reason:'')+' (API Key·네트워크를 확인해 주세요)',true); return; }
+      const out=_vzApplyMap(spec,r.map);
+      let spec2; try{ spec2=BTMViz.normalize(out.spec).spec; }catch(e){ _vizRcToast('번역한 글로 인포그래픽을 만들지 못했어요',true); return; }
+      if(!box.isConnected||g('aiChatModal').style.display!=='flex'||_eid!==eid0||_sessId!==sid0){ console.warn('[인포그래픽 다국어 생성] 번역하는 사이 팝업·대화가 바뀌어 결과를 붙이지 않았어요'); return; }
+      _vzPostExchange(box,L,spec2,r.missing.length);
+      _vizRcToast(r.missing.length?'🌐 '+L.label+' 인포그래픽을 만들었어요 — '+r.missing.length+'개 글은 번역하지 못해 원문 그대로예요':'🌐 '+L.label+' 인포그래픽을 만들었어요');
+    }catch(e){
+      console.error('[인포그래픽 다국어 생성]',e); _vizRcToast('번역하지 못했어요 — '+((e&&e.message)||e),true);
+    }finally{
+      box._trBusy=false; _vzTrAct=false;
+      if(btn){ btn.disabled=false; btn.textContent='🌐 다국어 생성 ▾'; }
+    }
   }
   function _vizBoxOpt(box){ let o={}; try{ o=JSON.parse(box.getAttribute('data-opt')||'{}')||{}; }catch(e){} return Object.assign(_vizPrefs(),o); }
   function _vizBoxAi(box){ try{ return JSON.parse(box.getAttribute('data-ai')||'{}')||{}; }catch(e){ return {}; } }
@@ -32272,6 +32403,7 @@ Rules:
   /* ── 메시지 전송 ── */
   window.sendAIMessage=async function(opts){   /* opts.extraSys: 시스템 프롬프트 끝에 덧붙일 글(AI Stock Radar 📡 업데이트의 History 블록) — 사용자 글이 아니라서 웹 검색어에 안 들어감 */
     if(_busy) return;
+    if(_vzTrAct){ _showToast('_ahToast','🌐 인포그래픽 번역 중이에요 — 끝난 뒤에 보낼 수 있어요','rgba(180,83,9,.93)'); return; }
     const input=g('aiUserInput');
     const inputHtml=_normalizeFontTags(input.innerHTML);
     const _hasHtmlFmt=/<[bius]>|<strong>|<em>|<span style="|<div style="text-align/i.test(inputHtml);
@@ -32992,7 +33124,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
   }
   async function _ahResume(id){
-    if(_busy){ _showToast('_ahToast','AI가 답변하는 중이에요 — 끝난 뒤에 불러오세요'); return; }
+    if(_busy||_vzTrAct){ _showToast('_ahToast',_vzTrAct?'인포그래픽 번역 중이에요 — 끝난 뒤에 불러오세요':'AI가 답변하는 중이에요 — 끝난 뒤에 불러오세요'); return; }
     let o; try{ o=await _ahGetBoth(id); }catch(e){ return; }
     if(!o||!o.meta||!o.body) return;
     const eid=_eid??'', area=g('aiMessages');
@@ -33085,6 +33217,23 @@ const THEMES={
 };
 const WIDTHS=[480,640,800];
 const FONT_STACK="'Malgun Gothic','맑은 고딕','Noto Sans KR','Apple SD Gothic Neo','Segoe UI','Segoe UI Emoji','Apple Color Emoji',sans-serif";
+/* 영어·중국어 인포그래픽(다국어 생성)은 그 언어에 맞는 글꼴을 앞에 — 영어는 한글 글꼴의 라틴 글자 대신 Segoe UI 등, 중국어는 간체 글리프가 있는 글꼴(+ lang="zh-CN") */
+const FONT_EN="'Segoe UI','Helvetica Neue',Arial,'Segoe UI Emoji','Apple Color Emoji','Malgun Gothic','Noto Sans KR',sans-serif";
+const FONT_ZH="'Microsoft YaHei','PingFang SC','Noto Sans SC','Noto Sans CJK SC','Hiragino Sans GB','Segoe UI','Segoe UI Emoji','Apple Color Emoji','Malgun Gothic',sans-serif";
+const _rg=(...p)=>new RegExp('['+p.map(x=>String.fromCharCode(x[0])+'-'+String.fromCharCode(x[1])).join('')+']');   /* 코드 범위로 정규식 만들기(소스에 특수 글자를 직접 넣지 않으려고) */
+const HANGUL_RE=_rg([0x1100,0x11FF],[0x3130,0x318F],[0xAC00,0xD7AF],[0x3040,0x30FF]);   /* 한글(+가나) */
+const HAN_RE=_rg([0x3400,0x9FFF]);
+const CJK_ANY_RE=_rg([0x1100,0x11FF],[0x3130,0x318F],[0xAC00,0xD7AF],[0x3040,0x30FF],[0x3400,0x9FFF]);
+function scriptOf(spec){   /* 명세 속 글이 어느 쪽인지 — 'ko'(한글·가나가 하나라도) | 'zh'(한자만) | 'en'(그 밖 — 라틴 글자) */
+  let hg=false, han=false;
+  (function w(o){
+    if(hg) return;
+    if(typeof o==='string'){ if(HANGUL_RE.test(o)) hg=true; else if(HAN_RE.test(o)) han=true; return; }
+    if(Array.isArray(o)){ o.forEach(w); return; }
+    if(o&&typeof o==='object') Object.keys(o).forEach(k=>w(o[k]));
+  })(spec);
+  return hg?'ko':(han?'zh':'en');
+}
 
 /* ── 양식 선택지 — [키, 라벨, 설명]. 채팅창 UI 도 이 표로 버튼을 만듦(한 곳에서 관리) ─────────────────────── */
 const OPT={
@@ -33198,7 +33347,10 @@ function clean(s,max,multi){   /* AI 가 쓴 글 한 조각을 안전한 한 줄
   s=stripBad(s);
   s=multi?s.split('\n').map(l=>{ l=l.replace(/[ \t]+/g,' ').trim(); const u=stripSrc(l); return (l&&!u)?null:u; }).filter(l=>l!==null).join('\n').replace(/\n{3,}/g,'\n\n').trim()   /* 출처 표기뿐이던 줄은 빈 줄도 남기지 않고 통째로 뺌 */
          :stripSrc(s.replace(/\s+/g,' ').trim());
-  if(max){ const a=Array.from(s); if(a.length>max) s=a.slice(0,max-1).join('').trimEnd()+'…'; }
+  if(max){
+    if(!CJK_ANY_RE.test(s)) max=Math.round(max*2);   /* 한글·한자가 없는 글(영어 등)은 글자 폭이 절반 가량이라 같은 자리에 두 배까지 */
+    const a=Array.from(s); if(a.length>max) s=a.slice(0,max-1).join('').trimEnd()+'…';
+  }
   return s;
 }
 const NUM_RE=/^\s*([+\-−–]?)\s*[$₩€¥£]?\s*(\d[\d,]*(?:\.\d+)?|\.\d+)\s*(?:[%a-zA-Z가-힣]{0,6})\s*$/;
@@ -33214,7 +33366,7 @@ function fmt(v,unit,plus){
   let s=a>=1000?a.toLocaleString('en-US',{maximumFractionDigits:2}):String(Number(a.toFixed(a<10?2:(a<100?1:0))));
   const sign=v<0?'-':(plus&&v>0?'+':'');
   unit=unit||'';
-  return /^[$₩€¥£]$/.test(unit)?sign+unit+s:sign+s+unit;
+  return /^[$₩€¥£]$/.test(unit)?sign+unit+s:sign+s+(/^[A-Za-z]{2,}/.test(unit)?' ':'')+unit;   /* 영어 단위(KRW tn·bn·pts)는 숫자와 띄움 — 한글·한자·%·x 는 붙임 */
 }
 function hexOk(c){ return typeof c==='string'&&/^#[0-9a-fA-F]{6}$/.test(c.trim())?c.trim().toLowerCase():''; }
 function mix(hex,base,a){   /* hex 를 base 위에 a(0~1) 만큼 섞은 불투명 #rrggbb */
@@ -34201,8 +34353,10 @@ function buildHtml(spec,opt){
     if(useTable(b,c)){ const t=TOTABLE[b.type](b,c); return card(t,tableHtml(t,c),c.tbl==='rows'?'':' tc'); }
     return BLOCKS[b.type](b,c);
   }).join('');
-  return {theme:themeKey,width:c.W,css:CSS,res:{lay:c.lay,form:c.form,tbl:c.tbl,head:c.head,bk:c.bk,dens:c.dens},
-    html:'<div class="v-root lay-'+c.lay+' dn-'+c.dens+'" style="width:'+c.W+'px;'+vars+'">'+headerHtml(spec,c)+'<div class="v-bd">'+blocks+'</div></div>'};
+  const sc=scriptOf(spec);   /* 영어·중국어 인포그래픽은 그 언어용 글꼴·lang 으로 */
+  const fam=sc==='zh'?FONT_ZH:(sc==='en'?FONT_EN:'');
+  return {theme:themeKey,width:c.W,css:CSS,res:{lay:c.lay,form:c.form,tbl:c.tbl,head:c.head,bk:c.bk,dens:c.dens,script:sc},
+    html:'<div class="v-root lay-'+c.lay+' dn-'+c.dens+'"'+(sc==='zh'?' lang="zh-CN"':(sc==='en'?' lang="en"':''))+' style="width:'+c.W+'px;'+vars+(fam?';font-family:'+fam:'')+'">'+headerHtml(spec,c)+'<div class="v-bd">'+blocks+'</div></div>'};
 }
 
 /* ── 측정 → PNG ─────────────────────────────────────────────────────────────────────────────────── */
@@ -34262,7 +34416,7 @@ function demo(){
     ]};
 }
 
-return {THEMES,WIDTHS,OPT,parse,normalize,buildHtml,render,demo,_esc:esc,_num:num,_fmt:fmt,_clean:clean};
+return {THEMES,WIDTHS,OPT,parse,normalize,buildHtml,render,demo,scriptOf,_esc:esc,_num:num,_fmt:fmt,_clean:clean};
 })();
 </script>
 <!-- VIZ-JS-END -->
@@ -38627,7 +38781,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
         <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
         <div id="aiVizPanel">
-          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고칠 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고치고, [🌐 다국어 생성]으로 영어·중국어 버전을 만들 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
           <div class="avp-rc" id="aiVizRecipes"></div>
           <div class="avp-ed" id="aiVizRcEd" style="display:none" data-i="-1">
             <div class="avp-eh" id="aiVizRcHd">＋ 새 문구 추가</div>
