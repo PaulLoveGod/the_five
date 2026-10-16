@@ -1715,6 +1715,58 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-viz-menu button:disabled:hover{background:transparent;color:#334155}
 .ai-viz-opts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding-top:7px;border-top:1px dashed #e2e8f0}
 /* 양식 고르기(🎛) — 양식 세트 + 헤더·문서 양식·표시 형식·표 양식·블록 모양·밀도 (그림 단추) */
+.ai-viz-b.ed{border-color:#c7d2fe}
+.ai-viz-box[data-ed="1"] .ai-viz-b.ed{background:#eef2ff;border-color:#818cf8;color:#3730a3}
+.ai-viz-box[data-ed="1"] .ai-viz-b.ed::after{content:' ●';color:#be185d;font-size:9px}
+/* 인포그래픽 글 수정 창(#aiVizEdModal) — 왼쪽 미리보기 / 오른쪽 글 칸 */
+#aiVizEdModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100001;align-items:center;justify-content:center;padding:16px}
+#aiVizEdModal .vzed-card{background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);width:min(1100px,98vw);height:min(88vh,800px);display:flex;flex-direction:column;overflow:hidden}
+#aiVizEdModal .vzed-hd{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#be185d,#7c3aed);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;flex:none}
+#aiVizEdModal .vzed-hd>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#aiVizEdModal .vzed-x{flex:none;border:none;background:transparent;color:#fff;font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;opacity:.85}
+#aiVizEdModal .vzed-x:hover{opacity:1}
+#aiVizEdModal .vzed-body{flex:1;min-height:0;display:flex;flex-direction:row}
+#aiVizEdModal .vzed-pv,#aiVizEdModal .vzed-fm{display:flex;flex-direction:column;min-width:0;min-height:0}
+#aiVizEdModal .vzed-pv{flex:0 0 44%;background:#f1f5f9;border-right:1px solid #e2e8f0}
+#aiVizEdModal .vzed-fm{flex:1}
+#aiVizEdModal .vzed-ph{flex:none;padding:8px 12px;font-size:11.5px;font-weight:800;color:#475569;border-bottom:1px solid #e2e8f0;background:#f8fafc}
+#aiVizEdModal .vzed-ph small{font-weight:600;color:#94a3b8;font-size:10.5px;margin-left:6px}
+#aiVizEdModal .vzed-pb{flex:1;min-height:0;overflow:auto;padding:12px}
+#aiVizEdModal .vzed-pb img{display:block;width:100%;height:auto;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.18);background:#fff}
+#aiVizEdModal .vzed-pb img:not([src]),#aiVizEdModal .vzed-pb img[src=""]{display:none}
+#aiVizEdMsg{margin-top:8px;font-size:11.5px;font-weight:700;color:#b91c1c;line-height:1.5}
+#aiVizEdModal .vzed-fb{flex:1;min-height:0;overflow:auto;padding:10px 14px 14px}
+#aiVizEdModal .vzed-sec{margin-bottom:14px}
+#aiVizEdModal .vzed-sh{font-size:11.5px;font-weight:800;color:#9d174d;padding:4px 0 5px;margin-bottom:6px;border-bottom:2px solid #fbcfe8}
+#aiVizEdModal .vzed-grp{margin-bottom:8px}
+#aiVizEdModal .vzed-gl{font-size:10.5px;font-weight:800;color:#64748b;margin-bottom:3px}
+#aiVizEdModal .vzed-row{display:flex;flex-wrap:wrap;gap:6px 8px}
+#aiVizEdModal .vzed-f{display:flex;flex-direction:column;gap:2px;flex:1 1 150px;min-width:0}
+#aiVizEdModal .vzed-f.sm{flex:0 0 72px}
+#aiVizEdModal .vzed-f.wide{flex:1 1 100%}
+#aiVizEdModal .vzed-fl{font-size:10px;font-weight:700;color:#94a3b8}
+#aiVizEdModal .vzed-f input,#aiVizEdModal .vzed-f textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px;font-family:inherit;color:#1e293b;background:#fff;outline:none;min-width:0}
+#aiVizEdModal .vzed-f textarea{resize:vertical;line-height:1.5;min-height:42px}
+#aiVizEdModal .vzed-f input:focus,#aiVizEdModal .vzed-f textarea:focus{border-color:#be185d;box-shadow:0 0 0 2px rgba(190,24,93,.13)}
+#aiVizEdModal .vzed-ft{flex:none;display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid #e2e8f0;background:#f8fafc}
+#aiVizEdModal .vzed-hint{flex:1 1 auto;min-width:0;font-size:10.5px;color:#94a3b8;line-height:1.45}
+#aiVizEdModal .vzed-sp{flex:0 0 0}
+#aiVizEdModal .vzed-b{height:30px;padding:0 16px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex:none}
+#aiVizEdModal .vzed-b.ok{border:1px solid #be185d;background:#be185d;color:#fff}
+#aiVizEdModal .vzed-b.ok:hover{background:#9d174d}
+#aiVizEdModal .vzed-b.ok:disabled{opacity:.45;cursor:default}
+#aiVizEdModal .vzed-b.cn{border:1px solid #cbd5e1;background:#fff;color:#64748b}
+#aiVizEdModal .vzed-b.cn:hover{background:#f1f5f9}
+#aiVizEdModal .vzed-b.rs{border:1px solid #c4b5fd;background:#fff;color:#6d28d9}
+#aiVizEdModal .vzed-b.rs:hover{background:#ede9fe}
+@media (max-width:760px){
+  #aiVizEdModal{padding:6px}
+  #aiVizEdModal .vzed-card{width:100%;height:96vh}
+  #aiVizEdModal .vzed-body{flex-direction:column}
+  #aiVizEdModal .vzed-pv{flex:0 0 34%;border-right:none;border-bottom:1px solid #e2e8f0}
+  #aiVizEdModal .vzed-ft{flex-wrap:wrap}
+  #aiVizEdModal .vzed-hint{flex:1 1 100%;order:3}
+}
 .ai-viz-b.rc{border-color:#f9a8d4;color:#9d174d}
 .ai-viz-b.rc:hover{background:#fce7f3}
 .ai-viz-b.rc.on{background:#be185d;border-color:#be185d;color:#fff}
@@ -2863,6 +2915,30 @@ body.mm-fs{overflow:hidden}
       <button onclick="_tsPickWriteMode('overwrite')" style="padding:10px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;text-align:left">🗑️ 덮어쓰기<div style="font-size:10px;font-weight:400;color:#94a3b8;margin-top:2px">기존 내용을 지우고 새로 작성</div></button>
       <button onclick="_tsPickWriteMode('append')" style="padding:10px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;text-align:left">➕ 이어쓰기<div style="font-size:10px;font-weight:400;color:#94a3b8;margin-top:2px">기존 내용 아래에 새로 추가</div></button>
       <button onclick="_tsPickWriteMode(null)" style="padding:7px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;font-size:11.5px;cursor:pointer">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 인포그래픽 글 수정 모달 — 상자의 [✏️ 수정]. 왼쪽 미리보기 + 오른쪽 글 칸(JS _vzEdOpen 이 채움) ═══════ -->
+<div id="aiVizEdModal" role="dialog" aria-modal="true" aria-label="인포그래픽 글 수정" onkeydown="if(event.key==='Escape'){event.stopPropagation();_vzEdAct('cancel');}else if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();_vzEdAct('apply');}">
+  <div class="vzed-card">
+    <div class="vzed-hd"><span id="aiVizEdTitle">✏️ 인포그래픽 글 수정</span><button type="button" class="vzed-x mobile-keep" onclick="_vzEdAct('cancel')" title="닫기 (Esc)" aria-label="닫기">✕</button></div>
+    <div class="vzed-body">
+      <div class="vzed-pv">
+        <div class="vzed-ph">미리보기 <small id="aiVizEdSt"></small></div>
+        <div class="vzed-pb"><img id="aiVizEdImg" alt="미리보기"><div id="aiVizEdMsg"></div></div>
+      </div>
+      <div class="vzed-fm">
+        <div class="vzed-ph">글 수정 <small>고칠 칸을 눌러 쓰세요 — 입력을 멈추면 미리보기가 바뀌어요</small></div>
+        <div class="vzed-fb" id="aiVizEdForm"></div>
+      </div>
+    </div>
+    <div class="vzed-ft">
+      <button type="button" id="aiVizEdReset" class="vzed-b rs mobile-keep" onclick="_vzEdAct('reset')" title="이 인포그래픽의 글을 AI 가 처음 쓴 그대로 되돌립니다 (적용을 눌러야 확정돼요)" style="display:none">↺ 처음 글로</button>
+      <span class="vzed-hint">글만 고칠 수 있어요(숫자 차트의 값은 그대로 · 색·모양은 🎛 양식). 칸을 모두 비우면 그 항목은 사라져요.</span>
+      <span class="vzed-sp"></span>
+      <button type="button" class="vzed-b cn mobile-keep" onclick="_vzEdAct('cancel')">취소</button>
+      <button type="button" id="aiVizEdOk" class="vzed-b ok mobile-keep" onclick="_vzEdAct('apply')" title="Ctrl+Enter">적용</button>
     </div>
   </div>
 </div>
@@ -31539,14 +31615,18 @@ Rules:
   }
 
   /* ── 상자 만들기(DOM) — live: 채팅창(붙여넣기·참조·스타일 바꾸기 포함) / false: 기록 조회 패널(보기·복사·저장만) ── */
-  function _vizMakeBox(v,live,vz){   /* vz: 기록 조회·이어서 대화일 때 그 대화에 저장된 상자별 양식 {열쇠:설정} — 없으면(새 답변) 지금의 기본 양식을 적용 */
+  function _vizMakeBox(v,live,vz,vzs){   /* vz: 기록 조회·이어서 대화일 때 그 대화에 저장된 상자별 양식 {열쇠:설정} — 없으면(새 답변) 지금의 기본 양식을 적용. vzs: 그 대화에 저장된 '고친 글' 명세 {열쇠:명세} */
     const Z=window.BTMViz;
     const box=document.createElement('div'); box.className='ai-result-box ai-viz-box';
-    let spec=null, err='', warn=[];
+    let spec=null, err='', warn=[], spec0=null;
     if(!Z) err='인포그래픽 모듈을 불러오지 못했어요 — 페이지를 새로고침해 주세요.';
     else{
       try{ const n=Z.normalize(Z.parse(v.body)); spec=n.spec; warn=n.warn||[]; }
       catch(e){ err=(v.truncated?'답변이 도중에 끊겨 ':'')+'인포그래픽 명세를 해석하지 못했어요 — '+(e&&e.message||e); }
+    }
+    if(spec&&vzs&&vzs[_vizKey(v.body)]){   /* 글을 고쳐 둔 상자 — 고친 명세로 그림(처음 명세는 되돌리기·AI 양식값용). 양식 값은 처음 명세(AI 값)에서 가져오고, 사용자가 고른 양식은 아래 pf 가 덮어씀 */
+      let es=null; try{ es=Z.normalize(vzs[_vizKey(v.body)]).spec; }catch(e){}
+      if(es){ ['theme'].concat(_VIZ_A6).forEach(k=>{ if(spec[k]) es[k]=spec[k]; else delete es[k]; }); spec0=spec; spec=es; }
     }
     const lbl=document.createElement('div'); lbl.className='ai-result-label';
     lbl.innerHTML='<span class="ai-res-t">🎨 인포그래픽<span class="ai-res-no"></span> — '+_ahEsc(spec?spec.title:'만들지 못했어요')+'</span>'+(live?_REF_BTN:'');
@@ -31560,13 +31640,14 @@ Rules:
       const pf=vz?_vizNormOpt(vz[vk]):_vizPrefs();   /* 기록에서 다시 그릴 땐 지금의 기본 양식이 아니라 그때 보던 양식(저장된 게 없으면 AI 가 정한 그대로) */
       box.setAttribute('data-vk',vk);
       box.setAttribute('data-title',spec.title);
-      const ai={}; ['theme'].concat(_VIZ_A6).forEach(k=>{ ai[k]=spec[k]||''; });   /* AI 가 정한 값 — 사용자가 '기본(auto)'로 돌리면 이 값으로 */
+      const ai={}; ['theme'].concat(_VIZ_A6).forEach(k=>{ ai[k]=(spec0||spec)[k]||''; });   /* AI 가 정한 값 — 사용자가 '기본(auto)'로 돌리면 이 값으로 */
       box.setAttribute('data-ai',JSON.stringify(ai));
       box.setAttribute('data-opt',JSON.stringify(pf));   /* 이 상자의 보기 설정(색·너비·상승색·양식 6축) — 처음엔 마지막에 고른 기본값 */
       if(pf.theme!=='auto') spec.theme=pf.theme;
       _VIZ_A6.forEach(k=>{ if(pf[k]!=='auto') spec[k]=pf[k]; });   /* 고른 양식은 명세에도 적어 둠 — 이후 AI 에게 고쳐 달라고 해도 같은 모양이 유지됨 */
       box.setAttribute('data-spec',JSON.stringify(spec));
       box.setAttribute('data-src',_vizSrcOf(spec));
+      if(spec0){ box.setAttribute('data-spec0',JSON.stringify(spec0)); box.setAttribute('data-ed','1'); }   /* 글을 고친 상자 표시 + 처음 명세(↺ 처음 글로) */
       box.setAttribute('data-state','busy');
       ph.textContent='🎨 인포그래픽 이미지를 만드는 중…';
       if(warn.length){ const n=document.createElement('div'); n.className='ai-viz-note'; n.textContent='⚠ 일부 항목('+warn.length+'개)은 형식이 맞지 않아 건너뛰었어요.'; cnt.appendChild(n); }
@@ -31580,6 +31661,7 @@ Rules:
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'copy\')" title="이미지를 클립보드에 복사 — 다른 곳에 Ctrl+V 로 붙여넣기">📋 복사</button>'
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'save\')" title="PNG 파일로 저장">💾 저장</button>'
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'zoom\')" title="크게 보기">🔍 크게</button>'
+        +(live?'<button type="button" class="ai-viz-b ed mobile-keep" data-r="ed" onclick="_vizAct(this,\'ed\')" title="인포그래픽 안의 글(제목·항목·표 칸 등)을 직접 고칩니다 — 숫자 차트의 값·색·모양은 그대로">✏️ 수정</button>':'')
         +(live?'<button type="button" class="ai-viz-b rc mobile-keep" data-r="rc" aria-expanded="false" onclick="_vizAct(this,\'rc\')" title="유형(핵심 요약·타임라인·비교 등) 버튼을 눌러 이 인포그래픽을 다른 유형으로 바꿔 다시 만듭니다">🔄 유형 바꾸기 ▾</button>':'');
       cnt.appendChild(bar);
       if(live){
@@ -31617,23 +31699,28 @@ Rules:
     _vizQ=_vizQ.then(()=>_vizDoRender(box,tok)).catch(()=>{});
     return _vizQ;
   }
+  /* 그릴 때 쓰는 보기 설정 — 양식 6축은 명세(spec)에 이미 반영돼 있음(고른 값 또는 AI 값), 색·너비·상승색만 여기서 */
+  function _vizRenderOpts(box,spec,scale){
+    const o=_vizBoxOpt(box), ai=_vizBoxAi(box);
+    return {theme:o.theme==='auto'?(ai.theme||spec.theme||'ocean'):o.theme,width:o.w,ud:o.ud,scale:scale||2};
+  }
   async function _vizDoRender(box,tok){
     if(tok!==box._tok) return;   /* 그새 더 새 요청(스타일 연속 변경)이 생겼으면 건너뜀 */
     const img=box.querySelector('.ai-viz-img');
     let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ _vizFail(box,'명세를 읽지 못했어요'); return; }
-    const o=_vizBoxOpt(box), ai=_vizBoxAi(box);
     try{
-      /* 양식 6축은 명세(spec)에 이미 반영돼 있음(고른 값 또는 AI 값) — 색·너비·상승색만 여기서 */
-      const r=await BTMViz.render(spec,{theme:o.theme==='auto'?(ai.theme||spec.theme||'ocean'):o.theme,width:o.w,ud:o.ud,scale:2});
+      const r=await BTMViz.render(spec,_vizRenderOpts(box,spec,2));
       if(tok!==box._tok) return;   /* 그리는 사이 더 새로운 요청이 있으면 이 결과는 버림 */
       img.setAttribute('data-w',r.width); img.setAttribute('data-h',r.height);
       const area=g('aiMessages'), first=!img.getAttribute('src');
       const nearBottom=first&&!!area&&box.isConnected&&area.contains(box)&&(area.scrollHeight-area.scrollTop-area.clientHeight<120);   /* 새로 생긴 상자를 보고 있던 중이면 */
       img.src=r.dataUrl;
       box.setAttribute('data-state','ready'); _vizBtnsEnable(box,true);
-      if(nearBottom){   /* 이미지가 자리를 차지한 뒤, 이미지 윗부분부터 보이게(버튼은 스크롤해서) — 아니면 위쪽이 화면 밖으로 밀려남 */
-        try{ await img.decode(); }catch(e){}
-        if(tok===box._tok&&area.contains(box)) area.scrollTop=Math.max(0,box.getBoundingClientRect().top-area.getBoundingClientRect().top+area.scrollTop-8);
+      if(nearBottom){   /* 이미지가 자리를 차지한 뒤, 이미지 윗부분부터 보이게(버튼은 스크롤해서) — 아니면 위쪽이 화면 밖으로 밀려남. 그림 큐를 붙잡지 않도록 기다리지 않고 따로 처리(큰 이미지 디코딩이 늦어져도 다음 그리기가 밀리지 않게) */
+        (async()=>{
+          try{ await img.decode(); }catch(e){}
+          if(tok===box._tok&&area.contains(box)) area.scrollTop=Math.max(0,box.getBoundingClientRect().top-area.getBoundingClientRect().top+area.scrollTop-8);
+        })();
       }
     }catch(e){ if(tok!==box._tok) return; _vizFail(box,(e&&e.message)||String(e)); }
   }
@@ -31659,6 +31746,7 @@ Rules:
     else if(act==='zoom') _vizZoom(box);
     else if(act==='retry') _vizRenderBox(box);
     else if(act==='undo') _vizUndoPaste(box);
+    else if(act==='ed') _vzEdOpen(box);
     else if(act==='rc') _vizBoxRcToggle(box);
     else if(act==='rcgo') _vizBoxRcGo(box,el);
     else if(act==='rcedit') _vizBoxRcEdit(box);
@@ -31708,6 +31796,203 @@ Rules:
     const p=g('aiVizPanel'); if(p&&p.style.display!=='flex') window._toggleVizPanel();
     _vizRcMode=true; _vizRcRender();
     try{ if(p) p.scrollIntoView({block:'nearest'}); }catch(e){}
+  }
+  /* ═══ 인포그래픽 글 수정 (2026-10-16) ═══════════════════════════════════════════════
+     상자의 [✏️ 수정] → 수정 창(#aiVizEdModal): 왼쪽 미리보기(PNG — 입력을 멈추면 다시 그림) + 오른쪽 글 칸들. 고칠 수 있는 건 명세 속 '글'(제목·부제·태그·항목 글·표 칸 등)뿐 — 숫자 차트의 값·색·모양은 그대로(색·모양은 🎛 양식).
+     · 칸을 모두 비우면 그 항목은 사라짐(정규화가 빈 항목을 버림). 고친 명세는 다시 BTMViz.normalize 를 거쳐 길이 제한·글자 정리·출처 표기 제거가 똑같이 적용됨.
+     · [적용] → 상자의 data-spec/data-src/data-title 을 고친 명세로 바꾸고 다시 그림. 처음 명세는 data-spec0 에 보관(↺ 처음 글로), data-ed="1" 로 '고친 상자' 표시.
+       data-src 가 바뀌므로 [↪ 참조]·[🔄 유형 바꾸기]로 AI 에게 가는 내용도 고친 글. 기록(🕘)엔 body.vzs[열쇠] 로 고친 명세를 저장 — 기록 조회·이어서 대화도 고친 글로 그림(양식 값은 처음 명세·body.viz 에서). */
+  const _VZ_AX=['theme'].concat(_VIZ_A6);   /* 명세 속 '양식' 값 — 글 수정과 따로 다룸 */
+  const _VZ_BT={stats:'수치 카드',points:'핵심 포인트',bar:'막대 차트',line:'선 차트',donut:'도넛 차트',timeline:'타임라인',steps:'단계·흐름',table:'표',compare:'비교',quote:'인용문',callout:'강조 박스',tags:'키워드',gauge:'계기판',text:'본문',heading:'구역 제목'};
+  const _vzAt=(root,p)=>p.reduce((o,k)=>(o==null?o:o[k]),root);
+  const _vzTone=d=>{ d=String(d||'').trim(); return /^[+▲△⬆↑]/.test(d)?'up':(/^[-−–▼▽⬇↓]/.test(d)?'down':''); };
+  const _vzNoAx=s=>{ const o=Object.assign({},s); _VZ_AX.forEach(k=>{ delete o[k]; }); return JSON.stringify(o); };
+  let _vzE=null;   /* 열려 있는 수정 창 {box, work, init, secs, fields, tok, timer} */
+  function _vzEdFields(spec){   /* 정규화된 명세 → 수정 칸 목록 {title, groups:[{label, fields:[{path,label,cap,value,value0,sm,multi,rows,wide,ph,tip,fix}]}]} */
+    const secs=[];
+    const F=(path,label,cap,o)=>{ const v=_vzAt(spec,path); return (typeof v==='string')?Object.assign({path,label,cap,value:v,value0:v},o||{}):null; };
+    const S=t=>{ const s={title:t,groups:[]}; secs.push(s); return s; };
+    const G=(s,label,fs)=>{ const f=fs.filter(Boolean); if(f.length) s.groups.push({label,fields:f}); };
+    G(S('머리 — 제목·부제·태그'),'',[F(['title'],'제목',60),F(['subtitle'],'부제',110),F(['tag'],'태그',36),F(['icon'],'아이콘',2,{sm:1})]);
+    (spec.blocks||[]).forEach((b,bi)=>{
+      const bp=['blocks',bi], s=S((bi+1)+'. '+(_VZ_BT[b.type]||b.type));
+      const T=()=>F(bp.concat('title'),'제목',40);
+      const SUBU=()=>[F(bp.concat('sub'),'부제',60),F(bp.concat('unit'),'단위',4,{sm:1})];
+      switch(b.type){
+        case 'stats':
+          G(s,'',[T()]);
+          (b.items||[]).forEach((it,i)=>{ const ip=bp.concat('items',i);
+            G(s,'카드 '+(i+1),[F(ip.concat('label'),'라벨',24),F(ip.concat('value'),'값',16,{tip:'비우면 이 카드가 사라져요'}),
+              F(ip.concat('delta'),'증감',14,{fix:(w,val,f)=>{ _vzAt(w,ip).tone=(val===f.value0)?it.tone:_vzTone(val); }}),   /* 증감 글이 바뀌면 빨강/파랑(tone)도 새 글의 부호로 */
+              F(ip.concat('note'),'주석',50),F(ip.concat('icon'),'아이콘',2,{sm:1})]); });
+          break;
+        case 'points':
+          G(s,'',[T()]);
+          (b.items||[]).forEach((it,i)=>{ const ip=bp.concat('items',i); G(s,'포인트 '+(i+1),[F(ip.concat('icon'),'아이콘',2,{sm:1}),F(ip.concat('head'),'제목',44),F(ip.concat('text'),'내용',170,{multi:1})]); });
+          break;
+        case 'bar':
+          G(s,'',[T()].concat(SUBU()));
+          (b.items||[]).forEach((it,i)=>{ const ip=bp.concat('items',i); G(s,'항목 '+(i+1),[F(ip.concat('label'),'이름',22),F(ip.concat('display'),'표시 값',14,{ph:'자동',tip:'막대 끝에 보이는 값 글 — 비우면 숫자에서 자동'})]); });
+          break;
+        case 'line':
+          G(s,'',[T()].concat(SUBU()));
+          G(s,'가로축 라벨',(b.labels||[]).map((l,j)=>F(bp.concat('labels',j),String(j+1),10,{sm:1})));
+          G(s,'선 이름',(b.series||[]).map((se,j)=>F(bp.concat('series',j,'name'),'선 '+(j+1),16)));
+          break;
+        case 'donut':
+          G(s,'',[T()].concat(SUBU()));
+          G(s,'가운데',[F(bp.concat('center'),'글자',10),F(bp.concat('centerSub'),'보조 글자',14)]);
+          (b.items||[]).forEach((it,i)=>{ const ip=bp.concat('items',i); G(s,'항목 '+(i+1),[F(ip.concat('label'),'이름',20),F(ip.concat('display'),'표시 값',12,{ph:'자동'})]); });
+          break;
+        case 'timeline':
+          G(s,'',[T()]);
+          (b.items||[]).forEach((it,i)=>{ const ip=bp.concat('items',i); G(s,'일정 '+(i+1),[F(ip.concat('date'),'날짜',16,{sm:1}),F(ip.concat('head'),'제목',48),F(ip.concat('text'),'내용',150,{multi:1})]); });
+          break;
+        case 'steps':
+          G(s,'',[T()]);
+          (b.items||[]).forEach((it,i)=>{ const ip=bp.concat('items',i); G(s,'단계 '+(i+1),[F(ip.concat('icon'),'아이콘',2,{sm:1}),F(ip.concat('head'),'제목',36),F(ip.concat('text'),'내용',110,{multi:1})]); });
+          break;
+        case 'table':
+          G(s,'',[T()]);
+          G(s,'표 머리',(b.headers||[]).map((h,c)=>F(bp.concat('headers',c),(c+1)+'열',18)));
+          (b.rows||[]).forEach((row,r)=>G(s,'행 '+(r+1),row.map((cell,c)=>{ const cp=bp.concat('rows',r,c);
+            return F(cp.concat('t'),(b.headers&&b.headers[c])||((c+1)+'열'),26,{fix:(w,val,f)=>{ _vzAt(w,cp).tone=(val===f.value0)?cell.tone:''; }}); })));   /* 칸 글이 바뀌면 부호 색은 새 글에서 다시 정함 */
+          break;
+        case 'compare':
+          G(s,'',[T()]);
+          (b.columns||[]).forEach((col,c)=>{ const cp=bp.concat('columns',c);
+            G(s,'묶음 '+(c+1),[F(cp.concat('head'),'묶음 제목',24)].concat((col.items||[]).map((x,j)=>F(cp.concat('items',j),'항목 '+(j+1),80,{wide:1})))); });
+          break;
+        case 'quote':
+          G(s,'',[F(bp.concat('text'),'인용문',240,{multi:1,rows:3}),F(bp.concat('source'),'말한 사람·구절',40)]);
+          break;
+        case 'callout':
+          G(s,'',[F(bp.concat('icon'),'아이콘',2,{sm:1}),F(bp.concat('head'),'제목',40),F(bp.concat('text'),'내용',220,{multi:1})]);
+          break;
+        case 'tags':
+          G(s,'',[T()]);
+          G(s,'키워드',(b.items||[]).map((x,j)=>F(bp.concat('items',j),String(j+1),18,{sm:1})));
+          break;
+        case 'gauge':
+          G(s,'',[T(),F(bp.concat('label'),'상태 글',16),F(bp.concat('caption'),'설명',70,{multi:1}),F(bp.concat('unit'),'단위',4,{sm:1})]);
+          break;
+        case 'text':
+          G(s,'',[T()]);
+          (b.paragraphs||[]).forEach((p,j)=>G(s,'문단 '+(j+1),[F(bp.concat('paragraphs',j),'내용',260,{multi:1,rows:3})]));
+          break;
+        case 'heading':
+          G(s,'',[F(bp.concat('text'),'구역 제목',40)]);
+          break;
+      }
+    });
+    return secs.filter(s=>s.groups.length);
+  }
+  function _vzEdBuild(){   /* 칸 DOM 만들기 — 값은 .value 로만 넣어 HTML 로 해석되지 않음 */
+    const form=g('aiVizEdForm'); form.textContent='';
+    const E=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
+    _vzE.fields=[];
+    _vzE.secs.forEach(sec=>{
+      const sd=E('div','vzed-sec'); sd.appendChild(E('div','vzed-sh',sec.title));
+      sec.groups.forEach(gr=>{
+        const gd=E('div','vzed-grp'); if(gr.label) gd.appendChild(E('div','vzed-gl',gr.label));
+        const row=E('div','vzed-row');
+        gr.fields.forEach(f=>{
+          const idx=_vzE.fields.push(f)-1;
+          const w=E('label','vzed-f'+((f.multi||f.wide)?' wide':'')+(f.sm?' sm':''));
+          w.appendChild(E('span','vzed-fl',f.label));
+          const inp=f.multi?E('textarea'):E('input'); if(f.multi) inp.rows=f.rows||2; else inp.type='text';
+          inp.className='mobile-keep'; inp.maxLength=(f.sm&&f.cap===2)?8:f.cap; inp.value=f.value; inp.setAttribute('data-fi',String(idx));
+          if(f.ph) inp.placeholder=f.ph; if(f.tip) inp.title=f.tip;
+          inp.addEventListener('input',_vzEdInput);
+          w.appendChild(inp); row.appendChild(w);
+        });
+        gd.appendChild(row); sd.appendChild(gd);
+      });
+      form.appendChild(sd);
+    });
+  }
+  function _vzEdInput(e){
+    const f=_vzE&&_vzE.fields[+e.target.getAttribute('data-fi')]; if(!f) return;
+    const parent=_vzAt(_vzE.work,f.path.slice(0,-1)); if(parent==null) return;
+    parent[f.path[f.path.length-1]]=e.target.value;
+    if(f.fix) f.fix(_vzE.work,e.target.value,f);
+    _vzEdSchedule();
+  }
+  function _vzEdSchedule(){
+    clearTimeout(_vzE.timer); _vzEdStatus('수정 중…');
+    _vzE.timer=setTimeout(_vzEdPreview,450);
+  }
+  function _vzEdStatus(t){ const s=g('aiVizEdSt'); if(s) s.textContent=t||''; }
+  function _vzEdNorm(){   /* 작업 중인 명세 → 정규화(길이 제한·글자 정리·출처 표기 제거). 그릴 내용이 없으면 null */
+    try{ return BTMViz.normalize(JSON.parse(JSON.stringify(_vzE.work))).spec; }catch(e){ return null; }
+  }
+  async function _vzEdPreview(){
+    if(!_vzE) return;
+    const tok=++_vzE.tok, spec=_vzEdNorm(), ok=g('aiVizEdOk'), msg=g('aiVizEdMsg');
+    if(!spec){ if(msg) msg.textContent='그릴 내용이 없어요 — 제목이나 항목을 하나 이상 남겨 주세요.'; if(ok) ok.disabled=true; _vzEdStatus(''); return; }
+    if(msg) msg.textContent=''; if(ok) ok.disabled=false;
+    _vzEdStatus('미리보기 만드는 중…');
+    try{
+      const r=await BTMViz.render(spec,_vizRenderOpts(_vzE.box,spec,1));
+      if(!_vzE||tok!==_vzE.tok) return;
+      g('aiVizEdImg').src=r.dataUrl; _vzEdStatus('최신 상태');
+    }catch(e){ if(!_vzE||tok!==_vzE.tok) return; _vzEdStatus('미리보기를 만들지 못했어요 — '+((e&&e.message)||e)); }
+  }
+  function _vzEdOpen(box){
+    let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ return; }
+    const m=g('aiVizEdModal'); if(!m||!window.BTMViz) return;
+    _vzE={box,work:JSON.parse(JSON.stringify(spec)),init:null,secs:null,fields:[],tok:0,timer:0};
+    _vzE.secs=_vzEdFields(_vzE.work); _vzE.init=JSON.stringify(_vzE.work);
+    g('aiVizEdTitle').textContent='✏️ 인포그래픽 글 수정 — '+(spec.title||'');
+    const im=box.querySelector('.ai-viz-img'); g('aiVizEdImg').src=(im&&im.getAttribute('src'))||'';
+    g('aiVizEdMsg').textContent=''; g('aiVizEdOk').disabled=false; _vzEdStatus('');
+    g('aiVizEdReset').style.display=box.getAttribute('data-spec0')?'':'none';
+    _vzEdBuild();
+    m.style.display='flex';
+    const first=g('aiVizEdForm').querySelector('input,textarea'); if(first) setTimeout(()=>{ try{ first.focus(); first.select(); }catch(e){} },40);
+  }
+  function _vzEdClose(){ if(!_vzE) return; clearTimeout(_vzE.timer); _vzE.tok++; const m=g('aiVizEdModal'); if(m) m.style.display='none'; _vzE=null; }
+  function _vzEdReset(){   /* 처음 글로 — 처음 명세에 지금의 양식 값만 얹어 칸을 다시 채움(적용 전까지는 취소 가능) */
+    if(!_vzE) return;
+    const s0=_vzE.box.getAttribute('data-spec0'); if(!s0) return;
+    let o; try{ o=JSON.parse(s0); }catch(e){ return; }
+    let cur={}; try{ cur=JSON.parse(_vzE.box.getAttribute('data-spec'))||{}; }catch(e){}
+    _VZ_AX.forEach(k=>{ if(cur[k]) o[k]=cur[k]; else delete o[k]; });
+    let n; try{ n=BTMViz.normalize(o).spec; }catch(e){ return; }
+    _vzE.work=n; _vzE.secs=_vzEdFields(n); _vzEdBuild(); _vzEdSchedule();
+  }
+  function _vzEdApply(){
+    if(!_vzE) return;
+    const box=_vzE.box, spec=_vzEdNorm();
+    if(!spec){ _vizRcToast('그릴 내용이 없어요 — 제목이나 항목을 하나 이상 남겨 주세요',true); return; }
+    const before=box.getAttribute('data-spec'), js=JSON.stringify(spec);
+    if(js===before){ _vzEdClose(); _vizRcToast('바뀐 글이 없어요'); return; }
+    if(!box.getAttribute('data-spec0')) box.setAttribute('data-spec0',before);   /* 처음 명세(되돌리기용) — 첫 수정 때 한 번만 */
+    let same=false;   /* 고친 결과가 처음 글과 같아졌으면 '고치지 않은 상태'로 */
+    try{ same=_vzNoAx(spec)===_vzNoAx(BTMViz.normalize(JSON.parse(box.getAttribute('data-spec0'))).spec); }catch(e){}
+    box.setAttribute('data-spec',js); box.setAttribute('data-src',_vizSrcOf(spec)); box.setAttribute('data-title',spec.title);
+    const lt=box.querySelector('.ai-res-t'); if(lt) lt.innerHTML='🎨 인포그래픽<span class="ai-res-no"></span> — '+_ahEsc(spec.title);
+    const im=box.querySelector('.ai-viz-img'); if(im) im.setAttribute('alt',spec.title);
+    if(same){ box.removeAttribute('data-spec0'); box.removeAttribute('data-ed'); }
+    else box.setAttribute('data-ed','1');
+    _vizHistPutSpec(box,same?null:spec);
+    _vzEdClose();
+    _vizRenderBox(box);
+    _vizRcToast(same?'↺ 처음 글로 되돌렸어요':'✅ 글을 고쳤어요');
+  }
+  window._vzEdAct=function(act){
+    if(!_vzE) return;
+    if(act==='apply') _vzEdApply();
+    else if(act==='reset') _vzEdReset();
+    else if(act==='cancel'){
+      if(JSON.stringify(_vzE.work)!==_vzE.init&&!confirm('고친 내용을 버리고 닫을까요?')) return;
+      _vzEdClose();
+    }
+  };
+  /* 기록(🕘)에 고친 명세 저장 — body.vzs[열쇠]. spec=null 이면 지움(처음 글로 되돌린 경우) */
+  function _vizHistPutSpec(box,spec){
+    const sid=_sessId, vk=box&&box.getAttribute('data-vk'); if(!sid||!vk) return;
+    _ahQ=_ahQ.then(()=>_ahPatchVzs(sid,vk,spec)).catch(e=>{ console.warn('[AI 대화 기록] 고친 인포그래픽 글을 저장하지 못했어요:',e&&e.message||e); });
   }
   function _vizBoxOpt(box){ let o={}; try{ o=JSON.parse(box.getAttribute('data-opt')||'{}')||{}; }catch(e){} return Object.assign(_vizPrefs(),o); }
   function _vizBoxAi(box){ try{ return JSON.parse(box.getAttribute('data-ai')||'{}')||{}; }catch(e){ return {}; } }
@@ -32494,6 +32779,13 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     o.body.viz=Object.assign({},o.body.viz,st);
     await _ahTx(['body'],'readwrite',b=>{ b.put(o.body); });
   }
+  /* 고친 인포그래픽 글(명세)을 body.vzs[열쇠] 에 저장 — spec=null 이면 지움 */
+  async function _ahPatchVzs(sid,vk,spec){
+    const o=await _ahGetBoth(sid); if(!o||!o.body) return;
+    const m=Object.assign({},o.body.vzs); if(spec) m[vk]=spec; else delete m[vk];
+    o.body.vzs=m;
+    await _ahTx(['body'],'readwrite',b=>{ b.put(o.body); });
+  }
   async function _ahSaveNow(u,reply,partial,vz){
     const imgs=[]; for(const url of (u.imgs||[]).slice(0,6)){ const t=await _ahThumb(url); if(t) imgs.push(t); }
     const now=Date.now(), o=await _ahGetBoth(u.sid);
@@ -32624,13 +32916,13 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     return (q+h)||'<div class="ai-user-txt">[이미지]</div>';
   }
   /* 답변 말풍선 안쪽 — _renderAssistantBubble 과 같은 모양(설명 + 결과물 상자)이되 현재 대화의 _lastResult 를 건드리지 않음 */
-  function _ahRenderReply(div,raw,eid,withRef,vz){   /* withRef: 채팅창에 이어 그릴 때만 '↪ 참조' 버튼(결과물 상자 머리줄 / 일반 답변 아래 줄) + 인포그래픽의 붙여넣기·스타일 바꾸기. vz: 이 대화에 저장된 인포그래픽 양식 */
+  function _ahRenderReply(div,raw,eid,withRef,vz,vzs){   /* withRef: 채팅창에 이어 그릴 때만 '↪ 참조' 버튼(결과물 상자 머리줄 / 일반 답변 아래 줄) + 인포그래픽의 붙여넣기·스타일 바꾸기. vz: 이 대화에 저장된 인포그래픽 양식 */
     const vs=_vizSplit(raw||'');
     const {explain,result}=_parseResult(vs.text);
     div.style.whiteSpace='normal';
     if(!result&&!vs.vizs.length){ div.innerHTML=_md2html(raw||''); if(withRef){ div.setAttribute('data-src',raw||''); _addAnsRow(div); } return; }
     if(explain){ const ex=document.createElement('div'); ex.className='ai-explain-text'; ex.innerHTML=_md2html(explain); div.appendChild(ex); }
-    vs.vizs.slice(0,_VIZ_MAX).forEach(v=>div.appendChild(_vizMakeBox(v,!!withRef,vz||{})));   /* vz 가 {} 여도 '기록 모드' — 지금의 기본 양식을 덧씌우지 않고 그때 그대로 */
+    vs.vizs.slice(0,_VIZ_MAX).forEach(v=>div.appendChild(_vizMakeBox(v,!!withRef,vz||{},vzs||{})));   /* vz 가 {} 여도 '기록 모드' — 지금의 기본 양식을 덧씌우지 않고 그때 그대로 */
     if(result){
       const box=document.createElement('div'); box.className='ai-result-box';
       const lbl=document.createElement('div'); lbl.className='ai-result-label';
@@ -32661,7 +32953,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     msgs.forEach((m,i)=>{
       const row=document.createElement('div'); row.className='ah-msgrow '+(m.r==='u'?'u':'a');
       const b=document.createElement('div'); b.className='ai-msg '+(m.r==='u'?'user':'assistant');
-      if(m.r==='u') b.innerHTML=_ahUserHtml(m); else _ahRenderReply(b,m.text,meta.eid,false,o.body.viz);
+      if(m.r==='u') b.innerHTML=_ahUserHtml(m); else _ahRenderReply(b,m.text,meta.eid,false,o.body.viz,o.body.vzs);
       const info=document.createElement('div'); info.className='ah-info';
       info.innerHTML='<span>'+_ahHM(m.t)+(m.r==='a'?' · '+_ahEsc(_ahProv(m.prov))+(m.partial?' · (중단됨)':''):'')+'</span>'
         +(m.r==='u'?'<button class="ah-ic mobile-keep" data-ah="toinput" data-i="'+i+'" title="이 질문을 입력창으로 가져오기">↩ 입력창으로</button>'
@@ -32716,7 +33008,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
         _addBubble('user',m.text||'[이미지]',_ahUserHtml(m,true)).insertAdjacentHTML('afterend',_UNDO_ROW);
       } else {
         _hist.push({role:'assistant',content:m.text||''});
-        _ahRenderReply(_addBubble('assistant',''),m.text,eid,true,o.body.viz); last=m.text||'';
+        _ahRenderReply(_addBubble('assistant',''),m.text,eid,true,o.body.viz,o.body.vzs); last=m.text||'';
       }
     });
     _lastReply=_vizSplit(last).text; const pr=_parseResult(_lastReply); _lastResult=pr.result?_sanitizeResultHtml(pr.result):'';
@@ -33107,7 +33399,7 @@ const NORM={
         if(c&&typeof c==='object') return {t:clean(pick(c,['t','text','value','label','v']),26),tone:toneOf(pick(c,['tone','color','status']))};
         return {t:clean(c,26),tone:''};
       });
-    }).filter(r=>r&&r.length);
+    }).filter(r=>r&&r.length&&r.some(c=>c.t));   /* 칸이 전부 빈 행은 버림(글 수정에서 비운 행이 빈 줄로 남지 않게) */
     if(!rows.length) return null;
     const cols=Math.max(headers.length,...rows.map(r=>r.length));
     headers=headers.slice(0,cols); while(headers.length&&headers.length<cols) headers.push('');
@@ -38335,7 +38627,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
         <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
         <div id="aiVizPanel">
-          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고칠 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
           <div class="avp-rc" id="aiVizRecipes"></div>
           <div class="avp-ed" id="aiVizRcEd" style="display:none" data-i="-1">
             <div class="avp-eh" id="aiVizRcHd">＋ 새 문구 추가</div>
