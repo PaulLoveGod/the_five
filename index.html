@@ -1715,6 +1715,19 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .ai-viz-menu button:disabled:hover{background:transparent;color:#334155}
 .ai-viz-opts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding-top:7px;border-top:1px dashed #e2e8f0}
 /* 양식 고르기(🎛) — 양식 세트 + 헤더·문서 양식·표시 형식·표 양식·블록 모양·밀도 (그림 단추) */
+.ai-viz-b.rc{border-color:#f9a8d4;color:#9d174d}
+.ai-viz-b.rc:hover{background:#fce7f3}
+.ai-viz-b.rc.on{background:#be185d;border-color:#be185d;color:#fff}
+.ai-viz-rcw{display:none;margin-top:8px;padding:8px 9px 9px;background:#fff7fb;border:1px solid #fbcfe8;border-radius:9px}
+.ai-viz-box[data-rc="1"] .ai-viz-rcw{display:block}
+.ai-viz-rch{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.ai-viz-rch span{flex:1;min-width:0;font-size:10.5px;font-weight:600;line-height:1.45;color:#a8738a}
+.ai-viz-rch button{flex:none;height:22px;padding:0 9px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ai-viz-rch button:hover{background:#f1f5f9}
+.ai-viz-rcb{display:flex;flex-wrap:wrap;gap:6px}
+.ai-viz-rcb button{height:26px;padding:0 11px;border:1px solid #f9a8d4;border-radius:13px;background:#fff;color:#9d174d;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
+.ai-viz-rcb button:hover{background:#fce7f3}
+.ai-viz-rcn{font-size:10.5px;color:#a8738a}
 .ai-viz-b.mini{height:22px;padding:0 9px;font-size:10.5px}
 .ai-viz-b.mini.on{background:#4f46e5;border-color:#4f46e5;color:#fff}
 .ai-viz-more{flex:1 1 100%;display:flex;flex-direction:column;gap:7px;margin-top:2px;padding:9px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px}
@@ -31566,9 +31579,13 @@ Rules:
         :'')
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'copy\')" title="이미지를 클립보드에 복사 — 다른 곳에 Ctrl+V 로 붙여넣기">📋 복사</button>'
         +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'save\')" title="PNG 파일로 저장">💾 저장</button>'
-        +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'zoom\')" title="크게 보기">🔍 크게</button>';
+        +'<button type="button" class="ai-viz-b mobile-keep" onclick="_vizAct(this,\'zoom\')" title="크게 보기">🔍 크게</button>'
+        +(live?'<button type="button" class="ai-viz-b rc mobile-keep" data-r="rc" aria-expanded="false" onclick="_vizAct(this,\'rc\')" title="유형(핵심 요약·타임라인·비교 등) 버튼을 눌러 이 인포그래픽을 다른 유형으로 바꿔 다시 만듭니다">🔄 유형 바꾸기 ▾</button>':'');
       cnt.appendChild(bar);
-      if(live){ const o=document.createElement('div'); o.className='ai-viz-opts'; o.innerHTML=_vizOptsHtml(pf,false); cnt.appendChild(o); }
+      if(live){
+        const rw=document.createElement('div'); rw.className='ai-viz-rcw'; cnt.appendChild(rw);   /* 유형 버튼 줄 — [🔄 유형 바꾸기]를 열 때 그림 */
+        const o=document.createElement('div'); o.className='ai-viz-opts'; o.innerHTML=_vizOptsHtml(pf,false); cnt.appendChild(o);
+      }
     } else {
       box.setAttribute('data-state','error');
       box.setAttribute('data-src',v.raw||v.body||'');
@@ -31624,6 +31641,7 @@ Rules:
     (root||document).querySelectorAll('.ai-viz-box[data-state="busy"],.ai-viz-box[data-state="ready"]').forEach(b=>{
       const im=b.querySelector('.ai-viz-img'); if(im&&!im.getAttribute('src')&&b.getAttribute('data-spec')) _vizRenderBox(b);
     });
+    (root||document).querySelectorAll('.ai-viz-box[data-rc="1"]').forEach(b=>_vizBoxRcRender(b));   /* 열려 있던 유형 버튼 줄은 지금의 목록으로 다시 */
     (root||document).querySelectorAll('.ai-viz-undo').forEach(u=>{ const b=u.closest('.ai-viz-box'); if(!b||!b._paste) u.remove(); });   /* 팝업을 닫았다 열어 복원된 상자엔 붙여넣기 기록(JS 변수)이 없으므로 죽은 취소 버튼은 치움 */
   }
   function _vizPngOk(s){ return typeof s==='string'&&s.length>100&&/^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(s); }
@@ -31641,9 +31659,56 @@ Rules:
     else if(act==='zoom') _vizZoom(box);
     else if(act==='retry') _vizRenderBox(box);
     else if(act==='undo') _vizUndoPaste(box);
+    else if(act==='rc') _vizBoxRcToggle(box);
+    else if(act==='rcgo') _vizBoxRcGo(box,el);
+    else if(act==='rcedit') _vizBoxRcEdit(box);
     else if(act==='more'){ box.setAttribute('data-more',box.getAttribute('data-more')==='1'?'0':'1'); const op=box.querySelector('.ai-viz-opts'); if(op) op.innerHTML=_vizOptsHtml(_vizBoxOpt(box),box.getAttribute('data-more')==='1'); }
     else if(act==='theme'||act==='width'||act==='ud'||act==='preset'||act==='rand'||_VIZ_A6.indexOf(act)>=0) _vizSetOpt(box,act,arg);
   };
+  /* ── 완성된 인포그래픽에서 유형 버튼으로 결과물 바꾸기 ──
+     상자의 [🔄 유형 바꾸기]를 열면 🎨 패널과 같은 유형 버튼(추가·수정·삭제한 문구 포함)이 나오고, 누르면 이 인포그래픽을 '참조'로 삼아 그 유형으로 다시 만들어 달라는 요청이 바로 전송됨.
+     새 결과물은 아래에 새 답변으로 생기고 이전 것은 그대로 남음(비교·붙여넣기 가능). 입력창에 쓰던 글·이미지·참조가 있으면 덮거나 함께 보내지 않고 요청 문구만 채워 둠(보내기는 Enter). */
+  function _vizBoxRcSet(box,on){
+    box.setAttribute('data-rc',on?'1':'0');
+    const b=box.querySelector('.ai-viz-bar [data-r="rc"]');
+    if(b){ b.textContent='🔄 유형 바꾸기 '+(on?'▴':'▾'); b.classList.toggle('on',!!on); b.setAttribute('aria-expanded',on?'true':'false'); }
+  }
+  function _vizBoxRcRender(box){   /* 유형 버튼 줄 — 열 때마다 지금의 목록(🎨 패널에서 고친 것 포함)으로 다시 그림 */
+    const w=box&&box.querySelector&&box.querySelector('.ai-viz-rcw'); if(!w) return;
+    const list=_vizRecipes();
+    w.innerHTML='<div class="ai-viz-rch"><span>이 인포그래픽을 참조해 다른 유형으로 다시 만들어요 — 누르면 바로 AI 에게 요청합니다.</span><button type="button" class="mobile-keep" onclick="_vizAct(this,\'rcedit\')" title="유형(요청 문구)을 추가·수정·삭제하려면 🎨 패널을 편집 모드로 엽니다">✏️ 문구 편집</button></div>'
+      +'<div class="ai-viz-rcb">'+(list.length
+        ?list.map(r=>'<button type="button" class="mobile-keep" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_ahEsc(r.p)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</button>').join('')
+        :'<span class="ai-viz-rcn">등록된 유형이 없어요 — ✏️ 문구 편집에서 추가하세요.</span>')+'</div>';
+  }
+  function _vizBoxRcToggle(box){ const on=box.getAttribute('data-rc')!=='1'; _vizBoxRcSet(box,on); if(on) _vizBoxRcRender(box); }
+  const _vizRcReq=r=>'🔄 참조한 인포그래픽을 ‘'+r.t+'’ 유형으로 바꿔서 다시 만들어줘.\n'+r.p;
+  function _vizBoxRcGo(box,btn){
+    if(box._rcBusy) return;   /* 연타로 같은 요청이 두 번 가지 않게 */
+    const name=btn&&btn.getAttribute('data-n'), r=_vizRecipes().find(x=>x.t===name);
+    if(!r){ _vizRcToast('그 유형을 찾을 수 없어요 — 목록을 새로 불러왔어요',true); _vizBoxRcRender(box); return; }
+    if(_busy){ _vizRcToast('AI가 답변하는 중이에요 — 끝난 뒤에 눌러 주세요',true); return; }
+    const inp=g('aiUserInput'), rb=box.querySelector('.ai-ref-btn'); if(!inp||!rb) return;
+    const clean=!(inp.innerText||'').trim()&&!inp.querySelector('img')&&!_pendingImages.length&&!_pendingRefs.length;   /* 쓰던 글·이미지·참조가 없을 때만 바로 보냄 */
+    const txt=_vizRcReq(r);
+    window._refFromBtn(rb);   /* 이 인포그래픽을 참조 칩으로 — 번호·미리보기·중복 처리는 [↪ 참조] 와 같음 */
+    _vizBoxRcSet(box,false);
+    if(clean&&_pendingRefs.length){
+      box._rcBusy=true; setTimeout(()=>{ box._rcBusy=false; },1500);
+      inp.textContent=txt;
+      window.sendAIMessage();
+    } else {
+      if(!(inp.innerText||'').trim()) inp.textContent=txt;
+      else{ inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(txt)); }
+      _focusInputEnd();
+      _vizRcToast('쓰던 내용이 있어 요청 문구만 입력창에 채워 뒀어요 — 확인한 뒤 Enter 로 보내세요',true);
+    }
+  }
+  function _vizBoxRcEdit(){   /* 🎨 패널을 열고 문구 편집 모드로 */
+    const p=g('aiVizPanel'); if(p&&p.style.display!=='flex') window._toggleVizPanel();
+    _vizRcMode=true; _vizRcRender();
+    try{ if(p) p.scrollIntoView({block:'nearest'}); }catch(e){}
+  }
   function _vizBoxOpt(box){ let o={}; try{ o=JSON.parse(box.getAttribute('data-opt')||'{}')||{}; }catch(e){} return Object.assign(_vizPrefs(),o); }
   function _vizBoxAi(box){ try{ return JSON.parse(box.getAttribute('data-ai')||'{}')||{}; }catch(e){ return {}; } }
   function _vizSetOpt(box,k,v){
@@ -31822,6 +31887,7 @@ Rules:
       +'<button type="button" class="avp-tg'+(ed?' on':'')+' mobile-keep" onclick="_vizRcAct(\'mode\')" title="'+(ed?'편집을 마치고 문구를 눌러 쓰는 상태로 돌아갑니다':'문구를 눌러 고치거나 ✕ 로 삭제합니다')+'">'+(ed?'✓ 편집 끝':'✏️ 편집')+'</button>';
     if(ed||!list.length) h+='<button type="button" class="avp-rs mobile-keep" onclick="_vizRcAct(\'reset\')" title="추가·수정·삭제한 것을 모두 버리고 처음 기본 문구로 되돌립니다">↺ 기본 문구로</button>';
     rc.innerHTML=h;
+    document.querySelectorAll('#aiMessages .ai-viz-box[data-rc="1"]').forEach(b=>_vizBoxRcRender(b));   /* 열려 있는 상자의 유형 버튼 줄도 같은 목록으로 */
   }
   function _vizRcOpen(i){   /* 아래 편집 칸 열기 — i<0 이면 새 문구 */
     const ed=g('aiVizRcEd'); if(!ed) return;
