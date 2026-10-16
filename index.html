@@ -3824,7 +3824,7 @@ body.mm-fs{overflow:hidden}
           onclick="toggleHeatmapManual()">Manual</button>
         <button id="hmCaptureBtn" class="btn mobile-keep"
           style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4e3d7a;border:none;border-radius:3px;font-weight:700;color:#fff"
-          onclick="captureHeatmapSection()" title="히트맵 전체 캡쳐 후 고해상도 이미지로 붙여넣기 — 이 탭의 화면 공유가 이미 허용돼 있으면 바로 캡쳐하고, 아니면 허용 창을 띄운 뒤 허용하면 약 1초 후 캡쳐합니다">📸 캡쳐</button>
+          onclick="captureHeatmapSection()" title="히트맵 전체 캡쳐 후 고해상도 이미지로 붙여넣기 — 누르면 이 탭의 화면 공유 허용 창이 뜨고, 허용하면 약 1초 후 캡쳐한 뒤 화면 공유를 자동으로 중지합니다">📸 캡쳐</button>
         <button id="heatmapBtn" class="btn mobile-keep"
           style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#f97316;border:none;border-radius:3px;font-weight:700;color:#fff"
           onclick="updateHeatmap()" title="히트맵 업데이트">🔄 업데이트</button>
@@ -25467,21 +25467,25 @@ function toggleHeatmapManual(){
   }
 }
 
-/* S&P 히트맵 화면공유 스트림 재사용 — getDisplayMedia는 브라우저 보안정책상 "허용" 응답을
-   저장해두고 자동으로 다시 내려줄 방법이 전혀 없어(페이지가 코드로 흉내낼 수 없는 영역), 캡쳐할
-   때마다 원천적으로 매번 새로 물어봐야 함. 대신 한 번 허용받은 스트림을 끊지 않고 페이지가
-   열려있는 동안 계속 재사용하면 "이 탭을 보도록 허용" 창은 이 세션에서 최초 1회만 뜨고, 이후
-   캡쳐부터는 창 없이 바로 진행됨(사용자가 브라우저 자체의 공유 중지 버튼을 누르면 트랙이
-   'ended'로 바뀌므로 그 다음 캡쳐에서만 다시 허용을 받음) */
+/* S&P 히트맵 화면공유 스트림 — getDisplayMedia는 브라우저 보안정책상 "허용"을 페이지 코드가 대신 눌러줄 수 없고(사용자가 직접 눌러야 하는
+   영역), 허용 응답을 저장해 두었다가 자동으로 다시 내려줄 방법도 없음.
+   [2026-10-16] 📸 캡쳐는 누를 때마다 '허용 → 약 1초 대기 → 캡쳐 → 즉시 공유 중지' 한 사이클로 끝냄 — 스트림을 남겨 두지 않으므로(_hmStopCaptureStream)
+   브라우저의 '공유 중' 표시줄은 캡쳐하는 동안에만 보이고, 다음 캡쳐 때 다시 허용을 받음. (예전: 한 번 허용받은 스트림을 끊지 않고 계속 재사용)
+   사용자가 브라우저 자체의 공유 중지 버튼을 누르면 트랙이 'ended' 로 바뀌어 _hmCaptureStream 이 비워짐 */
 let _hmCaptureStream=null;
 function _hmStreamIsLive(){
   const t=_hmCaptureStream&&_hmCaptureStream.getVideoTracks()[0];
   return !!(t&&t.readyState==='live');
 }
-/* [2026-10-16] 화면 공유 허용 창은 📸 캡쳐 버튼에서만 띄움(captureHeatmapSection) — 이미 허용된 상태(_hmStreamIsLive)면 창 없이 바로 캡쳐하고,
-   아니면 허용을 묻고 '허용' 직후 _HM_SHARE_SETTLE_MS(약 1초) 기다렸다가 캡쳐함. S&P 🔄 업데이트·UPDATE ALL 은 더 이상 묻지 않음.
+/* [2026-10-16] 화면 공유 허용 창은 📸 캡쳐 버튼에서만 띄움(captureHeatmapSection) — 허용하면 _HM_SHARE_SETTLE_MS(약 1초) 기다렸다가 캡쳐하고 곧바로 공유를 중지함.
+   S&P 🔄 업데이트·UPDATE ALL 은 허용을 묻지 않음.
    기다리는 이유: 허용하면 브라우저가 페이지 맨 위에 '이 탭을 공유하는 중' 표시줄을 끼워 넣어 화면이 아래로 밀리는데, 그 사이에 찍으면 밀리는 중인 화면이 캡쳐됨 */
 const _HM_SHARE_SETTLE_MS=1000;
+/* 화면 공유 중지 — 트랙을 stop() 하면 브라우저의 '공유 중' 표시줄이 사라짐(stop() 은 'ended' 이벤트를 내지 않으므로 _hmCaptureStream 도 직접 비움) */
+function _hmStopCaptureStream(){
+  const s=_hmCaptureStream; _hmCaptureStream=null;
+  try{ if(s) s.getTracks().forEach(t=>t.stop()); }catch(_){}
+}
 async function _hmGetCaptureStream(){
   if(_hmStreamIsLive()) return _hmCaptureStream;
   /* preferCurrentTab·selfBrowserSurface는 Chrome/Edge에서 "이 탭"을 바로 선택할 수 있게
@@ -25504,8 +25508,8 @@ async function _hmGetCaptureStream(){
    캡쳐는 끝내 안 되는 것처럼 보였다(사용자가 겪은 "업데이트만 되고 캡쳐가 안 됨" 증상의 원인).
    ── 해결 ──────────────────────────────────────────────────────────────────
    화면에 실제로 렌더링된 픽셀은 iframe 출처와 무관하게 화면 공유(getDisplayMedia)로만 읽을 수
-   있으므로, 이 탭을 공유받아 한 프레임만 가져온 뒤 히트맵 영역만 화면 좌표로 잘라낸다. 스트림
-   자체는 위 _hmGetCaptureStream이 재사용하므로 여기서는 끄지 않는다(매번 재동의를 피하기 위함). */
+   있으므로, 이 탭을 공유받아 한 프레임만 가져온 뒤 히트맵 영역만 화면 좌표로 잘라낸다. 스트림은
+   프레임을 가져오는 즉시 _hmStopCaptureStream 으로 끊는다(2026-10-16 — 예전엔 재동의를 피하려 계속 재사용). */
 async function captureHeatmapSection(){
   const btn=g('hmCaptureBtn');
   const content=g('heatmapContent');
@@ -25522,20 +25526,20 @@ async function captureHeatmapSection(){
   if(btn) btn.disabled=true;   /* 허용 창·대기 중 중복 클릭 방지 */
 
   try{
-    /* [2026-10-16] 이미 허용된 상태(공유 중)면 바로 캡쳐. 아니면 이 자리에서 허용을 묻고(getDisplayMedia 는 클릭 직후 동기 호출이라야 창이 뜸),
-       '허용'하면 곧바로 찍지 않고 _HM_SHARE_SETTLE_MS(약 1초) 기다림 — 허용 직후 브라우저가 페이지 맨 위에 '이 탭을 공유하는 중' 표시줄을 끼워
-       넣어 화면이 아래로 밀리는데, 그 사이에 찍으면 밀리는 중인 화면이 캡쳐됨. 취소·거부하면 캡쳐하지 않음 */
-    if(!_hmStreamIsLive()){
-      if(btn) btn.textContent='🔒 허용 대기…';
-      try{ await _hmGetCaptureStream(); }
-      catch(e){
-        if(e&&e.name==='NotAllowedError') _showToast('hmCaptureToast','화면 공유를 허용하지 않아 캡쳐하지 않았습니다');
-        else alert('화면 공유를 시작할 수 없습니다: '+(e&&e.message?e.message:e));
-        return;
-      }
-      if(btn) btn.textContent='⏳ 준비 중…';
-      await new Promise(res=>setTimeout(res,_HM_SHARE_SETTLE_MS));
+    /* [2026-10-16] 누를 때마다 '허용 → 약 1초 대기 → 캡쳐 → 공유 중지' 한 사이클. 이 자리에서 허용을 묻고(getDisplayMedia 는 클릭 직후 동기 호출이라야
+       창이 뜸 — 허용은 사용자가 직접 눌러야 하며 페이지 코드로 대신할 수 없음), '허용'하면 곧바로 찍지 않고 _HM_SHARE_SETTLE_MS(약 1초) 기다림 —
+       허용 직후 브라우저가 페이지 맨 위에 '이 탭을 공유하는 중' 표시줄을 끼워 넣어 화면이 아래로 밀리는데, 그 사이에 찍으면 밀리는 중인 화면이 캡쳐됨.
+       취소·거부하면 캡쳐하지 않음. 공유 중지는 프레임을 가져온 직후(아래)와 finally 에서 함 */
+    if(btn) btn.textContent='🔒 허용 대기…';
+    try{ await _hmGetCaptureStream(); }
+    catch(e){
+      if(e&&e.name==='NotAllowedError') _showToast('hmCaptureToast','화면 공유를 허용하지 않아 캡쳐하지 않았습니다');
+      else alert('화면 공유를 시작할 수 없습니다: '+(e&&e.message?e.message:e));
+      return;
     }
+    if(btn) btn.textContent='⏳ 준비 중…';
+    await new Promise(res=>setTimeout(res,_HM_SHARE_SETTLE_MS));
+    if(!_hmStreamIsLive()) throw new Error('화면 공유가 중지되어 캡쳐하지 못했습니다.');   /* 대기 중 브라우저의 '공유 중지'를 누른 경우 */
     if(btn) btn.textContent='📷 캡쳐 중…';
     const stream=_hmCaptureStream;
     const video=document.createElement('video');
@@ -25563,6 +25567,9 @@ async function captureHeatmapSection(){
     canvas.width=Math.round(sw); canvas.height=Math.round(sh);
     canvas.getContext('2d').drawImage(video, sx,sy,sw,sh, 0,0,canvas.width,canvas.height);
     const dataUrl=canvas.toDataURL('image/png');
+    /* 프레임을 얻었으니 곧바로 화면 공유 중지('공유 중' 표시줄이 사라짐) — 중간에 예외가 나도 아래 finally 에서 한 번 더 중지 */
+    video.pause(); video.srcObject=null;
+    _hmStopCaptureStream();
 
     /* iframe 제거 후 hm-manual-img로 교체 */
     content.innerHTML='';
@@ -25579,7 +25586,7 @@ async function captureHeatmapSection(){
   }catch(e){
     alert('캡쳐 실패: '+(e&&e.message?e.message:e));
   }finally{
-    /* 스트림은 여기서 끄지 않음 — _hmCaptureStream에 남겨 다음 캡쳐부터 재사용(재동의 방지) */
+    _hmStopCaptureStream();   /* 성공했으면 이미 중지됨 — 오류·취소로 빠져나와도 화면 공유가 남지 않게 */
     if(btn){btn.textContent=origText;btn.disabled=false;}
   }
 }
