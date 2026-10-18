@@ -1873,6 +1873,16 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
 .ai-viz-rcb button{height:26px;padding:0 11px;border:1px solid #f9a8d4;border-radius:13px;background:#fff;color:#9d174d;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
 .ai-viz-rcb button:hover{background:#fce7f3}
 .ai-viz-rcn{font-size:10.5px;color:#a8738a}
+/* 유형 실행 범위(2026-10-18) — 🎨 패널(.avp-mode)과 [🔄 유형 바꾸기](.ai-viz-rcm)의 '텍스트+인포그래픽 / 텍스트만 / 인포그래픽만' 선택줄, 유형 편집 칸의 두 프롬프트 이름표(.avp-el) */
+#aiVizPanel .avp-mode,.ai-viz-rcm{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.ai-viz-rcm{margin-bottom:7px}
+#aiVizPanel .avp-mode .lb,.ai-viz-rcm .lb{font-size:10.5px;font-weight:800;color:#9d174d;margin-right:2px}
+#aiVizPanel .avp-mode small{flex:1 1 170px;min-width:0;font-size:10px;font-weight:600;color:#a8738a;line-height:1.4}
+#aiVizPanel .avp-mode button,.ai-viz-rcm button{height:24px;padding:0 10px;border:1px solid #f9a8d4;border-radius:12px;background:#fff;color:#9d174d;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s}
+#aiVizPanel .avp-mode button:hover,.ai-viz-rcm button:hover{background:#fce7f3}
+#aiVizPanel .avp-mode button.on,.ai-viz-rcm button.on{background:#be185d;border-color:#be185d;color:#fff}
+.avp-ed .avp-el{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:10.5px;font-weight:800;color:#9d174d;margin-top:2px}
+.avp-ed .avp-el small{font-weight:600;color:#a8738a;font-size:10px}
 .ai-viz-b.mini{height:22px;padding:0 9px;font-size:10.5px}
 .ai-viz-b.mini.on{background:#4f46e5;border-color:#4f46e5;color:#fff}
 .ai-viz-more{flex:1 1 100%;display:flex;flex-direction:column;gap:7px;margin-top:2px;padding:9px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px}
@@ -2446,6 +2456,135 @@ body.mm-fs{overflow:hidden}
 #mindmapSection.mm-editing .mm-stage,#mindmapSection.mm-full .mm-stage{overscroll-behavior:contain}
 </style>
 <!-- MM-CSS-END -->
+<!-- BTMSCRIPT-CSS-BEGIN -->
+<style>
+/* ── 상단 '스크립트' 메뉴 — 🎬 스크립트 만들기 · 🕘 스크립트 이력 (2026-10-18) ──
+   모달(#scMakerModal·#scHistModal)은 JS(BTMSCRIPT-JS)가 처음 열 때 만들어 body 에 붙임. 클래스 접두어 sc-. 글자 강조색은 호박색(#d97706) */
+body.guest-mode #mbtnScriptWrap{display:none!important}
+.sc-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.62);z-index:10005;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}
+.sc-ov.open{display:flex}
+@media print{.sc-ov{display:none!important}}
+.sc-card{background:#fff;color:#1e293b;border-radius:14px;width:min(1240px,98vw);height:min(900px,95vh);box-shadow:0 10px 50px rgba(0,0,0,.42);display:flex;flex-direction:column;overflow:hidden;font-size:13px;line-height:1.55}
+.sc-card.sm{width:min(920px,98vw)}
+.sc-card *{box-sizing:border-box}
+.sc-head{background:#1e293b;color:#fff;padding:11px 14px 11px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;min-height:48px}
+.sc-title{font-weight:800;font-size:14.5px;letter-spacing:.2px;white-space:nowrap}
+.sc-sub{flex:1;min-width:0;font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-x,.sc-back{border:none;background:rgba(255,255,255,.12);color:#e2e8f0;cursor:pointer;flex-shrink:0;transition:background .12s}
+.sc-x{width:28px;height:28px;border-radius:50%;font-size:14px;line-height:28px;padding:0}
+.sc-back{height:26px;padding:0 11px;border-radius:13px;font-size:11.5px;font-weight:700}
+.sc-x:hover,.sc-back:hover{background:rgba(255,255,255,.26)}
+.sc-body{flex:1;min-height:0;display:flex}
+/* 왼쪽: 설정 */
+.sc-side{width:330px;flex-shrink:0;border-right:1px solid #e2e8f0;background:#f8fafc;display:flex;flex-direction:column;min-height:0}
+.sc-sbody{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 12px;display:flex;flex-direction:column;gap:15px}
+.sc-sfoot{flex-shrink:0;padding:10px 14px 14px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;flex-direction:column;gap:8px}
+.sc-f{display:flex;flex-direction:column;gap:6px}
+.sc-lb{font-size:11.5px;font-weight:800;color:#334155;display:flex;align-items:center;gap:6px}
+.sc-opt{font-weight:500;color:#94a3b8;font-size:10.5px}
+.sc-links{margin-left:auto;display:flex;gap:9px;font-weight:600}
+.sc-links a{color:#b45309;cursor:pointer;font-size:10.5px;text-decoration:underline;text-underline-offset:2px}
+.sc-line{display:flex;align-items:center;gap:7px}
+.sc-u{font-size:12.5px;font-weight:700;color:#475569}
+#scMakerModal input[type=number]{width:96px;min-height:36px;border:1px solid #cbd5e1;border-radius:8px;padding:5px 10px;font-size:16px;font-weight:800;text-align:right;color:#0f172a;background:#fff;font-family:inherit}
+#scMakerModal #scCpm{width:84px;min-height:32px;font-size:13.5px;font-weight:700}
+#scMakerModal select{width:100%;min-height:34px;border:1px solid #cbd5e1;border-radius:8px;padding:4px 8px;font-size:12.5px;background:#fff;color:#1e293b;font-family:inherit}
+#scMakerModal textarea{min-height:64px;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.55;resize:vertical;background:#fff;color:#1e293b}
+#scMakerModal input[type=number]:focus,#scMakerModal select:focus,#scMakerModal textarea:focus,#scHistModal #shQ:focus{outline:none;border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.18)}
+#scMakerModal input:disabled,#scMakerModal select:disabled,#scMakerModal textarea:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed}
+.sc-hint{font-size:11px;color:#64748b;min-height:16px}
+.sc-hint b{color:#b45309}
+.sc-grp{font-size:10px;font-weight:800;color:#94a3b8;letter-spacing:.4px;margin:9px 0 4px}
+.sc-grp:first-child{margin-top:0}
+.sc-sr{display:flex;align-items:center;gap:8px;padding:5px 9px;margin-bottom:4px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;transition:background .1s,border-color .1s}
+.sc-sr:hover{border-color:#fcd34d;background:#fffdf5}
+.sc-sr input{width:15px;height:15px;margin:0;accent-color:#d97706;cursor:pointer;flex-shrink:0}
+.sc-sr .nm{flex:1;min-width:0;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-sr .st{font-size:10px;color:#94a3b8;white-space:nowrap}
+.sc-sr input:checked~.nm{color:#92400e}
+.sc-sr.empty{background:#f1f5f9;cursor:not-allowed}
+.sc-sr.empty:hover{border-color:#e2e8f0;background:#f1f5f9}
+.sc-sr.empty .nm{color:#94a3b8;font-weight:500}
+.sc-sr.empty input{cursor:not-allowed}
+.sc-act{display:flex;gap:8px;flex-wrap:wrap}
+.sc-btn{height:40px;padding:0 16px;border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer;background:#e2e8f0;color:#334155;white-space:nowrap;transition:background .12s,transform .05s}
+.sc-btn:hover{background:#cbd5e1}
+.sc-btn:active{transform:translateY(1px)}
+.sc-btn.pri{flex:1;background:#d97706;color:#fff}
+.sc-btn.pri:hover{background:#b45309}
+.sc-btn.dng{flex:1;background:#dc2626;color:#fff}
+.sc-btn.dng:hover{background:#b91c1c}
+.sc-err{display:none;font-size:11.5px;line-height:1.6;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 10px;word-break:break-word}
+.sc-err.on{display:block}
+.sc-err.note{color:#92400e;background:#fffbeb;border-color:#fde68a}
+/* 오른쪽: 결과 */
+.sc-main{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:#fff}
+.sc-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid #e2e8f0;background:#fafafa;flex-shrink:0}
+.sc-prog{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 auto}
+.sc-pbar{width:130px;height:7px;border-radius:4px;background:#e2e8f0;overflow:hidden;flex-shrink:0}
+.sc-pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#d97706);border-radius:4px;transition:width .25s}
+#scPt{font-size:11.5px;color:#475569;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sc-sp{flex:1 1 0;min-width:0}
+.sc-bar .sc-sp{display:none}
+.sc-mini{height:28px;padding:0 11px;border:1px solid #e2e8f0;border-radius:7px;background:#fff;color:#475569;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s}
+.sc-mini:hover{background:#f1f5f9}
+.sc-mini.pri{background:#d97706;border-color:#d97706;color:#fff}
+.sc-mini.pri:hover{background:#b45309}
+.sc-mini.dng{color:#b91c1c;border-color:#fecaca}
+.sc-mini.dng:hover{background:#fef2f2}
+.sc-out{flex:1;min-height:0;overflow-y:auto;padding:14px 20px 28px}
+.sc-sec{margin-bottom:18px}
+.sc-sh{display:flex;align-items:center;gap:10px;padding-bottom:7px;margin-bottom:8px;border-bottom:2px solid #fde68a}
+.sc-sh b{font-size:14px;color:#78350f}
+.sc-meta{flex:1;min-width:0;font-size:11px;color:#94a3b8}
+.sc-doc{font-size:13px;line-height:1.75;color:#1e293b;word-break:keep-all;overflow-wrap:break-word}
+.sc-doc h4{font-size:13.5px;margin:18px 0 6px;color:#9a3412;border-left:3px solid #f59e0b;padding-left:9px;font-weight:800;line-height:1.5}
+.sc-doc h4:first-child{margin-top:2px}
+.sc-doc p{margin:5px 0}
+.sc-doc ul{margin:3px 0 8px 20px;padding:0}
+.sc-doc li{margin:3px 0}
+.sc-wait{color:#94a3b8;font-size:12px;padding:6px 0}
+.sc-ch{border:1px solid #e2e8f0;border-radius:10px;margin:0 0 10px;overflow:hidden;background:#fff}
+.sc-ch.run,.sc-ch.adjust{border-color:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.14)}
+.sc-ch.wait{opacity:.62}
+.sc-ch-h{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#fffbeb;border-bottom:1px solid #fde68a;font-size:12.5px;color:#78350f;flex-wrap:wrap}
+.sc-ch-h .tc{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:11px;font-weight:800;color:#b45309;background:#fef3c7;border-radius:5px;padding:1px 7px}
+.sc-ch-h em{font-style:normal;font-size:10.5px;color:#d97706;font-weight:700}
+.sc-ch-h .d{margin-left:auto;font-size:10.5px;color:#94a3b8}
+.sc-ch-b{padding:9px 14px 10px}
+.sc-ch-b p{margin:0 0 9px;font-size:13.5px;line-height:1.85}
+.sc-cue{margin:7px 0;padding:3px 9px;border-left:3px solid #7dd3fc;background:#f0f9ff;color:#0369a1;font-size:11.5px;border-radius:0 6px 6px 0}
+.sc-empty{text-align:center;color:#94a3b8;font-size:12.5px;line-height:1.9;padding:70px 20px}
+.sc-empty .big{font-size:34px;margin-bottom:8px;opacity:.7}
+.sc-empty .sub{margin-top:8px;font-size:11px}
+/* 이력 */
+.sc-hbar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid #e2e8f0;background:#fafafa;flex-shrink:0}
+#scHistModal #shQ{flex:1 1 200px;max-width:320px;min-height:30px;height:30px;border:1px solid #cbd5e1;border-radius:8px;padding:0 10px;font-size:12px;background:#fff;color:#1e293b;font-family:inherit}
+.sc-hbody{flex:1;min-height:0;overflow-y:auto;padding:10px 16px 22px}
+.sc-day{font-size:10.5px;font-weight:800;color:#64748b;letter-spacing:.3px;margin:12px 0 5px;padding-bottom:3px;border-bottom:1px solid #eef2f7}
+.sc-day:first-child{margin-top:2px}
+.sc-hi{display:flex;align-items:flex-start;gap:8px;padding:9px 11px;margin-bottom:7px;border:1px solid #e2e8f0;border-radius:10px;background:#fffdf8;cursor:pointer;transition:background .12s,border-color .12s}
+.sc-hi:hover{background:#fffbeb;border-color:#fcd34d}
+.sc-hi-main{flex:1;min-width:0}
+.sc-hi-t{font-size:12.5px;font-weight:800;color:#78350f;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.sc-hi-t .tm{margin-left:auto;font-size:10.5px;font-weight:600;color:#94a3b8}
+.sc-hi-p{font-size:12px;color:#334155;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.sc-hi-m{font-size:10.5px;color:#94a3b8;margin-top:4px}
+.sc-hi-m b{color:#b45309;font-weight:800}
+.sc-hi-x{flex-shrink:0;width:26px;height:26px;padding:0;border:none;border-radius:6px;background:transparent;color:#94a3b8;cursor:pointer;font-size:13px;line-height:26px}
+.sc-hi-x:hover{background:#fee2e2;color:#dc2626}
+.sc-tag{padding:0 7px;border-radius:8px;background:#fef3c7;color:#b45309;font-weight:800;font-size:10px;line-height:16px}
+.sc-tag.run{background:#dbeafe;color:#1d4ed8}
+.sc-dact{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.sc-dmeta{font-size:11.5px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:8px 11px;margin-bottom:14px;line-height:1.7}
+.sc-dmeta b{color:#b45309;font-weight:800}
+@media(max-width:860px){
+  .sc-body{flex-direction:column}
+  .sc-side{width:auto;max-height:46%;border-right:none;border-bottom:1px solid #e2e8f0}
+  .sc-pbar{width:70px}
+}
+</style>
+<!-- BTMSCRIPT-CSS-END -->
 </head>
 <body spellcheck="false">
 
@@ -3220,6 +3359,14 @@ body.mm-fs{overflow:hidden}
   </div>
   <!-- PDF / 이미지 순차 내보내기 -->
   <button id="pdfImgBtn" class="btn" style="background:#2a5f65" onclick="_exportPdfAndImage()">PDF / 이미지</button>
+  <!-- 스크립트(시황 분석 유튜브 영상용 종합 분석 보고서·스크립트) 드롭다운 -->
+  <div class="mbtn-wrap" id="mbtnScriptWrap">
+    <button class="btn" style="background:#9a5b0f" onclick="_toggleMBtnMenu('mbtnScript',event)" title="시황 분석 유튜브 영상용 종합 분석 보고서·스크립트를 만들고, 만든 이력을 조회합니다">스크립트</button>
+    <div id="mbtnScript" class="mbtn-menu">
+      <button onclick="openScriptMaker();_closeMBtnMenus()">🎬 스크립트 만들기</button>
+      <button onclick="openScriptHistory();_closeMBtnMenus()">🕘 스크립트 이력</button>
+    </div>
+  </div>
   <!-- 기록조회 드롭다운 -->
   <div class="mbtn-wrap">
     <button class="btn mobile-keep" style="background:#3d5068" onclick="_toggleMBtnMenu('mbtnRQ',event)">기록조회</button>
@@ -6485,7 +6632,7 @@ function openAiRadarTargetModal(){
   chk('aiRadarHistChk',cfg.hist); { const hn=g('aiRadarHistN'); if(hn) hn.value=String(_airN(cfg)); }
   chk('aiRadarVizChk',cfg.viz!==false);   /* 🎨 인포그래픽 자동 제작 — 안내 줄에 쓰일 유형(이 섹션 AI 팝업에서 마지막으로 만든 유형) */
   { const vi=g('aiRadarVizInfo'); if(vi){ const o=(typeof window._aiVizLastFor==='function')?window._aiVizLastFor('aiStockRadar'):null;
-    vi.innerHTML=o?((o.fallback?'이 섹션의 AI 팝업에서 만든 인포그래픽 유형 기록이 없어 기본 유형 <b>':'사용할 유형: <b>')+_airEsc(o.ic+' '+o.t)+'</b>'+(o.fallback?' 으로 만들어요.':' — 이 섹션의 AI 팝업(✨ › 🎨 인포그래픽)에서 마지막으로 만든 유형이에요.')):''; } }
+    vi.innerHTML=o?((o.fallback?'이 섹션의 AI 팝업에서 만든 인포그래픽 유형 기록이 없어 기본 유형 <b>':'사용할 유형: <b>')+_airEsc(o.ic+' '+o.t)+'</b>'+(o.fallback?' 으로 만들어요.':' — 이 섹션의 AI 팝업(✨ › 🎨 인포그래픽)에서 마지막으로 만든 유형이에요.')+' (그 유형의 ‘인포그래픽 프롬프트’로 이미지만 만들어요)'):''; } }
   const psel=g('aiRadarProviderSelect'); if(psel) psel.value=_getAiRadarProvider();
   const m=g('aiRadarTargetModal'); if(m) m.style.display='flex';
 }
@@ -29237,6 +29384,7 @@ const _BTM_AI_SECTIONS=[
   {id:'tradingStrategy',label:'My Trading Strategy With AI Navigator'},
   {id:'mindmapOutline',label:'MindMap — AI로 개요 만들기 (본문에 반영 → 개요 가져오기)'},
   {id:'btmLangGen',label:'🌐 다국어 생성 (번역)'},
+  {id:'scriptMaker',label:'🎬 스크립트 만들기 (시황 분석 유튜브 영상 보고서·스크립트)'},
 ];
 const _BTM_AI_PROVIDER_LABELS={claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)','chatgpt-flash':'🟢 ChatGPT(Flash)','chatgpt-pro':'🟢 ChatGPT(Pro)'};
 function _renderAiProviderSettings(){
@@ -29756,6 +29904,41 @@ async function _fetchClaudeBalance(){
         lastErr=e;
         if(attempt<MAX_TRY && isBusyErr(e) && !(signal&&signal.aborted)){
           if(typeof onRetry==='function') onRetry(attempt,MAX_TRY);
+          await new Promise(r=>setTimeout(r,attempt*2500));
+          continue;
+        }
+        throw e;
+      }
+    }
+    throw lastErr;
+  };
+  /* 팝업 UI 없이 글(텍스트)만 보내고 스트리밍으로 텍스트 응답을 받는 headless 호출 — 상단 '스크립트' 메뉴(BTMScript)가 씀.
+     공급자·키는 mapKey(BTMAiProviderMap)로 정해지고 5개 공급자(Claude·DeepSeek·Gemini·ChatGPT) 모두 지원(이미지·파일 없음).
+     o={onDelta(지금까지 받은 전체 글), signal, onRetry(회차,최대)} — 429/503 같은 혼잡 오류는 잠시 뒤 자동 재시도(중단된 경우는 재시도 안 함),
+     재시도하면 onDelta 가 처음부터 다시 옴 */
+  window._runTextPrompt=async function(mapKey, sys, userText, o){
+    o=o||{};
+    const {provider, key, name}=window._resolveAiProvider(mapKey);
+    if(!key) throw new Error(name+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.');
+    const msgs=[{role:'user',content:userText}];
+    const isBusyErr=(e)=>(e&&(e.status===429||e.status===503))||/high demand|overloaded|unavailable|try again|rate.?limit/i.test((e&&e.message)||'');
+    const MAX_TRY=3;
+    let lastErr;
+    for(let attempt=1;attempt<=MAX_TRY;attempt++){
+      let acc='';
+      const target={ get textContent(){ return acc; }, set textContent(v){ acc=v; if(typeof o.onDelta==='function'){ try{ o.onDelta(v); }catch(_){} } } };
+      try{
+        return provider.startsWith('deepseek')
+          ? await _streamDeepSeek(key,sys,msgs,target,o.signal,provider==='deepseek-pro')
+          : provider.startsWith('gemini')
+          ? await _streamGemini(key,sys,msgs,target,o.signal,provider==='gemini-pro')
+          : provider.startsWith('chatgpt')
+          ? await _streamChatGPT(key,sys,msgs,target,o.signal,provider==='chatgpt-pro')
+          : await _stream(key,sys,msgs,target,o.signal);
+      }catch(e){
+        lastErr=e;
+        if(attempt<MAX_TRY && isBusyErr(e) && !(o.signal&&o.signal.aborted)){
+          if(typeof o.onRetry==='function') o.onRetry(attempt,MAX_TRY);
           await new Promise(r=>setTimeout(r,attempt*2500));
           continue;
         }
@@ -32094,17 +32277,17 @@ Rules:
   const _VIZ_KW=/인포\s*그래픽|infographic|카드\s*뉴스|표형|보고서형|시각화|시각\s*자료|비주얼|도식|다이어그램|포스터|(?:이미지|그림|도표|차트|그래프|타임라인|흐름도|로드맵|슬라이드)\S{0,2}\s*(?:만들|그려|그리|생성|제작|변환)|(?:이미지|그림|도표|차트|그래프|타임라인|흐름도|로드맵|슬라이드|카드)(?:로|으로)\s*(?:만들|그려|그리|생성|제작|변환|정리|요약|표현|보여)/i;
   /* 유형(요청 문구) 기본 목록 — k 는 사라지지 않는 열쇠(사용자가 지운 기본 문구를 기억하고, 나중에 새 기본 문구가 생기면 자동 합류시키는 데 씀) */
   const _VIZ_RECIPES=[
-    {k:'sum',ic:'📊',t:'핵심 요약 한 장',p:'왼쪽 참고 자료의 주요 내용을 분석해서, 핵심 메시지·중요한 수치·시사점이 한눈에 보이는 인포그래픽 한 장으로 만들어줘.'},
-    {k:'num',ic:'🔢',t:'핵심 수치 카드',p:'참고 자료에서 중요한 숫자·지표를 뽑아 핵심 수치 카드와 간단한 차트 중심의 인포그래픽으로 만들어줘.'},
-    {k:'chart',ic:'📈',t:'차트 중심',p:'참고 자료의 숫자 데이터를 분석해서 가장 알맞은 차트(막대·선·도넛)로 시각화한 인포그래픽을 만들어줘.'},
-    {k:'flow',ic:'🧭',t:'흐름·단계',p:'참고 자료의 절차·인과관계·전략을 단계별 흐름도 형태의 인포그래픽으로 만들어줘.'},
-    {k:'time',ic:'🗓',t:'타임라인',p:'참고 자료의 내용을 시간 순서로 정리한 타임라인 인포그래픽으로 만들어줘.'},
-    {k:'vs',ic:'🆚',t:'비교·장단점',p:'참고 자료의 내용을 강세·약세(또는 장점·단점)로 나눠 비교하는 인포그래픽으로 만들어줘.'},
-    {k:'quote',ic:'💬',t:'말씀·명언 카드',p:'참고 자료에서 가장 마음에 남는 핵심 문장을 골라, 짧은 묵상 한 줄과 함께 보여 주는 카드 이미지로 만들어줘.'},
-    {k:'news3',ic:'🗂',t:'카드뉴스 3장',p:'참고 자료를 분석해서 표지(핵심 한 줄)·핵심 포인트·결론, 이렇게 3장으로 이루어진 카드뉴스를 인포그래픽 3개로 만들어줘.'},
-    {k:'tbl',ic:'📋',t:'표형 요약표',p:'참고 자료의 핵심 내용을 표 중심(표형 양식)의 인포그래픽으로 만들어줘. 수치와 항목은 표로 정리하고 헤더는 얇게 해줘.'},
-    {k:'rep',ic:'🧾',t:'보고서형 한 장',p:'참고 자료를 분석해서 보고서처럼 보이는 표형 인포그래픽 한 장으로 만들어줘. 보고서 양식에 한 줄 헤더로 촘촘하게.'},
-    {k:'thin',ic:'⚡',t:'얇은 헤더 요약',p:'참고 자료의 주요 내용을 얇은 헤더의 컴팩트한 인포그래픽 한 장으로 만들어줘.'},
+    {k:'sum',ic:'📊',t:'핵심 요약 한 장',p:'왼쪽 참고 자료의 주요 내용을 분석해서, 핵심 메시지·중요한 수치·시사점이 한눈에 보이는 인포그래픽 한 장으로 만들어줘.',tx:'왼쪽 참고 자료의 주요 내용을 분석해서, 핵심 메시지·중요한 수치·시사점이 한눈에 들어오는 요약 글로 정리해줘.'},
+    {k:'num',ic:'🔢',t:'핵심 수치 카드',p:'참고 자료에서 중요한 숫자·지표를 뽑아 핵심 수치 카드와 간단한 차트 중심의 인포그래픽으로 만들어줘.',tx:'참고 자료에서 중요한 숫자·지표를 뽑아, 항목마다 한 줄(수치와 그 의미)로 정리해줘.'},
+    {k:'chart',ic:'📈',t:'차트 중심',p:'참고 자료의 숫자 데이터를 분석해서 가장 알맞은 차트(막대·선·도넛)로 시각화한 인포그래픽을 만들어줘.',tx:'참고 자료의 숫자 데이터를 분석해서, 추이·비교·비중이 드러나도록 핵심 내용을 글로 정리해줘.'},
+    {k:'flow',ic:'🧭',t:'흐름·단계',p:'참고 자료의 절차·인과관계·전략을 단계별 흐름도 형태의 인포그래픽으로 만들어줘.',tx:'참고 자료의 절차·인과관계·전략을 단계별로 번호를 붙여 글로 정리해줘.'},
+    {k:'time',ic:'🗓',t:'타임라인',p:'참고 자료의 내용을 시간 순서로 정리한 타임라인 인포그래픽으로 만들어줘.',tx:'참고 자료의 내용을 시간 순서대로 날짜별 한 줄씩 정리해줘.'},
+    {k:'vs',ic:'🆚',t:'비교·장단점',p:'참고 자료의 내용을 강세·약세(또는 장점·단점)로 나눠 비교하는 인포그래픽으로 만들어줘.',tx:'참고 자료의 내용을 강세·약세(또는 장점·단점)로 나눠 비교하는 글로 정리해줘.'},
+    {k:'quote',ic:'💬',t:'말씀·명언 카드',p:'참고 자료에서 가장 마음에 남는 핵심 문장을 골라, 짧은 묵상 한 줄과 함께 보여 주는 카드 이미지로 만들어줘.',tx:'참고 자료에서 가장 마음에 남는 핵심 문장을 골라, 짧은 묵상 한 줄과 함께 정리해줘.'},
+    {k:'news3',ic:'🗂',t:'카드뉴스 3장',p:'참고 자료를 분석해서 표지(핵심 한 줄)·핵심 포인트·결론, 이렇게 3장으로 이루어진 카드뉴스를 인포그래픽 3개로 만들어줘.',tx:'참고 자료를 분석해서 표지(핵심 한 줄)·핵심 포인트·결론, 이렇게 세 부분으로 나눠 글로 정리해줘.'},
+    {k:'tbl',ic:'📋',t:'표형 요약표',p:'참고 자료의 핵심 내용을 표 중심(표형 양식)의 인포그래픽으로 만들어줘. 수치와 항목은 표로 정리하고 헤더는 얇게 해줘.',tx:'참고 자료의 핵심 내용을 항목과 수치 중심의 간결한 개조식으로 정리해줘.'},
+    {k:'rep',ic:'🧾',t:'보고서형 한 장',p:'참고 자료를 분석해서 보고서처럼 보이는 표형 인포그래픽 한 장으로 만들어줘. 보고서 양식에 한 줄 헤더로 촘촘하게.',tx:'참고 자료를 분석해서 보고서 문체의 개조식 글로 핵심 내용을 정리해줘.'},
+    {k:'thin',ic:'⚡',t:'얇은 헤더 요약',p:'참고 자료의 주요 내용을 얇은 헤더의 컴팩트한 인포그래픽 한 장으로 만들어줘.',tx:'참고 자료의 주요 내용을 짧고 컴팩트한 요약 글로 정리해줘.'},
   ];
   /* 양식 세트 — 헤더·문서 틀·표시 형식·표 양식·블록 모양·밀도를 한 번에 정함(색·너비·상승색은 안 건드림). 'auto' = AI 가 정한 값(없으면 기본값) */
   const _VIZ_PRESETS=[
@@ -32159,16 +32342,18 @@ Rules:
     if((refs||[]).some(r=>/<INFOGRAPHIC/i.test(r.src||''))) return true;
     return _hist.some(m=>m.role==='assistant'&&typeof m.content==='string'&&/<INFOGRAPHIC/i.test(m.content));
   }
-  function _vizRules(){
+  function _vizRules(mode){   /* mode: 'both'(기본 — 분석 + <RESULT> 정리 텍스트 + <INFOGRAPHIC>) | 'viz'(인포그래픽만 — <RESULT> 없이 분석 + <INFOGRAPHIC>) */
+    const viz=(mode==='viz');
     return `
 
 [인포그래픽(이미지) 제작 규칙 — 사용자가 인포그래픽·이미지·그림·카드뉴스·도표·차트·시각화를 요청했거나, 앞서 만든 <INFOGRAPHIC> 을 고쳐 달라는 경우에만 적용]
 이 앱은 당신이 쓴 명세(JSON)를 받아 인포그래픽 이미지(PNG)로 그려 주고, 사용자가 그 이미지를 리포트 본문에 붙여넣습니다. HTML·SVG·마크다운 표·코드블록으로 그림을 직접 그리지 말고 아래 형식만 쓰세요.
-답변은 반드시 아래 순서로 세 부분을 모두 씁니다.
+답변은 반드시 아래 순서로 ${viz?'두 부분만':'세 부분을 모두'} 씁니다.
 1) 먼저 일반 글로 '분석'을 2~4줄로 짧게 적습니다 — 핵심 메시지, 가장 중요한 수치, 왜 이런 구성으로 만들었는지. 이 글은 채팅창에만 보이고 이미지·본문에는 들어가지 않습니다(<RESULT> 로 감싸지 않습니다).
-2) 그다음 인포그래픽에 담을 내용을 '텍스트로 정리'해 위 [답변 형식 규칙]대로 <RESULT> 와 </RESULT> 사이에 씁니다(필수). 이미지에 들어갈 제목·핵심 수치·핵심 포인트·결론을 이미지와 같은 내용·수치 그대로, 줄바꿈과 글머리(·)로 읽기 좋게 정돈한 글입니다. 이 글은 인포그래픽 위에 먼저 보이고, 사용자가 '본문에 반영'하면 리포트 본문의 '텍스트'에 그대로 들어갑니다(인포그래픽 이미지는 본문의 '인포그래픽'에 들어갑니다). 그러니 인사·설명·출처 표기 없이 본문에 그대로 둘 내용만 쓰고, 이미지의 글자·수치와 어긋나지 않게 하세요.
-3) 그다음 <INFOGRAPHIC> 와 </INFOGRAPHIC> 사이에 JSON 하나만 씁니다(코드펜스 \`\`\`·주석 금지, 큰따옴표만 사용). 여러 장이면 장마다 태그를 따로 씁니다(최대 ${_VIZ_MAX}장).
-4) 이미지에 들어갈 글자는 모두 JSON 안에 있어야 합니다. 기본 언어는 한국어(자료가 영어면 용어는 원문 병기).
+${viz?'':`2) 그다음 인포그래픽에 담을 내용을 '텍스트로 정리'해 위 [답변 형식 규칙]대로 <RESULT> 와 </RESULT> 사이에 씁니다(필수). 이미지에 들어갈 제목·핵심 수치·핵심 포인트·결론을 이미지와 같은 내용·수치 그대로, 줄바꿈과 글머리(·)로 읽기 좋게 정돈한 글입니다. [텍스트] 요청(형식·분량·문체)이 따로 있으면 그것을 따르되 수치와 핵심 내용은 이미지와 어긋나지 않게 하세요. 이 글은 인포그래픽 위에 먼저 보이고, 사용자가 '본문에 반영'하면 리포트 본문의 '텍스트'에 그대로 들어갑니다(인포그래픽 이미지는 본문의 '인포그래픽'에 들어갑니다). 그러니 인사·설명·출처 표기 없이 본문에 그대로 둘 내용만 쓰고, 이미지의 글자·수치와 어긋나지 않게 하세요.
+`}${viz?2:3}) 그다음 <INFOGRAPHIC> 와 </INFOGRAPHIC> 사이에 JSON 하나만 씁니다(코드펜스 \`\`\`·주석 금지, 큰따옴표만 사용). 여러 장이면 장마다 태그를 따로 씁니다(최대 ${_VIZ_MAX}장).
+${viz?3:4}) 이미지에 들어갈 글자는 모두 JSON 안에 있어야 합니다. 기본 언어는 한국어(자료가 영어면 용어는 원문 병기).
+${viz?`이번 요청은 인포그래픽(이미지)만 필요합니다. <RESULT> 는 쓰지 마세요 — 본문의 ‘텍스트’는 이번 요청으로 바뀌지 않습니다.`:`요청이 [텍스트]와 [인포그래픽] 두 부분으로 나뉘어 있으면, [텍스트]의 지시(형식·분량·문체·강조점)는 2)의 <RESULT> 글에, [인포그래픽]의 지시(유형·블록 구성·양식)는 3)의 <INFOGRAPHIC> 에 각각 적용하세요. 두 결과의 핵심 내용과 수치는 서로 어긋나지 않게 하세요.`}
 
 [명세 형식]
 {"title":"제목(30자 안팎)","subtitle":"부제(선택)","tag":"분류·날짜 같은 작은 꼬리표(선택)","icon":"이모지 1개(선택)","theme":"ocean|forest|sunset|royal|wine|slate|midnight|teal|indigo|coral|gold|sky|mono 중 내용에 어울리는 것(선택)","blocks":[…블록들…]}
@@ -32197,22 +32382,30 @@ Rules:
 - 글은 짧게: head 는 20자 안팎, text 는 60자 안팎(최대 120자), label 은 10자 안팎. 이모지는 icon 에만 쓰고 글 안에는 쓰지 마세요.
 - 보통 첫 블록은 stats(핵심 수치) 또는 points(핵심 요약), 마지막은 callout(결론·주의)으로 마무리하고, 같은 종류 블록을 반복하지 마세요.
 - 출처는 어떤 형태로도 표기하지 마세요. 이미지의 맨 아래 출처 줄(그런 필드는 없습니다)은 물론이고 '출처:'·'자료:'·'Source:' 같은 표기, 괄호 안 출처, 차트·표 제목 옆 출처, 주석, 링크 주소, '제공된 자료 기준' 같은 문구를 이미지 어디에도 넣지 않습니다. 앞의 '분석' 글과 <RESULT> 의 정리한 텍스트에도 출처 표기는 쓰지 않습니다. 이 앱은 출처를 표기하지 않는 설정이며, 요청이 있어도 마찬가지입니다.
-- 수정 요청(색·문구·항목 추가/삭제 등)이면 바뀐 부분만이 아니라 완성된 JSON 전체를 <INFOGRAPHIC> 로 다시 내세요. 참조한 인포그래픽이 있으면 그 JSON 을 바탕으로 고치세요. 문구·항목·수치가 바뀌면 <RESULT> 의 정리한 텍스트도 같은 내용으로 고쳐 다시 쓰세요.
+- 수정 요청(색·문구·항목 추가/삭제 등)이면 바뀐 부분만이 아니라 완성된 JSON 전체를 <INFOGRAPHIC> 로 다시 내세요. 참조한 인포그래픽이 있으면 그 JSON 을 바탕으로 고치세요.${viz?'':' 문구·항목·수치가 바뀌면 <RESULT> 의 정리한 텍스트도 같은 내용으로 고쳐 다시 쓰세요.'}
 - 인포그래픽을 요청하지 않은 질문에는 이 형식을 쓰지 말고 평소처럼 답하세요.
 - 사진·일러스트 같은 '그림 자체'는 만들 수 없습니다. 그런 요청이면 가장 가까운 인포그래픽(예: 말씀·명언 카드)으로 대신 만들고, 그 사실을 분석 글에 한 줄로 알려 주세요.
 
 [출력 예시 — 형식만 참고하고, 내용·수치는 반드시 이번 자료에서 가져오세요]
 핵심은 ① 금리 인하 기대 ② 기술주 주도 ③ 단기 과열 신호입니다. 수치는 카드·막대로, 해석은 포인트로 구성했어요.
 
-<RESULT>
+${viz?'':`<RESULT>
 · 금리 인하 기대 속 기술주 주도 상승 — S&P 500 5,412(+1.2%), 나스닥 17,640(+1.8%)
 · 섹터별 등락률: 기술 +3.2%, 에너지 -1.4%
 · 체크포인트: FOMC 의사록 공개 전까지 변동성에 유의
 </RESULT>
 
-<INFOGRAPHIC>
+`}<INFOGRAPHIC>
 {"title":"이번 주 미국 증시","subtitle":"금리 인하 기대 속 기술주 주도 상승","tag":"시황 분석","icon":"📈","theme":"ocean","blocks":[{"type":"stats","items":[{"label":"S&P 500","value":"5,412","delta":"+1.2%"},{"label":"나스닥","value":"17,640","delta":"+1.8%"}]},{"type":"bar","title":"섹터별 등락률","unit":"%","items":[{"label":"기술","value":3.2},{"label":"에너지","value":-1.4}]},{"type":"callout","tone":"warn","head":"체크포인트","text":"FOMC 의사록 공개 전까지 변동성에 유의"}]}
 </INFOGRAPHIC>`;
+  }
+
+  /* 유형을 '텍스트만' 범위로 실행했을 때 — 인포그래픽 규칙은 붙이지 않고(앞선 대화에 인포그래픽 답변이 있어도) 글 결과물만 만들게 안내 */
+  function _vizTextNote(){
+    return `
+
+[이번 요청 범위: 텍스트만]
+이번 요청은 글(텍스트) 결과물만 필요합니다. 인포그래픽·이미지·도표 그림은 만들지 말고 <INFOGRAPHIC> 형식도 쓰지 마세요(앞선 대화에 인포그래픽 답변이 있어도 마찬가지입니다). 본문에 반영할 글은 위 [답변 형식 규칙]대로 <RESULT> 와 </RESULT> 사이에 쓰세요.`;
   }
 
   /* ── 보기 설정(색·너비·상승색)과 양식(헤더·문서 틀·표시 형식·표 양식·블록 모양·밀도) — 마지막 선택을 기억해 새 인포그래픽에 적용 ── */
@@ -32466,6 +32659,7 @@ Rules:
     else if(act==='ed') _vzEdOpen(box);
     else if(act==='rc') _vizBoxRcToggle(box);
     else if(act==='rcgo') _vizBoxRcGo(box,el);
+    else if(act==='rcmode') _vizSetMode(arg);
     else if(act==='rcedit') _vizBoxRcEdit(box);
     else if(act==='more'){ box.setAttribute('data-more',box.getAttribute('data-more')==='1'?'0':'1'); const op=box.querySelector('.ai-viz-opts'); if(op) op.innerHTML=_vizOptsHtml(_vizBoxOpt(box),box.getAttribute('data-more')==='1'); }
     else if(act==='theme'||act==='width'||act==='ud'||act==='preset'||act==='rand'||_VIZ_A6.indexOf(act)>=0) _vizSetOpt(box,act,arg);
@@ -32482,12 +32676,13 @@ Rules:
     const w=box&&box.querySelector&&box.querySelector('.ai-viz-rcw'); if(!w) return;
     const list=_vizRecipes(), LS=_vizLastRes(_eid);
     w.innerHTML='<div class="ai-viz-rch"><span>이 인포그래픽을 참조해 다른 유형으로 다시 만들어요 — 누르면 바로 AI 에게 요청합니다.</span><button type="button" class="mobile-keep" onclick="_vizAct(this,\'rcedit\')" title="유형(요청 문구)을 추가·수정·삭제하려면 🎨 패널을 편집 모드로 엽니다">✏️ 문구 편집</button></div>'
+      +'<div class="ai-viz-rcm"><span class="lb">실행 범위</span>'+_vizModeBtns(_vizRunMode(),v=>"_vizAct(this,'rcmode','"+v+"')")+'</div>'
       +'<div class="ai-viz-rcb">'+(list.length
-        ?list.map(r=>'<button type="button" class="mobile-keep'+(_vizIsLast(LS,r)?' last':'')+'" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_ahEsc(r.p)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</button>').join('')
+        ?list.map(r=>'<button type="button" class="mobile-keep'+(_vizIsLast(LS,r)?' last':'')+'" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_vizRcTip(r)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</button>').join('')
         :'<span class="ai-viz-rcn">등록된 유형이 없어요 — ✏️ 문구 편집에서 추가하세요.</span>')+'</div>';
   }
   function _vizBoxRcToggle(box){ const on=box.getAttribute('data-rc')!=='1'; _vizBoxRcSet(box,on); if(on) _vizBoxRcRender(box); }
-  const _vizRcReq=r=>'🔄 참조한 인포그래픽을 ‘'+r.t+'’ 유형으로 바꿔서 다시 만들어줘.\n'+r.p;
+  const _vizRcLines=(r,mode)=>[mode==='text'?'🔄 참조한 인포그래픽의 내용을 ‘'+r.t+'’ 유형의 글로 다시 정리해줘.':'🔄 참조한 인포그래픽을 ‘'+r.t+'’ 유형으로 바꿔서 다시 만들어줘.'].concat(_vizComposeLines(r,mode));   /* 고른 실행 범위의 프롬프트를 이어 붙임 */
   function _vizBoxRcGo(box,btn){
     if(box._rcBusy) return;   /* 연타로 같은 요청이 두 번 가지 않게 */
     const name=btn&&btn.getAttribute('data-n'), r=_vizRecipes().find(x=>x.t===name);
@@ -32495,17 +32690,16 @@ Rules:
     if(_busy){ _vizRcToast('AI가 답변하는 중이에요 — 끝난 뒤에 눌러 주세요',true); return; }
     const inp=g('aiUserInput'), rb=box.querySelector('.ai-ref-btn'); if(!inp||!rb) return;
     const clean=!(inp.innerText||'').trim()&&!inp.querySelector('img')&&!_pendingImages.length&&!_pendingRefs.length;   /* 쓰던 글·이미지·참조가 없을 때만 바로 보냄 */
-    const txt=_vizRcReq(r);
-    _vizPendAdd(r);   /* 어느 유형으로 바꿔 만드는지 — 보낼 때 '마지막 유형'으로 기록 */
+    const mode=_vizRunMode(), lines=_vizRcLines(r,mode);
+    _vizPendAdd(r,mode);   /* 어느 유형으로·어떤 범위로 바꿔 만드는지 — 보낼 때 '마지막 유형'으로 기록하고 그 범위의 규칙을 붙임 */
     window._refFromBtn(rb);   /* 이 인포그래픽을 참조 칩으로 — 번호·미리보기·중복 처리는 [↪ 참조] 와 같음 */
     _vizBoxRcSet(box,false);
     if(clean&&_pendingRefs.length){
       box._rcBusy=true; setTimeout(()=>{ box._rcBusy=false; },1500);
-      inp.textContent=txt;
+      inp.textContent=''; _vizPutLines(inp,lines);
       window.sendAIMessage();
     } else {
-      if(!(inp.innerText||'').trim()) inp.textContent=txt;
-      else{ inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(txt)); }
+      _vizPutLines(inp,lines);
       _focusInputEnd();
       _vizRcToast('쓰던 내용이 있어 요청 문구만 입력창에 채워 뒀어요 — 확인한 뒤 Enter 로 보내세요',true);
     }
@@ -32976,19 +33170,51 @@ Rules:
     try{ if(window.Intl&&Intl.Segmenter) return Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(s)).slice(0,n).map(x=>x.segment).join(''); }catch(e){}
     return _vizCut(s,n);
   }
-  function _vizRcNorm(r,keepK){   /* 아이콘(이모지 1~2)·이름(24자)·요청 문구(600자) 검증 — 이름·문구가 비면 null */
+  /* ═══ 유형 실행 범위 (2026-10-18) ═══════════════════════════════════════════════════════════
+     유형(요청 문구)은 '텍스트 프롬프트'(tx — 본문 '텍스트'에 반영될 정리 글을 어떻게 쓸지)와 '인포그래픽 프롬프트'(p — 이미지를 어떻게 구성할지)를 따로 가짐(비워 두면 기본 문구).
+     유형을 실행(입력창 채우기·[🔄 유형 바꾸기])할 때 범위를 고름 — both: 텍스트+인포그래픽(두 프롬프트를 [텍스트]/[인포그래픽] 이름표를 붙여 함께) · text: 텍스트만(인포그래픽 규칙 없이 글 결과물 <RESULT> 만) ·
+     viz: 인포그래픽만(<RESULT> 없이 <INFOGRAPHIC> 만 — 본문 '텍스트'는 안 건드림). 마지막에 고른 범위는 localStorage.BTMVizRunMode 에 기억(기본 both).
+     범위는 유형 버튼을 누르는 순간 _vizPend 에 함께 기억되고, 보낼 때 _vizTypeOf 가 알아본 범위로 시스템 프롬프트(_vizRules(mode)/_vizTextNote)를 정함 —
+     글을 크게 고쳐 써서 유형을 못 알아보면 예전처럼 요청 글의 키워드로 판단. */
+  const _VMODE_KEY='BTMVizRunMode';
+  const _VMODE_NAME={both:'텍스트 + 인포그래픽',text:'텍스트만',viz:'인포그래픽만'};
+  const _VMODES=[
+    ['both','📝+🎨 텍스트 + 인포그래픽','정리한 글과 인포그래픽 이미지를 한 번에 만들어요 — 유형의 ‘텍스트 프롬프트’와 ‘인포그래픽 프롬프트’를 함께 보냅니다'],
+    ['text','📝 텍스트만','글(정리 텍스트)만 만들어요 — 유형의 ‘텍스트 프롬프트’만 보내고 인포그래픽 이미지는 만들지 않습니다'],
+    ['viz','🎨 인포그래픽만','인포그래픽 이미지만 만들어요 — 유형의 ‘인포그래픽 프롬프트’만 보내고 본문 ‘텍스트’에 반영할 글은 만들지 않습니다'],
+  ];
+  const _VIZ_TX_DEF='왼쪽 참고 자료의 주요 내용을 분석해서 핵심 내용을 간결한 글로 정리해줘.';   /* 텍스트 프롬프트가 비어 있을 때 */
+  const _VIZ_P_DEF='왼쪽 참고 자료의 주요 내용을 분석해서 인포그래픽 한 장으로 만들어줘.';   /* 인포그래픽 프롬프트가 비어 있을 때 */
+  function _vizRunMode(){ let m=''; try{ m=localStorage.getItem(_VMODE_KEY)||''; }catch(e){} return _VMODE_NAME[m]?m:'both'; }
+  function _vizPrompts(r){ return {tx:String((r&&r.tx)||'').trim()||_VIZ_TX_DEF, p:String((r&&r.p)||'').trim()||_VIZ_P_DEF}; }
+  function _vizComposeLines(r,mode){   /* 입력창에 채울 줄들 — both 는 [텍스트]/[인포그래픽] 이름표를 붙여 두 프롬프트를 함께 */
+    const q=_vizPrompts(r);
+    return mode==='text'?[q.tx]:mode==='viz'?[q.p]:['[텍스트] '+q.tx,'[인포그래픽] '+q.p];
+  }
+  function _vizPutLines(inp,lines){   /* 입력창에 줄들을 채움 — 쓰던 글이 있으면 지우지 않고 아래에 덧붙임(줄바꿈은 <br> — 이 입력창은 \n 을 줄바꿈으로 안 보여 줌) */
+    const has=!!(inp.innerText||'').trim();
+    if(!has) inp.textContent='';
+    lines.forEach((ln,i)=>{ if(has||i>0) inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(ln)); });
+  }
+  const _vizRcTip=r=>{ const q=_vizPrompts(r); return _ahEsc('📝 텍스트: '+q.tx+'\n🎨 인포그래픽: '+q.p).replace(/\n/g,'&#10;'); };   /* 유형 버튼의 말풍선 도움말 — 두 프롬프트 */
+  function _vizModeBtns(cur,fn){ return _VMODES.map(([v,lb,tt])=>'<button type="button" class="mobile-keep'+(v===cur?' on':'')+'" onclick="'+fn(v)+'" title="'+_ahEsc(tt)+'" aria-pressed="'+(v===cur?'true':'false')+'">'+lb+'</button>').join(''); }
+  window._vizSetMode=function(v){ if(!_VMODE_NAME[v]) return; try{ localStorage.setItem(_VMODE_KEY,v); }catch(e){} _vizRcRender(); };   /* 🎨 패널·열려 있는 [🔄 유형 바꾸기] 줄 모두 다시 그려짐 */
+  function _vizRcNorm(r,keepK){   /* 아이콘(이모지 1~2)·이름(24자)·텍스트 프롬프트 tx(600자)·인포그래픽 프롬프트 p(600자) 검증 — 이름이 없거나 두 프롬프트가 모두 비면 null */
     if(!r||typeof r!=='object') return null;
     const t=_vizCut(String(r.t==null?'':r.t).replace(/\s+/g,' ').trim(),24);
-    const p=_vizCut(String(r.p==null?'':r.p).replace(/\r/g,'').trim(),600);
-    if(!t||!p) return null;
-    const o={ic:_vizHeadG(r.ic,2)||'🎨',t,p};
+    const fix=s=>_vizCut(String(s==null?'':s).replace(/\r/g,'').trim(),600);
+    const p=fix(r.p), tx=fix(r.tx);
+    if(!t||(!p&&!tx)) return null;
+    const o={ic:_vizHeadG(r.ic,2)||'🎨',t,p,tx};
     if(keepK&&typeof r.k==='string'&&r.k) o.k=_vizCut(r.k,16);
     return o;
   }
   function _vizRecipes(){
     let st=null; try{ st=JSON.parse(localStorage.getItem(_VRK)||'null'); }catch(e){}
     if(!st||typeof st!=='object'||!Array.isArray(st.list)) return _VIZ_RECIPES.map(r=>Object.assign({},r));
-    const out=[]; st.list.forEach(r=>{ const n=_vizRcNorm(r,true); if(n&&out.length<_VR_MAX) out.push(n); });
+    const out=[]; st.list.forEach(r=>{ const n=_vizRcNorm(r,true); if(n&&out.length<_VR_MAX){
+      if(r&&typeof r.tx!=='string'){ const d=n.k&&_VIZ_RECIPES.find(x=>x.k===n.k); n.tx=d?d.tx:''; }   /* 텍스트 프롬프트가 생기기 전(2026-10-18 이전)에 저장된 문구 — 그 기본 문구의 텍스트 프롬프트를 이어받음(직접 만든 문구는 빈칸 = 기본 문구 사용) */
+      out.push(n); } });
     const have=new Set(out.map(r=>r.k).filter(Boolean)), hide=new Set(Array.isArray(st.hide)?st.hide:[]);
     _VIZ_RECIPES.forEach(r=>{ if(!have.has(r.k)&&!hide.has(r.k)) out.push(Object.assign({},r)); });
     return out;
@@ -33009,10 +33235,10 @@ Rules:
   function _vizLastGet(eid){   /* 저장된 기록(손상·조작에 대비해 검증) */
     const r=_vizLastAll()[_vlKey(eid)]; if(!r||typeof r!=='object') return null;
     const t=_vizCut(String(r.t==null?'':r.t).replace(/\s+/g,' ').trim(),24); if(!t) return null;
-    return {k:(typeof r.k==='string'?_vizCut(r.k,16):''),ic:_vizHeadG(r.ic,2)||'🎨',t,at:(+r.at>0?+r.at:0)};
+    return {k:(typeof r.k==='string'?_vizCut(r.k,16):''),ic:_vizHeadG(r.ic,2)||'🎨',t,at:(+r.at>0?+r.at:0),m:(_VMODE_NAME[r.m]?r.m:'')};
   }
-  function _vizLastSet(eid,r){
-    const m=_vizLastAll(); m[_vlKey(eid)]={k:r.k||'',ic:r.ic||'🎨',t:r.t,at:Date.now()};
+  function _vizLastSet(eid,r,mode){   /* mode: 그때 고른 실행 범위(both|text|viz — 모르면 '') */
+    const m=_vizLastAll(); m[_vlKey(eid)]={k:r.k||'',ic:r.ic||'🎨',t:r.t,at:Date.now(),m:(_VMODE_NAME[mode]?mode:'')};
     const ks=Object.keys(m);
     if(ks.length>_VLAST_MAX) ks.sort((a,b)=>((m[a]&&m[a].at)||0)-((m[b]&&m[b].at)||0)).slice(0,ks.length-_VLAST_MAX).forEach(k=>{ delete m[k]; });
     try{ localStorage.setItem(_VLAST,JSON.stringify({v:1,m})); }catch(e){}
@@ -33032,36 +33258,40 @@ Rules:
   function _vizLastPaint(){   /* 🎨 패널 맨 위 한 줄을 지금 섹션(_eid)의 기록으로 */
     const ln=g('aiVizLastLine'); if(!ln) return;
     const res=_vizLastRes(_eid);
-    if(res){ const w=_vizLastWhen(res.rec.at); ln.innerHTML='🕘 이 섹션에서 마지막으로 만든 유형 <b>'+_ahEsc(res.ic)+' '+_ahEsc(res.t)+'</b>'+(w?' <small>('+_ahEsc(w)+')</small>':''); }
+    if(res){ const w=_vizLastWhen(res.rec.at); ln.innerHTML='🕘 이 섹션에서 마지막으로 만든 유형 <b>'+_ahEsc(res.ic)+' '+_ahEsc(res.t)+'</b>'+(res.rec.m?' <small>· '+_ahEsc(_VMODE_NAME[res.rec.m])+'</small>':'')+(w?' <small>('+_ahEsc(w)+')</small>':''); }
     else ln.textContent='🕘 이 섹션에서는 아직 유형으로 만든 인포그래픽이 없어요 — 아래 유형을 눌러 시작해 보세요.';
   }
   /* 유형 버튼을 눌러 채운(또는 바로 보낸) 요청 문구 — 보낼 때 어느 유형으로 실행했는지 판별하는 데 씀 */
   let _vizPend=[];
-  function _vizPendAdd(r){ if(!r) return; _vizPend=_vizPend.filter(x=>x.t!==r.t||(x.k||'')!==(r.k||'')); _vizPend.push({k:r.k||'',ic:r.ic,t:r.t,p:r.p}); if(_vizPend.length>6) _vizPend.shift(); }
+  function _vizPendAdd(r,mode){ if(!r) return; _vizPend=_vizPend.filter(x=>x.t!==r.t||(x.k||'')!==(r.k||'')); _vizPend.push({k:r.k||'',ic:r.ic,t:r.t,p:r.p,tx:r.tx||'',mode:(_VMODE_NAME[mode]?mode:'')}); if(_vizPend.length>6) _vizPend.shift(); }   /* mode: 누른 실행 범위 — 보낼 때 그 범위의 규칙을 붙임 */
   const _vzSp=s=>String(s==null?'':s).replace(/\s+/g,' ').trim();
   const _vzToks=s=>Array.from(new Set(_vzSp(s).split(/[\s,.·…!?:;()\[\]{}"'“”‘’]+/).filter(w=>w.length>=2)));
-  function _vizTypeOf(txt){   /* 이번에 보내는 글이 어느 유형(요청 문구)인지 — 못 알아보면 null */
+  function _vizTypeOf(txt){   /* 이번에 보내는 글이 어느 유형(요청 문구)인지 — 못 알아보면 null. 텍스트 프롬프트·인포그래픽 프롬프트 어느 쪽이든 알아봄 */
     const nt=_vzSp(txt); if(!nt) return null;
     const have=new Set(_vzToks(txt));
+    const hit=s=>{ const np=_vzSp(s); if(!np) return false; if(nt.indexOf(np)>=0) return true; const pt=_vzToks(s); return !!pt.length&&pt.filter(w=>have.has(w)).length/pt.length>=0.6; };
     for(let i=_vizPend.length-1;i>=0;i--){   /* 방금 유형 버튼으로 채운 문구 중 아직 글에 남아 있는 것(가장 나중에 누른 것 먼저) */
-      const r=_vizPend[i], np=_vzSp(r.p); if(!np) continue;
-      if(nt.indexOf(np)>=0) return r;
-      const pt=_vzToks(r.p); if(!pt.length) continue;
-      if(pt.filter(w=>have.has(w)).length/pt.length>=0.6) return r;
+      const r=_vizPend[i], q=_vizPrompts(r);
+      if(hit(q.p)||hit(q.tx)){
+        let md=r.mode;   /* '텍스트 + 인포그래픽'으로 채운 두 줄 중 한쪽 이름표 줄을 지웠으면 남은 쪽만 실행(두 문구는 단어가 많이 겹쳐 내용으론 구분이 안 되므로 이름표로 판단) */
+        if(md==='both'){ const s=String(txt), hT=/(^|\n)\s*\[텍스트\]/.test(s), hP=/(^|\n)\s*\[인포그래픽\]/.test(s); if(hP&&!hT) md='viz'; else if(hT&&!hP) md='text'; }
+        return md===r.mode?r:Object.assign({},r,{mode:md});
+      }
     }
     let best=null;   /* 버튼 없이 같은 문구를 직접 넣은 경우 — 문구가 통째로 들어 있는 유형(가장 긴 문구 우선) */
-    _vizRecipes().forEach(r=>{ const np=_vzSp(r.p); if(np&&nt.indexOf(np)>=0&&(!best||np.length>_vzSp(best.p).length)) best=r; });
-    return best;
+    _vizRecipes().forEach(r=>{ [r.p,r.tx].forEach(s=>{ const np=_vzSp(s); if(np&&nt.indexOf(np)>=0&&(!best||np.length>best.len)) best={r,len:np.length}; }); });
+    return best?best.r:null;
   }
 
   function _vizRcRender(){
     const rc=g('aiVizRecipes'); if(!rc) return;
+    const md=g('aiVizMode'); if(md) md.innerHTML='<span class="lb">실행 범위</span>'+_vizModeBtns(_vizRunMode(),v=>"_vizSetMode('"+v+"')")+'<small>유형을 누르면 고른 범위의 프롬프트가 입력창에 채워져요 (두 줄 중 한 줄을 지우면 남은 쪽만 실행)</small>';
     const list=_vizRcCur=_vizRecipes(), ed=_vizRcMode, LS=_vizLastRes(_eid);
     let h=list.map((r,i)=>{
       const lab=_ahEsc(r.ic)+' '+_ahEsc(r.t), lc=_vizIsLast(LS,r)?' last':'';
       return ed
         ?'<span class="avp-chip"><button type="button" class="mobile-keep'+lc+'" onclick="_vizRcAct(\'edit\','+i+')" title="눌러서 이름·문구 고치기">'+lab+'</button><button type="button" class="avp-del mobile-keep" onclick="_vizRcAct(\'del\','+i+')" title="이 문구 삭제" aria-label="‘'+_ahEsc(r.t)+'’ 삭제">✕</button></span>'
-        :'<button type="button" class="mobile-keep'+lc+'" onclick="_vizRecipe('+i+')" title="'+_ahEsc(r.p)+'">'+lab+'</button>';
+        :'<button type="button" class="mobile-keep'+lc+'" onclick="_vizRecipe('+i+')" title="'+_vizRcTip(r)+'">'+lab+'</button>';
     }).join('');
     if(!list.length) h+='<span class="avp-none">등록된 문구가 없어요</span>';
     h+='<button type="button" class="avp-add mobile-keep" onclick="_vizRcAct(\'add\')" title="새 유형(요청 문구)을 추가합니다">＋ 추가</button>'
@@ -33076,7 +33306,7 @@ Rules:
     const r=i>=0?_vizRcCur[i]:null;
     ed.setAttribute('data-i',String(r?i:-1));
     g('aiVizRcHd').textContent=r?'✏️ 문구 고치기':'＋ 새 문구 추가';
-    g('aiVizRcIc').value=r?r.ic:''; g('aiVizRcT').value=r?r.t:''; g('aiVizRcP').value=r?r.p:'';
+    g('aiVizRcIc').value=r?r.ic:''; g('aiVizRcT').value=r?r.t:''; g('aiVizRcX').value=r?(r.tx||''):''; g('aiVizRcP').value=r?(r.p||''):'';
     ed.style.display='flex';
     try{ ed.scrollIntoView({block:'nearest'}); }catch(e){}
     setTimeout(()=>{ const t=g('aiVizRcT'); if(t) t.focus(); },30);
@@ -33086,7 +33316,7 @@ Rules:
     if(e.isComposing||e.keyCode===229) return;
     if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); _vizRcClose(); }
     else if(e.key==='Enter'){
-      if(e.target.id==='aiVizRcT'||e.target.id==='aiVizRcIc'){ e.preventDefault(); const p=g('aiVizRcP'); if(p) p.focus(); }
+      if(e.target.id==='aiVizRcT'||e.target.id==='aiVizRcIc'){ e.preventDefault(); const p=g('aiVizRcX')||g('aiVizRcP'); if(p) p.focus(); }
       else if(e.ctrlKey||e.metaKey){ e.preventDefault(); window._vizRcAct('save'); }
     }
   };
@@ -33113,8 +33343,8 @@ Rules:
     if(act==='save'){
       const ed=g('aiVizRcEd'); if(!ed||ed.style.display==='none') return;
       const idx=+ed.getAttribute('data-i');
-      const n=_vizRcNorm({ic:g('aiVizRcIc').value,t:g('aiVizRcT').value,p:g('aiVizRcP').value},false);
-      if(!n){ _vizRcToast('이름과 요청 문구를 모두 입력해 주세요',true); return; }
+      const n=_vizRcNorm({ic:g('aiVizRcIc').value,t:g('aiVizRcT').value,tx:g('aiVizRcX').value,p:g('aiVizRcP').value},false);
+      if(!n){ _vizRcToast('이름과 프롬프트(텍스트·인포그래픽 중 하나 이상)를 입력해 주세요',true); return; }
       const list=_vizRcCur.slice();
       if(list.some((r,j)=>j!==idx&&r.t===n.t)){ _vizRcToast('같은 이름이 이미 있어요 — 다른 이름으로 바꿔 주세요',true); return; }
       if(idx>=0&&list[idx]){ if(list[idx].k) n.k=list[idx].k; list[idx]=n; }
@@ -33152,9 +33382,9 @@ Rules:
   window._vizRecipe=function(i){
     const r=(_vizRcCur.length?_vizRcCur:_vizRecipes())[i]; if(!r) return;
     const inp=g('aiUserInput'); if(!inp) return;
-    _vizPendAdd(r);   /* 어느 유형을 골랐는지 기억 — 보낼 때 '마지막 유형'으로 기록 */
-    if(!(inp.innerText||'').trim()) inp.textContent=r.p;
-    else{ inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(r.p)); }   /* 쓰던 글이 있으면 지우지 않고 아래에 덧붙임 */
+    const mode=_vizRunMode();
+    _vizPendAdd(r,mode);   /* 어느 유형을·어떤 범위로 골랐는지 기억 — 보낼 때 '마지막 유형'으로 기록하고 그 범위의 규칙을 붙임 */
+    _vizPutLines(inp,_vizComposeLines(r,mode));   /* 쓰던 글이 있으면 지우지 않고 아래에 덧붙임 */
     _vizPanelClose(); _focusInputEnd();
   };
 
@@ -33247,13 +33477,18 @@ Rules:
     밸류에이션
 </RESULT>`:'';
 
-    /* 인포그래픽(이미지) 요청이면 명세 형식 규칙을 덧붙임 — 요청 글·참조·이전 답변에 근거가 있을 때만(평소 요청의 토큰·동작은 그대로) */
-    const _vizBlock=_vizWanted(txt,refs)?_vizRules():'';
-    /* 이 섹션의 '마지막 인포그래픽 유형' 기록 — 유형(요청 문구)으로 인포그래픽을 요청한 경우만(자유롭게 쓴 요청·고치기 요청은 유형이 아니라 그대로 둠) */
-    if(_vizBlock){
-      const _vt=_vizTypeOf(txt);
-      if(_vt){ _vizLastSet(_sendEid,_vt); if(_eid===_sendEid){ const _pp=g('aiVizPanel'); if(_pp&&_pp.style.display==='flex') _vizRcRender(); } }
+    /* 인포그래픽(이미지) 요청이면 명세 형식 규칙을 덧붙임 — 요청 글·참조·이전 답변에 근거가 있을 때만(평소 요청의 토큰·동작은 그대로).
+       유형(요청 문구) 버튼으로 보낸 글이면 그때 고른 '실행 범위'(텍스트+인포그래픽·텍스트만·인포그래픽만)가 우선 — 키워드·이전 답변과 무관하게 그 범위의 규칙을 붙임(2026-10-18) */
+    const _vt=_vizTypeOf(txt);
+    const _vmode=(_vt&&_VMODE_NAME[_vt.mode])?_vt.mode:'';
+    let _vizBlock='';
+    if(_eid!==_MM_EID&&window.BTMViz){
+      if(_vmode==='text') _vizBlock=_vizTextNote();
+      else if(_vmode) _vizBlock=_vizRules(_vmode);
+      else if(_vizWanted(txt,refs)) _vizBlock=_vizRules('both');
     }
+    /* 이 섹션의 '마지막 인포그래픽 유형' 기록 — 유형(요청 문구)으로 요청한 경우만(자유롭게 쓴 요청·고치기 요청은 유형이 아니라 그대로 둠) */
+    if(_vizBlock&&_vt){ _vizLastSet(_sendEid,_vt,_vmode); if(_eid===_sendEid){ const _pp=g('aiVizPanel'); if(_pp&&_pp.style.display==='flex') _vizRcRender(); } }
     _vizPend=[];
 
     /* 이번 메시지에 참조한 AI 답변이 있으면 '기본 대상 = [현재 참고 자료]' 규칙보다 그 참조가 우선 */
@@ -34242,8 +34477,8 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
       const lc=g('aiLeftContent');
       if(!String(lc.innerText||lc.textContent||'').trim()) return fail('본문이 비어 있어요');
       const ty=_aiAutoVizType(eid), r=ty.r;
-      _vizPendAdd(r);   /* 어느 유형인지 기억 — 보낼 때 '마지막 유형'으로 다시 기록 */
-      let req=r.p; if(!_VIZ_KW.test(req)) req+='\n인포그래픽으로 만들어줘.';   /* 직접 고친 문구에 '인포그래픽' 말이 없으면 AI 에게 인포그래픽 규칙이 안 붙으므로 */
+      _vizPendAdd(r,'viz');   /* 어느 유형인지 + '인포그래픽만' 범위 기억 — 보낼 때 '마지막 유형'으로 다시 기록하고 <RESULT> 없는 인포그래픽 규칙을 붙임(텍스트는 이미 본문에 반영됨) */
+      let req=_vizPrompts(r).p; if(!_VIZ_KW.test(req)) req+='\n인포그래픽으로 만들어줘.';   /* 직접 고친 문구에 '인포그래픽' 말이 없으면 AI 에게 인포그래픽 규칙이 안 붙으므로 */
       g('aiUserInput').textContent=req;
       await window.sendAIMessage();
       /* 그리는 중인 상자가 끝날 때까지 기다림(최대 90초) */
@@ -39884,8 +40119,9 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
         <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
         <div id="aiVizPanel">
-          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고치고, [🌐 다국어 생성]으로 영어·중국어 버전을 만들 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 글과 이미지(PNG)로 정리해 줘요. ‘실행 범위’를 고르고 유형을 누르면 그 범위의 프롬프트가 입력창에 채워지니, 고쳐 쓴 뒤 Enter 로 보내세요. 유형마다 ‘텍스트 프롬프트’(본문 ‘텍스트’용 글)와 ‘인포그래픽 프롬프트’(이미지 구성)를 따로 두며, ＋ 추가·✏️ 편집에서 입력·수정·삭제할 수 있어요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고치고, [🌐 다국어 생성]으로 영어·중국어 버전을 만들 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
           <div class="avp-last" id="aiVizLastLine"></div>
+          <div class="avp-mode" id="aiVizMode"></div>
           <div class="avp-rc" id="aiVizRecipes"></div>
           <div class="avp-ed" id="aiVizRcEd" style="display:none" data-i="-1">
             <div class="avp-eh" id="aiVizRcHd">＋ 새 문구 추가</div>
@@ -39893,7 +40129,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
               <input id="aiVizRcIc" class="mobile-keep" maxlength="8" placeholder="🙂" aria-label="아이콘 (이모지)" title="아이콘 — 이모지 한두 개 (비워 두면 🎨)" onkeydown="_vizRcKey(event)">
               <input id="aiVizRcT" class="mobile-keep" maxlength="24" placeholder="이름 (예: 주간 시황 요약)" aria-label="이름" onkeydown="_vizRcKey(event)">
             </div>
-            <textarea id="aiVizRcP" class="mobile-keep" rows="3" maxlength="600" placeholder="요청 문구 — 이 유형을 눌렀을 때 입력창에 채워질 글을 쓰세요. (Ctrl+Enter 저장 · Esc 닫기)" aria-label="요청 문구" onkeydown="_vizRcKey(event)"></textarea>
+            <label class="avp-el" for="aiVizRcX">📝 텍스트 프롬프트<small>본문 ‘텍스트’에 들어갈 글을 어떻게 정리할지 · 비워 두면 기본 문구</small></label>
+            <textarea id="aiVizRcX" class="mobile-keep" rows="2" maxlength="600" placeholder="예) 핵심 메시지·수치·시사점을 개조식 5줄로 정리해줘." aria-label="텍스트 프롬프트" onkeydown="_vizRcKey(event)"></textarea>
+            <label class="avp-el" for="aiVizRcP">🎨 인포그래픽 프롬프트<small>이미지를 어떤 구성으로 만들지 · 비워 두면 기본 문구</small></label>
+            <textarea id="aiVizRcP" class="mobile-keep" rows="2" maxlength="600" placeholder="예) 핵심 수치 카드와 막대 차트 중심의 인포그래픽 한 장으로 만들어줘. (Ctrl+Enter 저장 · Esc 닫기)" aria-label="인포그래픽 프롬프트" onkeydown="_vizRcKey(event)"></textarea>
             <div class="avp-er">
               <button type="button" class="avp-sv mobile-keep" onclick="_vizRcAct('save')">저장</button>
               <button type="button" class="avp-cn mobile-keep" onclick="_vizRcAct('cancel')">취소</button>
@@ -40010,5 +40249,680 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <div id="tsMgList"></div>
   </div>
 </div>
+<!-- BTMSCRIPT-JS-BEGIN -->
+<script>
+/* ═══ BTMSCRIPT-JS-BEGIN ═══════════════════════════════════════════════════════
+   상단 '스크립트' 메뉴 (2026-10-18)
+   · 🎬 스크립트 만들기 — 영상 길이(분, 직접 입력)와 반영할 섹션(주요 지수·경제 일정·시장 분석·테마 분석 + 선택 섹션)을 고르고 [만들기]를 누르면
+       ① 종합 분석 보고서(증시 분석 전문가 수준의 시황 분석 유튜브 영상 기획 자료)를 먼저 만들고, 그 아래 ② 영상 길이에 맞춘 스크립트(나레이션+[화면: …] 지시)를 챕터별로 이어서 만듦.
+       AI 호출은 AI 팝업 모듈의 window._runTextPrompt(스트리밍) — 공급자·키는 섹션 키 'scriptMaker' 로 BTMAiProviderMap 에 저장(관리 › 🧩 AI 공급자 목록에도 있음).
+       스크립트는 챕터(한 번에 최대 약 2,400자)로 나눠 한 번씩 요청 · 분량이 챕터 목표에서 25% 넘게 벗어나면 한 번 늘려/줄여 다시 씀 · 실패·중단하면 [▶ 이어서 만들기].
+       분량 기준 = 공백 제외 글자 수 ÷ 말 속도(기본 330자/분) · [화면: …] 줄은 글자 수에 안 셈.
+   · 🕘 스크립트 이력 — IndexedDB 'BTM_ScriptDB'(scripts)에 자동 보관(보고서 끝날 때·챕터마다·완료 때) → 목록·검색·상세·복사·TXT 저장·삭제·'이 설정으로 만들기'.
+   · 모달은 처음 열 때 만들어 body 에 붙임(#scMakerModal·#scHistModal). 게스트 화면에선 메뉴를 숨김(body.guest-mode).
+   · 수정 요령: 이 블록(표식 BTMSCRIPT-JS-BEGIN~END)과 위쪽 BTMSCRIPT-CSS 블록만 고치면 됨
+════════════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.BTMScript) return;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const LS_CFG='BTMScriptCfg', MAP_KEY='scriptMaker', DB_NAME='BTM_ScriptDB', STORE='scripts';
+const DEF_CFG={len:10,cpm:330,secs:['indices','eco','market','theme'],extra:''};
+const MAX_LEN=120, MAX_UNIT=2400, MIN_CH=1.0, ADJ_TOL=0.25;
+const CUE_RE=/^\s*[\[［(（]\s*화면\s*[:：]/;
+
+/* ── 반영할 수 있는 섹션 — 핵심 4개(기본 선택) + 선택 섹션 ── */
+const SECS=[
+  {k:'indices',label:'주요 지수',core:1},
+  {k:'eco',label:'경제 일정',core:1},
+  {k:'market',label:'시장 분석 (시황 분석)',core:1,id:'marketAnalysis'},
+  {k:'theme',label:'테마 분석',core:1,id:'sectorAnalysis'},
+  {k:'watch',label:'관심 종목'},
+  {k:'warren',label:'The Whispers of Warren Kim',id:'warrenKim'},
+  {k:'radar',label:'AI Stock Radar',id:'aiStockRadar'},
+  {k:'tech',label:'My Technical Analysis With AI',id:'technicalAnalysis'},
+  {k:'strategy',label:'My Trading Strategy With AI Navigator',id:'tradingStrategy'},
+];
+/* rpt = 보고서 소제목, chap = 스크립트 챕터 이름, w = 챕터 비중, focus = 그 챕터에서 다룰 내용 */
+const META={
+  indices:{rpt:'시장 온도계 — 주요 지수 해석',chap:'주요 지수 브리핑',w:15,focus:'주요 지수·금리·달러·유가·금·VIX·Fear & Greed 를 서로 연결해 지금 시장의 분위기와 위험 선호 정도를 설명'},
+  eco:{rpt:'이벤트 캘린더 — 경제 일정 체크포인트',chap:'경제 일정 체크포인트',w:14,focus:'다가오는 핵심 일정을 날짜순으로 짚고, 결과별(예상 상회·부합·하회) 시장 반응 시나리오를 설명'},
+  market:{rpt:'시장 분석 — 상승·하락 요인과 수급·심리',chap:'시황 분석',w:22,focus:'시장 분석(시황)의 핵심 논지 — 상승·하락 요인, 수급, 투자 심리 — 를 이야기 흐름으로 풀어서 설명'},
+  theme:{rpt:'테마·섹터 분석 — 주도 테마와 지속성',chap:'테마·섹터 분석',w:22,focus:'강세·약세 테마와 그 이유, 지속 가능성, 원자료에 나온 섹터·종목을 설명'},
+  watch:{rpt:'관심 종목 점검',chap:'관심 종목 점검',w:9,focus:'관심 종목의 전일 흐름과 이동평균 대비 위치를 짚어 주기'},
+  warren:{rpt:'The Whispers of Warren Kim 요약',chap:'Warren Kim 의 시각',w:9,focus:'Warren Kim 코멘트의 핵심 관점을 소개하고 이번 시장과 연결'},
+  radar:{rpt:'AI Stock Radar 포착 종목·전략',chap:'AI Stock Radar 포착 종목',w:10,focus:'AI Stock Radar 가 포착한 종목·전략의 핵심과 근거'},
+  tech:{rpt:'기술적 분석 포인트',chap:'기술적 분석 포인트',w:10,focus:'기술적 분석의 핵심 레벨(지지·저항·추세)과 해석'},
+  strategy:{rpt:'매매 전략 점검',chap:'매매 전략 점검',w:9,focus:'매매 전략의 핵심 원칙과 이번 시장에서의 적용 포인트(개인 포지션은 드러내지 말고 일반론으로)'},
+};
+const LIM={indices:3000,eco:5000,watch:3000,market:7000,theme:7000,warren:5000,radar:6000,tech:6000,strategy:6000};
+const labelOf=k=>(SECS.find(s=>s.k===k)||{label:k}).label;
+
+/* ═════════ 설정 저장 ═════════ */
+function loadCfg(){
+  let c={}; try{ c=JSON.parse(localStorage.getItem(LS_CFG)||'{}')||{}; }catch(e){}
+  const secs=Array.isArray(c.secs)?c.secs.filter(k=>SECS.some(s=>s.k===k)):DEF_CFG.secs.slice();
+  return {len:+c.len>=1?Math.round(+c.len*10)/10:DEF_CFG.len, cpm:+c.cpm>=150?Math.round(+c.cpm):DEF_CFG.cpm, secs, extra:typeof c.extra==='string'?c.extra:''};
+}
+function saveCfg(c){ try{ localStorage.setItem(LS_CFG,JSON.stringify(c)); }catch(e){} }
+const sigOf=c=>JSON.stringify([c.len,c.cpm,(c.secs||[]).slice().sort(),c.extra||'']);
+
+/* ═════════ 자료 모으기 — 화면의 섹션 내용을 글로 ═════════ */
+function repDate(){ const v=($('reportDate')||{}).value||''; return /^\d{4}-\d{2}-\d{2}$/.test(v)?new Date(v+'T00:00:00'):new Date(new Date().toDateString()); }
+const WD=['일','월','화','수','목','금','토'];
+const dLabel=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'('+WD[d.getDay()]+')';
+function clean(t){ return String(t||'').replace(/ /g,' ').replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim(); }
+function trunc(t,n){ return t.length>n?t.slice(0,n).replace(/\s+\S*$/,'')+'\n…(이하 생략)':t; }
+/* 번역(영/중) 화면이어도 한국어 원본을 씀 — 리포트가 번역 보기일 때 화면 글은 번역문이라 _koSnapshot 의 원본을 우선 */
+function fieldText(id){
+  let html=null;
+  try{ if(typeof _btmLang!=='undefined'&&_btmLang!=='ko'&&typeof _koSnapshot!=='undefined'&&_koSnapshot&&_koSnapshot.fields&&typeof _koSnapshot.fields[id]==='string') html=_koSnapshot.fields[id]; }catch(e){}
+  if(html==null){ const el=$(id); html=el?el.innerHTML:''; }
+  return clean(typeof _richToText==='function'?_richToText(html):String(html).replace(/<[^>]+>/g,' '));
+}
+function idxBlock(){
+  if(typeof INDICES==='undefined') return '';
+  const rows=[];
+  INDICES.forEach(ix=>{
+    const v=(($('idx-v-'+ix.key)||{}).value||'').trim(); if(!v) return;
+    if(ix.key==='feargreed'){ const r=(($('idx-hh-feargreed')||{}).textContent||'').trim(); rows.push('- Fear & Greed 지수: '+v+(r?' ('+r+')':'')); return; }
+    const c=(($('idx-c-'+ix.key)||{}).value||'').trim();
+    let line='- '+ix.name+': '+v+(c?' (전일비 '+c+')':'');
+    const hl=(($('idx-h-'+ix.key)||{}).value||'').trim(); if(hl) line+=' · 최근 1개월 '+hl;
+    try{ const cl=(typeof _idxCloses!=='undefined'&&_idxCloses&&_idxCloses[ix.key])||[]; if(cl.length>=2&&cl[0]){ const p=(cl[cl.length-1]/cl[0]-1)*100; line+=' · 1개월 등락 '+(p>=0?'+':'')+p.toFixed(1)+'%'; } }catch(e){}
+    rows.push(line);
+  });
+  return rows.join('\n');
+}
+function ecoBlock(){
+  let src=[]; try{ src=(typeof ecoData!=='undefined'&&Array.isArray(ecoData))?ecoData:[]; }catch(e){}
+  const rows=src.filter(r=>r&&String(r.content||'').trim()).slice();
+  if(!rows.length) return '';
+  const base=repDate();
+  rows.sort((a,b)=>String(a.date||'9999').localeCompare(String(b.date||'9999')));
+  return rows.map(r=>{
+    const d=String(r.date||'').trim(); let tag='';
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d)){ const diff=Math.round((new Date(d+'T00:00:00')-base)/86400000); tag=diff===0?' (기준일 당일)':diff>0?' (기준일 +'+diff+'일)':' (기준일 '+diff+'일)'; }
+    let wd=''; try{ wd=(d&&typeof _ecoDayStr==='function')?_ecoDayStr(d):''; }catch(e){}
+    return '- '+(d||'날짜 미정')+wd+tag+' ['+(r.type||'기타')+'] '+String(r.content).trim();
+  }).join('\n');
+}
+function watchBlock(){
+  let wl=[]; try{ wl=(typeof watchlist!=='undefined'&&Array.isArray(watchlist))?watchlist:[]; }catch(e){}
+  const num=v=>{ const n=parseFloat(String(v==null?'':v).replace(/,/g,'')); return isNaN(n)?null:n; };
+  return wl.filter(w=>w&&(w.name||w.ticker)).map(w=>{
+    const cur=num(w.curPrice), p=[];
+    if(w.curPrice) p.push('현재가 '+w.curPrice);
+    if(w.changeStr) p.push('전일비 '+w.changeStr);
+    if(cur!=null){ const pos=[]; [['ma20','20일선'],['ma60','60일선'],['ma200','200일선']].forEach(([k,lb])=>{ const m=num(w[k]); if(m!=null) pos.push(lb+(cur>=m?' 위':' 아래')); }); if(pos.length) p.push(pos.join('·')); }
+    return '- '+(w.name||w.ticker)+(w.name&&w.ticker?'('+w.ticker+')':'')+(p.length?': '+p.join(', '):'');
+  }).join('\n');
+}
+function rawBlock(k){
+  if(k==='indices') return idxBlock();
+  if(k==='eco') return ecoBlock();
+  if(k==='watch') return watchBlock();
+  const s=SECS.find(x=>x.k===k); return s&&s.id?fieldText(s.id):'';
+}
+function secInfo(k){
+  let t=''; try{ t=rawBlock(k); }catch(e){}
+  if(!t) return {n:0,txt:'비어 있음'};
+  if(k==='indices'||k==='eco'||k==='watch'){ const n=t.split('\n').length; return {n,txt:n+(k==='indices'?'개 지표':k==='eco'?'건':'종목')}; }
+  return {n:t.length,txt:t.length.toLocaleString()+'자'};
+}
+
+/* ═════════ 챕터 계획 — 영상 길이 → 챕터별 목표 글자 수 ═════════ */
+function buildPlan(L,cpm,secs){
+  const has=k=>secs.indexOf(k)>=0;
+  let it=[{key:'open',title:'오프닝',w:7,data:[],focus:'오늘 시장에서 가장 강한 한 줄로 시작(후킹) → 인사 → 이번 영상에서 다룰 내용 예고'}];
+  ['indices','eco','market','theme','watch','warren','radar','tech','strategy'].forEach(k=>{ if(has(k)){ const m=META[k]; it.push({key:k,title:m.chap,w:m.w,data:[k],focus:m.focus}); } });
+  it.push({key:'scenario',title:'시나리오와 대응 전략',w:12,data:[],focus:'상승·기본·하락 시나리오와 각각의 트리거·점검 지표, 투자자가 이번 주 체크할 것'});
+  it.push({key:'close',title:'마무리',w:6,data:[],focus:'핵심 3줄 요약 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'});
+  it.forEach(x=>{ x.names=[x.title]; x.foci=[x.focus]; });
+  const tw=it.reduce((a,x)=>a+x.w,0);
+  it.forEach(x=>{ x.min=L*x.w/tw; });
+  /* 1분이 안 되는 챕터는 이웃과 합침(가장 짧은 것부터, 최소 2챕터는 유지) */
+  while(it.length>2){
+    let i=-1,mn=Infinity; it.forEach((x,j)=>{ if(x.min<mn){ mn=x.min; i=j; } });
+    if(mn>=MIN_CH) break;
+    const j=i===0?1:i===it.length-1?i-1:(it[i-1].min<=it[i+1].min?i-1:i+1);
+    const a=Math.min(i,j), A=it[a], B=it[a+1];
+    const names=A.names.concat(B.names), foci=A.foci.concat(B.foci);
+    it.splice(a,2,{key:A.key+'+'+B.key,names,foci,
+      title:names.length<=2?names.join(' · '):names[0]+' ~ '+names[names.length-1],   /* 셋 이상 합쳐지면 처음~끝 이름으로 줄여 보임 */
+      w:A.w+B.w,min:A.min+B.min,data:A.data.concat(B.data.filter(d=>A.data.indexOf(d)<0)),
+      focus:foci.map((f,i)=>(i+1)+') '+names[i]+': '+f).join('\n')});   /* 합쳐진 챕터는 순서대로 모두 다루게 번호 목록으로 */
+  }
+  /* 글자 수 배정 + 너무 긴 챕터는 여러 번에 나눠 요청 */
+  const units=[];
+  it.forEach((x,ci)=>{
+    const total=Math.max(60,Math.round(x.min*cpm));
+    const parts=Math.max(1,Math.ceil(total/MAX_UNIT));
+    for(let p=0;p<parts;p++){
+      units.push({ci,part:p+1,parts,key:x.key,baseTitle:x.title,title:x.title+(parts>1?' ('+(p+1)+'/'+parts+')':''),data:x.data,focus:x.focus,
+        target:Math.round(total/parts),first:ci===0&&p===0,last:ci===it.length-1&&p===parts-1,text:'',chars:0,state:'wait'});
+    }
+  });
+  return units;
+}
+
+/* ═════════ 프롬프트 ═════════ */
+function sysReport(c){
+  let n=1; const o=[];
+  o.push('## '+(n++)+'. 한 줄 결론과 핵심 메시지 — "한 줄 결론:" 한 줄과 "핵심 메시지 3가지" 불릿 3개');
+  c.secs.forEach(k=>o.push('## '+(n++)+'. '+META[k].rpt));
+  o.push('## '+(n++)+'. 시나리오와 대응 전략 — 상승·기본·하락 3개 시나리오(각각 트리거와 점검 지표) + 투자자 체크리스트');
+  o.push('## '+(n++)+'. 리스크 요인과 반대 논리');
+  o.push('## '+(n++)+'. 영상 제작 가이드 — 영상 제목 후보 3개, 썸네일 문구 3개, 오프닝 훅 멘트 2개, 영상 구성안(챕터별 핵심 소재와 보여줄 화면 자료)');
+  return `당신은 20년 경력의 미국·한국 증시 시황 분석 전문가이자, 구독자 신뢰도가 높은 증시 유튜브 채널의 수석 애널리스트입니다.
+사용자가 주는 [원자료](투자 리포트의 주요 지수·경제 일정·시장 분석·테마 분석 등 섹션 내용)를 근거로, 시황 분석 유튜브 영상을 만들 수 있는 "종합 분석 보고서"를 작성하세요. 이 보고서는 곧바로 영상 스크립트의 근거 자료가 됩니다.
+
+[작성 원칙]
+1. 사실과 해석을 구분하세요. 사실(수치·일정·종목·발언)은 원자료에 있는 것만 쓰고, 원자료에 없는 수치·이벤트·실적·뉴스를 절대 지어내지 마세요. 자료가 부족한 부분은 "자료에 없음"이라고 짧게 밝히고 정성적으로만 다루세요.
+2. 지표를 따로따로 보지 말고 연결해서 해석하세요(예: 금리·달러 방향과 성장주, VIX와 지수의 괴리, 유가·금과 위험 선호, Fear & Greed 와 수급 심리).
+3. 경제 일정은 날짜순으로 정리하고, 각 일정이 시장에 줄 영향(상·중·하)과 결과별(예상 상회·부합·하회) 시장 반응 시나리오를 한두 줄로 제시하세요.
+4. 서술형 섹션(시장 분석·테마 분석 등)은 핵심 논지를 압축하되, 강세·약세 요인, 수급·심리, 테마의 지속 가능성을 짚으세요. 원자료에 이름이 나온 종목·섹터만 언급하세요.
+5. 확정적 예측, 종목 추천, 수익 보장 표현은 금지합니다. 시나리오와 점검 포인트로 말하고, 리스크와 반대 논리를 함께 제시하세요.
+6. 원자료에 개인 보유 종목·수량·평단·계좌 정보로 보이는 내용이 있으면 보고서에 쓰지 말고 일반론으로 바꿔 쓰세요(공개 영상용 자료입니다).
+7. 한국어로, 전문적이되 일반 투자자가 이해할 수 있게 쓰세요. 인사말·사족·자기소개는 쓰지 마세요.
+
+[출력 형식] 마크다운 소제목("## ")과 불릿("- ")만 사용하세요(표·코드블록 금지). 아래 구성을 그대로 따르세요.
+${o.join('\n')}
+
+분량은 공백 포함 약 3,000~4,500자입니다.`;
+}
+function dataBlocks(c,keys){ return keys.filter(k=>c.pack[k]).map(k=>'■ '+labelOf(k)+'\n'+c.pack[k]).join('\n\n'); }
+function reportUser(c){
+  return `[기준일] ${dLabel(c.base)}
+[영상 길이] ${c.cfg.len}분 (영상 제작 가이드는 이 길이를 기준으로 구성)
+[반영 섹션] ${c.secs.map(labelOf).join(', ')}
+${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
+[원자료]
+${dataBlocks(c,c.secs)}`;
+}
+const SYS_CHAPTER=`당신은 구독자 신뢰도가 높은 증시 유튜브 채널의 진행자 겸 시황 분석 전문가입니다. 이미 완성된 "종합 분석 보고서"를 바탕으로, 영상 스크립트의 한 챕터를 소리 내어 읽을 나레이션으로 작성합니다.
+
+[원칙]
+1. 구어체 존댓말(~입니다, ~죠, ~보시죠)로, 카메라 앞의 시청자에게 말하듯 자연스럽게 쓰세요. 문장은 짧게(한 문장 40자 안팎), 어려운 용어는 바로 풀어서 설명하세요. 숫자는 소리 내어 읽기 쉽게 단위를 붙여 쓰세요.
+2. 수치·일정·종목명·사실은 [종합 분석 보고서]와 [참고 원자료]에 있는 것만 쓰세요. 새 수치나 사건을 지어내지 마세요. 해석은 "~로 보입니다", "~일 가능성이 있습니다"처럼 단정하지 않게 말하세요.
+3. 종목 추천, 수익 보장, 확정적 예측은 금지합니다. 투자 판단은 시청자의 몫임을 존중하세요.
+4. 원자료의 개인 보유 종목·수량·평단·계좌 정보는 말하지 말고 일반론으로 바꾸세요(공개 영상입니다).
+5. 앞 챕터의 내용을 반복하지 말고, 앞 챕터의 마지막 문장에서 자연스럽게 이어 시작하세요(첫 챕터 제외).
+6. 분량은 지정한 글자 수(공백 제외)에 맞추세요. 모자라면 구체적인 수치 해설·비유·"왜 중요한가"·시청자에게 던지는 질문으로 채우고, 넘치면 덜 중요한 부분부터 덜어내세요.
+
+[출력 형식]
+- 나레이션만 출력하세요. 챕터 제목·번호·마크다운·따옴표·설명·글자 수 표기는 쓰지 마세요.
+- 문단은 빈 줄로 구분하세요.
+- 화면에 띄울 자료가 있으면 해당 문단 바로 앞에 [화면: …] 형식으로 한 줄을 따로 쓰세요(예: [화면: S&P500 1개월 차트]). 화면 지시는 글자 수에 포함되지 않으며 챕터당 1~3개면 충분합니다.`;
+function chapterUser(c,u,i){
+  const cpm=c.cfg.cpm, sec=c.plan.slice(0,i).reduce((a,x)=>a+x.target,0)/cpm*60, end=sec+u.target/cpm*60;
+  const outline=c.plan.map((x,j)=>(j+1)+'. '+x.title+' (약 '+x.target+'자)'+(j===i?'   ← 지금 작성할 챕터':'')).join('\n');
+  let role='';
+  if(u.first) role+='\n[첫 챕터입니다] 첫 문장은 오늘 시장에서 가장 강한 한 줄(후킹)로 시작하고, 짧게 인사한 뒤 이번 영상에서 다룰 내용을 예고하세요.';
+  if(u.last) role+='\n[마지막 챕터입니다] 핵심 3줄 요약 → 구독·좋아요 안내 → "본 영상은 투자 권유가 아니며 모든 투자 판단과 책임은 투자자 본인에게 있다"는 취지의 면책 멘트 순서로 마무리하세요.';
+  const prev=i>0&&c.plan[i-1].text?tailText(c.plan[i-1].text,420):'';
+  const data=dataBlocks(c,u.data);
+  return `[영상 정보] 총 ${c.cfg.len}분 · 기준일 ${dLabel(c.base)} · 챕터 ${i+1}/${c.plan.length}: "${u.title}" (예상 구간 ${fmtTime(sec)}~${fmtTime(end)})
+[이 챕터의 목표 분량] 공백 제외 약 ${u.target}자 (${Math.round(u.target*0.9)}~${Math.round(u.target*1.1)}자)
+[이 챕터에서 다룰 내용] ${u.focus}${role}
+${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
+[전체 챕터 구성]
+${outline}
+${prev?'\n[앞 챕터의 마지막 부분 — 여기서 자연스럽게 이어 쓰기]\n'+prev+'\n':''}
+[종합 분석 보고서]
+${c.report}
+${data?'\n[참고 원자료]\n'+data:''}`;
+}
+const SYS_ADJUST=`아래 나레이션 초안의 분량을 조정하세요. 내용·톤·사실관계는 그대로 두고 지정한 글자 수(공백 제외)에 맞게 늘리거나 줄이세요. 늘릴 때는 새 수치나 사건을 만들지 말고 설명·비유·시청자에게 던지는 질문으로 보강하고, 줄일 때는 중복과 사족부터 덜어내세요. [화면: …] 줄은 그대로 유지하세요. 조정한 나레이션만 출력하세요(제목·설명·마크다운·글자 수 표기 금지).`;
+function adjustUser(c,u){
+  return `[목표 분량] 공백 제외 약 ${u.target}자 (현재 ${u.chars}자 → ${u.chars<u.target?'늘리기':'줄이기'})
+
+[나레이션 초안]
+${u.text}`;
+}
+
+/* ═════════ 글 다듬기 · 분량 재기 ═════════ */
+function sameTitle(l,u){ const n=x=>String(x||'').replace(/[\s\[\]()（）［］#*\-—:：·]/g,'').toLowerCase(); const a=n(l); return !!a&&(a===n(u.title)||a===n(u.baseTitle)||(a.length<=16&&n(u.title).indexOf(a)>=0)); }
+function cleanNarr(t,u){
+  let s=String(t||'').replace(/\r/g,'').replace(/^\s*```[a-z]*\s*\n?/i,'').replace(/\n?```\s*$/,'');
+  const L=s.split('\n');
+  while(L.length){ const l=L[0].trim(); if(!l){ L.shift(); continue; } if(/^#{1,6}\s/.test(l)||/^[*\s]*(챕터|Chapter|파트)\s*\d+/i.test(l)||(u&&sameTitle(l,u))){ L.shift(); continue; } break; }
+  return L.join('\n').replace(/\*\*(.+?)\*\*/g,'$1').replace(/__(.+?)__/g,'$1').replace(/^\s*#{1,6}\s+/gm,'').replace(/[ \t]+$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
+}
+function cleanReport(t){
+  let s=String(t||'').replace(/\r/g,'').replace(/^\s*```[a-z]*\s*\n?/i,'').replace(/\n?```\s*$/,'');
+  const i=s.search(/^##\s/m); if(i>0) s=s.slice(i);
+  return s.replace(/\n{3,}/g,'\n\n').trim();
+}
+function narrChars(t){ return String(t||'').split('\n').filter(l=>!CUE_RE.test(l)).join('').replace(/\s+/g,'').length; }
+/* 앞 챕터의 마지막 n자(화면 지시 줄 제외) — 문장 중간에서 시작하지 않게 첫 문장 끝에서부터 */
+function tailText(t,n){
+  let s=String(t||'').split('\n').filter(l=>!CUE_RE.test(l)).join('\n').trim();
+  if(s.length<=n) return s;
+  s=s.slice(-n); const i=s.search(/[.!?。]\s/); if(i>=0&&i<200) s=s.slice(i+2);
+  return s.trim();
+}
+function fmtTime(sec){ sec=Math.max(0,Math.round(sec)); const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(s).padStart(2,'0'); }
+function fmtDur(sec){ sec=Math.max(0,Math.round(sec)); const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return h?h+'시간 '+m+'분':m?m+'분'+(s?' '+s+'초':''):s+'초'; }
+
+/* ═════════ 화면 그리기 ═════════ */
+function mdLite(src){
+  const inline=s=>esc(s).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+  let h='', ul=false; const closeUl=()=>{ if(ul){ h+='</ul>'; ul=false; } };
+  String(src||'').replace(/\r/g,'').split('\n').forEach(raw=>{
+    const ln=raw.replace(/\s+$/,''); let m;
+    if(!ln.trim()){ closeUl(); return; }
+    if((m=/^#{1,4}\s+(.*)$/.exec(ln))){ closeUl(); h+='<h4>'+inline(m[1])+'</h4>'; return; }
+    if((m=/^\s*[-*•]\s+(.*)$/.exec(ln))){ if(!ul){ h+='<ul>'; ul=true; } h+='<li>'+inline(m[1])+'</li>'; return; }
+    closeUl(); h+='<p>'+inline(ln)+'</p>';
+  });
+  closeUl(); return h;
+}
+function narrHtml(t){
+  return String(t||'').split('\n').map(x=>x.trim()).filter(Boolean).map(l=>CUE_RE.test(l)?'<div class="sc-cue">'+esc(l)+'</div>':'<p>'+esc(l)+'</p>').join('');
+}
+function scriptHtml(c){
+  const cpm=c.cfg.cpm; let acc=0, h='';
+  c.plan.forEach(u=>{
+    const body=u.text?narrHtml(u.text):'<div class="sc-wait">'+(u.state==='run'?'작성 중…':'대기 중')+'</div>';
+    const d=u.chars?u.chars.toLocaleString()+'자 · 약 '+fmtDur(u.chars/cpm*60):'목표 약 '+u.target.toLocaleString()+'자';
+    h+='<div class="sc-ch '+u.state+'"><div class="sc-ch-h"><span class="tc">'+fmtTime(acc/cpm*60)+'</span><b>'+esc(u.title)+'</b>'+(u.state==='adjust'?'<em>분량 조정 중…</em>':'')+'<span class="d">'+d+'</span></div><div class="sc-ch-b">'+body+'</div></div>';
+    acc+=(u.state==='done'?u.chars:u.target);
+  });
+  return h;
+}
+function scriptTotals(c){ const chars=c.plan.reduce((a,u)=>a+(u.chars||0),0), target=c.plan.reduce((a,u)=>a+u.target,0); return {chars,target,sec:chars/c.cfg.cpm*60}; }
+
+/* ═════════ 상태 ═════════ */
+const S={ctx:null,running:false,ctrl:null,canResume:false,follow:true,raf:0,dbWarned:false};
+let _mk=null,_hs=null,_histView=null;
+const toast=m=>{ try{ _showToast('_scToast',m); }catch(e){} };
+function showErr(m,note){ const e=$('scErr'); if(!e) return; e.textContent=m||''; e.className='sc-err'+(note?' note':'')+(m?' on':''); }
+function setProg(p,t){ const b=$('scPb'), x=$('scPt'); if(b) b.style.width=Math.max(0,Math.min(100,p))+'%'; if(x) x.textContent=t||''; }
+function paintReport(){
+  const c=S.ctx, el=$('scRep'); if(!c||!el) return;
+  el.innerHTML=c.report?mdLite(c.report):'<div class="sc-wait">'+(S.running&&!c.reportDone?'작성 중…':'—')+'</div>';
+  const m=$('scRepMeta'); if(m) m.textContent=c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'';
+}
+function paintScript(){
+  const c=S.ctx, el=$('scScr'); if(!c||!el) return;
+  el.innerHTML=scriptHtml(c);
+  const t=scriptTotals(c), m=$('scScrMeta');
+  const all=c.plan.every(u=>u.state==='done');
+  if(m) m.textContent=c.cfg.len+'분 · '+(t.chars?(all?'':'지금까지 ')+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')':'목표 약 '+t.target.toLocaleString()+'자');
+}
+function paintSoon(){
+  if(S.raf) return;
+  S.raf=requestAnimationFrame(()=>{ S.raf=0; paintReport(); paintScript(); const o=$('scOut'); if(o&&S.follow) o.scrollTop=o.scrollHeight; });
+}
+function renderOut(){
+  const out=$('scOut'); if(!out) return;
+  const c=S.ctx;
+  if(!c){ out.innerHTML='<div class="sc-empty"><div class="big">🎬</div>왼쪽에서 영상 길이와 반영할 섹션을 고른 뒤 <b>[만들기]</b>를 누르세요.<br>① 종합 분석 보고서를 만들고, 그 아래 ② 영상 길이에 맞는 스크립트를 이어서 만들어요.<div class="sub">만든 결과는 자동으로 [🕘 스크립트 이력]에 저장됩니다.</div></div>'; return; }
+  out.innerHTML='<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta" id="scRepMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyRep">복사</button></div><div class="sc-doc" id="scRep"></div></section>'
+    +'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta" id="scScrMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyScr">복사</button></div><div class="sc-doc" id="scScr"></div></section>';
+  paintReport(); paintScript();
+}
+
+/* ═════════ 글 합치기 · 복사 · 저장 ═════════ */
+function scriptText(c){
+  const cpm=c.cfg.cpm; let acc=0; const o=[];
+  c.plan.forEach(u=>{ o.push('['+fmtTime(acc/cpm*60)+'] '+u.title); o.push((u.text||'(작성되지 않음)').trim()); o.push(''); acc+=u.chars||0; });
+  return o.join('\n').trim();
+}
+function composeText(c){
+  const t=scriptTotals(c), o=[];
+  o.push('■ 시황 분석 유튜브 영상 기획안');
+  o.push('기준일: '+(typeof c.base==='string'?c.base:dLabel(c.base))+' · 영상 길이 목표 '+c.cfg.len+'분 · 말 속도 '+c.cfg.cpm+'자/분');
+  o.push('반영 섹션: '+c.secs.map(labelOf).join(', '));
+  if(c.cfg.extra) o.push('추가 요청: '+c.cfg.extra);
+  o.push('','━━━━━━━━ ① 종합 분석 보고서 ━━━━━━━━',(c.report||'(작성되지 않음)').trim(),'');
+  o.push('━━━━━━━━ ② 영상 스크립트 (목표 '+t.target.toLocaleString()+'자 · 실제 '+t.chars.toLocaleString()+'자 · 약 '+fmtDur(t.sec)+') ━━━━━━━━',scriptText(c));
+  return o.join('\n').replace(/\n{3,}/g,'\n\n').trim()+'\n';
+}
+async function copyText(t,msg){
+  try{ await navigator.clipboard.writeText(t); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=t; ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove(); }
+  toast(msg||'복사했어요');
+}
+function downloadTxt(name,text){
+  const b=new Blob(['﻿'+text],{type:'text/plain;charset=utf-8'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ try{ URL.revokeObjectURL(a.href); }catch(e){} a.remove(); },1500);
+}
+const fileName=c=>'시황스크립트_'+String(typeof c.base==='string'?c.base:dLabel(c.base)).replace(/\(.\)/,'')+'_'+c.cfg.len+'분.txt';
+
+/* ═════════ 이력 저장소(IndexedDB) ═════════ */
+let _db=null;
+function openDb(){
+  if(_db) return Promise.resolve(_db);
+  return new Promise((res,rej)=>{
+    if(!window.indexedDB){ rej(new Error('이 브라우저는 IndexedDB 를 지원하지 않아요')); return; }
+    const r=indexedDB.open(DB_NAME,1);
+    r.onupgradeneeded=()=>{ const d=r.result; if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE,{keyPath:'id'}).createIndex('ts','ts'); };
+    r.onsuccess=()=>{ _db=r.result; _db.onclose=()=>{ _db=null; }; _db.onversionchange=()=>{ try{ _db.close(); }catch(e){} _db=null; }; res(_db); };
+    r.onerror=()=>rej(r.error||new Error('DB 열기 실패'));
+    r.onblocked=()=>rej(new Error('DB 가 다른 탭에서 사용 중이에요'));
+  });
+}
+const dbPut=rec=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction(STORE,'readwrite'); t.objectStore(STORE).put(rec); t.oncomplete=()=>res(); t.onerror=t.onabort=()=>rej(t.error||new Error('저장 실패')); }));
+const dbAll=()=>openDb().then(d=>new Promise((res,rej)=>{ const q=d.transaction(STORE,'readonly').objectStore(STORE).getAll(); q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.ts-a.ts)); q.onerror=()=>rej(q.error); }));
+const dbDel=id=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction(STORE,'readwrite'); t.objectStore(STORE).delete(id); t.oncomplete=()=>res(); t.onerror=t.onabort=()=>rej(t.error||new Error('삭제 실패')); }));
+function recOf(c){
+  return {id:c.id,ts:c.ts,upd:Date.now(),date:dLabel(c.base),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
+    plan:c.plan.map(u=>({title:u.title,key:u.key,target:u.target,chars:u.chars,text:u.text,state:u.state})),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0)};
+}
+function persist(){
+  const c=S.ctx; if(!c||(!c.report&&!c.plan.some(u=>u.text))) return Promise.resolve();
+  return dbPut(recOf(c)).catch(e=>{ if(!S.dbWarned){ S.dbWarned=true; toast('이력 저장에 실패했어요 — '+((e&&e.message)||'')); } });
+}
+/* 이력 레코드 → 화면용 ctx 형태(복사·TXT 저장 재사용) */
+function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u))}; }
+
+/* ═════════ 만들기 팝업 ═════════ */
+function provOptions(){
+  const L=(typeof _BTM_AI_PROVIDER_LABELS!=='undefined'&&_BTM_AI_PROVIDER_LABELS)||{claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)','chatgpt-flash':'🟢 ChatGPT(Flash)','chatgpt-pro':'🟢 ChatGPT(Pro)'};
+  return Object.keys(L).map(k=>'<option value="'+k+'">'+esc(L[k])+'</option>').join('');
+}
+function makerHtml(){
+  const row=s=>'<label class="sc-sr" data-k="'+s.k+'"><input type="checkbox" class="mobile-keep" data-k="'+s.k+'"><span class="nm">'+esc(s.label)+'</span><span class="st"></span></label>';
+  return '<div class="sc-card" role="document">'
+   +'<div class="sc-head"><span class="sc-title">🎬 스크립트 만들기</span><span class="sc-sub">시황 분석 유튜브 영상 · ① 종합 분석 보고서 → ② 영상 스크립트</span><button type="button" class="sc-x mobile-keep" data-act="close" title="닫기 (Esc)">✕</button></div>'
+   +'<div class="sc-body">'
+   +'<div class="sc-side"><div class="sc-sbody">'
+   +'<div class="sc-f"><div class="sc-lb">영상 길이</div><div class="sc-line"><input id="scLen" type="number" min="1" max="'+MAX_LEN+'" step="1" inputmode="decimal" class="mobile-keep" aria-label="영상 길이(분)"><span class="sc-u">분</span></div><div class="sc-hint" id="scHint"></div></div>'
+   +'<div class="sc-f"><div class="sc-lb">말 속도 <span class="sc-opt">· 스크립트 분량 계산용</span></div><div class="sc-line"><input id="scCpm" type="number" min="150" max="600" step="10" inputmode="numeric" class="mobile-keep" aria-label="말 속도(자/분)" title="1분에 말하는 글자 수(공백 제외). 보통 300~360 — 천천히 말하는 편이면 낮추세요"><span class="sc-u">자/분</span></div></div>'
+   +'<div class="sc-f"><div class="sc-lb">반영할 섹션 <span class="sc-links"><a data-act="secCore">기본 4개</a><a data-act="secAll">전체</a><a data-act="secNone">해제</a></span></div><div id="scSecs"><div class="sc-grp">핵심</div>'+SECS.filter(s=>s.core).map(row).join('')+'<div class="sc-grp">추가 (선택)</div>'+SECS.filter(s=>!s.core).map(row).join('')+'</div></div>'
+   +'<div class="sc-f"><div class="sc-lb">AI</div><select id="scProv" class="mobile-keep" aria-label="AI 공급자">'+provOptions()+'</select></div>'
+   +'<div class="sc-f"><div class="sc-lb">추가 요청 <span class="sc-opt">· 선택</span></div><textarea id="scExtra" rows="3" class="mobile-keep" placeholder="예) 채널 이름·말투, 강조하고 싶은 종목·이슈, 피하고 싶은 표현 …"></textarea></div>'
+   +'</div><div class="sc-sfoot"><div class="sc-act"><button type="button" id="scGo" class="sc-btn pri mobile-keep" data-act="go">🎬 만들기</button><button type="button" id="scStop" class="sc-btn dng mobile-keep" data-act="stop" style="display:none">⏹ 중단</button><button type="button" id="scRestart" class="sc-btn mobile-keep" data-act="restart" style="display:none" title="지금까지 만든 내용을 버리고 처음부터 다시 만들어요">↺ 처음부터</button></div>'
+   +'<div class="sc-err" id="scErr" role="alert"></div></div>'
+   +'</div>'
+   +'<div class="sc-main"><div class="sc-bar"><div class="sc-prog"><div class="sc-pbar"><i id="scPb"></i></div><span id="scPt">대기 중</span></div><span class="sc-sp"></span><button type="button" class="sc-mini mobile-keep" data-act="copyAll">전체 복사</button><button type="button" class="sc-mini mobile-keep" data-act="txt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="hist">🕘 이력</button></div><div class="sc-out" id="scOut"></div></div>'
+   +'</div></div>';
+}
+function ensureMaker(){
+  if(_mk) return _mk;
+  const el=document.createElement('div'); el.id='scMakerModal'; el.className='sc-ov no-print'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','스크립트 만들기');
+  el.innerHTML=makerHtml(); document.body.appendChild(el); _mk=el;
+  el.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-act]'); if(b) makerAct(b.getAttribute('data-act'),b); });
+  const sync=()=>{ saveCfg(readCfg()); updateHint(); syncGo(); };
+  ['scLen','scCpm'].forEach(id=>$(id).addEventListener('input',sync));
+  $('scSecs').addEventListener('change',sync);
+  $('scExtra').addEventListener('input',()=>{ saveCfg(readCfg()); syncGo(); });
+  $('scProv').addEventListener('change',e=>{ saveProv(e.target.value); });
+  $('scOut').addEventListener('scroll',()=>{ const o=$('scOut'); S.follow=(o.scrollHeight-o.scrollTop-o.clientHeight)<90; });
+  return el;
+}
+function saveProv(v){ let m={}; try{ m=JSON.parse(localStorage.getItem('BTMAiProviderMap')||'{}')||{}; }catch(e){} m[MAP_KEY]=v; try{ localStorage.setItem('BTMAiProviderMap',JSON.stringify(m)); }catch(e){} }
+function fillForm(cfg){
+  $('scLen').value=cfg.len; $('scCpm').value=cfg.cpm; $('scExtra').value=cfg.extra||'';
+  SECS.forEach(s=>{
+    const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'), row=cb.closest('.sc-sr'), inf=secInfo(s.k);
+    cb.disabled=inf.n===0; cb.checked=inf.n>0&&cfg.secs.indexOf(s.k)>=0;
+    row.classList.toggle('empty',inf.n===0); row.querySelector('.st').textContent=inf.txt;
+  });
+  try{ const rk=window._resolveAiProvider&&window._resolveAiProvider(MAP_KEY); $('scProv').value=(rk&&rk.provider)||'claude'; }catch(e){}
+}
+function readCfg(){
+  const prev=loadCfg(), secs=[];
+  SECS.forEach(s=>{ const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'); if(cb&&!cb.disabled){ if(cb.checked) secs.push(s.k); } else if(prev.secs.indexOf(s.k)>=0) secs.push(s.k); });
+  return {len:Math.round(parseFloat($('scLen').value)*10)/10,cpm:parseInt($('scCpm').value,10),secs,extra:($('scExtra').value||'').trim()};   /* 영상 길이는 소수 한 자리(2.5분)까지 */
+}
+const activeSecs=cfg=>cfg.secs.filter(k=>secInfo(k).n>0);
+function validate(cfg){
+  if(!(cfg.len>=1&&cfg.len<=MAX_LEN)) return '영상 길이는 1~'+MAX_LEN+'분 사이의 숫자로 입력해 주세요(2.5처럼 소수도 돼요).';
+  if(!(cfg.cpm>=150&&cfg.cpm<=600)) return '말 속도는 150~600자/분 사이로 입력해 주세요(보통 300~360).';
+  if(!activeSecs(cfg).length) return '반영할 섹션을 하나 이상 선택해 주세요(내용이 있는 섹션만 고를 수 있어요).';
+  return '';
+}
+function updateHint(){
+  const h=$('scHint'); if(!h) return; const cfg=readCfg();
+  if(validate(cfg)){ h.textContent=''; return; }
+  const plan=buildPlan(cfg.len,cfg.cpm,activeSecs(cfg)), tot=plan.reduce((a,u)=>a+u.target,0), ch=new Set(plan.map(u=>u.ci)).size;
+  h.innerHTML='목표 약 <b>'+tot.toLocaleString()+'자</b> · 챕터 '+ch+'개 · AI 호출 약 '+(1+plan.length)+'회';
+}
+function syncGo(){
+  const go=$('scGo'), rs=$('scRestart'); if(!go) return;
+  const can=!S.running&&S.canResume&&S.ctx&&S.ctx.sig===sigOf(readCfg());
+  go.textContent=can?'▶ 이어서 만들기':(S.ctx&&S.ctx.status==='done'?'🎬 다시 만들기':'🎬 만들기');
+  rs.style.display=can?'':'none';
+}
+function setRunning(b){
+  S.running=b;
+  const m=_mk; if(!m) return;
+  m.classList.toggle('busy',b);
+  m.querySelectorAll('.sc-side input,.sc-side select,.sc-side textarea').forEach(x=>{ if(b){ x._wasDis=x.disabled; x.disabled=true; } else if(x._wasDis!==undefined){ x.disabled=x._wasDis; delete x._wasDis; } });
+  $('scGo').style.display=b?'none':''; $('scStop').style.display=b?'':'none';
+  if(b) $('scRestart').style.display='none'; else syncGo();
+}
+function openMaker(cfg){
+  const m=ensureMaker(); cfg=cfg||loadCfg();
+  if(!S.running) fillForm(cfg);
+  renderOut(); if(S.ctx){ S.follow=true; } syncGo(); updateHint();
+  if(!S.running&&!S.ctx) setProg(0,'대기 중');
+  showErr('');
+  m.classList.add('open');
+  if(!S.running){ const l=$('scLen'); if(l){ l.focus(); l.select(); } }
+}
+function closeMaker(force){
+  if(!_mk||!_mk.classList.contains('open')) return true;
+  if(S.running&&!force){
+    if(!confirm('스크립트를 만드는 중이에요.\n중단하고 닫을까요?\n(지금까지 만든 내용은 [🕘 스크립트 이력]에 저장돼요)')) return false;
+    abortRun();
+  }
+  _mk.classList.remove('open'); return true;
+}
+function abortRun(){ if(S.ctrl) try{ S.ctrl.abort(); }catch(e){} }
+function makerAct(act,btn){
+  if(act==='close') closeMaker();
+  else if(act==='go') run(false);
+  else if(act==='restart') run(true);
+  else if(act==='stop') abortRun();
+  else if(act==='hist') openHistory();
+  else if(act==='secCore'||act==='secAll'||act==='secNone'){
+    if(S.running) return;
+    SECS.forEach(s=>{ const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'); if(cb&&!cb.disabled) cb.checked=act==='secAll'?true:act==='secNone'?false:!!s.core; });
+    saveCfg(readCfg()); updateHint(); syncGo();
+  }
+  else if(act==='copyAll'||act==='txt'||act==='copyRep'||act==='copyScr'){
+    const c=S.ctx; if(!c||(!c.report&&!c.plan.some(u=>u.text))){ toast('아직 복사할 내용이 없어요'); return; }
+    if(act==='copyAll') copyText(composeText(c),'전체를 복사했어요');
+    else if(act==='copyRep') copyText((c.report||'').trim(),'보고서를 복사했어요');
+    else if(act==='copyScr') copyText(scriptText(c),'스크립트를 복사했어요');
+    else downloadTxt(fileName(c),composeText(c));
+  }
+}
+
+/* ═════════ 만들기 실행 ═════════ */
+function ai(sys,user,onDelta,signal){
+  if(typeof window._runTextPrompt!=='function') return Promise.reject(new Error('AI 모듈을 찾지 못했어요. 페이지를 새로고침한 뒤 다시 시도해 주세요.'));
+  return window._runTextPrompt(MAP_KEY,sys,user,{onDelta,signal,onRetry:(a,mx)=>setProg(parseFloat(($('scPb')||{style:{}}).style.width)||0,'AI 서버가 혼잡해요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+mx+')')});
+}
+function newCtx(cfg){
+  const pack={}, act=[];
+  cfg.secs.forEach(k=>{ const t=rawBlock(k); if(t){ pack[k]=trunc(t,LIM[k]||6000); act.push(k); } });
+  const secs=SECS.map(s=>s.k).filter(k=>act.indexOf(k)>=0);
+  return {id:'sc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),cfg:{len:cfg.len,cpm:cfg.cpm,secs:cfg.secs.slice(),extra:cfg.extra},secs,pack,base:repDate(),
+    plan:buildPlan(cfg.len,cfg.cpm,secs),report:'',reportDone:false,status:'run',provider:'',sig:sigOf(cfg)};
+}
+function progFor(c,i,curFrac){   /* 보고서가 15%, 스크립트 챕터가 나머지 85%(목표 글자 수 비례) */
+  const sum=c.plan.reduce((a,u)=>a+u.target,0)||1, done=c.plan.slice(0,i).reduce((a,u)=>a+u.target,0);
+  return 15+85*(done+c.plan[i].target*Math.min(1,curFrac))/sum;
+}
+async function run(fresh){
+  if(S.running) return;
+  const cfg=readCfg(), bad=validate(cfg);
+  if(bad){ showErr(bad); return; }
+  saveCfg(cfg); showErr('');
+  const rk=(typeof window._resolveAiProvider==='function')?window._resolveAiProvider(MAP_KEY):null;
+  if(!rk){ showErr('AI 모듈을 찾지 못했어요. 페이지를 새로고침한 뒤 다시 시도해 주세요.'); return; }
+  if(!rk.key){ showErr(rk.name+' API Key 가 없어요. 관리 메뉴 › 🧩 AI 공급자에서 설정하세요.'); return; }
+  const resume=!fresh&&S.canResume&&S.ctx&&S.ctx.sig===sigOf(cfg);
+  let c;
+  if(resume) c=S.ctx;
+  else {
+    c=newCtx(cfg);
+    if(!c.secs.length){ showErr('선택한 섹션에 내용이 없어요. 섹션에 내용을 채우거나 다른 섹션을 선택해 주세요.'); return; }
+    const miss=cfg.secs.filter(k=>c.secs.indexOf(k)<0);
+    if(miss.length) showErr('내용이 없는 섹션은 뺐어요: '+miss.map(labelOf).join(', '),true);
+    S.ctx=c;
+  }
+  c.provider=rk.provider; c.status='run';
+  S.ctrl=new AbortController(); S.canResume=false; S.follow=true;
+  const sig=S.ctrl.signal;
+  setRunning(true); renderOut();
+  try{
+    if(!c.reportDone){
+      setProg(2,'① 종합 분석 보고서 작성 중…'); paintReport();
+      const raw=await ai(sysReport(c),reportUser(c),t=>{ c.report=t; setProg(2+13*Math.min(1,t.length/3600),'① 종합 분석 보고서 작성 중…'); paintSoon(); },sig);
+      c.report=cleanReport(raw); c.reportDone=true; paintReport(); await persist();
+    }
+    for(let i=0;i<c.plan.length;i++){
+      const u=c.plan[i]; if(u.state==='done') continue;
+      u.state='run'; u.text=''; u.chars=0; paintScript();
+      const lab='② 스크립트 작성 중 — '+(i+1)+'/'+c.plan.length+' · '+u.title;
+      setProg(progFor(c,i,0),lab);
+      const raw=await ai(SYS_CHAPTER,chapterUser(c,u,i),t=>{ u.text=cleanNarr(t,u); u.chars=narrChars(u.text); setProg(progFor(c,i,u.chars/u.target),lab); paintSoon(); },sig);
+      u.text=cleanNarr(raw,u); u.chars=narrChars(u.text);
+      if(!u.text.trim()) throw new Error('AI 가 빈 응답을 보냈어요');
+      if(u.target>=250&&Math.abs(u.chars-u.target)/u.target>ADJ_TOL){
+        u.state='adjust'; setProg(progFor(c,i,1),'② '+u.title+' — 분량 조정 중…'); paintScript();
+        try{
+          const t2=cleanNarr(await ai(SYS_ADJUST,adjustUser(c,u),null,sig),u), n2=narrChars(t2);
+          if(n2&&Math.abs(n2-u.target)<Math.abs(u.chars-u.target)){ u.text=t2; u.chars=n2; }
+        }catch(e2){ if(e2&&e2.name==='AbortError'){ u.state='done'; paintScript(); await persist(); throw e2; } /* 조정에 실패하면 초안을 그대로 씀 */ }
+      }
+      u.state='done'; paintScript(); await persist();
+    }
+    c.status='done'; S.canResume=false;
+    const t=scriptTotals(c);
+    setProg(100,'완료 · 스크립트 '+t.chars.toLocaleString()+'자 · 약 '+fmtDur(t.sec)+' (목표 '+c.cfg.len+'분)');
+    await persist(); toast('만들었어요 — 이력에 저장했어요');
+  }catch(err){
+    const aborted=err&&err.name==='AbortError';
+    c.plan.forEach(u=>{ if(u.state==='adjust') u.state='done'; else if(u.state==='run'){ u.state='wait'; u.text=''; u.chars=0; } });   /* 조정 중에 멈추면 초안을 인정, 쓰던 중에 멈추면 그 챕터는 이어서 만들 때 처음부터 */
+    c.status='partial';
+    S.canResume=!!(c.report||c.plan.some(u=>u.state==='done'));
+    const pr=parseFloat(($('scPb')||{style:{}}).style.width)||0;
+    if(aborted) setProg(pr,'중단됨 — 지금까지의 내용은 이력에 저장됐어요');
+    else { setProg(pr,'오류로 멈췄어요'); showErr('오류: '+((err&&err.message)||err)+(S.canResume?'  — [▶ 이어서 만들기]로 멈춘 곳부터 계속할 수 있어요.':'')); }
+    await persist();
+  }finally{
+    S.ctrl=null; setRunning(false); paintReport(); paintScript(); syncGo();
+  }
+}
+
+/* ═════════ 이력 팝업 ═════════ */
+function histHtml(){
+  return '<div class="sc-card sm" role="document">'
+   +'<div class="sc-head"><button type="button" class="sc-back mobile-keep" data-act="back" style="display:none">← 목록</button><span class="sc-title" id="shTitle">🕘 스크립트 이력</span><span class="sc-sub" id="shSub"></span><button type="button" class="sc-x mobile-keep" data-act="close" title="닫기 (Esc)">✕</button></div>'
+   +'<div class="sc-hbar" id="shBar"><input id="shQ" type="text" class="mobile-keep" placeholder="이력 검색 (날짜·내용)" aria-label="이력 검색"><span class="sc-sp"></span><button type="button" class="sc-mini pri mobile-keep" data-act="new">🎬 새로 만들기</button></div>'
+   +'<div class="sc-hbody" id="shBody"></div></div>';
+}
+function ensureHist(){
+  if(_hs) return _hs;
+  const el=document.createElement('div'); el.id='scHistModal'; el.className='sc-ov no-print'; el.style.zIndex='10006'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','스크립트 이력');
+  el.innerHTML=histHtml(); document.body.appendChild(el); _hs=el;
+  el.addEventListener('click',e=>{
+    if(e.target===el){ closeHistory(); return; }
+    const b=e.target.closest&&e.target.closest('[data-act]'); if(!b) return;
+    const row=b.closest('[data-id]'), id=(row||b).getAttribute('data-id')||(_histView&&_histView.id);
+    histAct(b.getAttribute('data-act'),id);
+  });
+  $('shQ').addEventListener('input',()=>renderHistList());
+  return el;
+}
+function previewOf(r){
+  const rep=String(r.report||'');
+  let m=/한 줄 결론\s*[:：]\s*(.+)/.exec(rep);
+  let t=m?m[1]:(rep.split('\n').map(x=>x.trim()).find(x=>x&&!/^#/.test(x))||'');
+  t=t.replace(/\*\*/g,'').replace(/^[-•*]\s*/,'').trim();
+  return t.length>120?t.slice(0,120)+'…':t;
+}
+const timeOf=ts=>{ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
+const dateOfTs=ts=>{ const d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+function statusTag(r){
+  const live=S.running&&S.ctx&&S.ctx.id===r.id;
+  if(live) return '<span class="sc-tag run">작성 중</span>';
+  if(r.status==='done') return '';
+  return '<span class="sc-tag">'+(r.status==='error'?'오류':'중단됨')+'</span>';
+}
+async function renderHistList(){
+  _histView=null;
+  const body=$('shBody'), q=($('shQ').value||'').trim().toLowerCase();
+  $('shTitle').textContent='🕘 스크립트 이력'; $('shBar').style.display=''; _hs.querySelector('.sc-back').style.display='none';
+  body.innerHTML='<div class="sc-empty">불러오는 중…</div>';
+  let rows=[];
+  try{ rows=await dbAll(); }catch(e){ body.innerHTML='<div class="sc-empty">이력을 불러오지 못했어요<div class="sub">'+esc((e&&e.message)||'')+'</div></div>'; $('shSub').textContent=''; return; }
+  const all=rows.length;
+  if(q) rows=rows.filter(r=>(r.date+' '+dateOfTs(r.ts)+' '+r.report+' '+(r.plan||[]).map(u=>u.text).join(' ')+' '+(r.secs||[]).map(labelOf).join(' ')).toLowerCase().indexOf(q)>=0);
+  $('shSub').textContent=all?(q?rows.length+' / ':'')+all+'건':'';
+  if(!rows.length){ body.innerHTML='<div class="sc-empty">'+(all?'검색 결과가 없어요':'아직 만든 스크립트가 없어요<div class="sub">[🎬 스크립트 만들기]로 만들면 여기에 자동으로 쌓여요.</div>')+'</div>'; return; }
+  let day='', h='';
+  rows.forEach(r=>{
+    const d=dateOfTs(r.ts); if(d!==day){ day=d; h+='<div class="sc-day">'+esc(d)+' 생성</div>'; }
+    h+='<div class="sc-hi" data-id="'+esc(r.id)+'" data-act="open"><div class="sc-hi-main"><div class="sc-hi-t">기준일 '+esc(r.date)+' · '+r.cfg.len+'분 영상 '+statusTag(r)+'<span class="tm">'+timeOf(r.ts)+'</span></div>'
+      +'<div class="sc-hi-p">'+esc(previewOf(r)||'(보고서 없음)')+'</div>'
+      +'<div class="sc-hi-m"><b>섹션</b> '+esc((r.secs||[]).map(labelOf).join(' · '))+' · 스크립트 '+(r.chars||0).toLocaleString()+'자 · '+esc(provLabel(r.provider))+'</div></div>'
+      +'<button type="button" class="sc-hi-x mobile-keep" data-act="del" title="삭제">✕</button></div>';
+  });
+  body.innerHTML=h;
+}
+const provLabel=p=>{ try{ return ((typeof _BTM_AI_PROVIDER_LABELS!=='undefined'&&_BTM_AI_PROVIDER_LABELS[p])||p||'').replace(/^[^\s]+\s/,''); }catch(e){ return p||''; } };
+async function showDetail(id){
+  let rec=null; try{ rec=(await dbAll()).find(r=>r.id===id); }catch(e){}
+  if(!rec){ toast('이력을 찾지 못했어요'); renderHistList(); return; }
+  _histView=rec;
+  const c=ctxOfRec(rec), t=scriptTotals(c), body=$('shBody');
+  $('shTitle').textContent='🕘 '+rec.date+' · '+rec.cfg.len+'분 영상'; $('shSub').textContent=dateOfTs(rec.ts)+' '+timeOf(rec.ts)+' 생성'; $('shBar').style.display='none'; _hs.querySelector('.sc-back').style.display='';
+  body.innerHTML='<div class="sc-dact"><button type="button" class="sc-mini pri mobile-keep" data-act="dCopyAll">전체 복사</button><button type="button" class="sc-mini mobile-keep" data-act="dCopyRep">보고서 복사</button><button type="button" class="sc-mini mobile-keep" data-act="dCopyScr">스크립트 복사</button><button type="button" class="sc-mini mobile-keep" data-act="dTxt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="dReuse" title="이 영상 길이·섹션·말 속도로 새로 만들기 화면을 엽니다">↩ 이 설정으로 만들기</button><span class="sc-sp"></span><button type="button" class="sc-mini dng mobile-keep" data-act="dDel">삭제</button></div>'
+    +'<div class="sc-dmeta"><b>반영 섹션</b> '+esc((rec.secs||[]).map(labelOf).join(', '))+' · <b>말 속도</b> '+rec.cfg.cpm+'자/분 · <b>AI</b> '+esc(provLabel(rec.provider))+(rec.cfg.extra?'<br><b>추가 요청</b> '+esc(rec.cfg.extra):'')+(rec.status!=='done'?'<br><span class="sc-tag">'+(rec.status==='error'?'오류':'중단됨')+'</span> 끝까지 만들어지지 않은 기록이에요.':'')+'</div>'
+    +'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta">'+(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+'</span></div><div class="sc-doc">'+(c.report?mdLite(c.report):'<div class="sc-wait">—</div>')+'</div></section>'
+    +'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta">'+rec.cfg.len+'분 · '+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')</span></div><div class="sc-doc">'+scriptHtml(c)+'</div></section>';
+  body.scrollTop=0;
+}
+async function histAct(act,id){
+  if(act==='close') closeHistory();
+  else if(act==='back') renderHistList();
+  else if(act==='new'){ closeHistory(); openMaker(); }
+  else if(act==='open') showDetail(id);
+  else if(act==='del'||act==='dDel'){
+    if(!confirm('이 스크립트 기록을 삭제할까요?\n삭제하면 되돌릴 수 없어요.')) return;
+    try{ await dbDel(id); toast('삭제했어요'); }catch(e){ toast('삭제하지 못했어요'); }
+    renderHistList();
+  }
+  else if(_histView){
+    const c=ctxOfRec(_histView);
+    if(act==='dCopyAll') copyText(composeText(c),'전체를 복사했어요');
+    else if(act==='dCopyRep') copyText((c.report||'').trim(),'보고서를 복사했어요');
+    else if(act==='dCopyScr') copyText(scriptText(c),'스크립트를 복사했어요');
+    else if(act==='dTxt') downloadTxt(fileName(c),composeText(c));
+    else if(act==='dReuse'){
+      if(S.running){ toast('지금 스크립트를 만드는 중이라 설정을 바꿀 수 없어요'); return; }
+      const cfg={len:_histView.cfg.len,cpm:_histView.cfg.cpm,secs:(_histView.cfg.secs||[]).slice(),extra:_histView.cfg.extra||''};
+      saveCfg(cfg); closeHistory(); openMaker(cfg);
+    }
+  }
+}
+function openHistory(){ const h=ensureHist(); $('shQ').value=''; h.classList.add('open'); renderHistList(); }
+function closeHistory(){ if(_hs) _hs.classList.remove('open'); _histView=null; }
+
+/* Esc — 이력 → 만들기 순으로 닫음 */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(_hs&&_hs.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); if(_histView) renderHistList(); else closeHistory(); return; }
+  if(_mk&&_mk.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); closeMaker(); }
+},true);
+
+window.openScriptMaker=()=>openMaker();
+window.openScriptHistory=()=>openHistory();
+window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),
+  _dbg:{buildPlan,sysReport,reportUser,chapterUser,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur}};
+})();
+/* ═══ BTMSCRIPT-JS-END ═══ */
+</script>
+<!-- BTMSCRIPT-JS-END -->
 </body>
 </html>
