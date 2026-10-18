@@ -1661,6 +1661,25 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
       이미지 만들기는 BTMViz(VIZ-JS 블록). 상자는 .ai-result-box 의 한 종류라 '결과물 #N' 번호·↪ 참조가 그대로 동작 */
 #aiVizToggle{height:24px;padding:0 10px;font-size:10.5px;border:1px solid #f9a8d4;background:transparent;border-radius:12px;color:#be185d;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s}
 #aiVizToggle:hover,#aiVizToggle.active{background:#fce7f3}
+/* 마지막으로 실행한 인포그래픽 유형(2026-10-18) — 팝업 머리줄 제목 옆 알약(#aiVizLast) + 🎨 패널 맨 위 한 줄(.avp-last) + 유형 버튼의 '마지막' 표시(.last) */
+#aiModalTitleWrap{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+#aiModalTitleWrap #aiModalTitle{flex:0 1 auto}
+#aiVizLast{display:none;flex:0 3 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 10px;border:1px solid rgba(255,255,255,.42);border-radius:12px;background:rgba(255,255,255,.18);color:#fff;font-size:10.5px;font-weight:600;line-height:1.5;letter-spacing:0;cursor:pointer;transition:background .12s}
+#aiVizLast.on{display:block}
+#aiVizLast:hover,#aiVizLast:focus-visible{background:rgba(255,255,255,.32);outline:none}
+#aiVizLast .avl-i{margin-right:5px}
+#aiVizLast .avl-l{opacity:.82;margin-right:6px}
+#aiVizLast .avl-n{font-weight:800}
+#aiVizLast .avl-d{opacity:.72;margin-left:6px;font-size:9.5px}
+@media(max-width:760px){#aiVizLast .avl-l,#aiVizLast .avl-d{display:none}}   /* 좁으면 🎨+이름만 */
+@media(max-width:520px){#aiVizLast.on{display:none}}   /* 폰 폭은 제목 자리가 모자라 감춤 — 🎨 패널 안 한 줄과 유형 버튼의 '마지막' 표시는 그대로 */
+#aiVizPanel .avp-last{font-size:10.5px;font-weight:600;color:#9d174d;background:#fff;border:1px dashed #f9a8d4;border-radius:8px;padding:5px 10px;line-height:1.5}
+#aiVizPanel .avp-last b{font-weight:800}
+#aiVizPanel .avp-last small{color:#a8738a;font-size:10px;font-weight:600}
+.avp-rc button.last,.ai-viz-rcb button.last{background:#fce7f3;border-color:#be185d}
+.avp-rc button.last::after,.ai-viz-rcb button.last::after{content:'마지막';margin-left:6px;padding:1px 6px;border-radius:8px;background:#be185d;color:#fff;font-size:9px;font-weight:800;vertical-align:1px}
+.avp-rc button.last.flash,.ai-viz-rcb button.last.flash{animation:_aiVlFlash 1.4s ease-out 1}
+@keyframes _aiVlFlash{0%,45%{box-shadow:0 0 0 4px rgba(190,24,93,.55)}100%{box-shadow:0 0 0 4px rgba(190,24,93,0)}}
 #aiVizPanel{display:none;flex-shrink:0;border-bottom:1px solid #fbcfe8;background:#fff7fb;padding:9px 11px 10px;flex-direction:column;gap:8px;max-height:min(380px,52vh);overflow-y:auto}
 #aiVizPanel .avp-h{display:flex;align-items:flex-start;gap:8px;font-size:11px;font-weight:800;color:#9d174d}
 #aiVizPanel .avp-h>span{flex-shrink:0;line-height:1.5}
@@ -29826,6 +29845,7 @@ Rules:
     _provider=_getProviderFor(editorId);
     const _selEl=g('aiProviderSelect'); if(_selEl) _selEl.value=_provider;
     g('aiModalTitle').textContent='✨ '+label;
+    _vizPend=[]; _vizLastPaint();   /* 이 섹션에서 마지막으로 실행한 인포그래픽 유형 이름을 제목 옆에 */
     g('aiLeftTitle').textContent=label;
     /* 특정 섹션(eid) 없이 연 채팅(예: 상단바 'Claude AI' 버튼)은 '본문에 반영'이 대신 메모장에 저장됨을 미리 안내 */
     const _applyLabel=editorId?'📝 본문에 반영':'📝 메모장에 저장';
@@ -29898,7 +29918,7 @@ Rules:
     if(_busy){ if(_abortCtrl) _abortCtrl.abort(); }
     _saveChatSession();
     g('aiChatModal').style.display='none';
-    _eid='';_hist=[];_attachedFile=null;_pendingImages=[];_pendingRefs=[];_renderRefStrip();_lastReply='';_lastResult='';_abortCtrl=null;_sessId='';
+    _eid='';_hist=[];_attachedFile=null;_pendingImages=[];_pendingRefs=[];_renderRefStrip();_lastReply='';_lastResult='';_abortCtrl=null;_sessId='';_vizPend=[];
     _aiHistClose();
   };
 
@@ -32167,10 +32187,10 @@ Rules:
   }
   function _vizBoxRcRender(box){   /* 유형 버튼 줄 — 열 때마다 지금의 목록(🎨 패널에서 고친 것 포함)으로 다시 그림 */
     const w=box&&box.querySelector&&box.querySelector('.ai-viz-rcw'); if(!w) return;
-    const list=_vizRecipes();
+    const list=_vizRecipes(), LS=_vizLastRes(_eid);
     w.innerHTML='<div class="ai-viz-rch"><span>이 인포그래픽을 참조해 다른 유형으로 다시 만들어요 — 누르면 바로 AI 에게 요청합니다.</span><button type="button" class="mobile-keep" onclick="_vizAct(this,\'rcedit\')" title="유형(요청 문구)을 추가·수정·삭제하려면 🎨 패널을 편집 모드로 엽니다">✏️ 문구 편집</button></div>'
       +'<div class="ai-viz-rcb">'+(list.length
-        ?list.map(r=>'<button type="button" class="mobile-keep" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_ahEsc(r.p)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</button>').join('')
+        ?list.map(r=>'<button type="button" class="mobile-keep'+(_vizIsLast(LS,r)?' last':'')+'" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_ahEsc(r.p)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</button>').join('')
         :'<span class="ai-viz-rcn">등록된 유형이 없어요 — ✏️ 문구 편집에서 추가하세요.</span>')+'</div>';
   }
   function _vizBoxRcToggle(box){ const on=box.getAttribute('data-rc')!=='1'; _vizBoxRcSet(box,on); if(on) _vizBoxRcRender(box); }
@@ -32183,6 +32203,7 @@ Rules:
     const inp=g('aiUserInput'), rb=box.querySelector('.ai-ref-btn'); if(!inp||!rb) return;
     const clean=!(inp.innerText||'').trim()&&!inp.querySelector('img')&&!_pendingImages.length&&!_pendingRefs.length;   /* 쓰던 글·이미지·참조가 없을 때만 바로 보냄 */
     const txt=_vizRcReq(r);
+    _vizPendAdd(r);   /* 어느 유형으로 바꿔 만드는지 — 보낼 때 '마지막 유형'으로 기록 */
     window._refFromBtn(rb);   /* 이 인포그래픽을 참조 칩으로 — 번호·미리보기·중복 처리는 [↪ 참조] 와 같음 */
     _vizBoxRcSet(box,false);
     if(clean&&_pendingRefs.length){
@@ -32680,20 +32701,102 @@ Rules:
     try{ localStorage.setItem(_VRK,JSON.stringify({v:1,list,hide})); return true; }catch(e){ return false; }
   }
   const _vizRcToast=(m,warn)=>_showToast('_ahToast',m,warn?'rgba(180,83,9,.93)':'rgba(21,128,61,.93)');
+  /* ═══ 섹션별 '마지막으로 실행한 인포그래픽 유형' (2026-10-18) ═══════════════════════════════════════
+     유형(요청 문구)으로 인포그래픽을 요청할 때마다 그 섹션(_eid)의 마지막 유형으로 기록 — localStorage.BTMVizLast = {v:1,m:{섹션:{k,ic,t,at}}} (섹션 없는 채팅은 '_').
+     팝업을 열면 머리줄 제목 옆 알약(#aiVizLast)과 🎨 패널 맨 위 한 줄(#aiVizLastLine)에 이름을 보여 주고, 유형 버튼 줄(🎨 패널·[🔄 유형 바꾸기])에는 '마지막' 표시를 붙임.
+     '어느 유형으로 실행했나'는 보내는 순간의 글로 판별: 방금 유형 버튼으로 채운 문구(_vizPend)가 글에 남아 있으면(문구를 고쳐 쓰는 게 기본이라 단어가 60% 이상 남아 있으면 인정) 그 유형,
+     버튼 없이 같은 문구를 직접 넣었다면 문구가 통째로 들어 있는 유형. 자유롭게 쓴 요청·고치기 요청은 유형이 아니므로 기록을 바꾸지 않음. */
+  const _VLAST='BTMVizLast', _VLAST_MAX=80;
+  const _vlKey=e=>e||'_';
+  function _vizLastAll(){ let o=null; try{ o=JSON.parse(localStorage.getItem(_VLAST)||'null'); }catch(e){} return (o&&typeof o==='object'&&o.m&&typeof o.m==='object')?o.m:{}; }
+  function _vizLastGet(eid){   /* 저장된 기록(손상·조작에 대비해 검증) */
+    const r=_vizLastAll()[_vlKey(eid)]; if(!r||typeof r!=='object') return null;
+    const t=_vizCut(String(r.t==null?'':r.t).replace(/\s+/g,' ').trim(),24); if(!t) return null;
+    return {k:(typeof r.k==='string'?_vizCut(r.k,16):''),ic:_vizHeadG(r.ic,2)||'🎨',t,at:(+r.at>0?+r.at:0)};
+  }
+  function _vizLastSet(eid,r){
+    const m=_vizLastAll(); m[_vlKey(eid)]={k:r.k||'',ic:r.ic||'🎨',t:r.t,at:Date.now()};
+    const ks=Object.keys(m);
+    if(ks.length>_VLAST_MAX) ks.sort((a,b)=>((m[a]&&m[a].at)||0)-((m[b]&&m[b].at)||0)).slice(0,ks.length-_VLAST_MAX).forEach(k=>{ delete m[k]; });
+    try{ localStorage.setItem(_VLAST,JSON.stringify({v:1,m})); }catch(e){}
+  }
+  function _vizLastRes(eid){   /* 기록 → 지금 유형 목록에서 같은 유형 찾기(열쇠 k → 이름 순). 이름을 고쳤으면 지금 이름·아이콘으로, 지웠으면 기록해 둔 이름 그대로 */
+    const rec=_vizLastGet(eid); if(!rec) return null;
+    const list=_vizRecipes();
+    const cur=(rec.k&&list.find(r=>r.k===rec.k))||list.find(r=>r.t===rec.t)||null;
+    return {rec,cur,ic:cur?cur.ic:rec.ic,t:cur?cur.t:rec.t};
+  }
+  const _vizIsLast=(L,r)=>!!(L&&L.cur&&r.t===L.cur.t&&(r.k||'')===(L.cur.k||''));
+  function _vizLastWhen(at){
+    if(!at) return {short:'',full:''};
+    const d=new Date(at), n=new Date(), p2=x=>String(x).padStart(2,'0');
+    const ds=x=>x.getFullYear()+'-'+p2(x.getMonth()+1)+'-'+p2(x.getDate());
+    const y=new Date(n.getFullYear(),n.getMonth(),n.getDate()-1);
+    return {short:ds(d)===ds(n)?'오늘':(ds(d)===ds(y)?'어제':(d.getMonth()+1)+'/'+d.getDate()),full:ds(d)+' '+p2(d.getHours())+':'+p2(d.getMinutes())};
+  }
+  function _vizLastPaint(){   /* 머리줄 알약 + 🎨 패널 맨 위 한 줄을 지금 섹션(_eid) 기록으로 */
+    const res=_vizLastRes(_eid), wrap=g('aiModalTitleWrap');
+    let pill=g('aiVizLast');
+    if(!pill&&wrap){
+      pill=document.createElement('span'); pill.id='aiVizLast'; pill.setAttribute('role','button'); pill.tabIndex=0;
+      pill.onclick=()=>window._vizLastOpen();
+      pill.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); window._vizLastOpen(); } };
+      wrap.appendChild(pill);
+    }
+    const w=res?_vizLastWhen(res.rec.at):null;
+    if(pill){
+      if(res){
+        pill.innerHTML='<span class="avl-i">🎨</span><span class="avl-l">마지막 유형</span><span class="avl-n">'+_ahEsc(res.ic)+' '+_ahEsc(res.t)+'</span>'+(w.short?'<span class="avl-d">'+_ahEsc(w.short)+'</span>':'');
+        pill.title='이 섹션에서 마지막으로 실행한 인포그래픽 유형: '+res.ic+' '+res.t+(w.full?'\n'+w.full:'')+'\n눌러서 유형 목록 열기';
+        pill.setAttribute('aria-label','마지막으로 실행한 인포그래픽 유형 '+res.t);
+        pill.classList.add('on');
+      }else{ pill.classList.remove('on'); pill.textContent=''; pill.removeAttribute('title'); pill.removeAttribute('aria-label'); }
+    }
+    const ln=g('aiVizLastLine');
+    if(ln){
+      if(res) ln.innerHTML='🕘 이 섹션에서 마지막으로 만든 유형 <b>'+_ahEsc(res.ic)+' '+_ahEsc(res.t)+'</b>'+(w.full?' <small>('+_ahEsc(w.full)+')</small>':'');
+      else ln.textContent='🕘 이 섹션에서는 아직 유형으로 만든 인포그래픽이 없어요 — 아래 유형을 눌러 시작해 보세요.';
+    }
+  }
+  window._vizLastOpen=function(){   /* 알약을 누르면 🎨 패널을 열고 마지막 유형 버튼을 반짝여 보여 줌 */
+    const p=g('aiVizPanel'); if(!p) return;
+    if(p.style.display!=='flex') window._toggleVizPanel();
+    setTimeout(()=>{ const b=p.querySelector('.avp-rc button.last'); if(!b) return; try{ b.scrollIntoView({block:'nearest'}); }catch(e){} b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); },30);
+  };
+  /* 유형 버튼을 눌러 채운(또는 바로 보낸) 요청 문구 — 보낼 때 어느 유형으로 실행했는지 판별하는 데 씀 */
+  let _vizPend=[];
+  function _vizPendAdd(r){ if(!r) return; _vizPend=_vizPend.filter(x=>x.t!==r.t||(x.k||'')!==(r.k||'')); _vizPend.push({k:r.k||'',ic:r.ic,t:r.t,p:r.p}); if(_vizPend.length>6) _vizPend.shift(); }
+  const _vzSp=s=>String(s==null?'':s).replace(/\s+/g,' ').trim();
+  const _vzToks=s=>Array.from(new Set(_vzSp(s).split(/[\s,.·…!?:;()\[\]{}"'“”‘’]+/).filter(w=>w.length>=2)));
+  function _vizTypeOf(txt){   /* 이번에 보내는 글이 어느 유형(요청 문구)인지 — 못 알아보면 null */
+    const nt=_vzSp(txt); if(!nt) return null;
+    const have=new Set(_vzToks(txt));
+    for(let i=_vizPend.length-1;i>=0;i--){   /* 방금 유형 버튼으로 채운 문구 중 아직 글에 남아 있는 것(가장 나중에 누른 것 먼저) */
+      const r=_vizPend[i], np=_vzSp(r.p); if(!np) continue;
+      if(nt.indexOf(np)>=0) return r;
+      const pt=_vzToks(r.p); if(!pt.length) continue;
+      if(pt.filter(w=>have.has(w)).length/pt.length>=0.6) return r;
+    }
+    let best=null;   /* 버튼 없이 같은 문구를 직접 넣은 경우 — 문구가 통째로 들어 있는 유형(가장 긴 문구 우선) */
+    _vizRecipes().forEach(r=>{ const np=_vzSp(r.p); if(np&&nt.indexOf(np)>=0&&(!best||np.length>_vzSp(best.p).length)) best=r; });
+    return best;
+  }
+
   function _vizRcRender(){
     const rc=g('aiVizRecipes'); if(!rc) return;
-    const list=_vizRcCur=_vizRecipes(), ed=_vizRcMode;
+    const list=_vizRcCur=_vizRecipes(), ed=_vizRcMode, LS=_vizLastRes(_eid);
     let h=list.map((r,i)=>{
-      const lab=_ahEsc(r.ic)+' '+_ahEsc(r.t);
+      const lab=_ahEsc(r.ic)+' '+_ahEsc(r.t), lc=_vizIsLast(LS,r)?' last':'';
       return ed
-        ?'<span class="avp-chip"><button type="button" class="mobile-keep" onclick="_vizRcAct(\'edit\','+i+')" title="눌러서 이름·문구 고치기">'+lab+'</button><button type="button" class="avp-del mobile-keep" onclick="_vizRcAct(\'del\','+i+')" title="이 문구 삭제" aria-label="‘'+_ahEsc(r.t)+'’ 삭제">✕</button></span>'
-        :'<button type="button" class="mobile-keep" onclick="_vizRecipe('+i+')" title="'+_ahEsc(r.p)+'">'+lab+'</button>';
+        ?'<span class="avp-chip"><button type="button" class="mobile-keep'+lc+'" onclick="_vizRcAct(\'edit\','+i+')" title="눌러서 이름·문구 고치기">'+lab+'</button><button type="button" class="avp-del mobile-keep" onclick="_vizRcAct(\'del\','+i+')" title="이 문구 삭제" aria-label="‘'+_ahEsc(r.t)+'’ 삭제">✕</button></span>'
+        :'<button type="button" class="mobile-keep'+lc+'" onclick="_vizRecipe('+i+')" title="'+_ahEsc(r.p)+'">'+lab+'</button>';
     }).join('');
     if(!list.length) h+='<span class="avp-none">등록된 문구가 없어요</span>';
     h+='<button type="button" class="avp-add mobile-keep" onclick="_vizRcAct(\'add\')" title="새 유형(요청 문구)을 추가합니다">＋ 추가</button>'
       +'<button type="button" class="avp-tg'+(ed?' on':'')+' mobile-keep" onclick="_vizRcAct(\'mode\')" title="'+(ed?'편집을 마치고 문구를 눌러 쓰는 상태로 돌아갑니다':'문구를 눌러 고치거나 ✕ 로 삭제합니다')+'">'+(ed?'✓ 편집 끝':'✏️ 편집')+'</button>';
     if(ed||!list.length) h+='<button type="button" class="avp-rs mobile-keep" onclick="_vizRcAct(\'reset\')" title="추가·수정·삭제한 것을 모두 버리고 처음 기본 문구로 되돌립니다">↺ 기본 문구로</button>';
     rc.innerHTML=h;
+    _vizLastPaint();   /* 유형 이름·목록이 바뀌었을 수 있으니 '마지막 유형' 표시도 다시 */
     document.querySelectorAll('#aiMessages .ai-viz-box[data-rc="1"]').forEach(b=>_vizBoxRcRender(b));   /* 열려 있는 상자의 유형 버튼 줄도 같은 목록으로 */
   }
   function _vizRcOpen(i){   /* 아래 편집 칸 열기 — i<0 이면 새 문구 */
@@ -32777,6 +32880,7 @@ Rules:
   window._vizRecipe=function(i){
     const r=(_vizRcCur.length?_vizRcCur:_vizRecipes())[i]; if(!r) return;
     const inp=g('aiUserInput'); if(!inp) return;
+    _vizPendAdd(r);   /* 어느 유형을 골랐는지 기억 — 보낼 때 '마지막 유형'으로 기록 */
     if(!(inp.innerText||'').trim()) inp.textContent=r.p;
     else{ inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(r.p)); }   /* 쓰던 글이 있으면 지우지 않고 아래에 덧붙임 */
     _vizPanelClose(); _focusInputEnd();
@@ -32795,6 +32899,7 @@ Rules:
   window.sendAIMessage=async function(opts){   /* opts.extraSys: 시스템 프롬프트 끝에 덧붙일 글(AI Stock Radar 📡 업데이트의 History 블록) — 사용자 글이 아니라서 웹 검색어에 안 들어감 */
     if(_busy) return;
     if(_vzTrAct){ _showToast('_ahToast','🌐 인포그래픽 번역 중이에요 — 끝난 뒤에 보낼 수 있어요','rgba(180,83,9,.93)'); return; }
+    const _sendEid=_eid;   /* 이 요청이 속한 섹션 — 웹 조회 등을 기다리는 사이 다른 섹션 팝업이 열려도 기록은 이 섹션에 */
     const input=g('aiUserInput');
     const inputHtml=_normalizeFontTags(input.innerHTML);
     const _hasHtmlFmt=/<[bius]>|<strong>|<em>|<span style="|<div style="text-align/i.test(inputHtml);
@@ -32872,6 +32977,12 @@ Rules:
 
     /* 인포그래픽(이미지) 요청이면 명세 형식 규칙을 덧붙임 — 요청 글·참조·이전 답변에 근거가 있을 때만(평소 요청의 토큰·동작은 그대로) */
     const _vizBlock=_vizWanted(txt,refs)?_vizRules():'';
+    /* 이 섹션의 '마지막 인포그래픽 유형' 기록 — 유형(요청 문구)으로 인포그래픽을 요청한 경우만(자유롭게 쓴 요청·고치기 요청은 유형이 아니라 그대로 둠) */
+    if(_vizBlock){
+      const _vt=_vizTypeOf(txt);
+      if(_vt){ _vizLastSet(_sendEid,_vt); if(_eid===_sendEid){ _vizLastPaint(); const _pp=g('aiVizPanel'); if(_pp&&_pp.style.display==='flex') _vizRcRender(); } }
+    }
+    _vizPend=[];
 
     /* 이번 메시지에 참조한 AI 답변이 있으면 '기본 대상 = [현재 참고 자료]' 규칙보다 그 참조가 우선 */
     const _refRule=refs.length?'\n단, 이번 사용자 메시지에 [참조한 AI 답변]이 있으면 그 참조 내용이 요청의 처리 대상입니다. 이 경우 [현재 참고 자료]는 필요할 때만 보조로 쓰고, 참조한 결과물을 고쳐 쓰거나 이어 쓰라는 요청이면 본문에 반영될 최종 결과물을 아래 [답변 형식 규칙]대로 <RESULT>와 </RESULT> 사이에 작성하세요.':'';
@@ -38987,7 +39098,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <div id="aiChatModal">
   <div id="aiChatInner">
     <div id="aiModalHeader">
-      <span id="aiModalTitle">✨ AI 어시스턴트</span>
+      <div id="aiModalTitleWrap"><span id="aiModalTitle">✨ AI 어시스턴트</span></div><!-- 제목 옆에 '마지막 인포그래픽 유형' 알약(#aiVizLast)이 JS 로 붙음 — 제목 글(#aiModalTitle)은 기록의 섹션 이름(_ahSecName)으로도 읽히므로 알약은 그 안에 넣지 않음 -->
       <select id="aiProviderSelect" class="mobile-keep" onchange="_switchAiProvider(this.value)" title="이 섹션에 사용할 AI (선택 즉시 저장되어 다음에도 유지됨)"
         style="font-size:11px;padding:3px 6px;border:1px solid #e2e8f0;border-radius:6px;color:#1e293b;background:#fff;cursor:pointer;flex-shrink:0;margin-right:4px">
         <option value="claude">🤖 Claude</option>
@@ -39173,6 +39284,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
         <div id="aiVizPanel">
           <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 이미지(PNG)로 만들어 줘요. 유형을 누르면 요청 문구가 입력창에 채워지니(＋ 추가·✏️ 편집으로 문구를 직접 추가·수정·삭제할 수 있어요), 고쳐 쓴 뒤 Enter 로 보내세요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고치고, [🌐 다국어 생성]으로 영어·중국어 버전을 만들 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-last" id="aiVizLastLine"></div>
           <div class="avp-rc" id="aiVizRecipes"></div>
           <div class="avp-ed" id="aiVizRcEd" style="display:none" data-i="-1">
             <div class="avp-eh" id="aiVizRcHd">＋ 새 문구 추가</div>
