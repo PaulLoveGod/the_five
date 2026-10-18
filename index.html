@@ -2779,6 +2779,66 @@ body.guest-mode #lhPill{display:none!important}
 @media print{#imgEdModal{display:none!important}}
 </style>
 <!-- BTMIMGED-CSS-END -->
+<!-- BTMCMP-CSS-BEGIN -->
+<style>
+/* ── 수익률 그래프 × 주가지표 비교 (2026-10-19) — 머리줄 [📈 비교] 버튼 + 비교 창(#cmpPop). JS 는 BTMCMP-JS 블록 ── */
+#cmpBtn{background:none;border:1px solid #cbd5e1;border-radius:4px;height:24px;padding:0 6px;cursor:pointer;color:#64748b;font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;font-family:inherit;flex-shrink:0}
+#cmpBtn:hover{background:#f1f5f9;color:#1e40af}
+#cmpBtn.on{border-color:#3b82f6;color:#1d4ed8;background:#eff6ff}
+#cmpBtn.dis{opacity:.5}
+#cmpBtn .cmp-n{display:none;min-width:13px;height:13px;border-radius:7px;background:#3b82f6;color:#fff;font-size:9px;line-height:13px;text-align:center;padding:0 3px}
+#cmpBtn .cmp-n.has{display:inline-block}
+#cmpStatus{position:absolute;right:4px;top:0;z-index:2;display:none;font-size:9px;line-height:1.3;color:#64748b;background:rgba(255,255,255,.88);border-radius:3px;padding:1px 5px;pointer-events:none;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cmpStatus.bad{color:#b45309}
+#cmpPop{position:fixed;z-index:9100;display:none;width:350px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow-y:auto;background:#fff;color:#334155;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 12px 40px rgba(15,23,42,.3);font-size:11px;line-height:1.4;padding:10px 12px 12px;font-family:inherit}
+#cmpPop *{box-sizing:border-box}
+#cmpPop .cp-hd{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+#cmpPop .cp-hd b{font-size:13px;color:#0f172a}
+#cmpPop .cp-sub{font-size:10px;color:#94a3b8;flex:1}
+#cmpPop .cp-x{background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer;padding:0 2px;line-height:1}
+#cmpPop .cp-x:hover{color:#ef4444}
+#cmpPop .cp-warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:6px;padding:6px 8px;margin-bottom:8px;font-size:10.5px}
+#cmpPop .cp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+#cmpPop .cp-ck,#cmpPop .cp-md{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#334155;cursor:pointer}
+#cmpPop .cp-ck input{margin:0;width:13px;height:13px;accent-color:#2563eb}
+#cmpPop select{height:24px;min-height:0;font-size:11px;border:1px solid #cbd5e1;border-radius:4px;padding:0 4px;background:#fff;color:#334155;font-family:inherit}
+#cmpPop .cp-sec{font-size:10.5px;font-weight:700;color:#475569;margin:8px 0 4px;display:flex;align-items:center;gap:6px}
+#cmpPop .cp-sec small{font-weight:400;color:#94a3b8}
+#cmpPop .cp-cnt{font-weight:700;color:#2563eb;background:#eff6ff;border-radius:8px;padding:0 6px}
+#cmpPop .cp-cnt.full{color:#b45309;background:#fffbeb}
+#cmpPop .cp-sel{display:flex;flex-direction:column;gap:3px;min-height:20px}
+#cmpPop .cp-empty{color:#94a3b8;font-size:10.5px;padding:3px 0}
+#cmpPop .cp-it{display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:3px 6px}
+#cmpPop .cp-dot{width:10px;height:10px;border-radius:50%;flex:none}
+#cmpPop .cp-nm{font-weight:700;color:#0f172a;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#cmpPop .cp-it code{font-size:9.5px;color:#94a3b8;background:none;padding:0}
+#cmpPop .cp-it > span[data-st]{margin-left:auto;font-size:10px;white-space:nowrap}
+#cmpPop .cp-st{color:#94a3b8}
+#cmpPop .cp-st.ok{color:#059669}
+#cmpPop .cp-st.load{color:#2563eb}
+#cmpPop .cp-st.bad{color:#b45309}
+#cmpPop .cp-rm{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;padding:0 2px;line-height:1}
+#cmpPop .cp-rm:hover{color:#ef4444}
+#cmpPop .cp-chips{display:flex;flex-wrap:wrap;gap:4px}
+#cmpPop .cp-chip{background:#fff;border:1px solid #cbd5e1;border-radius:11px;padding:2px 8px;font-size:10.5px;color:#475569;cursor:pointer;line-height:1.4;font-family:inherit}
+#cmpPop .cp-chip:hover:not(:disabled){border-color:#3b82f6;color:#1d4ed8}
+#cmpPop .cp-chip.on{background:#2563eb;border-color:#2563eb;color:#fff}
+#cmpPop .cp-chip:disabled{opacity:.4;cursor:not-allowed}
+#cmpPop .cp-add{display:flex;gap:4px;margin-top:8px}
+#cmpPop .cp-add input{flex:1;min-width:0;height:26px;border:1px solid #cbd5e1;border-radius:4px;padding:0 6px;font-size:11px;font-family:inherit;color:#334155;background:#fff}
+#cmpPop .cp-add input:focus{outline:none;border-color:#3b82f6}
+#cmpPop .cp-btn{height:26px;padding:0 10px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;color:#475569;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap}
+#cmpPop .cp-btn:hover{background:#f1f5f9}
+#cmpPop .cp-btn.pri{background:#2563eb;border-color:#2563eb;color:#fff}
+#cmpPop .cp-btn.pri:hover{background:#1d4ed8}
+#cmpPop .cp-msg{min-height:14px;margin-top:3px;font-size:10px;color:#64748b}
+#cmpPop .cp-msg.bad{color:#dc2626}
+#cmpPop .cp-ft{display:flex;align-items:center;gap:4px;margin-top:6px}
+#cmpPop .cp-sp{flex:1}
+#cmpPop .cp-note{margin-top:8px;padding-top:7px;border-top:1px dashed #e2e8f0;font-size:10px;color:#94a3b8;line-height:1.5}
+@media print{#cmpPop,#cmpStatus{display:none!important}}
+</style>
+<!-- BTMCMP-CSS-END -->
 </head>
 <body spellcheck="false">
 
@@ -4788,7 +4848,7 @@ body.guest-mode #lhPill{display:none!important}
           </div>
           <!-- 우: 수익률 추이 그래프 -->
           <div id="summaryChartOuter" onclick="_selectChart('summary',event)" title="클릭: 선택 / 경계 드래그: 너비 조절" style="flex:1 1 0%;min-width:0;min-height:0;display:flex;flex-direction:column;cursor:pointer">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-shrink:0;min-width:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;row-gap:3px;margin-bottom:6px;flex-shrink:0;min-width:0">
               <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0">
                 <input type="text" id="summaryChartYMax" placeholder="Y최고" title="세로축 최고값 수동 고정 (비우면 자동)" style="font-size:10px;height:24px;width:84px;border:1px solid #cbd5e1;border-radius:4px;box-sizing:border-box;padding:0 4px;text-align:center" oninput="onSummaryYMaxInput(this)" onblur="onSummaryYMaxBlur(this)" onkeydown="if(event.key==='ArrowUp'){event.preventDefault();stepSummaryYMax(1)}else if(event.key==='ArrowDown'){event.preventDefault();stepSummaryYMax(-1)}"/>
                 <span style="display:flex;flex-direction:column;gap:1px">
@@ -4797,6 +4857,7 @@ body.guest-mode #lhPill{display:none!important}
                 </span>
               </span>
               <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+                <button id="cmpBtn" type="button" class="pdf-export-hide" onclick="window.BTMCmp&&BTMCmp.toggle(event)" title="내 수익률과 주가지표(S&P500·나스닥100·필라델피아 반도체 등)를 한 그래프에서 비교 — 최대 5개">📈 비교<span class="cmp-n"></span></button>
                 <button onclick="renderSummaryChart()" title="그래프 새로고침"
                   style="background:none;border:1px solid #cbd5e1;border-radius:4px;height:24px;padding:0 6px;cursor:pointer;color:#64748b;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center"
                   onmouseover="this.style.background='#f1f5f9';this.style.color='#1e40af'"
@@ -24343,6 +24404,8 @@ function _getChartMetric(){return document.getElementById('summaryChartMetric')?
 function _isReturnMetric(m){return m==='pfReturn'||m==='pfReturn100';}
 function _fmtYMax(v,m){
   if(v===null||v===undefined||isNaN(v))return '';
+  const _cf=(window.BTMCmp&&BTMCmp.fmtY)?BTMCmp.fmtY(v,m):null;   /* 지표 비교 중이면 스케일(%·지수화·0~100)에 맞는 서식 */
+  if(_cf!==null&&_cf!==undefined) return _cf;
   if(_isReturnMetric(m))return (v>=0?'+':'')+v.toFixed(1)+'%';
   return v>=1e8?(v/1e8).toFixed(1)+'억':v>=1e6?(v/1e6).toFixed(0)+'백만':v>=1e4?(v/1e4).toFixed(0)+'만':String(v);
 }
@@ -24358,7 +24421,7 @@ function _parseYMax(str){
 function stepSummaryYMax(dir){
   const el=document.getElementById('summaryChartYMax');
   const metric=_getChartMetric();
-  const step=_isReturnMetric(metric)?10:50000000;
+  const step=(window.BTMCmp&&BTMCmp.isOn&&BTMCmp.isOn(metric))?10:(_isReturnMetric(metric)?10:50000000);   /* 지표 비교 중엔 축이 %·지수화 값이라 10 단위 */
   let cur=_parseYMax(el?.value);
   if(cur===null||isNaN(cur)){cur=_summaryChart?.scales?.y?.max??0;}
   const next=cur+dir*step;
@@ -24467,6 +24530,16 @@ async function renderSummaryChart(){
       }
     }
   }
+
+  /* 지표 비교(BTMCmp) — 고른 주가지표가 있으면 같은 그래프에 겹쳐 그림(내 수익률·지표를 시작일 기준으로 스케일 맞춤).
+     그릴 게 없으면(false) 아래 기존 처리로 */
+  try{
+    if(window.BTMCmp){
+      if(BTMCmp.wants(metric)){
+        if(await BTMCmp.render({canvas,emptyEl,data,getValue,metric,from,to,manualYMax,yMaxEl})) return;
+      } else BTMCmp.hide(metric);
+    }
+  }catch(e){ console.error('[BTMCmp]',e); }
 
   if(data.length===0){
     canvas.style.display='none';
@@ -43346,5 +43419,542 @@ window.BTMImgEd={
 })();
 </script>
 <!-- BTMIMGED-JS-END -->
+<!-- BTMCMP-JS-BEGIN -->
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   수익률 그래프 × 주가지표 비교 BTMCmp (2026-10-19)
+   · [투자 현황] 수익률 그래프 머리줄의 [📈 비교] → S&P500·나스닥100·필라델피아 반도체(SOX) 등 원하는 주가지표를 최대 5개 골라 같은 그래프에 겹쳐 그림
+   · 수익률은 %, 지표는 지수 수치라 그대로는 못 겹침 → 세 가지 스케일(시작일 대비 등락률 % / 시작일=100 지수화 / 흐름 맞춤 0~100)로 맞춤.
+     시작점 = 내 수익률의 첫 기록일(기록이 없으면 조회 시작일) — 모든 선이 같은 날 같은 값(0% · 100)에서 출발
+   · 지표 시세는 야후 파이낸스 v8 chart(일봉)를 앱의 다른 곳과 같은 방식(직접 → r.jina.ai·allorigins·codetabs 레이스)으로 받아
+     localStorage(BTMCmpCache)에 캐시 — 3시간 안이면 다시 받지 않고, 실패해도 예전 캐시가 있으면 그것으로 그림
+   · 기존 renderSummaryChart() 가 데이터를 준비한 뒤 BTMCmp.wants() 이면 BTMCmp.render() 에 넘김(Chart.js 인스턴스는 기존 전역 _summaryChart 를 그대로 사용)
+   ═══════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.BTMCmp) return;
+
+/* ════════ 상수 ════════ */
+const CFG_KEY='BTMCmpCfg', CACHE_KEY='BTMCmpCache', MAX=5, FRESH_MS=3*3600*1000, RETRY_MS=3*60*1000, MAX_CACHE_ITEMS=20;
+const PALETTE=['#2563eb','#f97316','#10b981','#a855f7','#e11d48','#0891b2','#ca8a04','#64748b'];
+const MINE_COLOR='#0f172a';
+const PRESETS=[
+  {t:'^GSPC',n:'S&P500'},
+  {t:'^NDX',n:'나스닥100'},
+  {t:'^SOX',n:'필라델피아 반도체'},
+  {t:'^IXIC',n:'나스닥 종합'},
+  {t:'^DJI',n:'다우존스'},
+  {t:'^RUT',n:'러셀2000'},
+  {t:'^KS11',n:'코스피'},
+  {t:'^KQ11',n:'코스닥'},
+  {t:'^N225',n:'닛케이225'},
+  {t:'^HSI',n:'항셍'},
+  {t:'000001.SS',n:'상해종합'},
+  {t:'^STOXX50E',n:'유로스톡스50'},
+  {t:'^GDAXI',n:'독일 DAX'},
+  {t:'DX-Y.NYB',n:'달러인덱스'},
+  {t:'KRW=X',n:'원/달러'},
+  {t:'^TNX',n:'미국채 10Y'},
+  {t:'CL=F',n:'WTI 유가'},
+  {t:'GC=F',n:'금'},
+  {t:'BTC-USD',n:'비트코인'},
+  {t:'^VIX',n:'VIX'}
+];
+const RECOMMEND=['^GSPC','^NDX','^SOX'];
+const MODES=[['pct','시작일 대비 등락률 (%)'],['idx','시작일 = 100 (지수화)'],['norm','흐름 맞춤 (0~100)']];
+const TICKER_RE=/^[\^A-Za-z0-9.=_\-]{1,24}$/;
+
+/* ════════ 상태 ════════ */
+let CFG={on:true,mode:'pct',items:[]};
+let CACHE={v:1,it:{}};
+const ST={};           /* 티커 → {s:'load'|'ok'|'fail', n, msg} */
+const inflight={};
+const HIDDEN={};       /* 범례를 눌러 숨긴 선 — 다시 그려도 유지 */
+let renderTid=0, popEl=null, popOpen=false, lastMetric='pfReturn100', firstDraw=true, forceNext=false;
+
+function validItem(x){ return x&&typeof x.t==='string'&&TICKER_RE.test(x.t); }
+try{
+  const j=JSON.parse(localStorage.getItem(CFG_KEY)||'null');
+  if(j&&Array.isArray(j.items)){
+    CFG.on=j.on!==false;
+    CFG.mode=MODES.some(m=>m[0]===j.mode)?j.mode:'pct';
+    CFG.items=j.items.filter(validItem).slice(0,MAX).map((x,i)=>({t:x.t.toUpperCase(),n:String(x.n||x.t),c:/^#[0-9a-f]{6}$/i.test(x.c||'')?x.c:PALETTE[i%PALETTE.length]}));
+  }
+}catch(_){}
+try{ const j=JSON.parse(localStorage.getItem(CACHE_KEY)||'null'); if(j&&j.v===1&&j.it&&typeof j.it==='object') CACHE=j; }catch(_){}
+function saveCfg(){ try{ localStorage.setItem(CFG_KEY,JSON.stringify(CFG)); }catch(_){} }
+function saveCache(){
+  try{
+    const keys=Object.keys(CACHE.it);
+    if(keys.length>MAX_CACHE_ITEMS){ keys.sort((a,b)=>(CACHE.it[a].ts||0)-(CACHE.it[b].ts||0)); keys.slice(0,keys.length-MAX_CACHE_ITEMS).forEach(k=>{ delete CACHE.it[k]; }); }
+    localStorage.setItem(CACHE_KEY,JSON.stringify(CACHE));
+  }catch(_){}
+}
+
+/* ════════ 도우미 ════════ */
+const g=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const pad=n=>String(n).padStart(2,'0');
+function todayStr(off){ const d=new Date(); d.setDate(d.getDate()+(off||0)); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function addDays(str,n){ const d=new Date(str+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); }
+function normTicker(s){ return String(s||'').trim().toUpperCase(); }
+function nameOf(t){
+  const p=PRESETS.find(x=>x.t===t); if(p) return p.n;
+  try{
+    const all=[].concat(typeof holdings!=='undefined'?holdings:[],typeof watchlist!=='undefined'?watchlist:[]);
+    const h=all.find(x=>x&&String(x.ticker||'').toUpperCase()===t&&x.name); if(h) return String(h.name);
+  }catch(_){}
+  return t;
+}
+function isGuest(){ return document.body.classList.contains('guest-mode'); }
+function metricOk(metric){ return metric==='pfReturn'||metric==='pfReturn100'||metric==='totalAsset'; }
+function isRetMetric(m){ return m==='pfReturn'||m==='pfReturn100'; }
+function wants(metric){ return !isGuest()&&CFG.on&&CFG.items.length>0&&metricOk(metric); }
+function nextColor(){ const used=new Set(CFG.items.map(x=>x.c)); return PALETTE.find(c=>!used.has(c))||PALETTE[CFG.items.length%PALETTE.length]; }
+function fmtNum(v){ if(v==null||!isFinite(v)) return '-'; const a=Math.abs(v); return Number(v).toLocaleString('ko-KR',{minimumFractionDigits:a>=1000?0:2,maximumFractionDigits:a>=1000?0:2}); }
+function fmtPct(v,d){ if(v==null||!isFinite(v)) return '-'; return (v>=0?'+':'')+v.toFixed(d==null?2:d)+'%'; }
+
+/* ════════ 야후 파이낸스 일봉 수집 ════════ */
+function parseYahoo(txt){
+  let j; try{ j=JSON.parse(txt); }catch(_){ const a=txt.indexOf('{'), b=txt.lastIndexOf('}'); if(a<0||b<=a) return null; try{ j=JSON.parse(txt.slice(a,b+1)); }catch(__){ return null; } }
+  const res=j&&j.chart&&j.chart.result&&j.chart.result[0];
+  if(!res||!res.timestamp||!res.timestamp.length) return null;
+  const q=res.indicators&&res.indicators.quote&&res.indicators.quote[0], cl=(q&&q.close)||[], meta=res.meta||{}, off=meta.gmtoffset||0;
+  const d=[], c=[];
+  for(let i=0;i<res.timestamp.length;i++){
+    let v=cl[i];
+    if((v==null||!isFinite(v))&&i===res.timestamp.length-1&&meta.regularMarketPrice!=null) v=meta.regularMarketPrice;   /* 장 마감 직후 마지막 봉 종가가 비어 오는 경우 */
+    if(v==null||!isFinite(v)) continue;
+    const dt=new Date((res.timestamp[i]+off)*1000).toISOString().slice(0,10);
+    if(d.length&&d[d.length-1]===dt){ c[c.length-1]=Math.round(v*10000)/10000; continue; }
+    d.push(dt); c.push(Math.round(v*10000)/10000);
+  }
+  return d.length?{d,c}:null;
+}
+function reqOnce(url,ms,headers,reg){
+  return new Promise((resolve,reject)=>{
+    const ctrl=new AbortController(); if(reg) reg.push(ctrl);
+    const tid=setTimeout(()=>{ ctrl.abort(); reject(new Error('timeout')); },ms);
+    fetch(url,{signal:ctrl.signal,headers:headers||{}}).then(r=>{
+      if(!r.ok) throw new Error('http '+r.status);
+      return r.text();
+    }).then(txt=>{ clearTimeout(tid); const p=parseYahoo(txt); if(!p) throw new Error('parse'); resolve(p); }).catch(e=>{ clearTimeout(tid); reject(e); });
+  });
+}
+async function raceAbort(list){   /* 먼저 성공한 하나만 쓰고 나머지 요청은 끊음(무료 프록시에 불필요한 부하를 남기지 않게) */
+  const reg=[], ps=list.map(a=>reqOnce(a[0],a[1],a[2],reg));
+  try{ return await Promise.any(ps); } finally{ reg.forEach(c=>{ try{ c.abort(); }catch(_){} }); }
+}
+async function fetchSeries(ticker,p1str){
+  const p1=Math.floor(Date.parse(p1str+'T00:00:00Z')/1000), p2=Math.floor(Date.now()/1000)+2*86400;
+  const mk=h=>h+'/v8/finance/chart/'+encodeURIComponent(ticker)+'?period1='+p1+'&period2='+p2+'&interval=1d&includePrePost=false';
+  const q1=mk('https://query1.finance.yahoo.com'), q2=mk('https://query2.finance.yahoo.com');
+  try{ return await raceAbort([[q1,7000],[q2,7000]]); }catch(_){}        /* 직접 접속(CORS 허용 시) */
+  return await raceAbort([                                                /* 무료 프록시 레이스(앱의 다른 야후 조회와 같은 후보) */
+    ['https://r.jina.ai/'+q1,14000,{'X-Return-Format':'text'}],
+    ['https://r.jina.ai/'+q2,14000,{'X-Return-Format':'text'}],
+    ['https://api.allorigins.win/raw?url='+encodeURIComponent(q1),14000],
+    ['https://api.allorigins.win/raw?url='+encodeURIComponent(q2),14000],
+    ['https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(q1),14000]
+  ]);
+}
+function errMsg(e){
+  const m=String((e&&e.errors&&e.errors[0]&&e.errors[0].message)||(e&&e.message)||e||'');
+  if(/Promise.any|All promises/i.test(m)) return '연결 실패';
+  if(/timeout/i.test(m)) return '시간 초과';
+  if(/parse/i.test(m)) return '데이터 없음';
+  return m.slice(0,30)||'실패';
+}
+function getSeries(t){ const e=CACHE.it[t]; return (e&&e.d&&e.d.length)?e:null; }
+function ensureOne(it,p1,force){
+  const t=it.t, ent=CACHE.it[t];
+  const fresh=ent&&ent.p1<=p1&&(Date.now()-(ent.ts||0)<FRESH_MS);
+  if(fresh&&!force){ ST[t]={s:'ok',n:ent.d.length}; return null; }
+  if(inflight[t]) return inflight[t];
+  if(!force&&ST[t]&&ST[t].s==='fail'&&Date.now()-(ST[t].at||0)<RETRY_MS) return null;   /* 방금 실패한 지표는 몇 분 쉬었다가(다시 그릴 때마다 계속 두드리지 않게) — [새로 불러오기]는 바로 */
+  ST[t]={s:'load',n:ent?ent.d.length:0};
+  inflight[t]=(async()=>{
+    try{
+      const wantP1=(ent&&ent.p1<p1)?ent.p1:p1;           /* 이미 더 이른 시작의 캐시가 있으면 그 시작을 유지 */
+      const r=await fetchSeries(t,wantP1);
+      CACHE.it[t]={ts:Date.now(),p1:wantP1,d:r.d,c:r.c}; saveCache();
+      ST[t]={s:'ok',n:r.d.length};
+    }catch(e){ ST[t]={s:'fail',msg:errMsg(e),n:ent?ent.d.length:0,at:Date.now()}; }
+    finally{ delete inflight[t]; scheduleRender(); }
+  })();
+  return inflight[t];
+}
+async function ensureAll(p1,force){   /* 한 번에 2개씩 — 무료 프록시를 몰아치지 않게 */
+  const todo=CFG.items.slice();
+  for(let i=0;i<todo.length;i+=2){ await Promise.all(todo.slice(i,i+2).map(it=>ensureOne(it,p1,force))); }
+}
+function anyLoading(){ return CFG.items.some(it=>ST[it.t]&&ST[it.t].s==='load'); }
+function scheduleRender(ms){
+  clearTimeout(renderTid);
+  renderTid=setTimeout(()=>{ try{ if(typeof renderSummaryChart==='function') renderSummaryChart(); }catch(_){} refreshPop(); },ms==null?150:ms);
+}
+
+/* ════════ 비교 모델 — 날짜 정렬·스케일 맞춤 ════════ */
+function lastLE(arr,x){ let lo=0,hi=arr.length-1,r=-1; while(lo<=hi){ const m=(lo+hi)>>1; if(arr[m]<=x){ r=m; lo=m+1; } else hi=m-1; } return r; }
+function buildModel(o){
+  const myPts=o.myPts||[], loaded=o.loaded||[], mode=o.mode||'pct', isRet=!!o.isRet, from=o.from||'', to=o.to||'';
+  let start=myPts.length?myPts[0].date:'';
+  if(!start){ let m=''; loaded.forEach(x=>{ const i=x.ser.d.findIndex(d=>d>=from); if(i>=0&&(!m||x.ser.d[i]<m)) m=x.ser.d[i]; }); start=m; }
+  if(!start) return null;
+  const end=to||'9999-12-31', set=new Set();
+  myPts.forEach(p=>{ if(p.date>=start&&p.date<=end) set.add(p.date); });
+  loaded.forEach(x=>x.ser.d.forEach(d=>{ if(d>=start&&d<=end) set.add(d); }));
+  const dates=Array.from(set).sort();
+  if(!dates.length) return null;
+  const pos=new Map(dates.map((d,i)=>[d,i])), N=dates.length;
+  const out={dates,start,mode,mine:null,series:[]};
+  const xform=(lv,base,addMode,raw0)=>{   /* lv: 수준 배열(null 포함) → 스케일 맞춘 배열 */
+    if(mode==='norm'){
+      let mn=Infinity,mx=-Infinity; lv.forEach(v=>{ if(v!=null){ if(v<mn)mn=v; if(v>mx)mx=v; } });
+      return lv.map(v=>v==null?null:(mx>mn?(v-mn)/(mx-mn)*100:50));
+    }
+    if(addMode) return lv.map(v=>v==null?null:(mode==='idx'?100+(v-raw0):(v-raw0)));
+    return lv.map(v=>v==null?null:(mode==='idx'?v/base*100:(v/base-1)*100));
+  };
+  /* 내 수익률(또는 총금액) */
+  if(myPts.length){
+    const G=v=>isRet?1+v/100:v;
+    const g0=G(myPts[0].raw), addMode=!(g0>0.02), lv=new Array(N).fill(null), raw=new Array(N).fill(null), chg=new Array(N).fill(null);
+    myPts.forEach(p=>{ const i=pos.get(p.date); if(i==null) return; lv[i]=addMode?p.raw:G(p.raw); raw[i]=p.raw; chg[i]=addMode?(p.raw-myPts[0].raw):(G(p.raw)/g0-1)*100; });
+    out.mine={y:xform(lv,g0,addMode,myPts[0].raw),raw,chg,recByIdx:dates.map((d,i)=>{ const p=myPts.find(q=>q.date===d); return p?p.rec:null; })};
+  }
+  /* 지표 */
+  loaded.forEach(x=>{
+    const ser=x.ser, bi=lastLE(ser.d,start), b=ser.c[bi>=0?bi:ser.d.findIndex(d=>d>=start)];
+    if(b==null||!(b>0)) return;
+    const lv=new Array(N).fill(null), raw=new Array(N).fill(null), chg=new Array(N).fill(null);
+    for(let k=0;k<ser.d.length;k++){ const i=pos.get(ser.d[k]); if(i==null) continue; lv[i]=ser.c[k]; raw[i]=ser.c[k]; chg[i]=(ser.c[k]/b-1)*100; }
+    out.series.push({it:x.it,y:xform(lv,b,false,0),raw,chg});
+  });
+  return out;
+}
+
+/* ════════ 그래프 그리기 ════════ */
+function ensureStatusEl(canvas){
+  let el=g('cmpStatus');
+  if(!el){ el=document.createElement('div'); el.id='cmpStatus'; }
+  if(canvas&&canvas.parentNode&&el.parentNode!==canvas.parentNode) canvas.parentNode.appendChild(el);
+  return el;
+}
+function updateStatusEl(canvas){
+  const el=ensureStatusEl(canvas); if(!el) return;
+  const items=CFG.items, load=items.filter(it=>ST[it.t]&&ST[it.t].s==='load'), fail=items.filter(it=>ST[it.t]&&ST[it.t].s==='fail');
+  let txt='';
+  if(load.length) txt='⏳ 지표 불러오는 중… ('+(items.length-load.length)+'/'+items.length+')';
+  else if(fail.length) txt='⚠ '+fail.map(it=>it.n).join(', ')+' 불러오기 실패'+(fail.every(it=>ST[it.t].n>0)?' (저장된 값으로 표시)':'');
+  el.textContent=txt; el.style.display=txt?'block':'none';
+  el.classList.toggle('bad',!load.length&&fail.length>0);
+}
+function labelFmt(dates){ return dates[0].slice(0,4)!==dates[dates.length-1].slice(0,4)?(d=>d.slice(2)):(d=>d.slice(5)); }
+function modeLabel(){ return (MODES.find(m=>m[0]===CFG.mode)||MODES[0])[1]; }
+function render(a){
+  const canvas=a.canvas, emptyEl=a.emptyEl, data=a.data||[], getValue=a.getValue, metric=a.metric;
+  lastMetric=metric;
+  const isRet=isRetMetric(metric);
+  const myPts=[];
+  data.forEach(r=>{ const v=getValue(r); if(v!=null&&isFinite(v)) myPts.push({date:r.date,raw:v,rec:r}); });
+  const from=a.from||'', to=a.to||'';
+  const p1=addDays(myPts.length?myPts[0].date:(from||todayStr(-365)),-16);      /* 시작일(내 첫 기록일) 이전의 종가까지 받아야 시작일 기준값을 잡을 수 있음 */
+  const force=forceNext; forceNext=false;
+  ensureAll(p1,force);
+  const loaded=CFG.items.map(it=>({it,ser:getSeries(it.t)})).filter(x=>x.ser);
+  if(!myPts.length&&!loaded.length){
+    if(!anyLoading()) return false;                     /* 아무것도 못 그리고 받는 중도 아님 → 기존 '데이터 없음' 처리 */
+    try{ if(_summaryChart){ _summaryChart.destroy(); _summaryChart=null; } }catch(_){}
+    canvas.style.display='none'; emptyEl.style.display='flex'; emptyEl.textContent='지표를 불러오는 중…';
+    updateStatusEl(canvas); updateBadge(); return true;
+  }
+  const model=buildModel({myPts,loaded,mode:CFG.mode,isRet,from,to});
+  if(!model||(!model.mine&&!model.series.length)){
+    if(!anyLoading()) return false;
+    return true;
+  }
+  canvas.style.display='block'; emptyEl.style.display='none'; emptyEl.textContent='Archive 데이터가 없습니다';
+  const labels=model.dates.map(labelFmt(model.dates)), N=labels.length;
+  const mode=CFG.mode;
+  const datasets=[], ids=[], metas=[];
+  /* 범례에 마지막 값을 같이 적어 '누가 얼마나 올랐나'를 한눈에 — pct/흐름맞춤: 시작 대비 %, 지수화: 지수값 */
+  const lastTxt=(y,chg)=>{ let i=y.length-1; while(i>=0&&y[i]==null) i--; if(i<0) return ''; return '  '+(mode==='idx'?y[i].toFixed(1):fmtPct(mode==='pct'?y[i]:chg[i],1)); };
+  if(model.mine){
+    const m=model.mine; let lastI=-1, cnt=0; m.y.forEach((v,i)=>{ if(v!=null){ lastI=i; cnt++; } });
+    datasets.push({
+      label:(isRet?'내 수익률':'내 총금액')+lastTxt(m.y,m.chg), data:m.y, borderColor:MINE_COLOR, backgroundColor:MINE_COLOR, borderWidth:2.6, fill:false, cubicInterpolationMode:'monotone', spanGaps:true, order:0,
+      pointRadius:m.y.map((v,i)=>i===lastI?4:(cnt<=60&&v!=null?2:0)),
+      pointHoverRadius:5,
+      pointBackgroundColor:m.y.map((v,i)=>i===lastI?'#ef4444':MINE_COLOR), pointBorderColor:'#fff', pointBorderWidth:m.y.map((v,i)=>i===lastI?1.5:1),
+      hidden:!!HIDDEN.me
+    });
+    ids.push('me'); metas.push({kind:'me',m,name:isRet?'내 수익률':'내 총금액'});
+  }
+  model.series.forEach((s,k)=>{
+    datasets.push({label:s.it.n+lastTxt(s.y,s.chg),data:s.y,borderColor:s.it.c,backgroundColor:s.it.c,borderWidth:1.7,fill:false,cubicInterpolationMode:'monotone',spanGaps:true,order:k+1,pointRadius:0,pointHoverRadius:3,hidden:!!HIDDEN[s.it.t]});
+    ids.push(s.it.t); metas.push({kind:'idx',s,name:s.it.n});
+  });
+  const yFmt=v=>mode==='pct'?((v>=0?'+':'')+(Math.abs(v)>=100?v.toFixed(0):v.toFixed(1))+'%'):String(Math.round(v*10)/10);
+  const manual=(a.manualYMax!=null&&!isNaN(a.manualYMax))?a.manualYMax:null;
+  const st5=model.start.slice(5);
+  const yTitle=mode==='pct'?('시작일('+st5+') 대비 %'):(mode==='idx'?(st5+' = 100'):'0~100 맞춤');
+  const yOpt={position:'left',grid:{color:'rgba(241,245,249,.8)',drawBorder:false},border:{display:false},title:{display:true,text:yTitle,color:'#94a3b8',font:{size:9,weight:'normal'},padding:{top:0,bottom:2}},ticks:{font:{size:9},color:'#94a3b8',maxTicksLimit:6,callback:yFmt}};
+  if(mode==='norm'){ yOpt.min=0; yOpt.max=manual!=null?manual:100; } else if(manual!=null) yOpt.max=manual;
+  try{ if(_summaryChart){ _summaryChart.destroy(); _summaryChart=null; } }catch(_){}
+  const animate=firstDraw; firstDraw=false;
+  _summaryChart=new Chart(canvas,{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{
+          display:datasets.length>1,position:'top',align:'start',
+          labels:{boxWidth:14,boxHeight:3,padding:8,font:{size:9},color:'#475569',usePointStyle:false},
+          onClick:(e,item,legend)=>{ const ci=legend.chart, i=item.datasetIndex, vis=ci.isDatasetVisible(i); ci.setDatasetVisibility(i,!vis); HIDDEN[ids[i]]=vis; ci.update(); }
+        },
+        tooltip:{
+          backgroundColor:'rgba(15,23,42,.9)',titleColor:'#94a3b8',bodyColor:'#f1f5f9',padding:10,cornerRadius:8,titleFont:{size:10},bodyFont:{size:11,weight:'bold'},
+          filter:it=>it.raw!=null,
+          callbacks:{
+            title:its=>'📅 '+model.dates[its[0].dataIndex]+'  ·  '+modeLabel(),
+            label:ctx=>{
+              const mt=metas[ctx.datasetIndex], i=ctx.dataIndex, v=ctx.raw;
+              const main=mode==='pct'?fmtPct(v,2):(mode==='idx'?v.toFixed(1):v.toFixed(0)+'점');
+              if(mt.kind==='me'){
+                const raw=mt.m.raw[i], ch=mt.m.chg[i];
+                const real=isRet?('실제 '+fmtPct(raw,2)):('총금액 '+fmtNum(raw)+'원');
+                return '  '+mt.name+'  '+main+(mode==='pct'?'':'  (시작 대비 '+fmtPct(ch,2)+')')+'  ·  '+real;
+              }
+              const raw=mt.s.raw[i], ch=mt.s.chg[i];
+              return '  '+mt.name+'  '+main+(mode==='pct'?'':'  (시작 대비 '+fmtPct(ch,2)+')')+'  ·  '+fmtNum(raw);
+            },
+            afterLabel:ctx=>{
+              const mt=metas[ctx.datasetIndex]; if(mt.kind!=='me') return [];
+              const r=mt.m.recByIdx[ctx.dataIndex], parts=[];
+              if(r&&r.summary&&r.summary.fearGreed>0) parts.push('  F&G '+r.summary.fearGreed);
+              if(r&&r.data&&r.data.fiveCount) parts.push('  '+r.data.fiveCount);
+              return parts;
+            }
+          }
+        }
+      },
+      scales:{
+        y:yOpt,
+        x:{
+          grid:{display:false,drawBorder:false},border:{display:false},
+          ticks:{font:{size:9},color:'#94a3b8',maxTicksLimit:N>60?8:(N>20?10:N),maxRotation:0,autoSkip:true},
+          beforeFit(scale){ const lbs=scale.chart.data.labels; if(!lbs||!lbs.length) return; const last=lbs.length-1; if(!scale.ticks.some(t=>t.value===last)) scale.ticks.push({value:last,label:lbs[last],major:false}); }
+        }
+      },
+      animation:{duration:animate?400:0,easing:'easeInOutQuart'}
+    }
+  });
+  /* Y최고 입력 박스 — 현재 축의 최고값을 같은 서식으로 */
+  if(a.yMaxEl){
+    const dMax=manual!=null?manual:(_summaryChart&&_summaryChart.scales&&_summaryChart.scales.y?_summaryChart.scales.y.max:null);
+    if(dMax!=null&&!isNaN(dMax)) a.yMaxEl.value=mode==='pct'?((dMax>=0?'+':'')+dMax.toFixed(1)+'%'):String(Math.round(dMax*10)/10);
+  }
+  updateStatusEl(canvas); updateBadge();
+  return true;
+}
+function hide(metric){ if(metric) lastMetric=metric; const el=g('cmpStatus'); if(el) el.style.display='none'; updateBadge(); }
+
+/* ════════ 버튼 배지 ════════ */
+function updateBadge(){
+  const b=g('cmpBtn'); if(!b) return;
+  const n=CFG.items.length, act=n>0&&CFG.on&&metricOk(lastMetric);
+  b.classList.toggle('on',act);
+  b.classList.toggle('dis',n>0&&!metricOk(lastMetric));
+  const nb=b.querySelector('.cmp-n'); if(nb){ nb.textContent=n?String(n):''; nb.classList.toggle('has',n>0); }
+  b.title=!metricOk(lastMetric)&&n>0?'총수익 보기에서는 지표와 비교할 수 없어요 — 수익률 또는 총금액을 고르세요':
+    '내 수익률과 주가지표(S&P500·나스닥100·필라델피아 반도체 등)를 한 그래프에서 비교 — 최대 5개'+(n?' · 선택 '+n+'개'+(CFG.on?'':' (꺼짐)'):'');
+}
+
+/* ════════ 선택 조작 ════════ */
+function clearYMax(){
+  try{ localStorage.setItem('summaryChartYMax',''); }catch(_){}
+  const e=g('summaryChartYMax'); if(e) e.value='';
+}
+function afterChange(opts){
+  saveCfg(); updateBadge(); rebuildPop();
+  if(opts&&opts.clearY) clearYMax();
+  scheduleRender(0);
+}
+function resolveInput(txt){
+  txt=String(txt||'').trim(); if(!txt) return null;
+  const m=txt.match(/\(([^()]+)\)\s*$/);
+  if(m&&TICKER_RE.test(m[1].trim())){ const t=normTicker(m[1]); return {t,n:txt.replace(/\s*\([^()]+\)\s*$/,'').trim()||nameOf(t)}; }
+  if(TICKER_RE.test(txt)&&!/[가-힣]/.test(txt)){ const t=normTicker(txt); return {t,n:nameOf(t)}; }
+  const q=txt.toLowerCase().replace(/\s+/g,'');
+  const hit=PRESETS.find(p=>p.n.toLowerCase().replace(/\s+/g,'').includes(q));
+  if(hit) return {t:hit.t,n:hit.n};
+  try{
+    const all=[].concat(typeof holdings!=='undefined'?holdings:[],typeof watchlist!=='undefined'?watchlist:[]);
+    const h=all.find(x=>x&&x.ticker&&String(x.name||'').toLowerCase().replace(/\s+/g,'').includes(q));
+    if(h) return {t:normTicker(h.ticker),n:String(h.name)};
+  }catch(_){}
+  return null;
+}
+function addItem(t,n){
+  t=normTicker(t);
+  if(!t||!TICKER_RE.test(t)) return {ok:false,msg:'티커를 확인하세요 (예: NVDA, 005930.KS, ^GSPC)'};
+  if(CFG.items.some(x=>x.t===t)) return {ok:false,msg:'이미 선택돼 있어요'};
+  if(CFG.items.length>=MAX) return {ok:false,msg:'지표는 최대 '+MAX+'개까지 비교할 수 있어요'};
+  CFG.items.push({t,n:n||nameOf(t),c:nextColor()});
+  CFG.on=true;
+  afterChange(CFG.items.length===1?{clearY:true}:null);
+  return {ok:true};
+}
+function removeItem(t){
+  const i=CFG.items.findIndex(x=>x.t===t); if(i<0) return;
+  CFG.items.splice(i,1); delete HIDDEN[t];
+  afterChange(CFG.items.length===0?{clearY:true}:null);
+}
+function clearAll(){ CFG.items=[]; Object.keys(HIDDEN).forEach(k=>delete HIDDEN[k]); afterChange({clearY:true}); }
+function setMode(m){ if(!MODES.some(x=>x[0]===m)) return; CFG.mode=m; afterChange({clearY:true}); }
+function setOn(on){ CFG.on=!!on; afterChange({clearY:true}); }
+function recommend(){
+  RECOMMEND.forEach(t=>{ if(CFG.items.length<MAX&&!CFG.items.some(x=>x.t===t)) CFG.items.push({t,n:nameOf(t),c:nextColor()}); });
+  CFG.on=true; afterChange({clearY:true});
+}
+function refreshAll(){   /* 저장된 시세를 건너뛰고 다시 받음 — 다음 그리기에서 force */
+  CFG.items.forEach(it=>{ delete ST[it.t]; });
+  forceNext=true; scheduleRender(0); refreshPop();
+}
+
+/* ════════ 비교 창(팝업) ════════ */
+function statusHtml(it){
+  const s=ST[it.t], e=CACHE.it[it.t];
+  if(s&&s.s==='load') return '<span class="cp-st load">불러오는 중…</span>';
+  if(s&&s.s==='fail') return '<span class="cp-st bad" title="'+esc(s.msg||'')+'">⚠ '+esc(s.msg||'실패')+(s.n>0?' · 저장된 값 사용':'')+'</span>';
+  if(e&&e.d) return '<span class="cp-st ok">✓ '+e.d.length+'일 · '+esc(e.d[e.d.length-1].slice(5))+'</span>';
+  return '<span class="cp-st">대기</span>';
+}
+function popHtml(){
+  const n=CFG.items.length, full=n>=MAX, supported=metricOk(lastMetric);
+  const sel=CFG.items.map(it=>'<div class="cp-it"><i class="cp-dot" style="background:'+esc(it.c)+'"></i><span class="cp-nm" title="'+esc(it.t)+'">'+esc(it.n)+'</span><code>'+esc(it.t)+'</code><span data-st="'+esc(it.t)+'">'+statusHtml(it)+'</span><button type="button" class="cp-rm mobile-keep" data-a="rm" data-t="'+esc(it.t)+'" title="이 지표 빼기">✕</button></div>').join('')||'<div class="cp-empty">아직 고른 지표가 없어요 — 아래에서 눌러 추가하세요</div>';
+  const chips=PRESETS.map(p=>{ const on=CFG.items.some(x=>x.t===p.t); return '<button type="button" class="cp-chip mobile-keep'+(on?' on':'')+'" data-a="chip" data-t="'+esc(p.t)+'" data-n="'+esc(p.n)+'" title="'+esc(p.t)+'"'+((!on&&full)?' disabled':'')+'>'+esc(p.n)+'</button>'; }).join('');
+  let dl='';
+  try{
+    const seen=new Set(PRESETS.map(p=>p.t)), opts=PRESETS.map(p=>'<option value="'+esc(p.n+' ('+p.t+')')+'">');
+    [].concat(typeof holdings!=='undefined'?holdings:[],typeof watchlist!=='undefined'?watchlist:[]).forEach(x=>{ const t=normTicker(x&&x.ticker); if(!t||seen.has(t)||!TICKER_RE.test(t)) return; seen.add(t); opts.push('<option value="'+esc((x.name||t)+' ('+t+')')+'">'); });
+    dl='<datalist id="cmpList">'+opts.join('')+'</datalist>';
+  }catch(_){}
+  return ''+
+  '<div class="cp-hd"><b>📈 지표 비교</b><span class="cp-sub">내 수익률과 한 그래프에서 · 최대 '+MAX+'개</span><button type="button" class="cp-x mobile-keep" data-a="close" title="닫기 (Esc)">✕</button></div>'+
+  (supported?'':'<div class="cp-warn">지금은 <b>총수익</b> 보기라 비교선을 그릴 수 없어요 — 위 그래프에서 <b>수익률</b> 또는 <b>총금액</b>을 고르세요.</div>')+
+  '<div class="cp-row"><label class="cp-ck"><input type="checkbox" data-a="on"'+(CFG.on?' checked':'')+'> 그래프에 표시</label>'+
+    '<label class="cp-md">스케일 <select data-a="mode">'+MODES.map(m=>'<option value="'+m[0]+'"'+(CFG.mode===m[0]?' selected':'')+'>'+esc(m[1])+'</option>').join('')+'</select></label></div>'+
+  '<div class="cp-sec">고른 지표 <span class="cp-cnt'+(full?' full':'')+'">'+n+' / '+MAX+'</span></div>'+
+  '<div class="cp-sel">'+sel+'</div>'+
+  '<div class="cp-sec">지표 고르기 <small>눌러서 추가 · 다시 누르면 해제</small></div>'+
+  '<div class="cp-chips">'+chips+'</div>'+
+  '<div class="cp-add"><input id="cmpInput" type="text" list="cmpList" placeholder="이름 또는 티커 직접 입력 (예: NVDA, 005930.KS)" autocomplete="off" spellcheck="false"><button type="button" class="cp-btn pri mobile-keep" data-a="add">추가</button></div>'+dl+
+  '<div class="cp-msg" id="cmpMsg"></div>'+
+  '<div class="cp-ft"><button type="button" class="cp-btn mobile-keep" data-a="rec" title="S&P500 + 나스닥100 + 필라델피아 반도체">추천 3종</button><button type="button" class="cp-btn mobile-keep" data-a="clear">모두 해제</button><span class="cp-sp"></span><button type="button" class="cp-btn mobile-keep" data-a="refresh" title="저장된 시세를 버리고 야후에서 다시 받기">↻ 새로 불러오기</button></div>'+
+  '<div class="cp-note">시작점은 <b>내 수익률의 첫 기록일</b>이에요. 모든 선이 그날 같은 값(0% · 100)에서 출발하도록 맞춰, 내 수익률(%)과 지표(지수 수치)의 오르내림을 같은 눈금에서 비교해요. 값 칸에는 실제 수치도 함께 보여 드려요. 범례를 누르면 그 선을 잠깐 숨길 수 있어요.</div>';
+}
+function ensurePop(){
+  if(popEl) return popEl;
+  popEl=document.createElement('div'); popEl.id='cmpPop'; popEl.setAttribute('role','dialog'); popEl.setAttribute('aria-label','지표 비교');
+  document.body.appendChild(popEl);
+  popEl.addEventListener('click',onPopClick);
+  popEl.addEventListener('change',onPopChange);
+  popEl.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target&&e.target.id==='cmpInput'){ e.preventDefault(); doAdd(); } });
+  return popEl;
+}
+function rebuildPop(){
+  if(!popOpen||!popEl) return;
+  const inp=g('cmpInput'), keep=inp?inp.value:'', hadFocus=inp&&document.activeElement===inp;
+  popEl.innerHTML=popHtml();
+  const ni=g('cmpInput'); if(ni){ ni.value=keep; if(hadFocus) ni.focus(); }
+  placePop();
+}
+function refreshPop(){   /* 불러오는 동안 상태 글자만 갱신(입력 중인 칸을 건드리지 않게) */
+  if(!popOpen||!popEl) return;
+  CFG.items.forEach(it=>{ const el=popEl.querySelector('[data-st="'+it.t.replace(/"/g,'')+'"]'); if(el) el.innerHTML=statusHtml(it); });
+}
+function setMsg(txt,bad){ const m=g('cmpMsg'); if(m){ m.textContent=txt||''; m.classList.toggle('bad',!!bad); } }
+function doAdd(){
+  const inp=g('cmpInput'); if(!inp) return;
+  const r=resolveInput(inp.value);
+  if(!r){ setMsg('찾지 못했어요 — 야후 파이낸스 티커(예: NVDA, 005930.KS, ^GSPC)로 입력해 보세요',true); return; }
+  const res=addItem(r.t,r.n);
+  if(res.ok){ const ni=g('cmpInput'); if(ni){ ni.value=''; } setMsg(''); } else setMsg(res.msg,true);
+}
+function onPopClick(e){
+  const b=e.target.closest&&e.target.closest('[data-a]'); if(!b) return;
+  const a=b.dataset.a;
+  if(a==='close') closePop();
+  else if(a==='rm') removeItem(b.dataset.t);
+  else if(a==='chip'){
+    const t=b.dataset.t;
+    if(CFG.items.some(x=>x.t===t)) removeItem(t);
+    else { const r=addItem(t,b.dataset.n); if(!r.ok) setMsg(r.msg,true); }
+  }
+  else if(a==='add') doAdd();
+  else if(a==='clear') clearAll();
+  else if(a==='rec') recommend();
+  else if(a==='refresh') refreshAll();
+}
+function onPopChange(e){
+  const t=e.target, a=t&&t.dataset&&t.dataset.a;
+  if(a==='mode') setMode(t.value);
+  else if(a==='on') setOn(t.checked);
+}
+function placePop(){
+  if(!popOpen||!popEl) return;
+  const b=g('cmpBtn'); if(!b) return;
+  const r=b.getBoundingClientRect(), w=popEl.offsetWidth, h=popEl.offsetHeight, vw=window.innerWidth, vh=window.innerHeight;
+  let left=Math.min(Math.max(8,r.right-w),vw-w-8), top=r.bottom+6;
+  if(top+h>vh-8) top=Math.max(8,r.top-h-6);
+  if(top+h>vh-8) top=Math.max(8,vh-h-8);
+  popEl.style.left=left+'px'; popEl.style.top=top+'px';
+}
+function openPop(){
+  if(isGuest()) return;
+  ensurePop(); popOpen=true; popEl.style.display='block'; popEl.innerHTML=popHtml(); placePop();
+  document.addEventListener('mousedown',onDocDown,true); document.addEventListener('keydown',onDocKey,true);
+  window.addEventListener('resize',placePop); window.addEventListener('scroll',placePop,true);
+}
+function closePop(){
+  if(!popEl) return;
+  popOpen=false; popEl.style.display='none';
+  document.removeEventListener('mousedown',onDocDown,true); document.removeEventListener('keydown',onDocKey,true);
+  window.removeEventListener('resize',placePop); window.removeEventListener('scroll',placePop,true);
+}
+function toggle(e){
+  if(e){ e.stopPropagation(); }
+  if(popOpen) closePop(); else openPop();
+}
+function onDocDown(e){
+  if(!popOpen||!popEl) return;
+  if(popEl.contains(e.target)) return;
+  const b=g('cmpBtn'); if(b&&b.contains(e.target)) return;
+  closePop();
+}
+function onDocKey(e){ if(popOpen&&e.key==='Escape'){ e.stopPropagation(); closePop(); } }
+
+function fmtY(v,m){   /* Y최고 입력칸·증감 — 비교 중이면 스케일에 맞는 서식(기존 _fmtYMax 가 먼저 물어봄) */
+  if(!wants(m)) return null;
+  return CFG.mode==='pct'?((v>=0?'+':'')+v.toFixed(1)+'%'):String(Math.round(v*10)/10);
+}
+window.BTMCmp={
+  wants,render,hide,toggle,open:openPop,close:closePop,fmtY,
+  isOn:metric=>wants(metric),
+  state:()=>({cfg:JSON.parse(JSON.stringify(CFG)),st:JSON.parse(JSON.stringify(ST)),cache:Object.keys(CACHE.it)}),
+  addItem,removeItem,clearAll,setMode,setOn,recommend,refreshAll,
+  _dbg:{buildModel,parseYahoo,fetchSeries,CFG:()=>CFG,CACHE:()=>CACHE,ST,PRESETS,resolveInput,ensureAll,getSeries,HIDDEN,MAX,popHtml}
+};
+/* 이 스크립트가 renderSummaryChart 의 첫 호출보다 늦게 실행되므로, 저장된 비교 설정이 있으면 한 번 다시 그림 */
+if(CFG.items.length) setTimeout(()=>{ try{ if(typeof renderSummaryChart==='function') renderSummaryChart(); }catch(_){} },0);
+document.addEventListener('DOMContentLoaded',updateBadge);
+setTimeout(updateBadge,0);
+})();
+</script>
+<!-- BTMCMP-JS-END -->
 </body>
 </html>
