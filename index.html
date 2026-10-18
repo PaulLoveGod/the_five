@@ -2948,7 +2948,7 @@ body.mm-fs{overflow:hidden}
     </div>
     <div style="overflow-y:auto;flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
       <div style="font-size:11px;color:#64748b;line-height:1.6">
-        조건을 입력하고 저장한 뒤 <b>📡 업데이트</b> 버튼을 누르면 이 조건으로 자동 검색되어 결과가 AI Stock Radar 본문에 반영됩니다. (UPDATE ALL 실행 시에는 자동 조회되지 않습니다)
+        조건을 입력하고 저장한 뒤 <b>📡 업데이트</b> 버튼을 누르면 이 조건으로 자동 검색되어 결과가 AI Stock Radar 본문의 ‘텍스트’에 반영되고, 이어서 그 내용으로 인포그래픽도 만들어 ‘인포그래픽’에 추가됩니다(아래 설정으로 끌 수 있어요). (UPDATE ALL 실행 시에는 자동 조회되지 않습니다)
       </div>
       <div>
         <label style="font-size:11px;font-weight:700;color:#334155;display:block;margin-bottom:5px">조건 / 프롬프트</label>
@@ -2964,6 +2964,14 @@ body.mm-fs{overflow:hidden}
           <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarPfChk" style="width:14px;height:14px;cursor:pointer;accent-color:#7c3aed">💼 포트폴리오 반영<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 현재 보유종목 목록 참고</span></label>
           <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarHistChk" style="width:14px;height:14px;cursor:pointer;accent-color:#b45309">📜 History 반영<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 날짜별 과거 전략과 비교해 일관성 있게</span></label>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:-2px 0 0 21px;font-size:11px;color:#64748b">참고할 최근 기록<select id="aiRadarHistN" style="font-size:11px;padding:2px 4px;border:1px solid #e2e8f0;border-radius:5px;color:#1e293b;background:#fff;cursor:pointer"><option value="3">3건</option><option value="5">5건</option><option value="7">7건</option><option value="10">10건</option><option value="15">15건</option><option value="20">20건</option></select><span style="color:#94a3b8;font-size:10px">(저장 전 현재 본문도 함께 전달 · 기록은 📜 History 버튼에서 확인)</span></div>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#334155;display:block;margin-bottom:6px">업데이트 후 작업</label>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#334155">
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" id="aiRadarVizChk" style="width:14px;height:14px;cursor:pointer;accent-color:#be185d">🎨 인포그래픽 자동 제작<span style="color:#94a3b8;font-size:10px;margin-left:2px">— 본문 ‘텍스트’에 반영한 뒤 그 내용으로 인포그래픽을 만들어 ‘인포그래픽’에 추가</span></label>
+          <div id="aiRadarVizInfo" style="margin:-1px 0 0 21px;font-size:10.5px;color:#64748b;line-height:1.6"></div>
+          <div style="margin:-1px 0 0 21px;font-size:10px;color:#94a3b8;line-height:1.6">양식(색·너비·머리 등)은 🎨 패널의 마지막 선택을 따르고, 기존 ‘인포그래픽’ 본문은 새 인포그래픽으로 교체돼요. AI 를 한 번 더 호출하므로 시간이 더 걸려요.</div>
         </div>
       </div>
     </div>
@@ -6460,7 +6468,7 @@ const _AI_RADAR_KEY='BTMAiRadarSettings';
 function _loadAiRadarSettings(){
   /* web 기본값 true — "지금 HOT한 종목"을 실시간 데이터 없이 조사하는 건 의미가 없으므로
      (미설정 시 최초 1회만 적용되고, 이후 사용자가 저장한 값이 항상 우선함) */
-  const def={prompt:'',web:true,report:false,wl:false,pf:false,hist:true,histN:5};   /* hist: 📜 History 반영(날짜별 과거 전략을 AI 에 넘김, 기본 켬) · histN: 참고할 최근 기록 수 */
+  const def={prompt:'',web:true,report:false,wl:false,pf:false,hist:true,histN:5,viz:true};   /* hist: 📜 History 반영(날짜별 과거 전략을 AI 에 넘김, 기본 켬) · histN: 참고할 최근 기록 수 */
   try{ return {...def, ...JSON.parse(localStorage.getItem(_AI_RADAR_KEY)||'{}')}; }catch(e){ return def; }
 }
 function _saveAiRadarSettingsObj(s){ try{ localStorage.setItem(_AI_RADAR_KEY,JSON.stringify(s)); }catch(e){} }
@@ -6483,6 +6491,9 @@ function openAiRadarTargetModal(){
   chk('aiRadarWebChk',cfg.web); chk('aiRadarReportChk',cfg.report);
   chk('aiRadarWlChk',cfg.wl);   chk('aiRadarPfChk',cfg.pf);
   chk('aiRadarHistChk',cfg.hist); { const hn=g('aiRadarHistN'); if(hn) hn.value=String(_airN(cfg)); }
+  chk('aiRadarVizChk',cfg.viz!==false);   /* 🎨 인포그래픽 자동 제작 — 안내 줄에 쓰일 유형(이 섹션 AI 팝업에서 마지막으로 만든 유형) */
+  { const vi=g('aiRadarVizInfo'); if(vi){ const o=(typeof window._aiVizLastFor==='function')?window._aiVizLastFor('aiStockRadar'):null;
+    vi.innerHTML=o?((o.fallback?'이 섹션의 AI 팝업에서 만든 인포그래픽 유형 기록이 없어 기본 유형 <b>':'사용할 유형: <b>')+_airEsc(o.ic+' '+o.t)+'</b>'+(o.fallback?' 으로 만들어요.':' — 이 섹션의 AI 팝업(✨ › 🎨 인포그래픽)에서 마지막으로 만든 유형이에요.')):''; } }
   const psel=g('aiRadarProviderSelect'); if(psel) psel.value=_getAiRadarProvider();
   const m=g('aiRadarTargetModal'); if(m) m.style.display='flex';
 }
@@ -6497,6 +6508,7 @@ function _collectAiRadarForm(){
     pf:!!(g('aiRadarPfChk')?.checked),
     hist:!!(g('aiRadarHistChk')?.checked),
     histN:parseInt(g('aiRadarHistN')?.value)||5,
+    viz:!!(g('aiRadarVizChk')?.checked),
   };
 }
 function saveAiRadarTarget(){
@@ -6560,6 +6572,14 @@ async function runAiRadarSearch(silent){
       /* _applyToEditor가 1.4초 뒤 자체적으로 closeAIChat() 호출 → 그 전에 visibility를 복원하면
          숨겨뒀던 팝업이 그 찰나에 다시 보이므로, 완전히 닫힐 때까지 기다렸다가 복원한다 */
       await new Promise(r=>setTimeout(r,1500));
+      /* 이어서(2026-10-18) — 방금 본문 '텍스트'에 반영한 내용으로 인포그래픽을 만들어 본문의 '인포그래픽'에 추가(이 섹션 AI 팝업에서 마지막으로 만든 유형으로).
+         설정 '🎨 인포그래픽 자동 제작'(기본 켬)으로 끌 수 있고, 실패해도 텍스트 반영은 그대로. */
+      if(cfg.viz!==false&&typeof window._aiAutoInfographic==='function'){
+        if(btn) btn.textContent='🎨 제작중…';
+        let vr; try{ vr=await window._aiAutoInfographic('aiStockRadar','AI Stock Radar',{providerKey:'aiStockRadarTarget'}); }catch(e){ vr={ok:false,msg:(e&&e.message)||String(e)}; }
+        if(typeof _showMainToast==='function') _showMainToast(vr.ok?('🎨 인포그래픽도 추가했어요 · 유형: '+vr.ic+' '+vr.name+(vr.fallback?' (기본 유형)':'')):('⚠ 인포그래픽은 만들지 못했어요 — '+vr.msg+' (본문 텍스트는 정상 반영됐어요)'));
+        await new Promise(r=>setTimeout(r,300));
+      }
     } else {
       if(typeof window.closeAIChat==='function') window.closeAIChat();
     }
@@ -34175,6 +34195,70 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     box.innerHTML=h;
     return box;
   }
+
+  /* ═══ AI Stock Radar 📡 업데이트 → 인포그래픽 자동 제작 (2026-10-18) ═══════════════════════════════
+     📡 업데이트(runAiRadarSearch)가 결과를 본문의 '텍스트'에 반영한 뒤 이어서 부르는 단계 — 방금 반영한 본문 글을 왼쪽 참고 자료로 삼아, 이 섹션에서 마지막으로 만든 인포그래픽 유형(BTMVizLast)의
+     요청 문구로 인포그래픽을 만들고, 결과 이미지를 본문의 '인포그래픽'에 넣어(기존 인포그래픽 본문은 교체) 인포그래픽 보기로 전환함.
+     · 유형 기록이 없거나 그 유형을 지웠으면 기본 유형(목록 첫 번째)으로. 양식(색·너비·머리 등)은 🎨 패널의 마지막 선택을 그대로 따름(새 상자의 기본 동작).
+     · AI 가 함께 낸 <RESULT>(정리 텍스트)는 본문 글을 덮어쓰지 않도록 쓰지 않음. 팝업은 화면에 안 보이게(visibility:hidden — 호출한 쪽이 복원).
+     · 이 섹션 팝업의 저장된 대화(_chatStore — 다음 📡 업데이트가 이어 쓰는 것)는 자동 제작 전 상태 그대로 되돌림. 대화 자체는 [🕘 기록]에 남음. 실패해도 본문 글·기존 인포그래픽은 그대로.
+     · 반환 {ok, name, ic, n, fallback} 또는 {ok:false, msg}. */
+  function _aiAutoVizType(eid){   /* 이 섹션에서 마지막으로 만든 유형 → 지금 유형 목록의 같은 유형, 없으면 기본(목록 첫 번째) */
+    const L=_vizLastRes(eid), cur=L&&L.cur;
+    if(cur) return {r:cur,fallback:false};
+    return {r:_vizRecipes()[0]||_VIZ_RECIPES[0],fallback:true};
+  }
+  window._aiVizLastFor=function(eid){   /* 설정 창 안내용 — 자동 제작에 쓰일 유형 */
+    try{ const o=_aiAutoVizType(eid); return {ic:o.r.ic,t:o.r.t,fallback:o.fallback}; }catch(e){ return null; }
+  };
+  window._aiAutoInfographic=async function(eid,label,opts){
+    opts=opts||{};
+    const fail=msg=>({ok:false,msg});
+    let keep, kept=false;
+    const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+    try{
+      if(!window.BTMViz) return fail('인포그래픽 기능을 쓸 수 없어요');
+      if(!g(eid+'__vz')) return fail('이 섹션에는 인포그래픽 본문이 없어요');
+      /* 바로 앞 단계(_applyToEditor)가 1.4초 뒤 스스로 팝업을 닫으므로 닫힐 때까지 기다림 — 그 타이머가 새로 연 팝업을 닫지 않게 */
+      for(let i=0;i<40&&g('aiChatModal').style.display!=='none';i++) await sleep(100);
+      if(g('aiChatModal').style.display!=='none') closeAIChat();
+      keep=_chatStore[eid]?Object.assign({},_chatStore[eid]):null; kept=true;
+      openAIChat(eid,label);
+      const modal=g('aiChatModal'); if(modal) modal.style.visibility='hidden';
+      if(opts.providerKey&&window._applyAiProviderFor) window._applyAiProviderFor(opts.providerKey);
+      _createNewChat();   /* 왼쪽 참고 자료 = 방금 반영한 본문 글 */
+      const lc=g('aiLeftContent');
+      if(!String(lc.innerText||lc.textContent||'').trim()) return fail('본문이 비어 있어요');
+      const ty=_aiAutoVizType(eid), r=ty.r;
+      _vizPendAdd(r);   /* 어느 유형인지 기억 — 보낼 때 '마지막 유형'으로 다시 기록 */
+      let req=r.p; if(!_VIZ_KW.test(req)) req+='\n인포그래픽으로 만들어줘.';   /* 직접 고친 문구에 '인포그래픽' 말이 없으면 AI 에게 인포그래픽 규칙이 안 붙으므로 */
+      g('aiUserInput').textContent=req;
+      await window.sendAIMessage();
+      /* 그리는 중인 상자가 끝날 때까지 기다림(최대 90초) */
+      const area=g('aiMessages');
+      const lastBubble=()=>{ const b=area.querySelectorAll('.ai-msg.assistant'); return b.length?b[b.length-1]:null; };
+      let boxes=[];
+      for(let i=0;i<900;i++){
+        const lb=lastBubble(); boxes=lb?[...lb.querySelectorAll('.ai-viz-box')]:[];
+        if(boxes.length&&boxes.every(b=>b.getAttribute('data-state')!=='busy')) break;
+        if(!boxes.length&&i>5&&!_busy) break;   /* 답이 끝났는데 인포그래픽 상자가 없음 */
+        await sleep(100);
+      }
+      const imgs=_vizImgsOfLast();
+      if(!imgs.length) return fail(boxes.length?'인포그래픽 이미지를 만들지 못했어요':'AI 가 인포그래픽을 만들지 않았어요');
+      const vz=g(eid+'__vz');
+      vz.innerHTML=imgs.map(i=>_vizImgBlockHtml(i.src,i.alt,i.w)).join('')+'<div><br></div>';   /* 이미지만 — 정리 텍스트(<RESULT>)는 본문 글을 건드리지 않게 버림 */
+      vz.dispatchEvent(new Event('input',{bubbles:true}));
+      if(window.BTMVz) BTMVz.show(eid,'viz',{silent:true});
+      if(typeof saveData==='function') saveData();
+      return {ok:true,name:r.t,ic:r.ic,n:imgs.length,fallback:ty.fallback};
+    }catch(e){
+      return fail((e&&e.message)||String(e));
+    }finally{
+      try{ if(g('aiChatModal').style.display!=='none') closeAIChat(); }catch(_){}
+      if(kept){ if(keep) _chatStore[eid]=keep; else delete _chatStore[eid]; }   /* 이 섹션 팝업의 대화 상태는 자동 제작 전 그대로 */
+    }
+  };
 
   /* 입력창 이미지 붙여넣기 (Ctrl+V) */
   document.addEventListener('paste',function(e){
