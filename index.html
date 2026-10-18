@@ -1238,6 +1238,28 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
   flex-direction:column;
   gap:8px;
 }
+/* ═══ 섹션 끌어 옮기기 (BTMSecDrag) — 래퍼·끌기 표시·알림창 ═══ */
+#sdColHmL,#sdColHmR{min-width:0;display:flex;flex-direction:column;gap:10px}   /* 히트맵 행의 열(옛날엔 카드가 곧바로 grid 칸이었음) */
+#sdColRtA{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px}   /* Daily Inbody 칸 — 옛날엔 dibCard 가 행의 flex:1 항목이었음 */
+.sd-col>#dibCard{flex:0 0 auto!important}                                       /* 열 안에서는 세로 방향이라 flex:1 이 높이(240px)를 덮어쓰지 않게 */
+.sd-col:not(#sdColRtA)>#dibCard{width:auto!important}                           /* 다른 열로 옮기면 그 열 너비를 채움 */
+.sd-grow>.sd-col>.sd-it{flex:0 0 auto!important}                                /* 경제일정·히트맵 행: 맨 아래 섹션만 남는 높이를 채워 두 열 밑변을 맞춤 */
+.sd-grow>.sd-col>.sd-it.sd-last{flex:1 0 auto!important}
+.sd-grow>.sd-col>.sd-it.sd-auto-h{height:auto!important}
+@media(min-width:680px){
+  body.member-mode:not(.guest-mode) #report-root:not(.published-mode) .sd-handle{cursor:grab}
+}
+body.sd-dragging,body.sd-dragging *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.sd-moving{outline:2px dashed #2563eb!important;outline-offset:-2px;box-shadow:0 10px 28px rgba(37,99,235,.28)!important;opacity:.82;position:relative;z-index:30}
+body.sd-dragging .sd-col.sd-empty{min-height:72px;border:2px dashed #93c5fd;border-radius:8px;background:rgba(59,130,246,.06)}
+.sd-col.sd-over{outline:2px dashed rgba(37,99,235,.55);outline-offset:3px;border-radius:6px}
+body.sd-block-drag .sd-blk>.card-body{max-height:0;overflow:hidden;padding-top:0!important;padding-bottom:0!important;border-top-width:0!important}   /* 카테고리·표 카드를 끌 때는 본문을 접어 제목줄들만 보이게 */
+body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
+#sdGhost{display:none;position:fixed;z-index:2147483000;pointer-events:none;max-width:260px;padding:5px 11px;border-radius:14px;background:#2563eb;color:#fff;font-size:12px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+#sdToast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(18px);opacity:0;pointer-events:none;z-index:2147483000;display:flex;align-items:center;gap:8px;background:#1e293b;color:#fff;padding:9px 14px;border-radius:10px;font-size:12px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:opacity .18s,transform .18s}
+#sdToast.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
+#sdToast button{all:unset;box-sizing:border-box;cursor:pointer;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+#sdToast button:hover{background:rgba(255,255,255,.3)}
 /* 모바일: 1열 (오른쪽 먼저) */
 @media(max-width:679px){
   .routine-outer-grid{ grid-template-columns:1fr; }
@@ -2712,6 +2734,12 @@ body.mm-fs{overflow:hidden}
             style="padding:11px;background:#1e293b;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px">
             📋 섹션 제목·본문 관리 열기
           </button>
+          <div style="height:1px;background:#e2e8f0;margin:8px 0 2px"></div>
+          <div style="font-size:12px;font-weight:700;color:#1e293b">🧩 섹션 위치</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6">각 섹션의 <b>제목줄을 마우스로 끌어서</b> 다른 섹션이 있는 자리(왼쪽·오른쪽·위·아래)로 옮길 수 있습니다 — 성장 Routine·시장 분석의 글 상자 섹션끼리, 히트맵·경제일정 줄의 카드 섹션끼리. 옮긴 자리에 있던 섹션들은 아래로 밀리고 옮긴 섹션의 크기는 그대로 유지됩니다. 성장 Routine·시장 분석 안에서 맨 아래 좌우 두 섹션의 텍스트 박스 밑단은 항상 맞춰집니다. 카테고리(성장 Routine·시장 분석)와 포트폴리오·매매 일지는 제목줄을 끌어 위아래 순서를 바꿉니다. 끄는 도중 <b>Esc</b> 를 누르면 취소됩니다. 위치는 이 브라우저에 저장됩니다.</div>
+          <button onclick="BTMSecDrag.reset(false)" class="mobile-keep"
+            style="padding:10px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">↺ 섹션 위치를 처음 배치로 되돌리기</button>
+          <div id="sdAdminStatus" style="font-size:10.5px;color:#16a34a;min-height:14px"></div>
         </div>
 
         <!-- ⑥ VPN 실행여부 -->
@@ -3910,7 +3938,8 @@ body.mm-fs{overflow:hidden}
         <div class="routine-right-col">
           <!-- Daily Inbody Check + (Key-Word/Snowball 세로 스택) -->
           <div class="routine-right-top">
-            <!-- Daily Inbody Check -->
+            <!-- Daily Inbody Check (열 래퍼 #sdColRtA — 섹션을 끌어 옮길 때 이 칸에도 다른 섹션을 놓을 수 있게) -->
+            <div class="sd-col" id="sdColRtA">
             <div id="dibCard" class="routine-sub-card" style="flex:1;height:240px;">
               <div class="routine-sub-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span id="stid-dib" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="min-width:0;overflow:hidden;text-overflow:ellipsis">■ Daily Inbody Check</span><button id="dibResetBtn" type="button" class="pdf-export-hide" onclick="resetDibContent()" title="본문의 이미지와 입력한 글을 모두 삭제합니다" style="flex-shrink:0;height:16px;padding:0 8px;font-size:10px;font-weight:700;line-height:14px;font-family:inherit;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.45);border-radius:3px;cursor:pointer">Reset</button></div>
               <div id="dibContent" class="rich-editor" contenteditable="true" placeholder="인바디 결과를 붙여넣기(Ctrl+V)하세요."
@@ -3918,6 +3947,7 @@ body.mm-fs{overflow:hidden}
                 onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
               <div id="dibCardGrip" class="text-bot-grip" onclick="event.stopPropagation()" title="드래그하여 크기 조절">⠿</div>
             </div>
+            </div><!-- /sdColRtA -->
             <!-- Key-Word + Snowball Effect (세로 스택) -->
             <div class="routine-right-top-stack">
               <!-- Key-Word -->
@@ -4032,7 +4062,8 @@ body.mm-fs{overflow:hidden}
 <!-- ═══ S&P500 히트맵(좌) + 주요지수(우) 반응형 배치 ═══ -->
 <div class="idx-heatmap-layout">
 
-  <!-- ▌좌: S&P 500 히트맵 -->
+  <!-- ▌좌: S&P 500 히트맵 (섹션 끌어 옮기기용 열 래퍼 #sdColHmL) -->
+  <div class="sd-col" id="sdColHmL">
   <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;height:100%">
     <div class="card-header" style="background:#0f172a;color:#fff;flex-shrink:0">
       <span style="display:flex;align-items:center;gap:8px">
@@ -4065,8 +4096,10 @@ body.mm-fs{overflow:hidden}
       </div>
     </div>
   </div>
+  </div><!-- /sdColHmL -->
 
-  <!-- ▌우: 주요 지수 (6열 × 2행) -->
+  <!-- ▌우: 주요 지수 (6열 × 2행) (열 래퍼 #sdColHmR) -->
+  <div class="sd-col" id="sdColHmR">
   <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;height:100%">
     <div class="card-header red" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;flex-shrink:0">
       <span id="stid-indices" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ 주요 지수</span>
@@ -4081,6 +4114,7 @@ body.mm-fs{overflow:hidden}
       <div class="indices-grid" id="indicesGrid" style="flex:1"><!-- JS로 생성 --></div>
     </div>
   </div>
+  </div><!-- /sdColHmR -->
 
 </div>
 
@@ -4448,7 +4482,8 @@ body.mm-fs{overflow:hidden}
                oninput="_chartNoteHtml=this.innerHTML" onfocus="ftFocus(this)" onblur="ftBlur()"
                style="padding:14px 16px;overflow-y:auto;flex:1;font-size:12.5px;line-height:1.6;color:#1e293b;border:none;border-radius:0;min-height:0;resize:none"></div>
         </div>
-        <!-- ② My Technical Analysis With AI -->
+        <!-- ② My Technical Analysis With AI — 제목줄+차트+텍스트박스를 한 섹션(#mkTechSection)으로 묶음(제목을 끌어 옮길 때 함께 움직임) -->
+        <div id="mkTechSection" class="ma-left">
         <div id="tsChartSectionHeader" class="section-label" style="gap:4px 6px;flex-wrap:nowrap">
           <span id="stid-tech-analysis" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📊 My Technical Analysis With AI</span>
           <div style="display:flex;align-items:center;gap:5px;flex:0 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin">
@@ -4775,6 +4810,7 @@ body.mm-fs{overflow:hidden}
           <div id="tsCapOv" class="ts-cap-ov" title="캡쳐 이미지 — 위쪽 '✏️ 편집' 버튼을 누르면 이미지를 걷고 원본 그래프를 다시 편집합니다"><img id="tsCapImg" alt="차트 캡쳐" draggable="false"></div>
         </div>
         <div id="technicalAnalysis" class="rich-editor" contenteditable="true" style="height:144px;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
+        </div><!-- /mkTechSection -->
         <!-- ③ My Trading Strategy With AI Navigator -->
         <div class="ma-left">
           <div class="section-label" style="flex-wrap:wrap;gap:4px 6px">
@@ -7284,6 +7320,7 @@ function _tsChartNoteSyncHeight(){
   const pop=g('tsChartNotePopup');
   const header=g('tsChartSectionHeader');
   const chartWrap=g('tsChartWrap');
+  if(pop&&header&&window.BTMSecDrag) BTMSecDrag.placePopup(pop,header);   /* 섹션을 끌어 옮겨 차트가 다른 열에 있으면 팝업도 그 열 기준(반대편 열 자리)으로 */
   const container=pop&&pop.parentElement;
   if(!pop||!header||!container) return;
   const containerTop=container.getBoundingClientRect().top;
@@ -12044,6 +12081,7 @@ function collectData(opt){   /* opt.mmSaved: 마인드맵은 화면의 수정본
     valigns:Object.fromEntries(_VALIGN_IDS.map(id=>[id,g(id)?.dataset?.valign||''])),
     boxHeights:Object.fromEntries(_BOX_HEIGHT_IDS.map(id=>{const el=g(id);return[id,el?.style?.height||''];})),
     boxFlex:Object.fromEntries(_BOX_FLEX_IDS.map(id=>{const el=g(id);return[id,{flex:el?.style?.flex||'',width:el?.style?.width||''}];})),
+    secLayout:(window.BTMSecDrag&&BTMSecDrag.snapshot)?BTMSecDrag.snapshot():undefined,   /* 섹션 끌어 옮기기 배치(게스트 화면에서 같은 배치로 보이게) */
     keyWord: gv('keyWord')||'',
     snowball:{
       titles:[g('sb-t0')?.innerHTML||'',g('sb-t1')?.innerHTML||'',g('sb-t2')?.innerHTML||'',g('sb-t3')?.innerHTML||''],
@@ -13262,6 +13300,8 @@ function applyData(d){
     if(bf.flex) el.style.flex=bf.flex;
     if(bf.width && id==='dibCard') el.style.width=bf.width;
   });
+  try{ if(window.BTMSecDrag) BTMSecDrag.mirrorDib(); }catch(_){}   /* Daily Inbody 칸 너비 반영 */
+  try{ if(window.BTMSecDrag&&d.secLayout&&document.body.classList.contains('guest-mode')) BTMSecDrag.applyForViewer(d.secLayout); }catch(_){}   /* 게스트: 작성자가 옮겨 둔 섹션 배치 그대로 */
   /* ── 업데이트마다 해제되는 체크박스 ── */
   const _chkPf=g('chkIncludePortfolio'); if(_chkPf) _chkPf.checked=false;
   const _chkTr=g('chkIncludeTrade');     if(_chkTr) _chkTr.checked=false;
@@ -15819,50 +15859,8 @@ function applyRsHeight(targetId, h){
    · 우측 변화 → sectorAnalysis 높이 보정
    _inL/_inR 플래그로 피드백 루프 방지. */
 function _initMarketSync(){
-  const market   = g('marketAnalysis');
-  const sector   = g('sectorAnalysis');
-  const warren   = g('warrenKim');
-  const aiRadar  = g('aiStockRadar');
-  const techAnal = g('technicalAnalysis');
-  const trading  = g('tradingStrategy');
-  if(!market||!sector||!warren||!techAnal||!trading) return;
-  const MIN_H = 80;
-  let _inL = false, _inR = false;
-
-  /* 좌측 칼럼 변화(시황·테마·Warren Kim) → tradingStrategy 높이 보정
-     좌측 칼럼의 밑변 앵커가 테마분석 → Warren Kim으로 이동 (Warren Kim이 좌측 칼럼 마지막 박스) */
-  const _adjTrading = () => {
-    if(_inL || _inR) return;
-    _inL = true;
-    requestAnimationFrame(()=>{
-      const wBot = warren.getBoundingClientRect().bottom;
-      const tTop = trading.getBoundingClientRect().top;
-      const h = Math.max(MIN_H, Math.round(wBot - tTop));
-      if(Math.abs(trading.offsetHeight - h) > 1) trading.style.height = h + 'px';
-      requestAnimationFrame(()=>{ _inL = false; });
-    });
-  };
-
-  /* 우측 칼럼 변화 → Warren Kim 높이 보정 (기존 sectorAnalysis 역할을 대체하는 좌측 밑변 앵커) */
-  const _adjSector = () => {
-    if(_inL || _inR) return;
-    _inR = true;
-    requestAnimationFrame(()=>{
-      const tBot = trading.getBoundingClientRect().bottom;
-      const wTop = warren.getBoundingClientRect().top;
-      const h = Math.max(MIN_H, Math.round(tBot - wTop));
-      if(Math.abs(warren.offsetHeight - h) > 1) warren.style.height = h + 'px';
-      requestAnimationFrame(()=>{ _inR = false; });
-    });
-  };
-
-  /* 테마분석(sector)은 더 이상 높이 보정 대상이 아님 — 시황분석과 동일하게 트리거 전용 관찰 대상으로만 사용 */
-  [market, sector, warren].forEach(el => new ResizeObserver(_adjTrading).observe(el));
-  [aiRadar, techAnal, trading].forEach(el => new ResizeObserver(_adjSector).observe(el));
-  const cw = g('tsChartWrap');
-  if(cw) new ResizeObserver(_adjSector).observe(cw);
-  window._adjSector  = _adjSector;
-  window._adjTrading = _adjTrading;
+  /* → BTMSecDrag(섹션 끌어 옮기기 + 열 밑변 싱크 엔진)로 이전: 위 설명 그대로(좌측 변화 → 오른쪽 맨 아래 박스 보정, 우측 변화 → 왼쪽 보정, _inL/_inR 피드백 차단)이되
+     섹션을 옮겨 맨 아래 박스가 바뀌어도 다시 찾아 연결함. window._adjSector/_adjTrading 도 거기서 내보냄. */
 }
 
 /* ── 경제일정 ↔ 투자현황 좌우 너비 드래그 리사이즈 ── */
@@ -15962,6 +15960,7 @@ function _initBoxFreeResize(gripId, targetId, resizeWidth=true){
       target.style.flex='0 0 auto';
       if(resizeWidth) target.style.width=Math.max(100,startW+(x-startX))+'px';
       target.style.height=Math.max(60,startH+(y-startY))+'px';
+      if(window.BTMSecDrag&&BTMSecDrag.mirrorDib) BTMSecDrag.mirrorDib();   /* Daily Inbody 는 칸(#sdColRtA) 안에 있어 칸 너비도 같이 */
     };
     const onUp=()=>{
       document.getElementById('_freeResizeCursor')?.remove();
@@ -15986,45 +15985,7 @@ function _initBoxFreeResize(gripId, targetId, resizeWidth=true){
    (예전엔 qtMemo가 마지막이라 qtMemo를 앵커로 썼음), 이제는 prayer를 앵커로 사용:
    왼쪽 칼럼(bible·qtMemo·prayer) 변화 → fp 높이 보정 / 오른쪽 칼럼(myLife·fp) 변화 → prayer 높이 보정
    _inL/_inR 플래그로 피드백 루프 차단 */
-function _initPrayerFpSync(){
-  const bible  = g('qtBibleDisplay');
-  const qtMemo = g('qtMemo');
-  const myLife = g('myLifeContent');
-  const prayer = g('prayerContent');
-  const fp     = g('footprintContent');
-  if(!bible||!qtMemo||!myLife||!prayer||!fp) return;
-  const MIN_H = 80;
-  let _inL = false, _inR = false;
-
-  /* 왼쪽 칼럼 변화 → footprintContent 높이 보정 */
-  const _adjFp = () => {
-    if(_inL || _inR) return;
-    _inL = true;
-    requestAnimationFrame(()=>{
-      const pBot = prayer.getBoundingClientRect().bottom;
-      const fTop = fp.getBoundingClientRect().top;
-      const h = Math.max(MIN_H, Math.round(pBot - fTop));
-      if(Math.abs(fp.offsetHeight - h) > 1) fp.style.height = h + 'px';
-      requestAnimationFrame(()=>{ _inL = false; });
-    });
-  };
-
-  /* 오른쪽 칼럼 변화 → prayer 높이 보정 */
-  const _adjPrayer = () => {
-    if(_inL || _inR) return;
-    _inR = true;
-    requestAnimationFrame(()=>{
-      const fBot = fp.getBoundingClientRect().bottom;
-      const pTop = prayer.getBoundingClientRect().top;
-      const h = Math.max(MIN_H, Math.round(fBot - pTop));
-      if(Math.abs(prayer.offsetHeight - h) > 1) prayer.style.height = h + 'px';
-      requestAnimationFrame(()=>{ _inR = false; });
-    });
-  };
-
-  [bible, qtMemo, prayer].forEach(el => new ResizeObserver(_adjFp).observe(el));
-  [myLife, fp].forEach(el => new ResizeObserver(_adjPrayer).observe(el));
-}
+function _initPrayerFpSync(){ /* → BTMSecDrag 로 이전(성장 Routine 두 열의 맨 아래 박스 밑변 싱크) */ }
 
 /* ── Daily Inbody Check(왼쪽) ↔ Snowball Effect(오른쪽) 밑변 실시간 동기화 ──
    _initPrayerFpSync(감사와 간구 ↔ Footprints)와 동일한 로직:
@@ -16032,43 +15993,7 @@ function _initPrayerFpSync(){
    kw·sb는 옆 세로 스택이라 마지막 박스인 sb가 오른쪽 앵커.
    dib 변화 → sb 높이 보정 / 오른쪽 스택(kw·sb) 변화 → dib 높이 보정
    _inL/_inR 플래그로 피드백 루프 차단 */
-function _initDibSbSync(){
-  const dib = g('dibCard');
-  const kw  = g('kwCard');
-  const sb  = g('sbCard');
-  if(!dib||!kw||!sb) return;
-  const MIN_H = 80;
-  let _inL = false, _inR = false;
-
-  /* dib 변화 → sb 높이 보정 */
-  const _adjSb = () => {
-    if(_inL || _inR) return;
-    _inL = true;
-    requestAnimationFrame(()=>{
-      const dBot = dib.getBoundingClientRect().bottom;
-      const sTop = sb.getBoundingClientRect().top;
-      const h = Math.max(MIN_H, Math.round(dBot - sTop));
-      if(Math.abs(sb.offsetHeight - h) > 1) sb.style.height = h + 'px';
-      requestAnimationFrame(()=>{ _inL = false; });
-    });
-  };
-
-  /* 오른쪽 스택(kw·sb) 변화 → dib 높이 보정 */
-  const _adjDib = () => {
-    if(_inL || _inR) return;
-    _inR = true;
-    requestAnimationFrame(()=>{
-      const sBot = sb.getBoundingClientRect().bottom;
-      const dTop = dib.getBoundingClientRect().top;
-      const h = Math.max(MIN_H, Math.round(sBot - dTop));
-      if(Math.abs(dib.offsetHeight - h) > 1) dib.style.height = h + 'px';
-      requestAnimationFrame(()=>{ _inR = false; });
-    });
-  };
-
-  new ResizeObserver(_adjSb).observe(dib);
-  [kw, sb].forEach(el => new ResizeObserver(_adjDib).observe(el));
-}
+function _initDibSbSync(){ /* → BTMSecDrag 로 이전(Daily Inbody 칸 ↔ Key-Word·Snowball 칸의 맨 아래 박스 밑변 싱크) */ }
 
 /* ═══════════════ INVESTOR STATUS ═══════════════ */
 const _IS_DEFAULTS = [
@@ -23743,16 +23668,23 @@ KR|238490.KS|힘스`;
   });
 })();
 
+/* ── 섹션 높이 메타(경제일정 행): 저장 키·최소 높이 — .rs-grip(경제일정·투자현황)과 bot-rs-grip(관심종목·Investor Status·MindMap)이 함께 씀 ── */
+const _SEC_H={ecoSection:['BTMEcoH',RS_MIN],summarySection:['BTMSummaryH',RS_MIN],watchlistSection:['BTMWatchlistH',80],investorStatusSection:['BTMInvestorH2',140],mindmapSection:['BTMMindmapH',260]};
+function _setSecH(el,h){
+  if(!el) return; const m=_SEC_H[el.id]; h=Math.max(m?m[1]:60,h);
+  if(el.id==='ecoSection'||el.id==='summarySection') applyRsHeight(el.id,Math.min(RS_MAX,h));
+  else el.style.height=h+'px';
+}
+function _saveSecH(el){ const m=el&&_SEC_H[el.id]; if(m) localStorage.setItem(m[0],el.offsetHeight); }
+
 /* ── 관심종목 / Investor Status / MindMap 하단 박스 높이 조절 ──
-   · 관심종목(wl): 자기 높이만 조절(저장 키 BTMWatchlistH).
-   · Investor Status(왼쪽 맨 아래) ↔ MindMap(오른쪽 맨 아래): 두 박스의 밑변은 항상 같은 높이로 정렬.
-     ① CSS — 두 박스 모두 flex-grow:1 이라 어느 쪽 열이 더 짧든 그 열의 마지막 박스가 남는 높이를 자동으로 채움
-        (경제일정·투자현황·관심종목 높이를 바꿔도 밑변이 어긋나지 않음)
-     ② 그립(isCornerGrip / mmCornerGrip) 드래그 — 공유 밑변을 움직이도록 두 박스 높이를 같은 양만큼 함께 조절
-   저장 키: BTMInvestorH2 (옛 BTMInvestorH 는 'IS 가 오른쪽 열에서 관심종목 밑변에 맞추던 값'이라 새 배치에 맞지 않아 쓰지 않음), BTMMindmapH */
+   · 각 섹션 모서리 그립(wlCornerGrip·isCornerGrip·mmCornerGrip)은 자기 높이를 조절.
+   · 그 섹션이 자기 열의 맨 아래이고 반대 열에도 맨 아래 섹션이 있으면(기본 배치: Investor Status ↔ MindMap) 두 섹션을 같은 양만큼 함께 조절 —
+     공유 밑변을 움직임. 섹션을 끌어 옮겨 맨 아래 쌍이 바뀌어도 그때그때 BTMSecDrag.pairOf 로 짝을 찾음.
+   · 밑변 정렬 자체는 CSS — 맨 아래 섹션은 flex-grow:1 이라 어느 쪽 열이 더 짧든 남는 높이를 자동으로 채움(.sd-last, BTMSecDrag 가 맨 아래 섹션에 붙임).
+   저장 키: BTMWatchlistH · BTMInvestorH2(옛 BTMInvestorH 는 'IS 가 오른쪽 열에서 관심종목 밑변에 맞추던 값'이라 새 배치에 맞지 않아 쓰지 않음) · BTMMindmapH */
 function _initBottomRowResize(){
   const wl=g('watchlistSection'), is=g('investorStatusSection'), mm=g('mindmapSection');
-  const IS_MIN=140, MM_MIN=260;
   const saved=k=>{ const v=parseInt(localStorage.getItem(k)); return v>0?v:0; };
   const drag=(grip,onStart,onMove,onEnd)=>{
     if(!grip) return;
@@ -23774,18 +23706,15 @@ function _initBottomRowResize(){
     grip.addEventListener('mousedown',e=>{ e.preventDefault(); e.stopPropagation(); start(e.clientY); });
     grip.addEventListener('touchstart',e=>{ e.preventDefault(); start(e.touches[0].clientY); },{passive:false});
   };
-  /* 관심종목: 자기 높이만 */
+  /* 저장 높이 복원 */
   if(wl){ const sv=saved('BTMWatchlistH'); if(sv) wl.style.height=sv+'px'; }
-  drag(g('wlCornerGrip'),()=>({h:wl.offsetHeight}),(c,d)=>{ wl.style.height=Math.max(80,c.h+d)+'px'; },()=>{ localStorage.setItem('BTMWatchlistH',wl.offsetHeight); });
-  /* Investor Status ↔ MindMap: 저장 높이 복원 + 공유 밑변 드래그 */
-  if(is){ const sv=saved('BTMInvestorH2'); if(sv) is.style.height=Math.max(IS_MIN,sv)+'px'; }
-  if(mm){ const sv=saved('BTMMindmapH'); if(sv) mm.style.height=Math.max(MM_MIN,sv)+'px'; }
-  if(is&&mm){
-    const shared=grip=>drag(grip,()=>({is:is.offsetHeight,mm:mm.offsetHeight}),
-      (c,d)=>{ is.style.height=Math.max(IS_MIN,c.is+d)+'px'; mm.style.height=Math.max(MM_MIN,c.mm+d)+'px'; },
-      ()=>{ localStorage.setItem('BTMInvestorH2',is.offsetHeight); localStorage.setItem('BTMMindmapH',mm.offsetHeight); if(window.MM&&MM.refresh) MM.refresh(); });
-    shared(g('isCornerGrip')); shared(g('mmCornerGrip'));
-  }
+  if(is){ const sv=saved('BTMInvestorH2'); if(sv) is.style.height=Math.max(140,sv)+'px'; }
+  if(mm){ const sv=saved('BTMMindmapH'); if(sv) mm.style.height=Math.max(260,sv)+'px'; }
+  const paired=(sec,grip)=>{ if(!sec||!grip) return; drag(grip,
+    ()=>{ const pr=(window.BTMSecDrag&&BTMSecDrag.pairOf)?BTMSecDrag.pairOf(sec):null; return {a:sec.offsetHeight,p:pr?pr.offsetHeight:0,pr}; },
+    (c,d)=>{ _setSecH(sec,c.a+d); if(c.pr) _setSecH(c.pr,c.p+d); },
+    c=>{ _saveSecH(sec); if(c.pr) _saveSecH(c.pr); if(window.MM&&MM.refresh) MM.refresh(); }); };
+  paired(wl,g('wlCornerGrip')); paired(is,g('isCornerGrip')); paired(mm,g('mmCornerGrip'));
 }
 
 function initSectionResize(){
@@ -23814,11 +23743,12 @@ function initSectionResize(){
   document.querySelectorAll('.rs-grip').forEach(grip=>{
     const targetId   = grip.dataset.target;
     const storageKey = grip.dataset.key;
-    let startY=0, startH=0, active=false;
+    let startY=0, startH=0, active=false, pr=null, prH=0;   /* pr: 이 섹션이 자기 열 맨 아래일 때 밑변을 같이 움직일 반대 열 맨 아래 섹션(BTMSecDrag.pairOf) */
 
     const onStart = (clientY)=>{
       const el = document.getElementById(targetId);
       startY = clientY; startH = el.offsetHeight;
+      pr = (window.BTMSecDrag&&BTMSecDrag.pairOf)?BTMSecDrag.pairOf(el):null; prH = pr?pr.offsetHeight:0;
       active = true;
       document.body.style.cursor='se-resize';
       document.body.style.userSelect='none';
@@ -23828,6 +23758,7 @@ function initSectionResize(){
       if(!active) return;
       const newH = Math.min(RS_MAX, Math.max(RS_MIN, startH + (clientY - startY)));
       applyRsHeight(targetId, newH);
+      if(pr) _setSecH(pr, prH + (newH - startH));
     };
 
     const onEnd = ()=>{
@@ -23839,6 +23770,7 @@ function initSectionResize(){
       if(!el) return;
       const h = el.offsetHeight;
       localStorage.setItem(storageKey, h);
+      if(pr){ _saveSecH(pr); pr=null; }
     };
 
     grip.addEventListener('mousedown', e=>{ onStart(e.clientY); e.preventDefault(); });
@@ -27417,6 +27349,467 @@ function _initPfColResize(){
   });
 }
 
+/* ═══ SECDRAG-JS-BEGIN ═══════════════════════════════════════════════════════
+   섹션 제목 끌어 옮기기 + 열 밑변 싱크 (BTMSecDrag)
+   · 각 섹션의 제목줄(.sd-handle)을 마우스로 끌어 다른 열·다른 자리로 옮김. 옮긴 자리에 있던 섹션들은 아래로 밀림.
+     - 클릭은 그대로 제목 수정, 5px 넘게 끌면 이동 시작(버튼·입력칸·링크 위에서는 시작 안 함).
+     - 섹션 엘리먼트(DOM 노드) 자체를 옮기므로 높이·글·이벤트·ResizeObserver 가 그대로 유지됨(크기 유지).
+     - 옮길 수 있는 곳: 글 상자 섹션(성장 Routine 열 4개 = 왼쪽·오른쪽·Daily Inbody 칸·Key-Word/Snowball 칸 + 시장 분석 열 2개)끼리는 서로 어느 열·자리로든(차트 섹션만 시장 분석 두 열 안),
+       카드 섹션(히트맵 행 + 경제일정 행의 열 4개)끼리도 서로 어느 열·자리로든.
+       카테고리 카드(성장 Routine·시장 분석)와 포트폴리오·매매 일지는 제목줄을 끌어 위아래 순서만 바꿈(끄는 동안 본문을 접어 줄로 보여 줌).
+   · 열 밑변 싱크: 박스 정책 행(성장 Routine 두 열·Daily Inbody ↔ Snowball 행·시장 분석 두 열)은 각 열 "맨 아래 섹션의 텍스트 박스" 밑변을 항상 맞춤.
+     옛 _initPrayerFpSync/_initDibSbSync/_initMarketSync 의 로직(왼쪽 변화 → 오른쪽 맨 아래 박스 보정, 오른쪽 변화 → 왼쪽 보정, _inL/_inR 로 피드백 차단)을
+     그대로 일반화해, 섹션을 옮겨 맨 아래 섹션이 바뀌면 새 맨 아래 박스를 대상으로 다시 연결함. 경제일정 행·히트맵 행은 CSS flex-grow(.sd-last)로 맞춤.
+   · 저장: localStorage 'BTMSecLayout'(기기별 설정, 기본 배치와 같으면 지움). 게스트·잠금(Publish)·좁은 화면(<680px)에서는 끌기 불가(저장된 배치는 적용).
+     리포트 데이터(collectData)에도 그때의 배치(secLayout)를 실어 두고, 게스트 화면에서는 그 배치로 보여 줌(applyForViewer — 멤버는 자기 설정을 씀).
+   · 끄는 동안 싱크는 일시정지, 놓을 때 한 번 정렬: 짧은 열의 맨 아래 박스를 키워 밑변을 맞춤(전에 자동으로 늘렸던 여유분이 긴 쪽에 있으면 그것부터 되돌림 — 앞뒤로 옮겨도 계속 커지지 않음).
+     옮긴 섹션 자신의 박스는 건드리지 않고 그 바로 위 섹션 박스를 늘림(옮긴 섹션 크기 유지). 되돌리기는 옮기기 전 높이까지 복원.
+═══════════════════════════════════════════════════════════════════════════ */
+window.BTMSecDrag=(()=>{   /* 클래식 스크립트의 const 는 window 속성이 안 되므로 window 에 직접 둠(다른 코드가 window.BTMSecDrag 로 확인) */
+  'use strict';
+  const LS_KEY='BTMSecLayout', MIN_H=80, THRESH=5, NEAR=48;
+  const $=id=>document.getElementById(id);
+  const q=(s,r)=>(r||document).querySelector(s);
+  const closestOf=(id,sel)=>{ const e=$(id); return e?e.closest(sel):null; };
+  const INTER='a,button,input,select,textarea,label,summary,[onclick],[onmousedown],.ai-btn';   /* 이 위에서는 끌기 시작 안 함(제목 글자는 예외) */
+
+  /* ── 1. 레지스트리 ── */
+  const COL_DEFS=[
+    {key:'rtL', group:'text', el:()=>q('.routine-left-col')},
+    {key:'rtR', group:'text', el:()=>q('.routine-right-col')},
+    {key:'rtA', group:'text', el:()=>$('sdColRtA')},                    /* Daily Inbody 칸(행 .routine-right-top 의 왼쪽) */
+    {key:'rtB', group:'text', el:()=>q('.routine-right-top-stack')},    /* Key-Word·Snowball 칸 */
+    {key:'hmL', group:'card',    el:()=>$('sdColHmL')},
+    {key:'hmR', group:'card',    el:()=>$('sdColHmR')},
+    {key:'ecL', group:'card',    el:()=>$('ecoLeftCol')},
+    {key:'ecR', group:'card',    el:()=>$('ecoRightCol')},
+    {key:'mkL', group:'text', el:()=>q('.ma-left-col')},
+    {key:'mkR', group:'text', el:()=>q('.ma-right-theme')},
+  ];
+  const ROW_DEFS=[   /* 나란한 열들의 묶음. box=박스 밑변을 JS 로 맞춤 / grow=맨 아래 섹션이 남는 높이를 채움(CSS) */
+    {key:'rt',    cols:['rtL','rtR'], policy:'box',  el:()=>q('.routine-outer-grid')},
+    {key:'rtTop', cols:['rtA','rtB'], policy:'box',  el:()=>q('.routine-right-top'), anchorIn:'rtR'},
+    {key:'hm',    cols:['hmL','hmR'], policy:'grow', el:()=>q('.idx-heatmap-layout'), anchorIn:'root', fold:true},
+    {key:'ec',    cols:['ecL','ecR'], policy:'grow', el:()=>$('ecoSumRow'), anchorIn:'root', fold:true},
+    {key:'mk',    cols:['mkL','mkR'], policy:'box',  el:()=>q('.market-analysis-grid')},
+  ];
+  const sl=u=>q(':scope>.section-label',u), sh=u=>q(':scope>.routine-sub-hdr',u), ch=u=>q('.card-header',u);
+  const ITEM_DEFS=[
+    {key:'bible',      col:'rtL', unit:()=>q('.routine-left'), head:u=>u.firstElementChild, box:()=>$('qtBibleDisplay')},
+    {key:'meditation', col:'rtL', unit:()=>closestOf('qtMemo','.routine-memo-col'), head:sl, box:()=>$('qtMemo')},
+    {key:'gratitude',  col:'rtL', unit:()=>closestOf('prayerContent','.routine-memo-col'), head:sl, box:()=>$('prayerContent')},
+    {key:'dib',        col:'rtA', unit:()=>$('dibCard'), head:sh, box:()=>$('dibCard')},
+    {key:'kw',         col:'rtB', unit:()=>$('kwCard'),  head:sh, box:()=>$('kwCard')},
+    {key:'sb',         col:'rtB', unit:()=>$('sbCard'),  head:sh, box:()=>$('sbCard')},
+    {key:'mylife',     col:'rtR', unit:()=>closestOf('myLifeContent','.routine-memo-col'), head:sl, box:()=>$('myLifeContent')},
+    {key:'books',      col:'rtR', unit:()=>$('footprintBlock'), head:u=>u.firstElementChild, box:()=>$('footprintContent')},
+    {key:'heatmap',    col:'hmL', unit:()=>q('#sdColHmL>.card'), head:u=>q(':scope>.card-header',u), autoH:true},
+    {key:'indices',    col:'hmR', unit:()=>q('#sdColHmR>.card'), head:u=>q(':scope>.card-header',u), autoH:true},
+    {key:'eco',        col:'ecL', unit:()=>$('ecoSection'), head:ch},
+    {key:'watch',      col:'ecL', unit:()=>$('watchlistSection'), head:ch},
+    {key:'is',         col:'ecL', unit:()=>$('investorStatusSection'), head:ch},
+    {key:'sum',        col:'ecR', unit:()=>$('summarySection'), head:ch},
+    {key:'mm',         col:'ecR', unit:()=>$('mindmapSection'), head:u=>q('#mmCard>.card-header',u)},
+    {key:'mkt',        col:'mkL', unit:()=>closestOf('marketAnalysis','.ma-left'), head:sl, box:()=>$('marketAnalysis')},
+    {key:'theme',      col:'mkL', unit:()=>closestOf('sectorAnalysis','.ma-left'), head:sl, box:()=>$('sectorAnalysis')},
+    {key:'warren',     col:'mkL', unit:()=>closestOf('warrenKim','.ma-left'), head:sl, box:()=>$('warrenKim')},
+    {key:'radar',      col:'mkR', unit:()=>closestOf('aiStockRadar','.ma-left'), head:sl, box:()=>$('aiStockRadar')},
+    {key:'tech',       col:'mkR', unit:()=>$('mkTechSection'), head:()=>$('tsChartSectionHeader'), box:()=>$('technicalAnalysis'), only:['mkL','mkR']},   /* 차트 노트 팝업이 시장 분석 열 기준이라 시장 분석 두 열 안에서만 */
+    {key:'trading',    col:'mkR', unit:()=>closestOf('tradingStrategy','.ma-left'), head:sl, box:()=>$('tradingStrategy')},
+  ];
+  const cardHead=u=>q(':scope>.card-header',u);
+  const BLK_DEFS=[   /* 위아래 순서만 바꾸는 큰 덩어리(카테고리 카드·표 카드) */
+    {key:'b_routine',   el:()=>{ const t=$('stid-growth'); return t&&t.closest('.card'); }, head:cardHead},
+    {key:'b_market',    el:()=>{ const t=$('stid-market'); return t&&t.closest('.card'); }, head:cardHead},
+    {key:'b_portfolio', el:()=>$('portfolioCard'), head:cardHead},
+    {key:'b_trade',     el:()=>$('tradeCard'), head:cardHead},
+  ];
+
+  const COLS=[], COL={}, ITEMS=[], ITEM={}, ROWS=[], ROW={}, BLKS=[], BLK={};
+  const BYEL=new Map(), HEADOF=new WeakMap();
+  let ready=false, DEFAULT=null, D=null, GH=null, UNDO=null, TOAST_T=0, SUPPRESS=false;
+  const SYNC={rows:new Map(), paused:false};
+
+  function build(){
+    COL_DEFS.forEach(d=>{ const el=d.el(); if(!el) return; const c={key:d.key,group:d.group,el}; COLS.push(c); COL[c.key]=c; el.classList.add('sd-col'); el.dataset.sdCol=c.key; });
+    ROW_DEFS.forEach(d=>{ const el=d.el(); if(!el) return; const r={type:'row',key:d.key,pkey:'row_'+d.key,el,cols:d.cols.filter(k=>COL[k]),policy:d.policy,anchorIn:d.anchorIn||null};
+      ROWS.push(r); ROW[r.key]=r; el.classList.add('sd-row'); if(r.policy==='grow') el.classList.add('sd-grow'); if(d.fold) el.classList.add('sd-rowfold'); if(r.anchorIn) BYEL.set(el,r); });
+    ITEM_DEFS.forEach(d=>{ if(!COL[d.col]) return; let u=null,h=null; try{ u=d.unit(); h=u&&d.head(u); }catch(_){ }
+      if(!u||!h) return;
+      const it={type:'item',key:d.key,pkey:d.key,el:u,head:h,boxFn:d.box||null,col:d.col,group:COL[d.col].group,only:d.only||null,autoH:!!d.autoH};
+      ITEMS.push(it); ITEM[it.key]=it; BYEL.set(u,it); HEADOF.set(h,it); u.classList.add('sd-it'); if(it.autoH) u.classList.add('sd-auto-h'); h.classList.add('sd-handle'); });
+    BLK_DEFS.forEach(d=>{ let u=null,h=null; try{ u=d.el(); h=u&&d.head(u); }catch(_){ } if(!u||!h) return;
+      const b={type:'blk',key:d.key,pkey:d.key,el:u,head:h}; BLKS.push(b); BLK[b.key]=b; BYEL.set(u,b); HEADOF.set(h,b); u.classList.add('sd-blk'); h.classList.add('sd-handle'); });
+    /* 제목 툴팁(클릭=수정, 끌기=이동) */
+    [...ITEMS,...BLKS].forEach(e=>{ e.head.querySelectorAll('.stid-edit,#investorStatusTitle').forEach(t=>{ if(/끌/.test(t.title||'')) return; const base=t.title||(t.getAttribute('contenteditable')==='false'?'':'클릭하여 제목 수정'); t.title=(base?base+' · ':'')+'끌어서 섹션 이동'; }); });
+  }
+
+  /* ── 2. 참가자·상자 조회 ── */
+  function hostOf(colKey){ return colKey==='root'?$('report-root'):(COL[colKey]&&COL[colKey].el); }
+  function participants(colKey){   /* 그 열(또는 root)에 지금 들어 있는 섹션·행 앵커·블록 — DOM 순서 */
+    const host=hostOf(colKey), out=[]; if(!host) return out;
+    for(const ch of host.children){ const e=BYEL.get(ch); if(!e) continue;
+      if(colKey==='root'){ if(e.type==='blk'||(e.type==='row'&&e.anchorIn==='root')) out.push(e); }
+      else if(e.type==='item'||(e.type==='row'&&e.anchorIn===colKey)) out.push(e); }
+    return out;
+  }
+  const boxOf=e=>(e&&e.type==='item'&&e.boxFn)?e.boxFn():null;
+  function lastBoxIn(parts){   /* 참가자 목록에서 맨 아래 박스 */
+    for(let i=parts.length-1;i>=0;i--){ const p=parts[i];
+      if(p.type==='item'){ const b=boxOf(p); if(b) return {el:b,item:p}; }
+      else if(p.type==='row'){   /* 안쪽 행(예: Daily Inbody 칸 | Key-Word·Snowball 칸)이면 그 열들 중 밑변이 가장 낮은 열의 맨 아래 박스 */
+        let best=null, bb=-Infinity; p.cols.forEach(ck=>{ const b=bottomBox(ck); if(b){ const bt=b.el.getBoundingClientRect().bottom; if(bt>bb){ bb=bt; best=b; } } });
+        if(best) return best; } }
+    return null;
+  }
+  function bottomBox(colKey){ return lastBoxIn(participants(colKey)); }
+  function boxAbove(colKey,item){ const parts=participants(colKey); return lastBoxIn(parts.slice(0,Math.max(0,parts.indexOf(item)))); }
+  const rowOfCol=colKey=>ROWS.find(r=>r.cols.indexOf(colKey)>=0)||null;
+  const MARKS=['sdBase','sdAuto','sdPre','sdFrz'];   /* 자동 보정 표식(늘린 박스·굳힌 섹션) — 높이와 함께 보관·복원 */
+  function snapHeights(){ const arr=[]; const add=el=>arr.push([el,el.style.height,MARKS.map(k=>el.dataset[k])]); ITEMS.forEach(it=>{ add(it.el); const b=boxOf(it); if(b&&b!==it.el) add(b); }); return arr; }
+  function restoreHeights(arr){ (arr||[]).forEach(([el,h,m])=>{ el.style.height=h; MARKS.forEach((k,i)=>{ if(m&&m[i]!==undefined) el.dataset[k]=m[i]; else delete el.dataset[k]; }); }); }
+
+  /* ── 3. 열 밑변 싱크(박스 정책 행) ── */
+  function stacked(row){   /* 열들이 나란하지 않고 위아래로 쌓였으면(모바일 1열) 싱크 안 함 */
+    const a=COL[row.cols[0]], b=COL[row.cols[1]]; if(!a||!b) return true;
+    const ra=a.el.getBoundingClientRect(), rb=b.el.getBoundingClientRect();
+    if(!ra.width||!rb.width) return true;
+    return rb.top>=ra.bottom-1||ra.top>=rb.bottom-1;
+  }
+  function follow(row,driverCol,followCol){   /* 따라가는 열의 맨 아래 박스 높이 = 앞서는 열 맨 아래 박스 밑변 − 이 박스 윗변 */
+    if(stacked(row)) return;
+    const d=bottomBox(driverCol), f=bottomBox(followCol); if(!d||!f) return;
+    const h=Math.max(MIN_H,Math.round(d.el.getBoundingClientRect().bottom-f.el.getBoundingClientRect().top));
+    if(Math.abs(f.el.offsetHeight-h)>1) f.el.style.height=h+'px';
+  }
+  function watchEls(colKey){ const arr=[]; participants(colKey).forEach(p=>{ arr.push(p.el); const b=boxOf(p); if(b&&b!==p.el) arr.push(b); }); return arr; }
+  function setupRowSync(row){
+    const old=SYNC.rows.get(row.key); if(old) old.ros.forEach(o=>o.disconnect());
+    const st={ros:[],inL:false,inR:false,dirty:null,row};
+    const [cL,cR]=row.cols;
+    /* dir 'R': 왼쪽 열 변화 → 오른쪽 맨 아래 박스 보정 / 'L': 오른쪽 열 변화 → 왼쪽 맨 아래 박스 보정 */
+    const run=dir=>{
+      if(SYNC.paused) return;
+      if(st.inL||st.inR){ st.dirty=dir; return; }
+      const flag=dir==='R'?'inL':'inR'; st[flag]=true;
+      requestAnimationFrame(()=>{
+        try{ if(!SYNC.paused) follow(row,dir==='R'?cL:cR,dir==='R'?cR:cL); }catch(_){ }
+        requestAnimationFrame(()=>{ st[flag]=false; if(st.dirty){ const d=st.dirty; st.dirty=null; run(d); } });
+      });
+    };
+    st.run=run;
+    if(typeof ResizeObserver!=='undefined'){
+      const mk=(dir,colKey)=>{ const o=new ResizeObserver(()=>run(dir)); watchEls(colKey).forEach(el=>o.observe(el)); st.ros.push(o); };
+      mk('R',cL); mk('L',cR);
+    }
+    SYNC.rows.set(row.key,st);
+  }
+  function syncRefresh(){ ROWS.forEach(r=>{ if(r.policy==='box'&&r.cols.length===2) setupRowSync(r); }); }
+  /* 자동으로 늘린 박스는 "원래 높이(sdBase)"와 "늘린 뒤 높이(sdAuto)"를 기억 — 나중에 반대 방향으로 옮기면 그 여유분부터 되돌려, 앞뒤로 옮겨도 박스가 계속 커지지 않음.
+     그 사이 높이가 달라졌으면(사용자가 조절·싱크 보정) 기록을 무시 */
+  function slackOf(el){ const b=+el.dataset.sdBase, a=+el.dataset.sdAuto; if(!b||!a||Math.abs(el.offsetHeight-a)>1) return 0; return Math.max(0,a-b); }
+  function growBox(el,add){ const h0=el.offsetHeight; if(!slackOf(el)) el.dataset.sdBase=h0; const h=Math.max(MIN_H,Math.round(h0+add)); el.style.height=h+'px'; el.dataset.sdAuto=h; }
+  function shrinkBox(el,by){ const h=Math.max(MIN_H,Math.round(el.offsetHeight-by)); el.style.height=h+'px'; if(h<=(+el.dataset.sdBase||0)+1){ delete el.dataset.sdBase; delete el.dataset.sdAuto; } else el.dataset.sdAuto=h; }
+  function alignRow(row,movedKey){   /* 놓은 직후 한 번: 두 열 맨 아래 박스의 밑변을 맞춤.
+       밑변이 낮은(긴) 쪽에 전에 늘려 둔 여유분이 있으면 먼저 그만큼 되돌리고, 남는 차이는 짧은 쪽 맨 아래 박스를 키움(줄이는 일은 없음).
+       맨 아래 박스가 방금 옮긴 섹션이면 건드리지 않고 바로 위 섹션 박스를 씀(옮긴 섹션 크기 유지) */
+    if(row.policy!=='box'||row.cols.length!==2||stacked(row)) return;
+    const L=bottomBox(row.cols[0]), R=bottomBox(row.cols[1]); if(!L||!R) return;
+    const diff=Math.round(L.el.getBoundingClientRect().bottom-R.el.getBoundingClientRect().bottom);
+    if(Math.abs(diff)<=1) return;
+    const tallCol=diff>0?row.cols[0]:row.cols[1], shortCol=diff>0?row.cols[1]:row.cols[0];
+    let tBox=diff>0?L:R, sBox=diff>0?R:L;
+    if(movedKey){
+      if(tBox.item&&tBox.item.key===movedKey){ const up=boxAbove(tallCol,tBox.item); if(up) tBox=up; }
+      if(sBox.item&&sBox.item.key===movedKey){ const up=boxAbove(shortCol,sBox.item); if(up) sBox=up; }
+    }
+    let rest=Math.abs(diff);
+    const sl=slackOf(tBox.el); if(sl>0){ const s=Math.min(sl,rest); shrinkBox(tBox.el,s); rest-=s; }
+    if(rest>1) growBox(sBox.el,rest);
+  }
+  function alignAll(movedKey){ ['rtTop','rt','mk'].forEach(k=>{ const r=ROW[k]; if(r) alignRow(r,movedKey); }); }
+  function pairOf(secEl){   /* 경제일정 행(grow): 이 섹션이 자기 열 맨 아래이면 반대 열 맨 아래 섹션(밑변을 같이 움직일 짝) */
+    const it=BYEL.get(secEl); if(!it||it.type!=='item') return null;
+    const host=secEl.parentElement, ck=host&&host.dataset&&host.dataset.sdCol; if(!ck) return null;
+    const row=rowOfCol(ck); if(!row||row.policy!=='grow'||row.cols.length!==2) return null;
+    const mine=participants(ck).filter(p=>p.type==='item'); if(!mine.length||mine[mine.length-1]!==it) return null;
+    const other=participants(row.cols[row.cols[0]===ck?1:0]).filter(p=>p.type==='item');
+    return other.length?other[other.length-1].el:null;
+  }
+
+  /* ── 4. 클래스·부가 표시 ── */
+  function markClasses(){
+    ITEMS.forEach(it=>it.el.classList.remove('sd-last'));
+    COLS.forEach(c=>c.el.classList.toggle('sd-empty',!participants(c.key).some(p=>p.type==='item')));
+    ROWS.filter(r=>r.policy==='grow').forEach(r=>r.cols.forEach(ck=>{
+      const items=participants(ck).filter(p=>p.type==='item');
+      if(items.length) items[items.length-1].el.classList.add('sd-last'); }));
+    /* 경제일정 행: 굳혀 뒀던 섹션이 다시 맨 아래가 되면 굳히기 전 높이로 되돌림(그 사이 사용자가 바꿨으면 그대로 둠) */
+    ITEMS.forEach(it=>{ const el=it.el; if(!el.dataset.sdFrz||!el.classList.contains('sd-last')) return; if(el.style.height===el.dataset.sdFrz+'px') el.style.height=el.dataset.sdPre||''; delete el.dataset.sdFrz; delete el.dataset.sdPre; });
+  }
+  function applyForViewer(L){   /* 게스트(보기 전용) 화면: 리포트 데이터에 실려 온 작성자의 배치로 보여 줌 — 이 브라우저 설정(localStorage)은 건드리지 않음 */
+    if(!ready||!L) return;
+    try{ applyLayout(L); relayout(); }catch(e){ console.error('BTMSecDrag.applyForViewer',e); }
+  }
+  function mirrorDib(){   /* Daily Inbody 카드를 자유 리사이즈로 넓힌 너비(·flex)를 그 칸(래퍼)에도 반영 — 옛날엔 카드가 행의 flex 항목이었음 */
+    const w=$('sdColRtA'), d=$('dibCard'); if(!w||!d||d.parentElement!==w) return;
+    if(/^0 0 auto/.test(d.style.flex||'')&&d.style.width){ w.style.flex='0 0 auto'; w.style.width=d.style.width; }
+    else{ w.style.flex=''; w.style.width=''; }
+  }
+  function relayout(){ markClasses(); mirrorDib(); syncRefresh(); }
+  function notify(){   /* 폭·높이가 달라진 차트·마인드맵 등이 다시 그리도록 */
+    try{ window.dispatchEvent(new Event('resize')); }catch(_){ }
+    requestAnimationFrame(()=>{
+      try{ if(typeof renderPfDonut==='function') renderPfDonut(); }catch(_){ }
+      try{ if(typeof renderSummaryChart==='function') renderSummaryChart(); }catch(_){ }
+      try{ if(window.MM&&MM.refresh) MM.refresh(); }catch(_){ }
+      try{ const p=$('tsChartNotePopup'); if(p&&p.style.display==='flex'&&typeof _tsChartNoteSyncHeight==='function') _tsChartNoteSyncHeight(); }catch(_){ }
+    });
+  }
+  function placePopup(pop,header){   /* Chart Note 팝업: 차트 섹션이 있는 열의 반대편(이웃 열 자리)에 겹쳐 띄움 */
+    const col=header&&header.closest&&header.closest('.sd-col'); if(!col||!pop) return;
+    if(pop.parentElement!==col) col.appendChild(pop);
+    const row=rowOfCol(col.dataset.sdCol), left=!!row&&row.cols[0]===col.dataset.sdCol;
+    if(left){ if(getComputedStyle(col).position==='static') col.style.position='relative'; pop.style.left='calc(100% + 8px)'; pop.style.right='auto'; }
+    else{ pop.style.left='auto'; pop.style.right='calc(100% + 8px)'; }
+  }
+
+  /* ── 5. 배치 읽기·적용·저장 ── */
+  function readLayout(){ const L={v:1,root:participants('root').map(p=>p.pkey),cols:{}}; COLS.forEach(c=>{ L.cols[c.key]=participants(c.key).map(p=>p.pkey); }); return L; }
+  const entryOf=k=>ITEM[k]||BLK[k]||((typeof k==='string'&&k.indexOf('row_')===0)?ROW[k.slice(4)]:null);
+  const compatible=(it,c)=>!!c&&c.group===it.group&&(!it.only||it.only.indexOf(c.key)>=0);   /* 같은 종류(글 상자 섹션끼리=성장 Routine·시장 분석 / 카드 섹션끼리=히트맵·경제일정 행) */
+  function allowed(e,colKey){
+    if(colKey==='root') return e.type==='blk'||(e.type==='row'&&e.anchorIn==='root');
+    return (e.type==='item'&&compatible(e,COL[colKey]))||(e.type==='row'&&e.anchorIn===colKey);
+  }
+  function applyLayout(L){
+    if(!L||typeof L!=='object') return;
+    const seen=new Set(), plan={};
+    const norm=(keys,colKey)=>{ const out=[]; (Array.isArray(keys)?keys:[]).forEach(k=>{ const e=entryOf(k); if(!e||seen.has(e.pkey)||!allowed(e,colKey)) return; seen.add(e.pkey); out.push(e); }); return out; };
+    plan.root=norm(L.root,'root'); COLS.forEach(c=>{ plan[c.key]=norm(L.cols&&L.cols[c.key],c.key); });
+    const home=e=>e.type==='blk'||(e.type==='row'&&e.anchorIn==='root')?'root':(e.type==='row'?e.anchorIn:e.col);
+    [...BLKS,...ROWS.filter(r=>r.anchorIn),...ITEMS].forEach(e=>{ if(!seen.has(e.pkey)){ const h=home(e); if(plan[h]){ plan[h].push(e); seen.add(e.pkey); } } });   /* 저장본에 없던 섹션 → 기본 열 끝 */
+    const hosts=[['root',$('report-root')]].concat(COLS.map(c=>[c.key,c.el]));
+    const marks={}; hosts.forEach(([k])=>{ const ps=participants(k); marks[k]=ps.length?ps[ps.length-1].el.nextSibling:null; });
+    hosts.forEach(([k,host])=>{
+      if(!host) return;
+      const cur=participants(k).map(p=>p.pkey).join('|'), want=plan[k].map(p=>p.pkey).join('|'); if(cur===want) return;
+      let ref=marks[k]; if(ref&&ref.parentNode!==host) ref=null;   /* 표지 노드가 다른 곳으로 옮겨졌으면(차트 노트 팝업 등) 끝에 붙임 */
+      for(let i=plan[k].length-1;i>=0;i--){ const el=plan[k][i].el; host.insertBefore(el,ref); ref=el; }
+    });
+  }
+  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  function saveLayout(){ try{ const L=readLayout(); if(same(L,DEFAULT)) localStorage.removeItem(LS_KEY); else localStorage.setItem(LS_KEY,JSON.stringify(L)); }catch(_){ } }
+  function loadSaved(){ try{ const s=localStorage.getItem(LS_KEY); return s?JSON.parse(s):null; }catch(_){ return null; } }
+
+  /* ── 6. 끌기 ── */
+  const canDrag=()=>{ const b=document.body; return b.classList.contains('member-mode')&&!b.classList.contains('guest-mode')&&!document.querySelector('#report-root.published-mode')&&!(window.matchMedia&&matchMedia('(max-width:679px)').matches); };
+  const titleOf=e=>{ const t=e.head.querySelector('.stid-edit,#investorStatusTitle'); return ((t?t.textContent:e.head.textContent)||'').replace(/\s+/g,' ').trim().slice(0,38)||'섹션'; };
+  function placeIn(unitEl,colKey,idx){   /* 다른 참가자들 사이 idx 번째 자리로 옮김. 이미 그 자리면 false */
+    const host=hostOf(colKey); if(!host) return false;
+    const all=participants(colKey), others=all.filter(p=>p.el!==unitEl);
+    const cur=all.findIndex(p=>p.el===unitEl);
+    if(unitEl.parentElement===host&&cur===idx) return false;
+    if(idx<others.length) host.insertBefore(unitEl,others[idx].el);
+    else if(others.length) others[others.length-1].el.after(unitEl);
+    else host.appendChild(unitEl);
+    return true;
+  }
+  function slotIndex(colKey,unitEl,y){   /* 다른 참가자들의 세로 가운데보다 포인터가 위면 그 앞 */
+    const parts=participants(colKey).filter(p=>p.el!==unitEl);
+    for(let i=0;i<parts.length;i++){ const r=parts[i].el.getBoundingClientRect(); if(y<r.top+r.height/2) return i; }
+    return parts.length;
+  }
+  function colRect(c){   /* 열의 영역: 짧은 열은 같은 행 맨 아래까지(그 아래 빈자리에 놓으면 그 열 맨 끝) */
+    const r=c.el.getBoundingClientRect(); const row=rowOfCol(c.key);
+    if(!row||!r.width) return r;
+    const rr=row.el.getBoundingClientRect();
+    return {left:r.left,right:r.right,top:r.top,bottom:Math.max(r.bottom,rr.bottom),width:r.width,height:Math.max(r.bottom,rr.bottom)-r.top};
+  }
+  function pickCol(item,x,y){
+    const cands=COLS.filter(c=>compatible(item,c)&&c.el.isConnected);
+    let best=null, ba=Infinity;
+    for(const c of cands){ const r=colRect(c); if(r.width<2) continue;
+      if(x>=r.left&&x<=r.right&&y>=r.top-2&&y<=r.bottom+2){ const a=r.width*r.height; if(a<ba){ ba=a; best=c; } } }
+    if(best) return best;
+    let nd=NEAR;
+    for(const c of cands){ const r=colRect(c); if(r.width<2) continue;
+      const dx=Math.max(r.left-x,0,x-r.right), dy=Math.max(r.top-y,0,y-r.bottom), d=Math.hypot(dx,dy); if(d<nd){ nd=d; best=c; } }
+    return best;
+  }
+  function markOver(c){ COLS.forEach(k=>k.el.classList.toggle('sd-over',k===c)); }
+  function ghost(on){
+    if(on){ if(!GH){ GH=document.createElement('div'); GH.id='sdGhost'; document.body.appendChild(GH); } GH.textContent='⠿ '+titleOf(D.ent); GH.style.display='block'; ghostMove(); }
+    else if(GH) GH.style.display='none';
+  }
+  function ghostMove(){ if(GH&&D){ GH.style.left=(D.x+14)+'px'; GH.style.top=(D.y+12)+'px'; } }
+  const noSel=e=>{ e.preventDefault(); };
+  function topBarBottom(){ let b=0; ['.main-btn-bar','#report-root>.toolbar'].forEach(s=>{ const el=document.querySelector(s); if(!el) return; const cs=getComputedStyle(el); if(cs.display==='none'||(cs.position!=='fixed'&&cs.position!=='sticky')) return; b=Math.max(b,el.getBoundingClientRect().bottom); }); return b; }
+  function autoScroll(){
+    const top=topBarBottom()+46, bot=window.innerHeight-46; let dy=0;
+    if(D.y<top) dy=-Math.min(30,4+(top-D.y)*0.35); else if(D.y>bot) dy=Math.min(30,4+(D.y-bot)*0.35);
+    if(dy) window.scrollBy(0,dy);
+  }
+  function updateTarget(){
+    const ent=D.ent; let moved=false;
+    if(D.isBlk){ moved=placeIn(ent.el,'root',slotIndex('root',ent.el,D.y)); markOver(null); }
+    else{
+      const c=pickCol(ent,D.x,D.y); if(!c){ markOver(null); return; }
+      markOver(c); moved=placeIn(ent.el,c.key,slotIndex(c.key,ent.el,D.y));
+    }
+    if(moved) markClasses();
+  }
+  /* 끌기 도중 예외가 나도 화면이 '끄는 중' 상태로 굳지 않게: 원래 배치로 되돌리고 끝냄 */
+  function emergency(err){
+    try{ console.error('BTMSecDrag',err); }catch(_){ }
+    try{ if(D){ cleanup(); if(D.raf) cancelAnimationFrame(D.raf); if(D.active) finish(false); else D=null; } }
+    catch(_){ D=null; document.body.classList.remove('sd-dragging','sd-block-drag'); SYNC.paused=false; }
+  }
+  function tick(){ if(!D||!D.active) return; try{ autoScroll(); updateTarget(); D.raf=requestAnimationFrame(tick); }catch(e){ emergency(e); } }
+
+  function onDown(e){ try{ onDown0(e); }catch(err){ emergency(err); } }
+  function onDown0(e){
+    if(D||!ready||e.button!==0||e.pointerType==='touch') return;
+    const t=e.target; if(!t||!t.closest) return;
+    const head=t.closest('.sd-handle'); if(!head) return;
+    const ent=HEADOF.get(head); if(!ent||!canDrag()) return;
+    if(ent.el.classList.contains('mm-full')) return;   /* 마인드맵 전체 화면 */
+    const ce=t.closest('[contenteditable="true"]');
+    if(!(ce&&head.contains(ce))){ const it=t.closest(INTER); if(it&&it!==head&&head.contains(it)) return; }
+    D={ent,head,pid:e.pointerId,x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,active:false,isBlk:ent.type==='blk'};
+    window.addEventListener('pointermove',onMove,true);
+    window.addEventListener('pointerup',onUp,true);
+    window.addEventListener('pointercancel',onCancel,true);
+  }
+  function onMove(e){ try{ onMove0(e); }catch(err){ emergency(err); } }
+  function onMove0(e){
+    if(!D||(D.pid!==e.pointerId&&e.pointerId!==undefined)) return;
+    if(D.active&&e.pointerType==='mouse'&&e.buttons===0){ onUp(e); return; }   /* 창 밖에서 버튼을 놓아 pointerup 을 못 받은 경우(옮기는 동안 포인터 캡처가 풀림) */
+    D.x=e.clientX; D.y=e.clientY;
+    if(!D.active){ if(Math.hypot(D.x-D.x0,D.y-D.y0)<THRESH) return; begin(); if(!D) return; }
+    ghostMove();
+    const now=performance.now(); if(now-(D.lu||0)>24){ D.lu=now; updateTarget(); }   /* rAF 가 멈춘 상태(백그라운드 탭 등)에서도 자리 갱신 */
+  }
+  function begin(){
+    const ent=D.ent;
+    D.active=true; D.before=readLayout(); D.hsnap=snapHeights();
+    D.snap=snapGrow();
+    try{ const ae=document.activeElement; if(ae&&ae!==document.body&&ae.blur) ae.blur(); }catch(_){ }
+    try{ window.getSelection().removeAllRanges(); }catch(_){ }
+    try{ D.head.setPointerCapture(D.pid); }catch(_){ }
+    if(!D.isBlk){ D.rowMin=ROWS.map(r=>[r.el,r.el.style.minHeight]); ROWS.forEach(r=>{ r.el.style.minHeight=r.el.offsetHeight+'px'; }); }   /* 끄는 동안 행이 줄어들어 아래가 올라오지 않게 */
+    const top0=D.head.getBoundingClientRect().top;
+    document.body.classList.add('sd-dragging'); if(D.isBlk) document.body.classList.add('sd-block-drag');
+    if(D.isBlk){ const d=D.head.getBoundingClientRect().top-top0; if(d) window.scrollBy(0,d); }   /* 본문을 접어도 잡은 제목줄은 같은 화면 높이에 */
+    ent.el.classList.add('sd-moving');
+    SYNC.paused=true;
+    ghost(true);
+    document.addEventListener('selectstart',noSel,true); document.addEventListener('dragstart',noSel,true);
+    D.raf=requestAnimationFrame(tick);
+  }
+  function cleanup(){
+    window.removeEventListener('pointermove',onMove,true); window.removeEventListener('pointerup',onUp,true); window.removeEventListener('pointercancel',onCancel,true);
+    document.removeEventListener('selectstart',noSel,true); document.removeEventListener('dragstart',noSel,true);
+  }
+  function onUp(e){ try{ onUp0(e); }catch(err){ emergency(err); } }
+  function onUp0(e){
+    if(!D||(D.pid!==e.pointerId&&e.pointerId!==undefined)) return;
+    cleanup();
+    if(!D.active){ D=null; return; }
+    D.x=e.clientX; D.y=e.clientY;
+    cancelAnimationFrame(D.raf); updateTarget();
+    finish(true);
+  }
+  function onCancel(){ if(!D) return; cleanup(); if(!D.active){ D=null; return; } cancelAnimationFrame(D.raf); finish(false); }
+  function finish(ok){   /* ok=true 놓기(확정) / false 취소 */
+    const d=D; D=null;
+    try{ d.head.releasePointerCapture(d.pid); }catch(_){ }
+    document.body.classList.remove('sd-dragging','sd-block-drag');
+    d.ent.el.classList.remove('sd-moving'); markOver(null); ghost(false);
+    if(d.rowMin) d.rowMin.forEach(([el,v])=>{ el.style.minHeight=v; });
+    SUPPRESS=true; setTimeout(()=>{ SUPPRESS=false; },80);
+    if(!ok){ applyLayout(d.before); restoreHeights(d.hsnap); relayout(); SYNC.paused=false; notify(); return; }
+    const changed=commit(d.ent,d.before,d.hsnap,d.snap);
+    SYNC.paused=false;
+    if(!changed){ if(d.isBlk) keepInView(d); return; }   /* 제자리 */
+    notify(); if(d.isBlk) keepInView(d);
+    if(typeof saveData==='function'){ try{ saveData(); }catch(_){ } }
+    toast('"'+titleOf(d.ent)+'" 섹션을 옮겼습니다',true);
+  }
+  /* 놓은 직후 처리(끌기·moveItem 공용): 저장 → 클래스·싱크 다시 연결 → 밑변 정렬. 바뀐 게 없으면 false */
+  function commit(ent,before,hsnap,snap){
+    const after=readLayout();
+    if(same(after,before)){ relayout(); return false; }
+    markClasses();
+    /* 경제일정 행: 맨 아래라서 늘어나 있던 섹션이 맨 아래가 아니게 되면 늘어난 높이를 명시 높이로 굳힘(크기 유지) */
+    ITEMS.forEach(it=>{ const s0=snap&&snap[it.key]; if(!s0||!s0.last||it.autoH||it.el.classList.contains('sd-last')) return;
+      if(Math.abs(parseFloat(it.el.style.height||0)-s0.h)>1){ if(!it.el.dataset.sdFrz) it.el.dataset.sdPre=it.el.style.height; it.el.style.height=s0.h+'px'; it.el.dataset.sdFrz=s0.h; } });
+    UNDO={layout:before,heights:hsnap}; saveLayout();
+    relayout(); alignAll(ent.key);
+    return true;
+  }
+  function snapGrow(){   /* 경제일정·히트맵 행(grow) 섹션들의 지금 높이·맨 아래 여부 */
+    const o={}; ITEMS.forEach(it=>{ const r=rowOfCol(it.el.parentElement&&it.el.parentElement.dataset.sdCol); if(r&&r.policy==='grow') o[it.key]={h:it.el.offsetHeight,last:it.el.classList.contains('sd-last')}; });
+    return o;
+  }
+  function moveItem(key,colKey,idx){   /* 프로그램에서 직접 옮김(시험·확장용). idx 생략=그 열 맨 끝. 블록은 colKey 무시(root) */
+    const it=ITEM[key]||BLK[key]; if(!it||D) return false;
+    if(it.type==='blk') colKey='root'; else if(!compatible(it,COL[colKey])) return false;
+    const before=readLayout(), hsnap=snapHeights(), snap=snapGrow();
+    SYNC.paused=true;
+    const n=participants(colKey).filter(p=>p.el!==it.el).length;
+    placeIn(it.el,colKey,idx==null?n:Math.max(0,Math.min(idx,n)));
+    const changed=commit(it,before,hsnap,snap); SYNC.paused=false;
+    if(changed){ notify(); if(typeof saveData==='function'){ try{ saveData(); }catch(_){ } } }
+    return changed;
+  }
+  function keepInView(d){ requestAnimationFrame(()=>{ const r=d.head.getBoundingClientRect(); const dy=r.top-Math.min(Math.max(d.y,topBarBottom()+8),window.innerHeight-60); if(Math.abs(dy)>2) window.scrollBy(0,dy); }); }
+
+  /* ── 7. 알림창·되돌리기·초기화 ── */
+  function toast(msg,undoable){
+    let t=$('sdToast'); if(!t){ t=document.createElement('div'); t.id='sdToast'; document.body.appendChild(t); }
+    t.innerHTML=''; const s=document.createElement('span'); s.textContent=msg; t.appendChild(s);
+    const add=(label,fn)=>{ const b=document.createElement('button'); b.type='button'; b.className='mobile-keep'; b.textContent=label; b.onclick=()=>{ t.classList.remove('on'); fn(); }; t.appendChild(b); };
+    if(undoable) add('되돌리기',undo);
+    add('처음 배치로',()=>reset(true));
+    t.classList.add('on'); clearTimeout(TOAST_T); TOAST_T=setTimeout(()=>t.classList.remove('on'),7000);
+  }
+  function undo(){
+    if(!UNDO) return; const u=UNDO; UNDO=null;
+    applyLayout(u.layout); restoreHeights(u.heights); saveLayout(); relayout(); notify();
+    if(typeof saveData==='function'){ try{ saveData(); }catch(_){ } }
+  }
+  function reset(quiet){
+    UNDO={layout:readLayout(),heights:snapHeights()}; applyLayout(DEFAULT); try{ localStorage.removeItem(LS_KEY); }catch(_){ }
+    relayout(); alignAll(null); notify();
+    if(typeof saveData==='function'){ try{ saveData(); }catch(_){ } }
+    if(quiet) toast('섹션 위치를 처음 배치로 되돌렸습니다',true);
+    const st=$('sdAdminStatus'); if(st){ st.textContent='✅ 처음 배치로 되돌렸습니다.'; setTimeout(()=>{ st.textContent=''; },4000); }
+  }
+
+  /* ── 8. 초기화 ── */
+  function init(){
+    if(ready) return;
+    build();
+    DEFAULT=readLayout();
+    const saved=loadSaved(); if(saved) applyLayout(saved);
+    ready=true;
+    relayout();
+    window.addEventListener('pointerdown',onDown,true);
+    window.addEventListener('click',e=>{ if(SUPPRESS){ e.stopPropagation(); e.preventDefault(); } },true);
+    window.addEventListener('keydown',e=>{ if(D&&D.active&&e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); cleanup(); cancelAnimationFrame(D.raf); finish(false); } },true);
+    window.addEventListener('blur',()=>{ if(D&&D.active){ cleanup(); cancelAnimationFrame(D.raf); finish(false); } });
+    /* 옛 코드(차트 높이 변화 뒤 호출)가 쓰던 이름 유지: _adjSector=오른쪽 열 변화 → 왼쪽 보정 / _adjTrading=왼쪽 열 변화 → 오른쪽 보정 */
+    window._adjSector=()=>{ const s=SYNC.rows.get('mk'); if(s) s.run('L'); };
+    window._adjTrading=()=>{ const s=SYNC.rows.get('mk'); if(s) s.run('R'); };
+  }
+
+  const snapshot=()=>ready?readLayout():undefined;   /* 리포트 데이터에 실을 배치(초기화 전이면 없음) */
+  return {init,reset,undo,moveItem,pairOf,mirrorDib,placePopup,syncRefresh,readLayout,snapshot,applyLayout,applyForViewer,
+          _dbg:{COLS,COL,ITEMS,ITEM,ROWS,ROW,BLKS,BLK,SYNC,participants,bottomBox,get DEFAULT(){return DEFAULT;},get drag(){return D;}}};
+})();
+/* ═══ SECDRAG-JS-END ═══ */
+
 window.addEventListener('DOMContentLoaded',async ()=>{
   /* 포트폴리오 테이블 변경 감지 → Guest 마스킹 자동 재적용 */
   const _hb=g('holdingsBody');
@@ -27438,9 +27831,7 @@ window.addEventListener('DOMContentLoaded',async ()=>{
   _initTextBotResize('footprintGrip',    'footprintContent');
   _initTextBotResize('prayerCornerGrip',    'prayerContent');   /* 감사와 간구 우측하단 독립 리사이즈 */
   _initTextBotResize('watchlistNoteGrip',   'watchlistNote');   /* 관심종목 메모 높이 조절 */
-  _initPrayerFpSync();                                /* 감사와 간구 ↔ Footprints 밑변 싱크 */
-  _initDibSbSync();                                   /* Daily Inbody Check ↔ Snowball Effect 밑변 싱크 */
-  _initMarketSync();                                  /* 두 열 하단 정렬: trading ↔ technicalAnalysis 밑변 싱크 */
+  try{ BTMSecDrag.init(); }catch(e){ console.error('BTMSecDrag.init',e); }   /* 섹션 제목 끌어 옮기기 + 열 밑변 싱크(감사와 간구↔Footprints · Daily Inbody↔Snowball · 시장분석 두 열) — 옛 _initPrayerFpSync/_initDibSbSync/_initMarketSync 를 일반화해 대체 */
   _initEcoSumResize();                               /* 경제일정 ↔ 투자현황 좌우 너비 드래그 */
   initSectionResize();
   _initBottomRowResize();                           /* 관심종목 · Investor Status/MindMap(밑변 공유) 높이 조절 */
