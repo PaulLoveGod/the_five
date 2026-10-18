@@ -2585,6 +2585,23 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 }
 </style>
 <!-- BTMSCRIPT-CSS-END -->
+<!-- BTMLH-CSS-BEGIN -->
+<style>
+/* ── 텍스트박스별 행간격 조절 버튼 (2026-10-18) — 박스에 마우스를 올리거나 포커스하면 BTMLH-JS 가 이 버튼(#lhPill)을 박스 오른쪽 위로 옮겨 보임. 화면 고정(fixed)이라 리포트(#report-root) 밖 → PDF·이미지 저장에 안 들어감 ── */
+#lhPill{position:fixed;z-index:8700;display:none;align-items:center;gap:1px;height:22px;padding:0 3px 0 8px;border-radius:11px;background:rgba(30,41,59,.95);color:#e2e8f0;font-size:10px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.32);user-select:none;-webkit-user-select:none;font-family:inherit;white-space:nowrap}
+#lhPill.on{display:flex}
+#lhPill .lh-t{font-size:9px;color:#94a3b8;margin-right:3px}
+#lhPill button{width:18px;height:18px;min-height:0;padding:0;border:none;border-radius:50%;background:transparent;color:#e2e8f0;font-size:13px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
+#lhPill button:hover:not(:disabled){background:rgba(255,255,255,.22)}
+#lhPill button:disabled{opacity:.32;cursor:default}
+#lhPill .lh-v{min-width:27px;text-align:center;font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+#lhPill.cus .lh-v{color:#fbbf24}   /* 기본 값에서 바꾼 상태는 노란색 */
+#lhPill .lh-r{font-size:11px;margin-left:1px}
+body.guest-mode #lhPill{display:none!important}
+@media print{#lhPill{display:none!important}}
+@media(max-width:679px){#lhPill{display:none!important}}
+</style>
+<!-- BTMLH-CSS-END -->
 </head>
 <body spellcheck="false">
 
@@ -3315,11 +3332,11 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
   <button class="ft-blk" id="ftValignBottom" title="텍스트 하단 배치" onmousedown="return false" onclick="setBoxValign('bottom')" style="font-size:11px;padding:0 3px">⬇</button>
   <div class="ft-sep ft-blk"></div>
   <!-- 행간격 미세 조절 -->
-  <span class="ft-blk" style="display:inline-flex;align-items:center;gap:1px;vertical-align:middle">
+  <span class="ft-blk" title="커서가 있는 문단의 행간격 — 텍스트박스 전체의 행간은 박스에 마우스를 올리면 오른쪽 위에 나오는 [행간 − +] 버튼으로 조절하세요" style="display:inline-flex;align-items:center;gap:1px;vertical-align:middle">
     <span style="font-size:8px;color:#94a3b8;white-space:nowrap;margin-right:1px;line-height:1">행간</span>
-    <button title="행간격 줄이기 (−0.1)" onmousedown="return false" onclick="adjustLineHeight(-0.1)" style="font-size:11px;padding:0 3px;min-width:14px;line-height:1">−</button>
+    <button title="문단 행간격 줄이기 (−0.1)" onmousedown="return false" onclick="adjustLineHeight(-0.1)" style="font-size:11px;padding:0 3px;min-width:14px;line-height:1">−</button>
     <span id="ftLineHDisp" style="font-size:9.5px;color:#e2e8f0;min-width:20px;text-align:center;font-variant-numeric:tabular-nums;user-select:none">1.5</span>
-    <button title="행간격 늘리기 (+0.1)" onmousedown="return false" onclick="adjustLineHeight(0.1)" style="font-size:11px;padding:0 3px;min-width:14px;line-height:1">+</button>
+    <button title="문단 행간격 늘리기 (+0.1)" onmousedown="return false" onclick="adjustLineHeight(0.1)" style="font-size:11px;padding:0 3px;min-width:14px;line-height:1">+</button>
   </span>
   <div class="ft-sep ft-blk"></div>
   <!-- 서식삭제 — 맨 오른쪽 -->
@@ -5692,6 +5709,7 @@ function ftFocus(el){
   if(!el||el.id!=='sbTableWrap'){ const b=g('sb-tbl-box'); if(b) b.classList.remove('selected'); }
   ftUpdateState();
   _syncValignBtns();
+  _ftSyncLineH();   /* 툴바 행간 표시를 이 박스의 실제 행간으로 */
   /* 서식 툴바 표시 및 위치 조정 */
   _positionFormatToolbar();
   /* 스크롤 시 툴바 위치 재계산 */
@@ -6026,29 +6044,41 @@ function fmtCmd(cmd,val=null){
   ftUpdateState();
 }
 
-/* ── 행간격 미세 조절 ── */
+/* ── 행간격 미세 조절 ── 서식 툴바의 [행간 − +]는 '커서가 있는 문단(블록)' 단위. 커서가 문단 밖(박스 전체)이면 박스 오른쪽 위 [행간] 버튼과 같은 '박스 행간'(저장되는 값 — BTMBoxLH)으로 연결됨 */
 let _ftLineHeight = 1.5;
 const _FT_LH_BLOCK = new Set(['P','DIV','H1','H2','H3','H4','H5','H6','LI','TD','BLOCKQUOTE']);
-function adjustLineHeight(delta){
-  _ensureEditorFocus();
-  if(!_ftEditor) return;
-  _ftLineHeight = Math.round((_ftLineHeight + delta) * 10) / 10;
-  _ftLineHeight = Math.max(0.8, Math.min(4.0, _ftLineHeight));
-  const disp = g('ftLineHDisp');
-  if(disp) disp.textContent = _ftLineHeight.toFixed(1);
-  /* 커서/선택 범위를 포함하는 가장 가까운 블록 조상 또는 에디터 자체에 lineHeight 적용 */
+function _ftLhTarget(){   /* 커서(선택 시작)를 품은 가장 가까운 블록 조상 — 없으면 null(박스 전체) */
   const sel = window.getSelection();
-  let target = null;
-  if(sel && sel.rangeCount){
-    const range = sel.getRangeAt(0);
-    let node = range.startContainer;
+  if(sel && sel.rangeCount && _ftEditor){
+    let node = sel.getRangeAt(0).startContainer;
     if(node.nodeType === 3) node = node.parentNode;
     while(node && node !== _ftEditor){
-      if(node.nodeType === 1 && _FT_LH_BLOCK.has(node.tagName)){ target = node; break; }
+      if(node.nodeType === 1 && _FT_LH_BLOCK.has(node.tagName)) return node;
       node = node.parentNode;
     }
   }
-  (target || _ftEditor).style.lineHeight = _ftLineHeight;
+  return null;
+}
+function _ftLhRatio(el){   /* 그 요소에 실제 적용된 행간 ÷ 글자 크기 */
+  const cs = getComputedStyle(el), fs = parseFloat(cs.fontSize), lh = parseFloat(cs.lineHeight);
+  return (fs > 0 && isFinite(lh)) ? Math.round(lh / fs * 100) / 100 : _ftLineHeight;
+}
+function _ftSyncLineH(){   /* 툴바의 행간 표시를 지금 커서 문단(또는 박스)의 실제 값으로 */
+  const disp = g('ftLineHDisp'); if(!disp || !_ftEditor) return;
+  _ftLineHeight = _ftLhRatio(_ftLhTarget() || _ftEditor);
+  disp.textContent = String(+_ftLineHeight.toFixed(2));
+}
+function adjustLineHeight(delta){
+  _ensureEditorFocus();
+  if(!_ftEditor) return;
+  const sel = window.getSelection();
+  const target = _ftLhTarget();
+  /* 지금 그 요소에 실제로 적용돼 있는 행간에서 출발 — 전역 기억값에서 출발하면 박스의 원래 행간(1.7 등)과 달라 첫 클릭에 값이 튀었음 */
+  _ftLineHeight = Math.max(0.8, Math.min(4.0, Math.round((_ftLhRatio(target || _ftEditor) + delta) * 100) / 100));
+  const disp = g('ftLineHDisp');
+  if(disp) disp.textContent = String(+_ftLineHeight.toFixed(2));
+  if(!target && window.BTMBoxLH && BTMBoxLH.has(_ftEditor.id)) BTMBoxLH.set(_ftEditor.id, _ftLineHeight, {keepOverrides:true});   /* 박스 전체 — 로그인·Create New 뒤에도 유지되는 박스 행간으로 */
+  else (target || _ftEditor).style.lineHeight = _ftLineHeight;
   /* 적용 후 선택 유지 */
   if(sel && sel.rangeCount){
     try{
@@ -12360,6 +12390,7 @@ function collectData(opt){   /* opt.mmSaved: 마인드맵은 화면의 수정본
     vzBodies:(window.BTMVz?BTMVz.bodies():{}), vzModes:(window.BTMVz?BTMVz.modes():{}),   /* 섹션 본문의 '인포그래픽' 쪽 내용·보기(인포그래픽 보기인 섹션만) — 글 쪽은 위의 섹션 필드 */
     boxHeights:Object.fromEntries(_BOX_HEIGHT_IDS.map(id=>{const el=g(id);return[id,el?.style?.height||''];})),
     boxFlex:Object.fromEntries(_BOX_FLEX_IDS.map(id=>{const el=g(id);return[id,{flex:el?.style?.flex||'',width:el?.style?.width||''}];})),
+    lineHeights:(window.BTMBoxLH?BTMBoxLH.snapshot():undefined),   /* 텍스트박스별 행간격(바꾼 박스만) — 게스트 화면·다른 기기에서도 같게. 멤버 화면은 사용자 설정(BTMBoxLineH)이 우선 */
     secLayout:(window.BTMSecDrag&&BTMSecDrag.snapshot)?BTMSecDrag.snapshot():undefined,   /* 섹션 끌어 옮기기 배치(게스트 화면에서 같은 배치로 보이게) */
     keyWord: gv('keyWord')||'',
     snowball:{
@@ -13584,6 +13615,7 @@ function applyData(d){
   });
   try{ if(window.BTMSecDrag) BTMSecDrag.mirrorDib(); }catch(_){}   /* Daily Inbody 칸 너비 반영 */
   try{ if(window.BTMSecDrag&&d.secLayout&&document.body.classList.contains('guest-mode')) BTMSecDrag.applyForViewer(d.secLayout); }catch(_){}   /* 게스트: 작성자가 옮겨 둔 섹션 배치 그대로 */
+  try{ if(window.BTMBoxLH) BTMBoxLH.apply(d.lineHeights); }catch(_){}   /* 텍스트박스별 행간격 — 멤버는 사용자 설정(로그인 때 최신 Archive 기록이 덮어써도 유지), 게스트는 기록의 값 */
   /* ── 업데이트마다 해제되는 체크박스 ── */
   const _chkPf=g('chkIncludePortfolio'); if(_chkPf) _chkPf.checked=false;
   const _chkTr=g('chkIncludeTrade');     if(_chkTr) _chkTr.checked=false;
@@ -40924,5 +40956,179 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),
 /* ═══ BTMSCRIPT-JS-END ═══ */
 </script>
 <!-- BTMSCRIPT-JS-END -->
+<!-- BTMLH-JS-BEGIN -->
+<script>
+/* ═══ BTMLH-JS-BEGIN ═══════════════════════════════════════════════════════════
+   텍스트박스별 행간격 조절 (2026-10-18)
+   · 각 텍스트박스(시황·테마·묵상·간구·삶·Footprints·Warren Kim·AI Radar·기술적 분석·매매전략·오늘의 말씀·Daily Inbody·Key-Word·Snowball 메모·관심종목/Investor 메모)에
+     마우스를 올리면 오른쪽 위에 [행간 − 1.7 + ↺] 조절 버튼(#lhPill)이 뜸 — 본문 DOM 을 건드리지 않는 화면 고정(fixed) 떠 있는 버튼 하나를 박스 위치에 맞춰 옮겨 씀.
+     − / + 는 0.1 단위(누르고 있으면 반복), ↺ 는 그 박스의 기본 행간으로 되돌림. 범위 1.0~3.0. 박스 본문 전체에 적용(editor 요소의 inline line-height — 안쪽 문단에 따로 준 행간은 지움).
+   · 저장 — 이 값은 '리포트 내용'이 아니라 '박스 설정'이라 Create New·다른 날짜 기록 열기·창을 닫고 다시 로그인해도 유지돼야 함:
+       ① localStorage 'BTMBoxLineH' = {v:1,m:{박스id:행간(숫자) | 0(=기본으로 되돌려 둠)}} — 멤버 화면에선 이 값이 최우선(로그인 때 가장 최근 Archive 기록이 화면을 덮어써도 다시 적용됨)
+       ② 리포트 데이터 collectData().lineHeights = {박스id:행간}(바꾼 박스만) — 게스트 화면(작성자가 정한 행간 그대로)·다른 기기·JSON 백업용. 멤버는 ①에 값이 없을 때만 이 값을 따름
+     applyData() 끝에서 BTMBoxLH.apply(d.lineHeights) 가 호출됨(로그인·Create New·기록 불러오기·자동저장 복원 모두 거침) + 시작할 때 한 번.
+   · 서식 툴바의 [행간 − +] 는 그대로 '커서가 있는 문단' 단위 — 다만 커서가 문단(블록) 밖(박스 전체)이면 이 박스 행간(저장되는 값)으로 연결되고, 표시 값은 실제 적용된 값에서 출발.
+   · 버튼은 마우스를 올렸을 때 보임(키보드로 입력을 시작하면 첫 줄을 가리지 않게 숨기고, 마우스를 다시 움직이면 보임 — 터치 화면은 박스를 누르면 보임).
+   · 게스트·Published(잠금) 화면·모바일 폭(<680px)·인포그래픽 보기인 섹션에서는 버튼을 안 보임. 수정 요령: 이 블록(표식 BTMLH-JS-BEGIN~END)과 BTMLH-CSS 블록만 고치면 됨
+════════════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.BTMBoxLH) return;
+const LS='BTMBoxLineH', MIN=1, MAX=3, STEP=0.1;
+const BOXES=[['qtBibleDisplay','오늘의 말씀'],['qtMemo','나의 묵상 노트'],['prayerContent','감사와 간구'],['dibContent','Daily Inbody Check'],['keyWord','Key-Word'],['sb-above','Snowball 위 메모'],['sb-below','Snowball 아래 메모'],
+  ['myLifeContent','나의 삶, 나의 생각'],['footprintContent','Footprints in Books'],['watchlistNote','관심 종목 메모'],['investorStatusNote','Investor Status 메모'],
+  ['marketAnalysis','시황 분석'],['sectorAnalysis','테마 분석'],['warrenKim','The Whispers of Warren Kim'],['aiStockRadar','AI Stock Radar'],['technicalAnalysis','기술적 분석'],['tradingStrategy','매매 전략']];
+const IDS=BOXES.map(b=>b[0]), NAME=Object.fromEntries(BOXES);
+const SEL=IDS.map(id=>'#'+id).join(',');
+const $=id=>document.getElementById(id);
+const r2=x=>Math.round(x*100)/100;
+const clamp=v=>Math.max(MIN,Math.min(MAX,v));
+const fmt=v=>String(+r2(v).toFixed(2));
+const has=id=>IDS.indexOf(id)>=0;
+
+/* ───────── 저장 ───────── */
+function readPref(){   /* 사용자 설정(localStorage) — 손상·조작에 대비해 검증 */
+  let o=null; try{ o=JSON.parse(localStorage.getItem(LS)||'null'); }catch(e){}
+  const m=(o&&typeof o==='object'&&o.m&&typeof o.m==='object')?o.m:{}, out={};
+  IDS.forEach(id=>{ if(Object.prototype.hasOwnProperty.call(m,id)){ const x=Number(m[id]); out[id]=(isFinite(x)&&x>0)?clamp(r2(x)):0; } });
+  return out;
+}
+function writePref(m){ try{ localStorage.setItem(LS,JSON.stringify({v:1,m})); }catch(e){} }
+
+/* ───────── 박스에 적용 ───────── */
+function touch(el){ if(el._lhD===undefined) el._lhD=el.style.lineHeight||''; }   /* 처음 만났을 때의 inline 행간(Key-Word 처럼 기본값이 inline 인 박스)을 '기본'으로 기억 */
+function applyEl(el,v){   /* v>0 이면 그 행간, 아니면 기본 */
+  touch(el);
+  if(v>0){ const x=clamp(r2(v)); el.style.lineHeight=String(x); el.dataset.lh=String(x); }
+  else{ el.style.lineHeight=el._lhD; delete el.dataset.lh; if(el.getAttribute('style')==='') el.removeAttribute('style'); }
+}
+function ratio(el){ const cs=getComputedStyle(el), fs=parseFloat(cs.fontSize), lh=parseFloat(cs.lineHeight); return (fs>0&&isFinite(lh))?r2(lh/fs):1.5; }   /* 실제 적용된 행간 ÷ 글자 크기 */
+function defRatio(el){ touch(el); const cur=el.style.lineHeight; el.style.lineHeight=el._lhD; const v=ratio(el); el.style.lineHeight=cur; return v; }   /* 이 박스의 기본 행간(CSS) */
+function curVal(el){ const x=Number(el.dataset.lh); return x>0?x:defRatio(el); }
+function clearOverrides(el){   /* 박스 안 문단·글자에 따로 준 line-height 를 지움 — 안 그러면 박스 행간을 바꿔도 그 줄들만 안 변함 */
+  el.querySelectorAll('[style]').forEach(c=>{ if(c.style.lineHeight){ c.style.removeProperty('line-height'); if(c.getAttribute('style')==='') c.removeAttribute('style'); } });
+}
+
+/* 한 박스의 행간을 정함(사용자 동작) — v=0 이면 기본으로 되돌림 */
+function set(id,v,o){
+  o=o||{}; const el=$(id); if(!el||!has(id)) return false;
+  v=(isFinite(v)&&v>0)?clamp(r2(v)):0;
+  if(v>0&&Math.abs(v-defRatio(el))<0.005) v=0;   /* 기본 값과 같아지면 '기본'으로(나중에 기본 CSS 가 바뀌어도 따라가게) */
+  const m=readPref(); m[id]=v; writePref(m);
+  applyEl(el,v);
+  if(v>0&&!o.keepOverrides) clearOverrides(el);
+  try{ if(typeof saveData==='function') saveData(); }catch(e){}
+  refresh();
+  try{ if(typeof _ftSyncLineH==='function') _ftSyncLineH(); }catch(e){}
+  return true;
+}
+/* 저장된 값을 화면에 적용 — d.lineHeights(리포트 데이터)와 사용자 설정을 합쳐서. 멤버: 사용자 설정이 최우선, 없으면 데이터 값. 게스트: 데이터 값만(작성자가 정한 대로) */
+function apply(dm){
+  const guest=document.body.classList.contains('guest-mode'), pf=guest?{}:readPref();
+  IDS.forEach(id=>{
+    const el=$(id); if(!el) return;
+    let v=0;
+    if(!guest&&Object.prototype.hasOwnProperty.call(pf,id)) v=pf[id];
+    else if(dm&&typeof dm==='object'){ const x=Number(dm[id]); if(isFinite(x)&&x>0) v=x; }
+    applyEl(el,v);
+  });
+  refresh();
+}
+function snapshot(){ const o={}; IDS.forEach(id=>{ const el=$(id), x=el?Number(el.dataset.lh):0; if(x>0) o[id]=x; }); return o; }   /* 바꾼 박스만 */
+
+/* ───────── 떠 있는 조절 버튼 ───────── */
+let pill=null, cur=null, hideT=0, overPill=false, ro=null, holdT=0, holdI=0;
+function build(){
+  if(pill) return pill;
+  pill=document.createElement('div'); pill.id='lhPill'; pill.className='no-print'; pill.setAttribute('role','group');
+  pill.innerHTML='<span class="lh-t">행간</span><button type="button" class="lh-m" aria-label="행간격 줄이기" title="행간격 줄이기 (−0.1) — 누르고 있으면 계속">−</button><span class="lh-v" aria-live="polite"></span>'
+    +'<button type="button" class="lh-p" aria-label="행간격 늘리기" title="행간격 늘리기 (+0.1) — 누르고 있으면 계속">+</button><button type="button" class="lh-r" aria-label="기본 행간으로 되돌리기" title="이 박스의 기본 행간으로 되돌리기">↺</button>';
+  document.body.appendChild(pill);
+  pill.addEventListener('mousedown',e=>{   /* 편집 중인 글의 포커스·선택이 풀리지 않게 */
+    e.preventDefault();
+    const b=e.target.closest&&e.target.closest('button'); if(!b||b.disabled) return;
+    if(b.classList.contains('lh-r')){ reset(); return; }
+    const d=b.classList.contains('lh-p')?1:-1; step(d);
+    stopHold(); holdT=setTimeout(()=>{ holdI=setInterval(()=>step(d),110); },420);   /* 누르고 있으면 반복 */
+  });
+  pill.addEventListener('mouseenter',()=>{ overPill=true; clearTimeout(hideT); });
+  pill.addEventListener('mouseleave',()=>{ overPill=false; stopHold(); hideSoon(300); });
+  document.addEventListener('mouseup',stopHold);
+  return pill;
+}
+function stopHold(){ clearTimeout(holdT); clearInterval(holdI); holdT=0; holdI=0; }
+function step(d){ if(!cur) return; set(cur.id,r2(curVal(cur)+d*STEP)); }
+function reset(){ if(cur) set(cur.id,0); }
+function refresh(){   /* 버튼 표시(값·색·비활성)를 지금 박스 상태로 */
+  if(!pill||!cur) return;
+  const x=Number(cur.dataset.lh), custom=x>0, v=custom?x:defRatio(cur);
+  pill.querySelector('.lh-v').textContent=fmt(v);
+  pill.classList.toggle('cus',custom);
+  pill.querySelector('.lh-m').disabled=v<=MIN+0.001;
+  pill.querySelector('.lh-p').disabled=v>=MAX-0.001;
+  pill.querySelector('.lh-r').disabled=!custom;
+  pill.title=(NAME[cur.id]||'텍스트박스')+' 본문 행간격 — 한 번 정하면 Create New·다시 로그인해도 유지돼요';
+}
+function eligible(el){
+  if(!el||!el.isConnected) return false;
+  if(document.body.classList.contains('guest-mode')) return false;
+  const rr=$('report-root'); if(rr&&rr.classList.contains('published-mode')) return false;   /* 게시(잠금) 화면 */
+  if(el.closest('.vz-wrap.vz-on')) return false;   /* 인포그래픽 보기인 섹션은 글이 가려져 있음 */
+  const r=el.getBoundingClientRect(); return r.width>20&&r.height>8;
+}
+function place(){
+  if(!pill||!cur) return;
+  const r=cur.getBoundingClientRect(), pw=pill.offsetWidth||130, ph=pill.offsetHeight||22;
+  const bar=document.querySelector('.main-btn-bar'), top0=(bar&&getComputedStyle(bar).display!=='none')?Math.max(0,bar.getBoundingClientRect().bottom):0;
+  if(r.bottom<top0+14||r.top>innerHeight-12||r.right<8||r.left>innerWidth-8){ pill.style.visibility='hidden'; return; }   /* 박스가 화면 밖 */
+  let x=Math.max(4,Math.min(innerWidth-pw-6,r.right-pw-8)), y;
+  if(r.height<46){ y=r.top-ph-2; if(y<top0+2) y=r.bottom+2; }   /* 한 줄짜리 작은 박스(Key-Word·Snowball 메모)는 바로 위에 */
+  else y=Math.max(r.top+5,top0+3);                              /* 보통 박스는 안쪽 오른쪽 위(스크롤로 윗부분이 가려지면 메뉴바 밑에 붙어 따라옴) */
+  y=Math.max(top0+2,Math.min(y,innerHeight-ph-4));
+  pill.style.left=x+'px'; pill.style.top=y+'px'; pill.style.visibility='visible';
+}
+function showFor(el){
+  build(); clearTimeout(hideT);
+  if(cur!==el){ cur=el; try{ if(ro) ro.disconnect(); if(window.ResizeObserver){ ro=new ResizeObserver(()=>place()); ro.observe(el); } }catch(e){} }
+  pill.classList.add('on'); refresh(); place();
+}
+function hideNow(){ clearTimeout(hideT); stopHold(); if(pill) pill.classList.remove('on'); cur=null; try{ if(ro) ro.disconnect(); }catch(e){} }
+let sup=false, lastPT='mouse';   /* sup: 키보드로 입력 중이라 숨겨 둔 상태 — 마우스를 다시 움직이면 보임 · lastPT: 마지막 포인터 종류(터치는 마우스 올리기가 없어 포커스 때 보임) */
+function hideSoon(ms){
+  clearTimeout(hideT);
+  hideT=setTimeout(()=>{ if(overPill) return; const a=document.activeElement; if(lastPT==='touch'&&cur&&a&&(cur===a||cur.contains(a))) return; hideNow(); },ms||350);   /* 터치 화면에서는 편집 중(포커스)이면 유지 */
+}
+const hostOf=t=>{ try{ return t&&t.closest?t.closest(SEL):null; }catch(e){ return null; } };
+document.addEventListener('mouseover',e=>{
+  const t=e.target; sup=false;
+  if(pill&&pill.contains(t)){ overPill=true; clearTimeout(hideT); return; }
+  overPill=false;
+  const h=hostOf(t);
+  if(h&&eligible(h)) showFor(h); else if(cur) hideSoon();
+},true);
+document.addEventListener('mousemove',e=>{   /* 입력하느라 숨겼다가, 마우스를 움직이면 그 자리의 박스 버튼을 다시 보임 */
+  if(!sup) return; sup=false;
+  const t=e.target; if(pill&&pill.contains(t)) return;
+  const h=hostOf(t); if(h&&eligible(h)) showFor(h);
+},true);
+document.addEventListener('keydown',e=>{   /* 글을 입력하기 시작하면 버튼이 첫 줄 오른쪽 끝을 가리지 않게 숨김 */
+  if(!cur||(pill&&pill.contains(e.target))) return;
+  hideNow(); sup=true;
+},true);
+document.addEventListener('focusin',e=>{ if(lastPT!=='touch') return; const h=hostOf(e.target); if(h&&eligible(h)) showFor(h); },true);   /* 터치 화면 — 박스를 누르면 보임 */
+document.addEventListener('focusout',()=>{ if(cur) hideSoon(250); },true);
+document.addEventListener('pointerdown',e=>{   /* 다른 곳을 누르면(헤더 끌기 등) 숨김 */
+  lastPT=e.pointerType||'mouse';
+  if(cur&&!(pill&&pill.contains(e.target))&&!hostOf(e.target)) hideNow();
+},true);
+window.addEventListener('scroll',()=>{ if(cur&&pill&&pill.classList.contains('on')) place(); },{passive:true,capture:true});
+window.addEventListener('resize',()=>{ if(cur&&pill&&pill.classList.contains('on')) place(); });
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>apply()); else apply();   /* 시작할 때 사용자 설정을 먼저 적용(저장본 복원은 이어서 applyData 가 다시) */
+window.BTMBoxLH={IDS,apply,snapshot,set,has,get:id=>{ const el=$(id); return el?curVal(el):null; },_dbg:{readPref,writePref,defRatio,get cur(){ return cur; },get pill(){ return pill; },showFor,hideNow,place,refresh,eligible}};
+})();
+/* ═══ BTMLH-JS-END ═══ */
+</script>
+<!-- BTMLH-JS-END -->
 </body>
 </html>
