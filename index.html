@@ -31441,6 +31441,7 @@ Rules:
       {label:'The Whispers of Warren Kim',            id:'warrenKim'},
       {label:'AI Stock Radar',                        id:'aiStockRadar'},
       {label:'My Technical Analysis With AI',         id:'technicalAnalysis'},
+      {label:'Chart Note (서술형 해설)',               id:'tsChartNoteBody',noImg:true,isCur:()=>_eid==='tsChartNoteBody',tt:'Chart Note 팝업(차트 AI 분석이 기록한 서술형 해설 노트)의 내용을 왼쪽 참고자료로 가져옵니다'},   /* 글 노트라 📷 캡쳐는 없음 */
       {label:'My Trading Strategy With AI Navigator', id:'tradingStrategy'},
     ]},
     {group:'MindMap',items:[   /* 텍스트 = 지도 전체의 들여쓰기 개요(MM.outlineText), 캡쳐 = 지도 전체 PNG(MM.capturePng) — 화면 글(innerText)이 아니라 MindMap 전용으로 처리 */
@@ -31471,7 +31472,8 @@ Rules:
       const imgBtn=document.createElement('button'); imgBtn.className='ai-body-dd-btn ai-body-dd-img'; imgBtn.textContent='📷 캡쳐';
       imgBtn.onclick=()=>{ _fetchSectionImage(eid,s.label); dd.style.display='none'; btn&&btn.classList.remove('active'); };
       if(s.tt) txtBtn.title=s.tt; if(s.ti) imgBtn.title=s.ti;
-      row.append(lbl,txtBtn,imgBtn); list.appendChild(row);
+      if(s.noImg) row.append(lbl,txtBtn); else row.append(lbl,txtBtn,imgBtn);   /* noImg: 글뿐인 항목(Chart Note)은 캡쳐 버튼 없음 */
+      list.appendChild(row);
     };
     _BODY_SECS.forEach(entry=>{
       if(entry.group){
@@ -31500,9 +31502,20 @@ Rules:
       return;
     }
     const el=g(eid); if(!el) return;
-    const txt=(el.innerText||el.textContent||'').trim();
-    const dataImgs=[...el.querySelectorAll('img')].filter(i=>i.src.startsWith('data:image/'));
-    if(!txt&&!dataImgs.length) return;
+    let txt, dataImgs;
+    if(eid==='tsChartNoteBody'){
+      /* Chart Note — 팝업이 닫혀 있으면 화면 요소는 안 보이는 상태(innerText 가 줄바꿈 없이 이어짐)이고 내용의 원본은 _chartNoteHtml 이라, 그 HTML 을 비활성 문서(DOMParser)로 읽어
+         줄바꿈을 살린 글(_richToText)과 data:image 이미지로 가져옴 */
+      const html=(typeof _chartNoteHtml==='string'&&_chartNoteHtml.trim())?_chartNoteHtml:(el.innerHTML||'');
+      txt=_richToText(html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi,'')).trim();   /* script·style 블록 안의 글은 가져오지 않음 */
+      let doc=null; try{ doc=new DOMParser().parseFromString(html,'text/html'); }catch(e){}
+      dataImgs=doc?[...doc.querySelectorAll('img')].map(i=>({src:i.getAttribute('src')||''})).filter(i=>i.src.startsWith('data:image/')):[];
+      if(!txt&&!dataImgs.length){ _showToast('_aiBodyToast','Chart Note 에 가져올 내용이 없어요'); return; }
+    } else {
+      txt=(el.innerText||el.textContent||'').trim();
+      dataImgs=[...el.querySelectorAll('img')].filter(i=>i.src.startsWith('data:image/'));
+      if(!txt&&!dataImgs.length) return;
+    }
     const lc=g('aiLeftContent');
     lc.textContent=txt+(dataImgs.length?`\n\n[이미지 ${dataImgs.length}개 포함]`:'');
     _setLeftMode('text');
