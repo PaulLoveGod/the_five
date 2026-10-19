@@ -2700,6 +2700,7 @@ body.guest-mode #lhPill{display:none!important}
 .ie-osep{width:1px;height:20px;background:#444;flex:none}
 /* 작업 영역 */
 .ie-stage{flex:1;min-height:0;overflow:auto;background:#2b2b2b;position:relative;overscroll-behavior:contain;touch-action:none;cursor:crosshair;scrollbar-width:thin;scrollbar-color:#666 #2b2b2b}
+.ie-stage[data-tool=none]{cursor:default}
 .ie-stage[data-tool=magnifier]{cursor:zoom-in}
 .ie-stage[data-tool=text]{cursor:text}
 .ie-stage[data-tool=fill]{cursor:cell}
@@ -2714,6 +2715,7 @@ body.guest-mode #lhPill{display:none!important}
 #ieOb{z-index:3}
 .ie-svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:4}
 .ie-hov{position:absolute;display:none;pointer-events:none;z-index:4;border:2px solid #5cc8ff;background:rgba(92,200,255,.10)}
+.ie-hov.in{background:transparent}
 .ie-frame{position:absolute;display:none;pointer-events:none;z-index:5}
 .ie-selbox{border:1px dashed #fff;outline:1px dashed #000;outline-offset:-1px;pointer-events:auto;cursor:move}
 .ie-selbox.nohd .ie-hd{display:none}
@@ -2759,6 +2761,21 @@ body.guest-mode #lhPill{display:none!important}
 .ie-toast{position:absolute;left:50%;bottom:46px;transform:translateX(-50%);background:rgba(10,10,10,.93);color:#fff;padding:8px 16px;border-radius:8px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:80%;text-align:center}
 .ie-toast.on{opacity:1}
 .ie-menu{position:absolute;z-index:50;min-width:200px;background:#2b2b2b;border:1px solid #4a4a4a;border-radius:8px;padding:4px;box-shadow:0 8px 28px rgba(0,0,0,.55)}
+/* 색 칸을 누르면 그 칸 바로 아래에 뜨는 색상표(투명 포함) */
+.ie-colpop{min-width:0;width:max-content;max-width:calc(100% - 12px);padding:8px 10px 10px}
+.ie-cph{font-size:11.5px;font-weight:700;color:#d6d6d6;margin:0 2px 7px;white-space:nowrap}
+.ie-cpn{display:flex;align-items:center;gap:9px;width:100%;height:28px;padding:0 8px;margin:0 0 8px;background:#333;border:1px solid #4a4a4a;border-radius:5px;color:#eee;font-size:12px;text-align:left;white-space:nowrap}
+.ie-cpn:hover{background:#3d3d3d}
+.ie-cpn.on{border:2px solid #60cdff;padding:0 7px}
+.ie-cpx{position:relative;display:inline-block;width:18px;height:18px;flex:none;border:1px solid #888;border-radius:3px;background:conic-gradient(#ccc 25%,#fff 0 50%,#ccc 0 75%,#fff 0) 0 0/8px 8px;overflow:hidden}
+.ie-cpx::after{content:'';position:absolute;left:-3px;right:-3px;top:50%;height:2px;margin-top:-1px;background:#e5484d;transform:rotate(-45deg)}
+.ie-cpg{display:grid;grid-template-columns:repeat(10,22px);gap:5px}
+.ie-pc{width:22px;height:22px;border-radius:50%;border:1.5px solid #6a6a6a;padding:0}
+.ie-pc:hover{border-color:#fff;transform:scale(1.12)}
+.ie-pc.on{border:3px solid #60cdff}
+.ie-cpl{font-size:11px;color:#9a9a9a;margin:9px 2px 5px}
+.ie-cpm{display:block;width:100%;height:28px;margin-top:9px;background:#2d2d2d;border:1px solid #4a4a4a;border-radius:5px;color:#ddd;font-size:12px}
+.ie-cpm:hover{background:#3a3a3a}
 .ie-mi{display:flex;align-items:center;gap:8px;width:100%;height:28px;padding:0 10px;background:transparent;border:0;border-radius:5px;color:#eee;text-align:left;font-size:12.5px;white-space:nowrap}
 .ie-mi:hover:not(.dis){background:#3d3d3d}
 .ie-mi.on .ie-mtx::before{content:'✓ ';color:#60cdff}
@@ -41474,9 +41491,9 @@ const S={
   selShape:'rect', selTransp:false, bg:'c2',
   tx:{font:0,size:28,b:false,i:false,u:false,s:false,al:'left',bg:'transp'},
   sel:null,
-  objs:[], nid:1, osel:null, oedit:null, ohov:null, ohovShown:false, dtap:null, dblMs:500, pend:null, ckT:0, editBefore:null, polyBefore:null,
+  objs:[], nid:1, osel:null, oedit:null, ohov:null, ohovShown:false, ohovIn:false, dtap:null, dblMs:500, pend:null, ckT:0, editBefore:null, polyBefore:null, escToast:0,
   undo:[], redo:[], histBytes:0, evicted:0,
-  clip:null, space:false, dlg:null, menu:null, menuAnchor:null, blockOpen:null, hover:null,
+  clip:null, space:false, dlg:null, menu:null, menuAnchor:null, menuKey:null, blockOpen:null, blockKey:null, hover:null,
   tick:0
 };
 let OBJ_BASE='[]';     /* 개체 목록의 마지막 확정 상태(JSON) — 개체를 바꾸기 전에 읽어 두었다가 histPushObjs(before) 로 되돌리기 기록을 남김 */
@@ -41696,14 +41713,25 @@ function toast(msg,ms){
 }
 function closeMenu(){
   if(S.menu){ S.menu.remove(); S.menu=null; }
-  S.menuAnchor=null;
+  S.menuAnchor=null; S.menuKey=null;
   document.removeEventListener('pointerdown',menuOutside,true);
 }
 function menuOutside(e){
   if(!S.menu) return;
   if(S.menu.contains(e.target)) return;
-  if(S.menuAnchor&&S.menuAnchor.contains(e.target)){ S.blockOpen=S.menuAnchor; setTimeout(()=>{ S.blockOpen=null; },450); }
+  if(S.menuAnchor&&S.menuAnchor.contains(e.target)){ S.blockOpen=S.menuAnchor; S.blockKey=S.menuKey; setTimeout(()=>{ S.blockOpen=null; S.blockKey=null; },450); }     /* 열려 있는 메뉴·색상표의 칸을 다시 누르면 닫기만 하고 다시 열리지 않게 */
   closeMenu();
+}
+function showPop(anchor,el,key){   /* 메뉴·색상표 팝업을 anchor 바로 아래(자리가 없으면 위)에 띄움. Esc·바깥 클릭으로 닫힘. key: 칸이 다시 그려져도 '같은 칸'을 알아볼 이름 */
+  closeMenu();
+  R.inner.appendChild(el);
+  const ar=anchor.getBoundingClientRect(), ir=R.inner.getBoundingClientRect();
+  let left=ar.left-ir.left, top=ar.bottom-ir.top+2;
+  if(left+el.offsetWidth>ir.width-6) left=Math.max(6,ir.width-el.offsetWidth-6);
+  if(top+el.offsetHeight>ir.height-6) top=Math.max(6,ar.top-ir.top-el.offsetHeight-2);
+  el.style.left=left+'px'; el.style.top=top+'px';
+  S.menu=el; S.menuAnchor=anchor; S.menuKey=key||null;
+  setTimeout(()=>{ if(S.menu===el) document.addEventListener('pointerdown',menuOutside,true); },0);
 }
 function showMenu(anchor,items){
   if(S.blockOpen===anchor){ S.blockOpen=null; return; }
@@ -41716,14 +41744,7 @@ function showMenu(anchor,items){
     b.onclick=e=>{ e.stopPropagation(); if(it.dis) return; closeMenu(); if(it.fn) it.fn(); };
     m.appendChild(b);
   });
-  R.inner.appendChild(m);
-  const ar=anchor.getBoundingClientRect(), ir=R.inner.getBoundingClientRect();
-  let left=ar.left-ir.left, top=ar.bottom-ir.top+2;
-  if(left+m.offsetWidth>ir.width-6) left=Math.max(6,ir.width-m.offsetWidth-6);
-  if(top+m.offsetHeight>ir.height-6) top=Math.max(6,ar.top-ir.top-m.offsetHeight-2);
-  m.style.left=left+'px'; m.style.top=top+'px';
-  S.menu=m; S.menuAnchor=anchor;
-  setTimeout(()=>{ if(S.menu===m) document.addEventListener('pointerdown',menuOutside,true); },0);
+  showPop(anchor,m);
 }
 function closeDlg(){
   if(!S.dlg) return;
@@ -41795,7 +41816,7 @@ function tpl(){
   '<span class="ie-vsep"></span>'+
   '<button type="button" class="ie-tb mobile-keep" data-act="savepng" title="편집 중인 이미지를 PNG 파일로 저장">💾 PNG 저장</button>'+
   '<button type="button" class="ie-tb ie-ok mobile-keep" data-act="apply" title="편집한 이미지를 텍스트박스에 적용 (Ctrl+Enter)">✔ 적용</button>'+
-  '<button type="button" class="ie-tb ie-x mobile-keep" data-act="close" title="닫기 (Esc)">✕ 닫기</button>'+
+  '<button type="button" class="ie-tb ie-x mobile-keep" data-act="close" title="닫기 (편집한 내용이 있으면 적용할지 물어요)">✕ 닫기</button>'+
  '</div>'+
  '<div class="ie-ribbon" id="ieRibbon">'+
   '<div class="ie-grp"><div class="ie-gbody">'+
@@ -41921,7 +41942,8 @@ function onStageDown(e){
   S.pend=null;
   /* 어떤 도구를 쓰는 중이든 기존 도형·글상자 위를 누르면 그 개체를 고름(끌면 이동, 더블클릭이면 글 입력). Alt 를 누르고 있으면 도구 그대로 */
   if(inside&&!e.altKey&&objActive()){
-    const o=hitObj(p.x,p.y);
+    let o=hitObj(p.x,p.y);
+    if(!o&&S.tool==='none') o=hitInterior(p.x,p.y);      /* 포인터 상태(그리는 도구 없음): 속이 빈 도형은 안쪽을 눌러도 고름 */
     if(o){ objPointerDown(e,o,p,btn); return; }
     if(btn===1&&(S.tool==='shape'||S.tool==='text'||S.tool==='select')){     /* 속이 빈 도형의 안쪽: 끌면 새로 그리고, '누르기만' 하면 그 도형을 고름(더블클릭 → 글 입력) */
       const oi=hitInterior(p.x,p.y); if(oi) S.pend={o:oi,cx:e.clientX,cy:e.clientY};
@@ -41937,7 +41959,12 @@ function onStageMove(e){
   const inside=p.x>=0&&p.y>=0&&p.x<S.W&&p.y<S.H;
   const sp=g('ieStPos'); if(sp) sp.textContent=inside?(Math.floor(p.x)+', '+Math.floor(p.y)+' 픽셀'):'';
   const po=polyObj(); if(po){ po.hover=p; renderObjects(); }
-  if(!DRAG) setHover((inside&&!e.altKey&&!S.dlg&&!S.space&&objActive())?hitObj(p.x,p.y):null);     /* 도형·글상자에 올리면 커서가 이동(선택) 모양으로 바뀌고 파란 테두리가 보임 */
+  if(!DRAG){     /* 도형·글상자에 올리면 커서가 이동(선택) 모양으로 바뀌고 파란 테두리가 보임 */
+    const live=inside&&!e.altKey&&!S.dlg&&!S.space&&objActive();
+    let ho=live?hitObj(p.x,p.y):null, inner=false;
+    if(live&&!ho&&S.tool==='none'){ ho=hitInterior(p.x,p.y); inner=!!ho; }      /* 포인터 상태에서 속이 빈 도형 안쪽 — 테두리만 표시(큰 빈 도형이 화면을 덮어 보이지 않게) */
+    setHover(ho,inner);
+  }
   moveCursorRing(p);
 }
 function moveCursorRing(p){
@@ -42783,14 +42810,15 @@ function layoutEdit(){
   }
   ti.style.left=((tr.x-b.x)*S.z)+'px'; ti.style.top=((ty-b.y)*S.z)+'px'; ti.style.height=th+'px';
 }
-function setHover(o){   /* 마우스가 올라간 개체 — 커서를 이동 모양으로, 아직 고르지 않은 개체면 파란 테두리 */
-  const id=o?o.id:null, show=!!(o&&o.id!==S.osel);
-  if(S.ohov===id&&S.ohovShown===show) return;
-  S.ohov=id; S.ohovShown=show;
+function setHover(o,inner){   /* 마우스가 올라간 개체 — 커서를 이동 모양으로, 아직 고르지 않은 개체면 파란 테두리(inner=true: 속이 빈 도형의 안쪽이라 테두리만, 배경 없이) */
+  const id=o?o.id:null, show=!!(o&&o.id!==S.osel), inn=!!inner;
+  if(S.ohov===id&&S.ohovShown===show&&S.ohovIn===inn) return;
+  S.ohov=id; S.ohovShown=show; S.ohovIn=inn;
   if(R.stage) R.stage.classList.toggle('ie-onobj',id!=null);
   const h=R.hov; if(!h) return;
   if(!show){ h.style.display='none'; return; }
   const b=objBBox(o), rot=objRot(o);
+  h.classList.toggle('in',inn);
   placeBox(h,b.x,b.y,Math.max(b.w,1),Math.max(b.h,1)); h.style.display='block'; h.style.transform=rot?('rotate('+rot+'rad)'):'';
 }
 
@@ -42893,6 +42921,23 @@ function setTextColor(hex){   /* 글자색 — 선택한 개체가 있으면 그
   hex=String(hex||'').toLowerCase(); if(!/^#[0-9a-f]{6}$/.test(hex)) return;
   if(selObj()) mutateSel(o=>{ o.tx.color=hex; },'tcolor'); else setColor(1,hex);
   renderOpts();
+}
+function applyColorField(field,hex){   /* 옵션 줄 색 칸의 색상표에서 고른 색을 '그 칸의 대상'에 직접 적용(글 입력 중이어도 팔레트 규칙과 무관): co 윤곽선 · cf 채우기 · tbg 글 배경 · tcolor 글자색. 도형·글상자를 고르지 않았으면 기본값(색1/색2)만 바꿈 */
+  hex=String(hex||'').toLowerCase(); if(!/^#[0-9a-f]{6}$/.test(hex)) return;
+  const so=selObj(), sh=(so&&so.k==='shape')?so:null;
+  if(field==='co'){
+    setActive(1); S.c1=hex; paintColorUI();
+    if(sh) mutateSel(o=>{ o.co=hex; if(o.ol==='none') o.ol='solid'; },'co'); else if(S.outline==='none') S.outline='solid';      /* 윤곽선 색을 고르면 윤곽선도 켬 */
+  } else if(field==='cf'){
+    setActive(2); S.c2=hex; paintColorUI();
+    if(sh) mutateSel(o=>{ o.cf=hex; if(o.fl==='none'&&!shapeIsOpen(o)) o.fl='solid'; },'cf'); else if(S.fill==='none') S.fill='solid';     /* 채우기 색을 고르면 채우기도 켬 */
+  } else if(field==='tbg'){
+    setActive(2); S.c2=hex; paintColorUI();
+    if(so) mutateSel(o=>{ o.tx.bgc=hex; o.tx.bg='fill'; },'tbg'); else S.tx.bg='fill';
+  } else if(field==='tcolor'){
+    if(so) mutateSel(o=>{ o.tx.color=hex; },'tcolor'); else { S.c1=hex; paintColorUI(); }
+  }
+  saveCfg(); renderOpts();
 }
 
 /* ════════ 마우스로 개체 다루기 ════════ */
@@ -43146,6 +43191,9 @@ function newTextObj(x,y,w,h){
   w=Math.max(30,Math.min(Math.round(w),S.W-x)); h=Math.max(Math.ceil(lh),Math.round(h));
   return {id:S.nid++,k:'text',x,y,w,h,minH:h,rot:0,text:'',tx:newTx('text')};
 }
+TOOLS.none={   /* 포인터(도구 없음) — Esc 로 모든 도구를 풀었을 때. 빈 곳을 눌러도 아무것도 그리지 않음(선택 해제는 onStageDown 이 이미 했음). 개체 위를 누르면 onStageDown 이 먼저 그 개체를 잡음 */
+  down(){}
+};
 TOOLS.text={
   down(e,p){
     editCommit();
@@ -43455,8 +43503,8 @@ function selOpt(name,label,arr,cur){
 function radioOpt(name,label,arr,cur){   /* arr 항목: [값, 글자, (설명)] */
   return '<span class="ie-ol">'+label+' '+arr.map(a=>'<button type="button" class="ie-tg mobile-keep'+(a[0]===cur?' on':'')+'" data-optb="'+name+'" data-v="'+a[0]+'"'+(a[2]?' title="'+esc(a[2])+'"':'')+'>'+esc(a[1])+'</button>').join('')+'</span>';
 }
-function colSwatch(slot,col,off,tip){   /* 색 칸 — 지금 색을 보여주고, 누르면 팔레트가 바꾸는 칸(색1/색2)을 이 칸으로 옮김. 켜진(대상인) 칸은 파란 테두리, 모양이 '없음'이면 흐리게 */
-  return '<button type="button" class="ie-cs mobile-keep'+(S.act===slot?' on':'')+(off?' off':'')+'" data-optb="tgt" data-v="'+slot+'" title="'+esc(tip)+'"><i class="ie-tsw" style="background:'+esc(col)+'"></i></button>';
+function colSwatch(slot,col,off,tip,ck){   /* 색 칸 — 지금 색을 보여주고, 누르면 팔레트가 바꾸는 칸(색1/색2)을 이 칸으로 옮기며 바로 아래에 색상표(투명 포함)를 띄움(ck: co 윤곽선·cf 채우기·tbg 글 배경). 켜진(대상인) 칸은 파란 테두리, 모양이 '없음'이면 흐리게 */
+  return '<button type="button" class="ie-cs mobile-keep'+(S.act===slot?' on':'')+(off?' off':'')+'" data-optb="tgt" data-v="'+slot+'" data-ck="'+(ck||'co')+'" title="'+esc(tip)+'"><i class="ie-tsw" style="background:'+esc(col)+'"></i></button>';
 }
 function paletteHint(kind){   /* 힌트 줄 맨 앞에 '지금 팔레트가 바꾸는 색'을 알려 줌 */
   if(kind==='text') return '팔레트로 바꾸는 색: '+(S.act===2?'배경색(색 2)':'글자색(색 1)')+' · ';
@@ -43470,12 +43518,12 @@ function txtOptsHtml(tx,shape){   /* 글 서식 줄 — 선택한 개체(없으�
     '<span class="ie-ol">'+tg('tb',tx.b,'굵게','<b>B</b>')+tg('ti',tx.i,'기울임','<i>I</i>')+tg('tu',tx.u,'밑줄','<u>U</u>')+tg('ts',tx.s,'취소선','<s>S</s>')+'</span>'+
     radioOpt('tal','가로',[['left','좌','왼쪽 정렬'],['center','중','가운데 정렬'],['right','우','오른쪽 정렬']],tx.al)+
     (shape?radioOpt('tva','세로',[['top','상','위쪽'],['middle','중','세로 가운데'],['bottom','하','아래쪽']],tx.va||'middle')
-          :radioOpt('tbg','배경',[['transp','투명','글 뒤를 비워 둠'],['fill','채움','배경을 색 2 로 칠함 — 이어서 팔레트로 색을 고르면 배경색이 바뀌어요']],tx.bg)+colSwatch(2,tx.bgc||S.c2,tx.bg!=='fill','배경색 — 누르면 팔레트가 배경색(색 2)을 바꿔요'))+
-    '<span class="ie-ol"><button type="button" class="ie-tg mobile-keep" data-optb="tcolor" title="글자색 고르기">글자색 <i class="ie-tsw" style="background:'+esc(tx.color||S.c1)+'"></i></button></span>';
+          :radioOpt('tbg','배경',[['transp','투명','글 뒤를 비워 둠'],['fill','채움','배경을 색 2 로 칠함 — 이어서 팔레트로 색을 고르면 배경색이 바뀌어요']],tx.bg)+colSwatch(2,tx.bgc||S.c2,tx.bg!=='fill','배경색 — 누르면 색상표가 열려요(투명 포함)','tbg'))+
+    '<span class="ie-ol"><button type="button" class="ie-tg mobile-keep" data-optb="tcolor" title="글자색 — 누르면 색상표가 열려요">글자색 <i class="ie-tsw" style="background:'+esc(tx.color||S.c1)+'"></i></button></span>';
 }
 function shapeLineOpts(ol,co,fl,cf){   /* 윤곽선 모양+색 칸, 채우기 모양+색 칸 */
-  return selOpt('outline','윤곽선',OUTLINES,ol)+colSwatch(1,co,ol==='none','윤곽선 색 — 누르면 팔레트가 윤곽선 색(색 1)을 바꿔요')+
-         selOpt('fill','채우기',FILLS,fl)+colSwatch(2,cf,fl==='none','채우기 색 — 누르면 팔레트가 채우기 색(색 2)을 바꿔요');
+  return selOpt('outline','윤곽선',OUTLINES,ol)+colSwatch(1,co,ol==='none','윤곽선 색 — 누르면 색상표가 열려요(투명 포함)','co')+
+         selOpt('fill','채우기',FILLS,fl)+colSwatch(2,cf,fl==='none','채우기 색 — 누르면 색상표가 열려요(투명 포함)','cf');
 }
 function objOptsHtml(so,hint){   /* 도형·글상자를 골랐을 때의 옵션 줄 — 어떤 도구를 쓰는 중이든 고른 개체의 서식을 보여주고 바꿈 */
   if(so.k==='text')
@@ -43492,6 +43540,7 @@ function renderOpts(){
   const hint=s=>{ ht=s; return ''; };      /* 힌트는 조절 줄 아래 한 줄에 따로 — 옵션 줄 높이가 늘 같아야 개체를 눌렀을 때 캔버스가 밀리지 않음 */
   const so=selObj();
   if(so) h=objOptsHtml(so,hint);
+  else if(t==='none') h='<span class="ie-ot">포인터</span>'+hint('그리는 도구가 꺼진 상태 — 도형·글상자를 눌러 고르고 끌어서 옮기고 더블클릭하면 글을 고쳐요(속이 빈 도형은 안쪽을 눌러도 돼요) · 그리려면 위에서 도구를 고르세요 · Esc = 쓰던 도구·선택 모두 해제');
   else if(t==='pencil') h='<span class="ie-ot">연필</span>'+hint('1픽셀 굵기의 선을 그려요 · 좌클릭=색1 · 우클릭=색2 · 도형·글상자 위에서는 Alt 를 누르고 그려요');
   else if(t==='brush') h='<span class="ie-ot">브러시</span>'+selOpt('brush','종류',BRUSHES,S.brush)+sizeOptHtml()+hint('좌클릭=색1 · 우클릭=색2 · 마커·수채화는 반투명 · 도형·글상자 위에서 시작하면 그 개체가 잡혀요(그리려면 Alt)');
   else if(t==='eraser') h='<span class="ie-ot">지우개</span>'+sizeOptHtml()+radioOpt('erase','지운 자리',[['bg','배경색(색2)'],['transp','투명']],S.erase)+hint('우클릭 = 색1을 색2로 바꾸는 색 지우개 · 지우개는 그림만 지워요 — 도형·글상자는 눌러서 고른 뒤 Delete');
@@ -43501,7 +43550,7 @@ function renderOpts(){
   else if(t==='magnifier') h='<span class="ie-ot">돋보기</span>'+hint('좌클릭=확대 · 우클릭=축소 · Ctrl+마우스 휠로도 확대/축소 · 스페이스+드래그로 화면 이동');
   else if(t==='text'){
     h='<span class="ie-ot">텍스트</span>'+txtOptsHtml(Object.assign({},tx,{color:S.c1}),false)+
-      hint('드래그해 글상자를 만들고 입력 · 이미 있는 글상자·도형을 누르면 그 글을 고쳐요 · 글자색=색1 · 다른 곳을 누르거나 Esc/Ctrl+Enter 로 확정 — 글상자는 언제든 다시 고를 수 있어요');
+      hint('드래그해 글상자를 만들고 입력 · 이미 있는 글상자·도형을 누르면 그 글을 고쳐요 · 글자색=색1 · 다른 곳을 누르거나 Ctrl+Enter 로 확정 · Esc = 확정하고 도구 해제 — 글상자는 언제든 다시 고를 수 있어요');
   }
   else if(t==='select') h='<span class="ie-ot">선택</span>'+radioOpt('selshape','모양',[['rect','사각형'],['free','자유형']],S.selShape)+
     '<label class="ie-ol"><input type="checkbox" data-opt="seltransp"'+(S.selTransp?' checked':'')+'> 투명 선택 <small>(색2와 같은 색을 투명으로)</small></label>'+
@@ -43535,8 +43584,12 @@ function onOptsClick(e){
   else if(k==='selshape'){ S.selShape=v; }
   else if(k==='tb') setTxField('b',!tx.b); else if(k==='ti') setTxField('i',!tx.i); else if(k==='tu') setTxField('u',!tx.u); else if(k==='ts') setTxField('s',!tx.s);
   else if(k==='tal') setTxField('al',v); else if(k==='tbg') setTxField('bg',v); else if(k==='tva') setTxField('va',v);
-  else if(k==='tgt') setActive(+v);       /* 색 칸을 눌러 팔레트가 바꿀 대상(윤곽선/채우기·글자/배경) 고르기 */
-  else if(k==='tcolor'){ openColorEdit(undefined,'txt'); return; }
+  else if(k==='tgt'){      /* 색 칸을 누르면: 팔레트가 바꿀 대상(윤곽선/채우기·글 배경)을 이 칸으로 옮기고, 그 칸 바로 아래에 색상표(투명 포함)를 띄움 */
+    const ck=b.dataset.ck||'co'; setActive(+v); renderOpts();
+    const a=R.opts.querySelector('.ie-cs[data-ck="'+ck+'"]'); if(a) colorPopFor(ck,a);
+    return;
+  }
+  else if(k==='tcolor'){ colorPopFor('tcolor',b); return; }     /* 글자색 — 색상표 */
   saveCfg(); renderOpts(); refocusEdit();
 }
 
@@ -43612,16 +43665,62 @@ const ACT={
     {t:'모자이크 (작게)',fn:()=>applyFilter('mosaic1')},
     {t:'모자이크 (크게)',fn:()=>applyFilter('mosaic2')}
   ]),
-  c1:()=>{ setActive(1); renderOpts(); }, c2:()=>{ setActive(2); renderOpts(); },
+  c1:b=>{ setActive(1); renderOpts(); colorPopFor('c1',b); }, c2:b=>{ setActive(2); renderOpts(); colorPopFor('c2',b); },      /* 색 1·색 2 원 — 팔레트 대상으로 정하고 바로 아래에 색상표 */
   coledit:()=>openColorEdit(),
   zoomin:()=>zoomStep(1), zoomout:()=>zoomStep(-1), fit:()=>fitZoom(), zoom100:()=>setZoom(1)
 };
-function openColorEdit(slotIdx,target){   /* target='txt': 선택한 도형·글상자의 글자색을 고름 */
+function openColorEdit(slotIdx,target,cb,cur,anchor){   /* 브라우저 색 선택 창. cb(hex,final)가 있으면 그리로(색상표의 [다른 색 고르기…]), 없으면 target='txt' → 글자색 / 아니면 지금 대상 칸(색1·색2)에 적용 */
   const ci=R.colorIn, so=selObj();
-  ci.value=(target==='txt')?((so&&so.tx&&so.tx.color)||S.c1):(S.act===2?S.c2:S.c1);
-  const br=g(target==='txt'?'ieOpts':'ieC1').getBoundingClientRect(), ir=R.inner.getBoundingClientRect();     /* 브라우저 색 선택 창이 색 칸 근처에 뜨도록 */
+  ci.value=cur||((target==='txt')?((so&&so.tx&&so.tx.color)||S.c1):(S.act===2?S.c2:S.c1));
+  const br=(anchor||g(target==='txt'?'ieOpts':'ieC1')).getBoundingClientRect(), ir=R.inner.getBoundingClientRect();     /* 브라우저 색 선택 창이 색 칸 근처에 뜨도록 */
   ci.style.left=Math.round(br.left-ir.left)+'px'; ci.style.top=Math.round(br.bottom-ir.top)+'px';
-  ci._slot=slotIdx; ci._tgt=target||null; ci.click();
+  ci._slot=slotIdx; ci._tgt=target||null; ci._cb=cb||null; ci.click();
+}
+function openColorPop(anchor,key,o){   /* 색 칸을 누르면 그 칸 바로 아래에 색상표를 띄움 — o:{title, cur:현재 색(#rrggbb; 없으면 null=투명), none:'투명 칸 이름'(없으면 투명 칸 없음), pick(hex), clear()} */
+  if(S.blockKey&&S.blockKey===key){ S.blockKey=null; S.blockOpen=null; return; }       /* 열려 있던 같은 칸을 눌러 방금 닫은 경우 — 다시 열지 않음 */
+  const m=document.createElement('div'); m.className='ie-menu ie-colpop'; m.setAttribute('role','dialog'); m.setAttribute('aria-label',o.title||'색 고르기');
+  const cur=o.cur?String(o.cur).toLowerCase():'';
+  const sw=c=>'<button type="button" class="ie-pc mobile-keep'+(c===cur?' on':'')+'" data-cp="'+c+'" title="'+c+'" style="background:'+c+'"></button>';
+  let h='<div class="ie-cph">'+esc(o.title||'색')+'</div>';
+  if(o.none) h+='<button type="button" class="ie-cpn mobile-keep'+(o.cur?'':' on')+'" data-cp="none" title="'+esc(o.none)+'"><i class="ie-cpx"></i><span>'+esc(o.none)+'</span></button>';
+  h+='<div class="ie-cpg">'+PALETTE.map(sw).join('')+'</div>';
+  if(S.custom.length) h+='<div class="ie-cpl">사용자 색</div><div class="ie-cpg">'+S.custom.map(sw).join('')+'</div>';
+  h+='<button type="button" class="ie-cpm mobile-keep" data-cp="more">다른 색 고르기…</button>';
+  m.innerHTML=h;
+  m.addEventListener('click',e=>{
+    const b=e.target.closest&&e.target.closest('[data-cp]'); if(!b) return;
+    e.stopPropagation(); const v=b.dataset.cp;
+    closeMenu();
+    if(v==='none'){ if(o.clear) o.clear(); }
+    else if(v==='more') openColorEdit(undefined,null,hex=>o.pick(hex),cur||'#000000',anchor);
+    else o.pick(v);
+    refocusEdit();
+  });
+  showPop(anchor,m,key);
+}
+function colorPopFor(kind,anchor){   /* kind: co 윤곽선 · cf 채우기 · tbg 글 배경 · tcolor 글자색 · c1/c2 리본의 색 1·색 2 원 — 윤곽선·채우기·배경에는 '투명'(= 없음) 칸이 있음 */
+  const so=selObj(), sh=(so&&so.k==='shape')?so:null;
+  if(kind==='co') return openColorPop(anchor,'co',{title:'윤곽선 색',cur:sh?(sh.ol==='none'?null:sh.co):(S.outline==='none'?null:S.c1),none:'윤곽선 없음 (투명)',
+    pick:hex=>applyColorField('co',hex),
+    clear:()=>{
+      const fillOff=sh?(sh.fl==='none'||shapeIsOpen(sh)):(S.fill==='none');
+      if(fillOff){ toast('채우기가 없는 도형은 윤곽선까지 없애면 보이지 않아서 윤곽선을 그대로 둬요'); return; }
+      setShapeField('ol','none'); renderOpts();
+    }});
+  if(kind==='cf') return openColorPop(anchor,'cf',{title:'채우기 색',cur:sh?(sh.fl==='none'?null:sh.cf):(S.fill==='none'?null:S.c2),none:'채우기 없음 (투명)',
+    pick:hex=>applyColorField('cf',hex),
+    clear:()=>{
+      if((sh?sh.ol:S.outline)==='none'){ toast('윤곽선도 없으면 도형이 보이지 않아서 채우기를 그대로 둬요'); return; }
+      setShapeField('fl','none'); renderOpts();
+    }});
+  if(kind==='tbg') return openColorPop(anchor,'tbg',{title:'글 배경색',cur:so?(so.tx.bg==='fill'?so.tx.bgc:null):(S.tx.bg==='fill'?S.c2:null),none:'배경 없음 (투명)',
+    pick:hex=>applyColorField('tbg',hex),
+    clear:()=>{ setTxField('bg','transp'); renderOpts(); }});
+  if(kind==='tcolor') return openColorPop(anchor,'tcolor',{title:'글자색',cur:so?so.tx.color:S.c1,pick:hex=>applyColorField('tcolor',hex)});
+  if(kind==='c1'||kind==='c2'){
+    const n=(kind==='c1')?1:2;
+    return openColorPop(anchor,kind,{title:n===1?'색 1 (윤곽선·글자색)':'색 2 (채우기·배경색)',cur:n===1?S.c1:S.c2,pick:hex=>{ setActive(n); setColor(n,hex); renderOpts(); }});
+  }
 }
 function onInnerClick(e){
   const t=e.target.closest&&e.target.closest('[data-act],[data-tool],[data-shape],.ie-sw');
@@ -43637,6 +43736,14 @@ function onInnerClick(e){
   if(t.dataset.tool) setTool(t.dataset.tool);
 }
 /* ════════ 키보드·붙여넣기 ════════ */
+function releaseTools(){   /* Esc — 입력 중인 글·그리던 다각형·선택 영역을 확정하고, 고른 도형·글상자와 쓰던 도구를 모두 풀어 '포인터' 상태(도형·글상자를 마우스로 고를 수 있는 상태)로 */
+  closeMenu();
+  const had=(S.tool!=='none');
+  commitAll(); deselectObj();
+  if(S.tool!=='none') setTool('none');
+  setHover(null);
+  if(had&&S.escToast<2){ S.escToast++; toast('도구를 풀었어요 — 이제 마우스로 도형·글상자를 눌러 고를 수 있어요 (그리려면 도구를 다시 고르세요)',2800); }
+}
 function dlgKey(k){ if(!S.dlg) return; const b=S.dlg.box.querySelector('.ie-dbtn[data-k="'+k+'"]'); if(b) b.click(); }
 function onKey(e){
   if(!S.open) return;
@@ -43651,13 +43758,10 @@ function onKey(e){
   }
   if(DRAG){ if(key==='Escape') eat(); return; }      /* 끌고 있는 동안에는 단축키 무시(Esc 로 중간에 확정돼 꼬이지 않게) */
   if(key==='Escape'){
+    if(e.isComposing) return;                         /* 한글 등 조합 중의 Esc 는 입력기가 처리 */
     eat();
-    if(S.menu) closeMenu();
-    else if(S.oedit!=null) editCommit();          /* 글 입력 중이면 입력만 끝냄(개체는 선택된 채로) */
-    else if(polyBuilding()) finishBuilding();
-    else if(S.sel) commitSel();
-    else if(S.osel!=null) deselectObj();          /* 고른 도형·글상자 선택 해제 */
-    else requestClose();
+    if(S.menu){ closeMenu(); return; }                /* 열려 있는 메뉴만 닫음 */
+    releaseTools();                                   /* 그 밖에는 진행 중인 것을 확정하고 도구·선택을 모두 풀어 '포인터'(도형·글상자를 마우스로 고르는) 상태로. 창은 닫지 않음 — 닫기는 [✕ 닫기] */
     return;
   }
   if(ctrl&&key==='Enter'){ eat(); if(S.oedit!=null) editCommit(); else applyEdit(); return; }      /* 글 입력 중이면 입력만 확정, 아니면 [적용] */
@@ -43763,7 +43867,7 @@ function closeNow(){
   S.open=false; S.busy=false; S.space=false;
   if(R.modal) R.modal.classList.remove('on');
   S.undo=[]; S.redo=[]; S.histBytes=0; S.sel=null; S.hover=null;
-  S.objs=[]; S.osel=null; S.oedit=null; S.ohov=null; S.ohovShown=false; S.dtap=null; S.pend=null; S.editBefore=null; S.polyBefore=null; S.nid=1; OBJ_BASE='[]';
+  S.objs=[]; S.osel=null; S.oedit=null; S.ohov=null; S.ohovShown=false; S.ohovIn=false; S.dtap=null; S.pend=null; S.editBefore=null; S.polyBefore=null; S.nid=1; OBJ_BASE='[]';
   if(R.ta) R.ta.value='';
   if(R.hov) R.hov.style.display='none';
   if(R.stage) R.stage.classList.remove('ie-onobj');
@@ -43797,8 +43901,9 @@ function bindEvents(){
   R.inner.addEventListener('contextmenu',e=>{ const sw=e.target.closest&&e.target.closest('.ie-sw'); if(sw&&sw.dataset.c){ e.preventDefault(); setColor(2,sw.dataset.c); } });
   R.inner.addEventListener('dblclick',e=>{ const sw=e.target.closest&&e.target.closest('.ie-cu'); if(sw&&sw.dataset.c) openColorEdit(+sw.dataset.cu); });
   const ci=document.createElement('input'); ci.type='color'; ci.className='ie-colorin'; ci.tabIndex=-1; R.inner.appendChild(ci); R.colorIn=ci;
-  ci.addEventListener('input',()=>{ if(ci._tgt==='txt') setTextColor(ci.value); else setColor(S.act,ci.value); });
-  ci.addEventListener('change',()=>{ if(ci._tgt==='txt') setTextColor(ci.value); else setColor(S.act,ci.value); addCustom(ci.value); });
+  const applyCi=final=>{ if(ci._cb) ci._cb(ci.value,final); else if(ci._tgt==='txt') setTextColor(ci.value); else setColor(S.act,ci.value); };
+  ci.addEventListener('input',()=>applyCi(false));
+  ci.addEventListener('change',()=>{ applyCi(true); addCustom(ci.value); });
   /* 그림 삽입(파일 선택) · 파일을 끌어다 놓기 — 붙여넣기와 같이 움직이는 선택 영역으로 들어옴 */
   const fi=document.createElement('input'); fi.type='file'; fi.accept='image/*'; fi.className='ie-colorin'; fi.tabIndex=-1; R.inner.appendChild(fi); R.file=fi;
   fi.addEventListener('change',()=>{ const f=fi.files&&fi.files[0]; if(f) pasteFromBlob(f); });
@@ -43844,10 +43949,10 @@ function open(img){
       R.sctx.clearRect(0,0,w,h); R.sctx.drawImage(R.cv,0,0);
       R.sctx.getImageData(0,0,1,1);     /* 외부 주소 이미지(오염된 캔버스)면 여기서 예외 */
       S.baseW=w; S.baseH=h; S.undo=[]; S.redo=[]; S.histBytes=0; S.evicted=0; S.sel=null;
-      S.objs=[]; S.osel=null; S.oedit=null; S.ohov=null; S.ohovShown=false; S.dtap=null; S.pend=null; S.editBefore=null; S.polyBefore=null; S.nid=1; OBJ_BASE='[]';
+      S.objs=[]; S.osel=null; S.oedit=null; S.ohov=null; S.ohovShown=false; S.ohovIn=false; S.dtap=null; S.pend=null; S.editBefore=null; S.polyBefore=null; S.nid=1; OBJ_BASE='[]';
       R.pv.style.opacity='1'; R.pctx.clearRect(0,0,w,h); renderObjects();
       g('ieInfo').textContent='원본 '+nw+' × '+nh+' 픽셀'+(k<1?' → 편집용으로 '+w+' × '+h+' 로 줄임':'')+(/^data:image\/gif/i.test(src)?' · 움직이는 GIF 는 첫 장면만 편집돼요':'');
-      S.tool='pencil'; S.prevTool='pencil';
+      S.tool='pencil'; S.prevTool='pencil'; S.escToast=0;
       syncUndoUI(); fitZoom(); syncToolUI(); renderOpts(); paintColorUI();
       toast(k<1?'큰 이미지라 '+w+' × '+h+' 크기로 줄여서 편집해요':'편집할 준비가 됐어요 — 도구를 골라 그려 보세요',2200);
     }catch(err){ fail('이 이미지는 편집할 수 없어요 — 외부 주소의 이미지는 브라우저 보안 때문에 편집할 수 없어요. 이미지를 복사해서 텍스트박스에 다시 붙여넣어 주세요'); }
