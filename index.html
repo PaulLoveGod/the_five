@@ -2490,6 +2490,42 @@ body.mm-fs{overflow:hidden}
 #mindmapSection.mm-editing .mm-stage,#mindmapSection.mm-full .mm-stage{overscroll-behavior:contain}
 </style>
 <!-- MM-CSS-END -->
+<!-- MMHIST-CSS-BEGIN -->
+<style id="mmHistStyle">
+/* ═══ MindMap 📜 History (2026-10-21, MMHIST-JS) — 카드 제목줄 [📜 History] 버튼 + 팝업 ═══ */
+#mindmapSection .card-header #mmHistBtn{height:24px!important;min-height:0!important;line-height:22px!important;padding:0 9px!important;font-size:11px!important;font-weight:700;border:none;border-radius:5px;background:#b45309;color:#fff;cursor:pointer;letter-spacing:.2px;font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;flex-shrink:0}
+#mindmapSection .card-header #mmHistBtn:hover{background:#92400e}
+#mmHistBtn .mmh-n{display:inline-block;min-width:14px;height:14px;line-height:14px;margin-left:5px;padding:0 4px;border-radius:7px;background:rgba(255,255,255,.92);color:#92400e;font-size:9px;font-weight:800;text-align:center;box-sizing:border-box}
+#mmHistBtn .mmh-n:empty{display:none}
+#mmHistModal{display:none;position:fixed;inset:0;z-index:10025;background:rgba(0,0,0,.52);align-items:center;justify-content:center;padding:12px;outline:none}
+#mmHistInner{background:#fff;border-radius:14px;width:min(680px,96vw);min-height:min(340px,92vh);max-height:min(720px,92vh);box-shadow:0 8px 50px rgba(0,0,0,.38);display:flex;flex-direction:column;overflow:hidden}   /* 항목이 적으면 내용만큼, 많으면 최대 720px 에서 목록만 스크롤 */
+#mmHistInner .mmh-head{background:linear-gradient(135deg,#78350f,#b45309);color:#fff;padding:11px 16px;display:flex;align-items:center;gap:9px;flex-shrink:0}
+#mmHistInner .mmh-ttl{font-weight:700;font-size:14px;letter-spacing:.2px;white-space:nowrap}
+#mmHistInner .mmh-cnt{flex-shrink:0;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:rgba(255,255,255,.22);white-space:nowrap}
+#mmHistInner .mmh-cnt:empty{display:none}
+#mmhSearch{margin-left:auto;flex:0 1 220px;width:auto;min-width:90px;height:28px;box-sizing:border-box;border:1px solid rgba(255,255,255,.45);border-radius:7px;background:rgba(255,255,255,.96);color:#1e293b;font-size:12px;padding:0 9px;outline:none;font-family:inherit}
+#mmhSearch:focus{box-shadow:0 0 0 2px rgba(253,230,138,.75)}
+#mmHistInner .mmh-ib{flex-shrink:0;width:26px;height:26px;min-height:0;padding:0;border:none;border-radius:6px;background:rgba(255,255,255,.16);color:#fff;font-size:14px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
+#mmHistInner .mmh-ib:hover{background:rgba(255,255,255,.32)}
+#mmHistInner .mmh-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;background:#fafaf9}
+#mmHistInner .mmh-it{display:flex;align-items:flex-start;gap:12px;padding:10px 16px 10px 13px;border-bottom:1px solid #eeece9;border-left:3px solid transparent;cursor:pointer;outline:none;background:#fff}
+#mmHistInner .mmh-it:hover,#mmHistInner .mmh-it:focus-visible{background:#fffbeb}
+#mmHistInner .mmh-it:focus-visible{box-shadow:inset 0 0 0 2px #fcd34d}
+#mmHistInner .mmh-it.cur{border-left-color:#b45309;background:#fef9ee}
+#mmHistInner .mmh-it-main{flex:1;min-width:0}
+#mmHistInner .mmh-it-title{font-size:13.5px;font-weight:800;color:#1e293b;line-height:1.55;overflow-wrap:anywhere}
+#mmHistInner .mmh-sep{margin:0 7px;color:#d6a45a;font-weight:800}
+#mmHistInner .mmh-none{color:#a8a29e;font-weight:600;font-style:italic}
+#mmHistInner .mmh-chip{display:inline-block;margin-left:8px;padding:0 7px;border-radius:8px;background:#dcfce7;color:#15803d;font-size:9.5px;font-weight:700;line-height:1.6;vertical-align:1px;white-space:nowrap}
+#mmHistInner .mmh-it-meta{margin-top:2px;font-size:11px;color:#78716c}
+#mmHistInner .mmh-it-date{flex:0 0 auto;text-align:right;font-size:12.5px;font-weight:800;color:#92400e;white-space:nowrap;font-variant-numeric:tabular-nums}
+#mmHistInner .mmh-it-date small{display:block;margin-top:1px;font-size:10.5px;font-weight:600;color:#a8a29e}
+#mmHistInner .mmh-empty{text-align:center;color:#a8a29e;font-size:12px;line-height:1.9;padding:56px 18px;background:#fafaf9}
+#mmHistInner .mmh-foot{flex-shrink:0;padding:8px 16px;border-top:1px solid #e7e5e4;background:#fafaf9;font-size:11px;line-height:1.6;color:#78716c}
+#mmHistInner .mmh-foot b{color:#92400e}
+@media print{#mmHistModal,#mindmapSection #mmHistBtn{display:none!important}}
+</style>
+<!-- MMHIST-CSS-END -->
 <!-- BTMSCRIPT-CSS-BEGIN -->
 <style>
 /* ── 상단 '스크립트' 메뉴 — 🎬 스크립트 만들기 · 🕘 스크립트 이력 (2026-10-18) ──
@@ -4969,6 +5005,7 @@ body.guest-mode #lhPill{display:none!important}
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px">
         <span id="stid-mindmap" class="stid-edit" contenteditable="false" spellcheck="false" oninput="MM.titleChanged()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ MindMap</span>
         <span class="pdf-export-hide" style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <button id="mmHistBtn" type="button" class="mm-e" onclick="if(window.BTMMmHist)BTMMmHist.open()" title="MindMap History — 💾 Save 한 마인드맵을 중심주제별로 모아 둔 목록(날짜 최신순). 누르면 그 마인드맵이 표시되고, 같은 중심주제는 Save 할 때마다 하나로 덮어써져요">📜 History<span class="mmh-n"></span></button>
           <button id="mmEditBtn" type="button" class="mm-e" onclick="MM.toggleEdit()" title="편집 모드 켜기/끄기 — 편집 중에는 메뉴 팝업이 표시됩니다" aria-pressed="false">편집</button>
           <button id="mmAiBtn" type="button" class="ai-btn mm-e" onclick="openAIChat('mindmapOutline','MindMap')" title="AI 어시스턴트 — 주제·자료를 마인드맵 개요로 만들고, 결과의 '본문에 반영'을 누르면 개요 가져오기 창에 채워집니다" aria-label="MindMap AI 어시스턴트 열기">✨</button>
           <span id="mmStatus" style="font-size:9px;color:#94a3b8;font-weight:normal"></span>
@@ -14621,6 +14658,7 @@ async function archiveReport(isPublish=false, auto=false){   /* auto: 다른 날
   try{
     putArchiveRecord(record);
     if(!auto){ try{ if(window.MM&&typeof MM.markSaved==='function') MM.markSaved(data.mindmap); }catch(_){} }   /* 💾 Save: 지금 마인드맵이 '저장된 상태'가 됨 */
+    if(!auto){ try{ if(window.BTMMmHist) BTMMmHist.onSave(data.mindmap,date); }catch(_){} }   /* 📜 MindMap History — 같은 중심주제의 항목은 날짜가 달라도 이번 Save 내용으로 덮어씀(중심주제별 1개) */
     /* 💾 SAVE는 지금까지 dated archive에만 기록되고 "현재 리포트" 스냅샷(SK)엔 반영되지 않아서,
        (예: 차트 종합분석 직후처럼) 텍스트 입력 없이 SAVE만 누르고 탭을 닫았다 다시 열면 archive엔
        저장됐는데 정작 화면(SK 기반 loadData())엔 그 변경이 안 보이는 불일치가 있었음 — SAVE 버튼을
@@ -40594,6 +40632,26 @@ function init(){
 }
 /* 글 편집 중인 주제가 있으면 확정 — 💾 Save·Create New 가 마인드맵을 읽기 직전에 호출 */
 function flush(){ if(editing) endEdit(true); }
+/* ───────── History(📜 MindMap History)에서 고른 마인드맵을 지금 리포트의 마인드맵으로 표시 (2026-10-21) ─────────
+   · 실행 취소(Ctrl+Z)로 되돌릴 수 있음(mutate 와 같은 방식으로 되돌리기 스냅샷을 쌓음 — 단 '편집' 모드가 아니어도 동작하므로 mutate 대신 직접 함).
+   · doc.mt 는 그 마인드맵의 것을 그대로 씀 → 지금 저장본과 같은 지도면 '저장 전'이 아니고, 다른 지도면 💾 Save 전 수정으로 취급됨. savedSnap 은 건드리지 않으므로 Save 안 하고 창을 닫으면 마지막 저장본으로 돌아감.
+   · topics(): 지금 지도의 중심 주제 글들(손대지 않은 예시 지도면 빈 배열) — History 목록의 '지금 표시 중' 표시용 */
+function showDoc(d){
+  if(permRO()) return false;
+  const nd=sanitize(d); if(!nd) return false;
+  if(!stage){ init(); if(!stage) return false; }
+  endEdit(false);
+  undoS.push(snap()); if(undoS.length>120) undoS.shift();
+  redoS.length=0; lastMut={key:null,t:0};
+  doc.title=nd.title; doc.settings=nd.settings; doc.roots=nd.roots; doc.rels=nd.rels; Object.assign(doc.imgs,nd.imgs); doc.seq=Math.max(doc.seq,nd.seq); doc.mt=nd.mt||Date.now();
+  sel.clear(); primary=null; selRel=null; selEdge=null; matches=new Set(); matchList=[]; relMode=null;
+  stage.classList.remove('mm-relmode'); connMode=null; stage.classList.remove('mm-connmode'); if(chl) chl.textContent='';
+  reindex(); ensureBranchColors(); cleanSel();
+  els.forEach(el=>el.remove()); els.clear(); sigs.clear(); SZ.clear();   /* 다른 지도라 요소를 모두 새로 만듦(load 와 같게) */
+  render(); syncTitle(); syncUndoBtns(); persist(); fitView();
+  return true;
+}
+const topicsNow=()=>(doc&&doc.mt)?doc.roots.map(r=>r.t):[];
 function load(d,opt){
   if(!stage){ init(); if(!stage) return false; }
   opt=opt||{};
@@ -40628,7 +40686,7 @@ function setTranslation(map){
   if(autoFit) fitView();
 }
 window.MM={
-  init, load, flush, serialize, serializeSaved, markSaved, hasUnsaved:()=>unsavedMm(), titleChanged, setEdit, toggleEdit, openOutline, prepareClone, setTranslation, translatableTexts, isTranslated:()=>!!XL, outlineText, capturePng,
+  init, load, flush, showDoc, topics:topicsNow, serialize, serializeSaved, markSaved, hasUnsaved:()=>unsavedMm(), titleChanged, setEdit, toggleEdit, openOutline, prepareClone, setTranslation, translatableTexts, isTranslated:()=>!!XL, outlineText, capturePng,
   isEditing(){ return editMode; }, canEdit(){ return !permRO(); },
   refresh(){ if(stage){ measure(true); render(); } },
   fit(){ fitView(); },
@@ -40640,6 +40698,193 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 </script>
 <!-- MM-JS-END -->
+<!-- MMHIST-JS-BEGIN -->
+<script>
+/* ═══ MMHIST-JS-BEGIN ═══════════════════════════════════════════════════════
+   MindMap 📜 History (2026-10-21)
+   · MindMap 카드 제목줄의 [📜 History] → 💾 Save 한 마인드맵을 '중심주제'별 목록으로 보여 주는 팝업(날짜 최신순 — 맨 위가 가장 최근). 항목을 누르면 그 마인드맵이 지도에 표시됨.
+     - 목록 제목 = 그 마인드맵의 중심주제(여러 개면 모두 '·' 로 이어서), 오른쪽 = 날짜(저장한 리포트의 날짜+요일), 아랫줄 = 주제 수·중심주제 수·저장 시각. 검색창으로 중심주제·날짜를 거름. 지금 지도와 중심주제가 같은 항목엔 '지금 표시 중'.
+     - 항목을 누르면 MM.showDoc(doc): 지금 리포트의 마인드맵을 그 내용으로 바꿔 표시(실행 취소 Ctrl+Z 가능). 마인드맵은 💾 Save 해야 리포트에 확정되는 기존 규칙 그대로라 '저장 전' 수정으로 취급됨
+       (Save 안 하고 창을 닫으면 마지막 저장본으로 돌아감). 지금 마인드맵에 저장 전 수정이 있으면 먼저 확인창.
+   · 같은 중심주제는 하나만: 키 = 중심주제 글(공백 정리·대소문자 무시)을 정렬해 이은 값 — 순서와 무관하고, 중심주제가 여러 개면 그 묶음 전체가 같아야 같은 것. 💾 Save 할 때마다(archiveReport 의 !auto 경로 = Save·Publish·UPDATE ALL)
+     BTMMmHist.onSave(마인드맵,리포트 날짜)가 그 키의 항목을 덮어씀 — 날짜가 달라도 덮어쓰고 날짜·저장 시각도 이번 것으로 바뀜. 중심주제를 고치면 새 키라 새 항목이 생김(옛 이름 항목은 남음).
+   · 저장소: IndexedDB 'BTM_MmHistDB'(store 'maps', keyPath 'key') — 레코드 {key,topics,nodes,date,savedAt,mt,doc(마인드맵 JSON)}. IndexedDB 를 못 쓰면 이 창이 열려 있는 동안만 메모리에 둠.
+   · 기존 저장분 반영: 팝업을 열 때(와 ↻ 버튼) Archive 의 날짜별 기록(data.mindmap)에서 같은 키는 가장 최근 날짜 것 하나만 골라 **저장소에 아직 없는 키만** 추가(이미 있는 키는 Save 로 덮어쓴 것이라 건드리지 않음).
+     Archive 는 메모리 캐시라 가볍고, 아직 Archive 에 안 담긴 현재 리포트의 저장본(MM.serializeSaved)도 함께 봄.
+   · 버튼은 .mm-e 라 게스트·Publish 잠금·좁은 화면에서는 안 보임. 번역(영/중) 화면에서는 지도를 바꿀 수 없어 안내만.
+   수정 요령: 이 블록(표식 MMHIST-JS-BEGIN~END)과 MMHIST-CSS 블록, MM 블록의 showDoc·topics, archiveReport 의 onSave 한 줄만 고치면 됨
+════════════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.BTMMmHist) return;
+const $=id=>document.getElementById(id);
+const DB_NAME='BTM_MmHistDB', ST='maps';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const okDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(d||'');
+const clone=o=>JSON.parse(JSON.stringify(o));
+const norm=s=>String(s==null?'':s).replace(/\s+/g,' ').trim();
+const z2=n=>String(n).padStart(2,'0');
+const dayStr=d=>{ try{ return (typeof _getDayStr==='function')?_getDayStr(d):''; }catch(_){ return ''; } };
+const toast=m=>{ try{ if(typeof _showMainToast==='function') _showMainToast(m); }catch(_){} };
+const today=()=>{ try{ if(typeof todayStr==='function') return todayStr(); }catch(_){} const d=new Date(); return d.getFullYear()+'-'+z2(d.getMonth()+1)+'-'+z2(d.getDate()); };
+
+/* ───────── 마인드맵 → 중심주제·키·주제 수 ───────── */
+const keyOf=topics=>'t:'+topics.map(t=>norm(t).toLowerCase()).sort().join('\u0001');
+function infoOf(m){
+  if(!m||typeof m!=='object'||!m.root||typeof m.root!=='object') return null;
+  const roots=[m.root].concat(Array.isArray(m.more)?m.more:[]).filter(r=>r&&typeof r==='object');
+  const topics=roots.map(r=>norm(r.t));
+  let nodes=0; roots.forEach(r=>{ (function w(n,d){ if(!n||typeof n!=='object'||d>60) return; nodes++; if(Array.isArray(n.c)) n.c.forEach(c=>w(c,d+1)); })(r,0); });
+  return {key:keyOf(topics),topics,nodes};
+}
+
+/* ───────── 저장소(IndexedDB) ───────── */
+let _dbP=null; const _mem=new Map();
+function openDb(){
+  if(_dbP) return _dbP;
+  _dbP=new Promise(res=>{
+    let done=false; const fin=v=>{ if(!done){ done=true; res(v); } };
+    try{
+      if(!window.indexedDB) return fin(null);
+      const rq=indexedDB.open(DB_NAME,1);
+      rq.onupgradeneeded=()=>{ const db=rq.result; if(!db.objectStoreNames.contains(ST)) db.createObjectStore(ST,{keyPath:'key'}); };
+      rq.onsuccess=()=>{ const db=rq.result; db.onversionchange=()=>{ try{ db.close(); }catch(_){} _dbP=null; }; fin(db); };
+      rq.onerror=()=>fin(null); rq.onblocked=()=>fin(null);
+    }catch(_){ fin(null); }
+  });
+  return _dbP;
+}
+async function dbAll(){ const db=await openDb(); if(!db) return [..._mem.values()]; return new Promise(res=>{ try{ const rq=db.transaction(ST,'readonly').objectStore(ST).getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>res([]); }catch(_){ res([]); } }); }
+async function dbPut(rec){ const db=await openDb(); if(!db){ _mem.set(rec.key,rec); return true; } return new Promise(res=>{ try{ const t=db.transaction(ST,'readwrite'); t.objectStore(ST).put(rec); t.oncomplete=()=>res(true); t.onerror=()=>res(false); t.onabort=()=>res(false); }catch(_){ res(false); } }); }
+async function dbCount(){ const db=await openDb(); if(!db) return _mem.size; return new Promise(res=>{ try{ const rq=db.transaction(ST,'readonly').objectStore(ST).count(); rq.onsuccess=()=>res(rq.result||0); rq.onerror=()=>res(0); }catch(_){ res(0); } }); }
+
+/* ───────── 💾 Save → 같은 중심주제 항목을 덮어씀 ───────── */
+async function onSave(m,date){
+  const info=infoOf(m); if(!info) return false;
+  const rec={key:info.key,topics:info.topics,nodes:info.nodes,date:okDate(date)?date:today(),savedAt:Date.now(),mt:+m.mt||0,doc:clone(m)};
+  const ok=await dbPut(rec);
+  if(!ok) console.warn('[MM History] 저장하지 못했어요(저장소 오류)');
+  badge(); if(isOpen()) reload();
+  return ok;
+}
+
+/* ───────── 기존 저장분(Archive 날짜별 기록)을 저장소에 반영 — 저장소에 없는 키만, 같은 키는 가장 최근 날짜 것 하나 ───────── */
+async function mergeArchives(){
+  let arcs=[]; try{ arcs=await getAllArchives(); }catch(_){ return 0; }
+  const have=new Set((await dbAll()).map(r=>r.key)), best=new Map();
+  const cand=(m,date,at)=>{
+    const info=infoOf(m); if(!info||have.has(info.key)||!okDate(date)) return;
+    const c={key:info.key,topics:info.topics,nodes:info.nodes,date,savedAt:at||0,mt:+m.mt||0,doc:m}, o=best.get(info.key);
+    if(!o||c.date>o.date||(c.date===o.date&&c.savedAt>o.savedAt)) best.set(info.key,c);
+  };
+  arcs.forEach(r=>{ if(r&&r.data&&r.data.mindmap) cand(r.data.mindmap,r.date,Date.parse(r.archivedAt)||0); });
+  try{ const M=window.MM, cur=M&&M.serializeSaved&&M.serializeSaved(), rd=(typeof gv==='function')?gv('reportDate'):''; if(cur) cand(cur,String(rd||'').trim(),0); }catch(_){}   /* 아직 Archive 에 안 담긴 현재 리포트의 저장본 */
+  let n=0;
+  for(const c of best.values()){ c.doc=clone(c.doc); if(await dbPut(c)) n++; }
+  return n;
+}
+
+/* ───────── 목록 ───────── */
+let LIST=[], Q='';
+const cmp=(a,b)=>(a.date<b.date?1:a.date>b.date?-1:0)||((b.savedAt||0)-(a.savedAt||0));   /* 최신 날짜가 맨 위(같은 날짜는 나중에 저장한 것이 위) */
+async function reload(){ LIST=(await dbAll()).filter(r=>r&&r.key&&r.doc&&Array.isArray(r.topics)&&okDate(r.date)).sort(cmp); render(); badge(); }
+function curKey(){ try{ const t=window.MM&&MM.topics&&MM.topics(); return (t&&t.length)?keyOf(t):''; }catch(_){ return ''; } }
+const terms=()=>Q.toLowerCase().split(/\s+/).filter(Boolean);
+function visible(){ const T=terms(); return T.length?LIST.filter(e=>{ const hay=(e.topics.join(' ')+' '+e.date).toLowerCase(); return T.every(t=>hay.indexOf(t)>=0); }):LIST; }
+function metaOf(e){
+  const a=['주제 '+e.nodes+'개'];
+  if(e.topics.length>1) a.push('중심주제 '+e.topics.length+'개');
+  const d=e.savedAt?new Date(e.savedAt):null;
+  if(d&&!isNaN(d)) a.push('저장 '+z2(d.getMonth()+1)+'-'+z2(d.getDate())+' '+z2(d.getHours())+':'+z2(d.getMinutes()));
+  return a.join(' · ');
+}
+const titleHtml=e=>e.topics.map(t=>t?'<span class="mmh-tp">'+esc(t)+'</span>':'<span class="mmh-tp mmh-none">(제목 없음)</span>').join('<span class="mmh-sep">·</span>');
+function render(){
+  const L=$('mmhList'); if(!L) return;
+  const v=visible(), ck=curKey();
+  $('mmhCnt').textContent=terms().length?(v.length+' / '+LIST.length+'개'):(LIST.length+'개');
+  if(!v.length){ L.innerHTML='<div class="mmh-empty">'+(LIST.length?'검색 결과가 없어요.':'아직 저장된 마인드맵이 없어요.<br>마인드맵을 만들고 <b>💾 Save</b> 하면<br>중심주제별로 이곳에 쌓여요.')+'</div>'; return; }
+  L.innerHTML=v.map(e=>'<div class="mmh-it'+(e.key===ck?' cur':'')+'" role="option" tabindex="0" data-k="'+esc(e.key)+'">'
+    +'<div class="mmh-it-main"><div class="mmh-it-title">'+titleHtml(e)+(e.key===ck?'<span class="mmh-chip" title="지금 지도와 중심주제가 같아요">지금 표시 중</span>':'')+'</div><div class="mmh-it-meta">'+esc(metaOf(e))+'</div></div>'
+    +'<div class="mmh-it-date">'+esc(e.date)+'<small>'+esc(dayStr(e.date))+'</small></div></div>').join('');
+}
+async function badge(){ try{ const n=await dbCount(), sp=document.querySelector('#mmHistBtn .mmh-n'); if(sp) sp.textContent=n||''; }catch(_){} }
+
+/* ───────── 항목 선택 → 지도에 표시 ───────── */
+function pick(key){
+  const e=LIST.find(x=>x.key===key); if(!e) return;
+  const M=window.MM;
+  if(!M||!M.canEdit||!M.canEdit()){ toast(M&&M.isTranslated&&M.isTranslated()?'번역(영어·중국어) 화면에서는 마인드맵을 바꿀 수 없어요 — 한국어 화면에서 불러 주세요':'이 화면에서는 마인드맵을 불러올 수 없어요'); return; }
+  if(M.hasUnsaved&&M.hasUnsaved()&&!confirm('지금 마인드맵에 💾 Save 하지 않은 수정이 있어요.\n선택한 마인드맵으로 바꾸면 그 수정은 지도에서 사라져요.\n(편집 모드에서 Ctrl+Z 로 되돌릴 수 있어요)\n\n계속할까요?')) return;
+  if(!M.showDoc(clone(e.doc))){ toast('마인드맵을 불러오지 못했어요'); return; }
+  close();
+  toast('📜 "'+e.topics.filter(Boolean).join(' · ')+'" 마인드맵을 불러왔어요 · 이 리포트에 남기려면 💾 Save 하세요');
+}
+
+/* ───────── 팝업 ───────── */
+const isOpen=()=>{ const m=$('mmHistModal'); return !!m&&m.style.display==='flex'; };
+function onKey(ev){
+  if(ev.key==='Escape'){
+    ev.preventDefault(); ev.stopPropagation();   /* 확대 보기(MM)의 Esc 로 새지 않게 */
+    const si=$('mmhSearch'); if(ev.target===si&&si.value){ si.value=''; Q=''; render(); } else close();
+    return;
+  }
+  if(ev.key==='Tab'){   /* Tab 키가 팝업 밖(뒤의 리포트)으로 새지 않게 팝업 안에서만 돌림 */
+    const m=$('mmHistModal'), f=[...m.querySelectorAll('input,button,.mmh-it')], a=document.activeElement;
+    if(f.length){ if(ev.shiftKey&&(a===f[0]||!m.contains(a))){ ev.preventDefault(); f[f.length-1].focus(); } else if(!ev.shiftKey&&(a===f[f.length-1]||!m.contains(a))){ ev.preventDefault(); f[0].focus(); } }
+    return;
+  }
+  const items=[...$('mmhList').querySelectorAll('.mmh-it')], i=items.indexOf(document.activeElement);
+  if(ev.key==='ArrowDown'||ev.key==='ArrowUp'){
+    if(ev.target&&ev.target.id==='mmhSearch'&&ev.key==='ArrowUp') return;
+    ev.preventDefault(); const n=items[i<0?(ev.key==='ArrowDown'?0:items.length-1):i+(ev.key==='ArrowDown'?1:-1)]; if(n) n.focus();
+  }else if((ev.key==='Enter'||ev.key===' ')&&i>=0){ ev.preventDefault(); pick(items[i].getAttribute('data-k')); }
+}
+function ensureModal(){
+  let m=$('mmHistModal'); if(m) return m;
+  m=document.createElement('div'); m.id='mmHistModal'; m.className='no-print pdf-export-hide'; m.tabIndex=-1;
+  m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','MindMap History');
+  m.innerHTML='<div id="mmHistInner"><div class="mmh-head"><span class="mmh-ttl">📜 MindMap History</span><span id="mmhCnt" class="mmh-cnt"></span>'
+    +'<input id="mmhSearch" type="search" placeholder="중심주제·날짜 검색" autocomplete="off" spellcheck="false" aria-label="중심주제·날짜 검색">'
+    +'<button type="button" id="mmhRefresh" class="mmh-ib mobile-keep" aria-label="Archive 에서 다시 가져오기" title="Archive 의 날짜별 기록에서 빠진 마인드맵을 다시 가져오기">↻</button>'
+    +'<button type="button" id="mmhClose" class="mmh-ib mobile-keep" aria-label="닫기" title="닫기 (Esc)">✕</button></div>'
+    +'<div id="mmhList" class="mmh-list" role="listbox" aria-label="저장된 마인드맵"></div>'
+    +'<div class="mmh-foot">💡 항목을 누르면 그 마인드맵이 지도에 표시돼요(💾 Save 해야 이 리포트에 남아요). <b>💾 Save</b> 할 때마다 <b>같은 중심주제는 하나로 덮어써져요</b>(날짜가 달라도).</div></div>';
+  document.body.appendChild(m);
+  let down=false;   /* 바깥(어두운 배경)을 눌러 닫기 — 누르기·떼기가 모두 배경일 때만(글을 끌다 바깥에서 떼도 안 닫힘) */
+  m.addEventListener('mousedown',e=>{ down=(e.target===m); });
+  m.addEventListener('mouseup',e=>{ if(down&&e.target===m) close(); down=false; });
+  m.addEventListener('click',e=>{
+    const it=e.target.closest&&e.target.closest('.mmh-it'); if(it){ pick(it.getAttribute('data-k')); return; }
+    const b=e.target.closest&&e.target.closest('button'); if(!b) return;
+    if(b.id==='mmhClose') close(); else if(b.id==='mmhRefresh') refresh(true);
+  });
+  m.addEventListener('input',e=>{ if(e.target.id==='mmhSearch'){ Q=e.target.value||''; render(); } });
+  m.addEventListener('keydown',onKey);
+  return m;
+}
+async function open(){
+  const M=window.MM; if(!M) return;
+  if(M.isTranslated&&M.isTranslated()){ toast('번역(영어·중국어) 화면에서는 History 를 열 수 없어요 — 한국어 화면에서 열어 주세요'); return; }
+  const m=ensureModal(); Q=''; $('mmhSearch').value=''; $('mmhCnt').textContent='';
+  $('mmhList').innerHTML='<div class="mmh-empty">불러오는 중…</div>';
+  m.style.display='flex'; $('mmhSearch').focus();
+  try{ await mergeArchives(); }catch(e){ console.warn('[MM History] Archive 반영 실패:',e); }
+  await reload();
+}
+function close(){ const m=$('mmHistModal'); if(m) m.style.display='none'; try{ const b=$('mmHistBtn'); if(b) b.focus({preventScroll:true}); }catch(_){} }
+async function refresh(manual){
+  let n=0; try{ n=await mergeArchives(); }catch(e){ console.warn('[MM History] Archive 반영 실패:',e); }
+  await reload();
+  if(manual) toast(n?'Archive 에서 마인드맵 '+n+'개를 새로 가져왔어요':'새로 가져올 마인드맵이 없어요');
+}
+
+window.addEventListener('load',()=>{ badge(); });   /* 버튼의 건수 */
+window.BTMMmHist={open,close,onSave,refresh,mergeArchives,infoOf,keyOf,list:()=>LIST.slice(),_dbg:{dbAll,dbPut,dbCount,openDb,render,pick,get mem(){ return _mem; }}};
+})();
+/* ═══ MMHIST-JS-END ═══ */
+</script>
+<!-- MMHIST-JS-END -->
 
 <!-- ═══════ AI CHAT MODAL ═══════ -->
 <div id="aiChatModal">
