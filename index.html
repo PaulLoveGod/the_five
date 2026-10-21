@@ -1761,10 +1761,42 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
 .avp-ed .avp-cn{border:1px solid #cbd5e1;background:#fff;color:#64748b}
 .avp-ed .avp-cn:hover{background:#f1f5f9}
 .avp-pf{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:10.5px}
+/* 유형 ↔ 섹션 연동(2026-10-21) — 🎨 패널의 ‘이 섹션에 연동된 유형’ 줄(.avp-link)·유형 버튼의 연동 꼬리표(.lk)와 이 섹션 연동 강조(.lnk)·유형 편집 칸의 ‘연동 섹션’ 체크 목록(.avp-secs) */
+#aiVizPanel .avp-link{display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;font-size:10.5px;font-weight:600;color:#5b21b6;background:#faf5ff;border:1px solid #c4b5fd;border-radius:8px;padding:5px 10px;line-height:1.5}
+#aiVizPanel .avp-link.none{background:#fff;border-style:dashed;border-color:#ddd6fe;color:#7c6a9a}
+#aiVizPanel .avp-link>span{flex:1 1 200px;min-width:0}
+#aiVizPanel .avp-link b{font-weight:800}
+#aiVizPanel .avp-link small{color:#8b7bb0;font-size:10px;font-weight:600}
+#aiVizPanel .avp-link .avp-go{flex:none;height:24px;padding:0 12px;border:1px solid #7c3aed;border-radius:12px;background:#7c3aed;color:#fff;font-size:10.5px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background .12s}
+#aiVizPanel .avp-link .avp-go:hover{background:#6d28d9}
+.avp-rc button.lnk,.ai-viz-rcb button.lnk{background:#f5f3ff;border-color:#7c3aed;color:#5b21b6}
+.avp-rc button.lnk:hover,.ai-viz-rcb button.lnk:hover{background:#ede9fe}
+.avp-rc button .lk,.ai-viz-rcb button .lk{display:inline-block;max-width:210px;margin-left:6px;padding:1px 7px;border-radius:8px;background:#ede9fe;color:#5b21b6;font-size:9.5px;font-weight:700;line-height:1.4;vertical-align:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avp-rc button.lnk .lk,.ai-viz-rcb button.lnk .lk{background:#7c3aed;color:#fff}
+.avp-ed .avp-secs{display:flex;flex-wrap:wrap;gap:1px 14px;padding:6px 9px;border:1px solid #fbcfe8;border-radius:8px;background:#fffafd}
+.avp-ed .avp-sec{flex:1 1 250px;display:flex;flex-wrap:wrap;align-items:center;gap:1px 6px;min-width:0;padding:2px 0;font-size:11px;font-weight:600;color:#1e293b;line-height:1.5;cursor:pointer}
+.avp-ed .avp-secs input[type=checkbox]{flex:none;width:14px;height:14px;margin:0;padding:0;border:none;border-radius:0;box-shadow:none;accent-color:#7c3aed;cursor:pointer}
+.avp-ed .avp-sec .nm{min-width:0;overflow-wrap:anywhere}
+.avp-ed .avp-sec em{font-style:normal;font-size:9px;font-weight:800;color:#fff;background:#6366f1;border-radius:8px;padding:0 6px}
+.avp-ed .avp-sec .by{font-size:10px;font-weight:700;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:0 7px}
+.avp-ed .avp-sec.off{cursor:not-allowed;color:#94a3b8}
+.avp-ed .avp-sec.off input{cursor:not-allowed}
 .ai-viz-ol{font-weight:800;color:#7c5a6b;font-size:10.5px}
 .ai-viz-sws{display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px;max-width:100%}
 .ai-viz-sw{width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cbd5e1;cursor:pointer;padding:0;flex-shrink:0}
 .ai-viz-sw.on{box-shadow:0 0 0 2px #4f46e5}
+/* 색상 선택(2026-10-21) — Base(배경 바탕)·Item(포인트 색) 두 줄: 줄마다 '이름 + 스와치들', Base 스와치는 바탕·카드·글자 색을 작은 그림으로 */
+.ai-viz-cr{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;min-width:0}
+.ai-viz-cr>.ai-viz-ol{flex:none;width:62px}
+.ai-viz-cap{flex:1 1 100%;font-size:10.5px;font-weight:800;color:#7c5a6b}
+.ai-viz-cap small{font-weight:600;color:#a8738a;font-size:10px}
+.ai-viz-sg{display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px;max-width:100%}
+.ai-viz-gc{font-style:normal;font-size:9.5px;font-weight:700;color:#94a3b8;margin-right:-1px;white-space:nowrap}
+.ai-viz-sw{transition:transform .1s}
+.ai-viz-sw:hover{transform:scale(1.12)}
+.ai-viz-sw.bs{width:22px;height:22px;border:0;border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px #cbd5e1}
+.ai-viz-sw.bs svg{display:block;width:100%;height:100%}
+.ai-viz-sw.bs.on{box-shadow:0 0 0 2px #4f46e5}
 .ai-viz-seg{display:inline-flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;background:#fff}
 .ai-viz-seg button{height:20px;padding:0 8px;border:none;border-right:1px solid #e2e8f0;background:#fff;color:#64748b;font-size:10.5px;font-weight:700;cursor:pointer}
 .ai-viz-seg button:last-child{border-right:none}
@@ -6931,7 +6963,7 @@ function openAiRadarTargetModal(){
   chk('aiRadarHistChk',cfg.hist); { const hn=g('aiRadarHistN'); if(hn) hn.value=String(_airN(cfg)); }
   chk('aiRadarVizChk',cfg.viz!==false);   /* 🎨 인포그래픽 자동 제작 — 안내 줄에 쓰일 유형(이 섹션 AI 팝업에서 마지막으로 만든 유형) */
   { const vi=g('aiRadarVizInfo'); if(vi){ const o=(typeof window._aiVizLastFor==='function')?window._aiVizLastFor('aiStockRadar'):null;
-    vi.innerHTML=o?((o.fallback?'이 섹션의 AI 팝업에서 만든 인포그래픽 유형 기록이 없어 기본 유형 <b>':'사용할 유형: <b>')+_airEsc(o.ic+' '+o.t)+'</b>'+(o.fallback?' 으로 만들어요.':' — 이 섹션의 AI 팝업(✨ › 🎨 인포그래픽)에서 마지막으로 만든 유형이에요.')+' (그 유형의 ‘인포그래픽 프롬프트’로 이미지만 만들어요)'):''; } }
+    vi.innerHTML=o?(o.linked?('사용할 유형: <b>'+_airEsc(o.ic+' '+o.t)+'</b> — 이 섹션에 <b>연동</b>된 유형이에요. (AI 팝업 🎨 패널의 유형 ✏️ 편집 › ‘연동 섹션’에서 바꿀 수 있어요) (그 유형의 ‘인포그래픽 프롬프트’로 이미지만 만들어요)'):((o.fallback?'이 섹션의 AI 팝업에서 만든 인포그래픽 유형 기록이 없어 기본 유형 <b>':'사용할 유형: <b>')+_airEsc(o.ic+' '+o.t)+'</b>'+(o.fallback?' 으로 만들어요.':' — 이 섹션의 AI 팝업(✨ › 🎨 인포그래픽)에서 마지막으로 만든 유형이에요.')+' (그 유형의 ‘인포그래픽 프롬프트’로 이미지만 만들어요)')):''; } }
   const psel=g('aiRadarProviderSelect'); if(psel) psel.value=_getAiRadarProvider();
   const m=g('aiRadarTargetModal'); if(m) m.style.display='flex';
 }
@@ -7015,7 +7047,7 @@ async function runAiRadarSearch(silent){
       if(cfg.viz!==false&&typeof window._aiAutoInfographic==='function'){
         if(btn) btn.textContent='🎨 제작중…';
         let vr; try{ vr=await window._aiAutoInfographic('aiStockRadar','AI Stock Radar',{providerKey:'aiStockRadarTarget'}); }catch(e){ vr={ok:false,msg:(e&&e.message)||String(e)}; }
-        if(typeof _showMainToast==='function') _showMainToast(vr.ok?('🎨 인포그래픽도 추가했어요 · 유형: '+vr.ic+' '+vr.name+(vr.fallback?' (기본 유형)':'')):('⚠ 인포그래픽은 만들지 못했어요 — '+vr.msg+' (본문 텍스트는 정상 반영됐어요)'));
+        if(typeof _showMainToast==='function') _showMainToast(vr.ok?('🎨 인포그래픽도 추가했어요 · 유형: '+vr.ic+' '+vr.name+(vr.linked?' (연동 유형)':vr.fallback?' (기본 유형)':'')):('⚠ 인포그래픽은 만들지 못했어요 — '+vr.msg+' (본문 텍스트는 정상 반영됐어요)'));
         await new Promise(r=>setTimeout(r,300));
       }
     } else {
@@ -30670,6 +30702,7 @@ Rules:
     _pendingRefs=[]; _renderRefStrip();   /* 참조 칩은 그 채팅의 DOM 을 가리키므로 다른 섹션·다시 열기로 이어지지 않게 */
     g('aiSendBtn').disabled=false;
     g('aiChatModal').style.display='flex';
+    try{ _vizToggleMark(); }catch(e){}   /* 연동 유형이 있는 섹션이면 🎨 버튼에 🔗(2026-10-21) */
     _ahBadge();
     setTimeout(()=>{
       const ar=g('aiMessages'); ar.scrollTop=ar.scrollHeight;
@@ -32717,6 +32750,7 @@ ${viz?`이번 요청은 인포그래픽(이미지)만 필요합니다. <RESULT> 
 [양식 선택 — 모두 선택 사항. 생략하면 앱이 사용자가 고른 기본 양식을 적용합니다]
 명세 맨 위에 필드로 적을 수 있습니다. "head"(제목 머리: lg 크게·md 보통·sm 얇게·xs 한 줄·line 라인·side 사이드·center 가운데·band 색 띠·none 없음), "lay"(문서 틀: card 카드·report 표형 보고서·plain 미니멀·panel 컬러 패널), "form"(card 또는 table — table 이면 수치·항목을 표로 보여 주고 막대·비중은 표 안 막대로), "tbl"(표 모양: classic·zebra·grid·rule·min·solid·compact·rows·bold), "bk"(블록 모양 묶음: std·cards·flow·lite), "dens"(normal·tight·loose). 블록마다 "style"(stats: tiles|strip, points: list|cards|plain, steps: cards|chevron|list, timeline: vertical|horizontal, donut: ring|stack)과 "form"(card|table)도 쓸 수 있습니다.
 사용자가 '표로'·'표형'·'보고서처럼'·'얇은/한 줄 헤더'·'촘촘하게'·'미니멀' 같은 말을 하면 거기에 맞게 고르고, 말하지 않았다면 이 필드들은 생략해도 됩니다.
+색 — "base"(배경 바탕)와 "item"(포인트 색)을 따로 고를 수 있습니다(위 "theme" 은 둘을 한 벌로 고르는 방식이라 생략해도 됩니다). base 밝은 배경: white·neutral·cool·azure·ice·peri·lavender·rose·blush·peach·cream·sage·mint / 어두운 배경: midnight·navy·indigo·plum·wine·cocoa·olive·forest·teal·ocean·slate·charcoal·black. item: red·coral·orange·gold·yellow·lime·green·emerald·teal·cyan·sky·blue·indigo·violet·fuchsia·pink·wine·slate·mono. 사용자가 '어두운/다크/검은 배경'·'초록 포인트' 같은 말을 하면 거기에 맞게 고르고, 말하지 않았다면 생략해도 됩니다(앱이 사용자가 고른 색을 적용합니다).
 
 [작성 원칙]
 - 숫자는 [현재 참고 자료]·사용자 입력·웹 조회 데이터에 실제로 있는 것만 쓰세요. 없는 수치를 지어내거나 어림해 차트를 만들지 마세요. 수치가 부족하면 bar·line 대신 points·timeline·steps·compare 로 구성하고, 추정치에는 '(추정)'을 붙이세요.
@@ -32753,10 +32787,28 @@ ${viz?'':`<RESULT>
   const _VIZ_WIDTHS=[480,640,800];
   const _VIZ_A6=['head','lay','form','tbl','bk','dens'];   /* 렌더러 BTMViz.OPT 의 양식 축 */
   function _vizOptOk(k,v){ return v==='auto'||!!(window.BTMViz&&BTMViz.OPT&&BTMViz.OPT[k]&&BTMViz.OPT[k].some(x=>x[0]===v)); }
+  /* ═══ 색상: Base(배경 바탕) · Item(포인트 색) (2026-10-21) ═══════════════════════════════════════════════
+     예전엔 '스타일' 스와치 한 줄(테마 13종 = 바탕 + 포인트색 한 벌, 어두운 배경은 하나뿐)이었는데, 이제 두 줄로 나눠 각각 고름 —
+     · Base 색상: 배경·카드·글자 바탕 — 밝은 13종 + 어두운 13종. · Item 색상: 헤더·막대·번호·강조선 같은 포인트 색 19종(어두운 배경에선 자동으로 밝게 맞춤). 둘은 서로 독립(어두운 배경 + 초록 포인트 가능).
+     · 옵션 값은 'auto'(AI 가 고른 대로) | 키(BTMViz.BASES / BTMViz.ITEMS). AI 명세의 theme(옛 한 벌)은 그대로 'auto' 의 근거.
+     · 옛 저장본(보기 설정에 theme 한 벌만 있던 것 — BTMVizPrefs·상자 data-opt·대화 기록 body.viz)은 읽을 때 Base+Item 짝으로 바꿔(_vizMigOpt) 같은 색이 그대로 나옴. */
+  function _vizMigOpt(o){
+    o=Object.assign({},o);
+    if(o.theme!==undefined){
+      if(o.base===undefined&&o.item===undefined){
+        const Z=window.BTMViz, L=(o.theme!=='auto'&&Z&&Z.LEGACY&&Object.prototype.hasOwnProperty.call(Z.LEGACY,o.theme))?Z.LEGACY[o.theme]:null;
+        o.base=L?L[0]:'auto'; o.item=L?L[1]:'auto';
+      }
+      delete o.theme;
+    }
+    return o;
+  }
   function _vizNormOpt(p){   /* 저장돼 있던·넘겨받은 보기 설정을 검증해 9개 값으로 — 없거나 잘못된 값은 기본(AI 추천·640·빨강↑) */
     p=p||{};
-    const th=(p.theme==='auto'||(window.BTMViz&&BTMViz.THEMES[p.theme]))?p.theme:'auto';
-    const o={theme:th,w:_VIZ_WIDTHS.includes(+p.w)?+p.w:640,ud:p.ud==='us'?'us':'kr'};
+    p=_vizMigOpt(p);   /* 옛 theme 한 벌 → Base+Item */
+    const Z=window.BTMViz, hb=(t,k)=>!!(t&&typeof k==='string'&&Object.prototype.hasOwnProperty.call(t,k));
+    const bs=(p.base==='auto'||hb(Z&&Z.BASES,p.base))?p.base:'auto', it=(p.item==='auto'||hb(Z&&Z.ITEMS,p.item))?p.item:'auto';
+    const o={base:bs,item:it,w:_VIZ_WIDTHS.includes(+p.w)?+p.w:640,ud:p.ud==='us'?'us':'kr'};
     _VIZ_A6.forEach(k=>{ o[k]=_vizOptOk(k,p[k])?p[k]:'auto'; });
     return o;
   }
@@ -32787,9 +32839,28 @@ ${viz?'':`<RESULT>
   function _vizSrcOf(spec){   /* ↪ 참조·AI 문맥으로 돌려줄 원문 — 빈 값은 빼서 짧게 */
     return '<INFOGRAPHIC>\n'+JSON.stringify(spec,(k,v)=>(v===''||v==null||(Array.isArray(v)&&!v.length&&k!=='blocks'))?undefined:v)+'\n</INFOGRAPHIC>';
   }
-  function _vizSwatches(cur,fn){
-    const T=BTMViz.THEMES;
-    return ['auto'].concat(Object.keys(T)).map(k=>'<button type="button" class="ai-viz-sw mobile-keep'+(k===cur?' on':'')+'" data-k="'+k+'" title="'+(k==='auto'?'AI 추천 — 내용에 맞춰 AI가 고름':T[k].label)+'" aria-label="'+(k==='auto'?'AI 추천':T[k].label)+'" style="background:'+(k==='auto'?'conic-gradient(#2563eb,#16a34a,#f97316,#7c3aed,#be185d,#2563eb)':'linear-gradient(135deg,'+T[k].p1+','+T[k].p2+')')+'" onclick="'+fn+'"></button>').join('');
+  /* 색 스와치 — Base: 바탕·카드·글자를 담은 작은 그림(밝은/어두운 두 묶음), Item: 포인트 색 그라데이션 동그라미. cur: 지금 값('auto' 또는 키), fn: onclick 문자열 */
+  function _vizBaseSwatches(cur,fn){
+    const B=BTMViz.BASES, ks=Object.keys(B), on=k=>(k===cur?' on':'');
+    const sw=k=>{
+      const b=B[k], tip=b.label+(b.dark?' · 어두운 배경':' · 밝은 배경');
+      return '<button type="button" class="ai-viz-sw bs mobile-keep'+on(k)+'" data-k="'+k+'" title="Base 색상 — '+_ahEsc(tip)+'" aria-label="Base 색상: '+_ahEsc(tip)+'" aria-pressed="'+(k===cur)+'" onclick="'+fn+'">'
+        +'<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="22" fill="'+b.bg+'"/><rect x="4" y="5" width="14" height="12" rx="3" fill="'+b.card+'" stroke="'+b.line+'"/><rect x="6.5" y="8" width="9" height="2" rx="1" fill="'+b.ink+'"/><rect x="6.5" y="12" width="5.5" height="2" rx="1" fill="'+b.mute+'"/></svg></button>';
+    };
+    const auto='<button type="button" class="ai-viz-sw bs mobile-keep'+on('auto')+'" data-k="auto" title="Base 색상 — AI 추천 · 내용에 맞춰 AI가 고름" aria-label="Base 색상: AI 추천" aria-pressed="'+('auto'===cur)+'" onclick="'+fn+'">'
+      +'<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="22" fill="#eef2f8"/><polygon points="22,0 22,22 0,22" fill="#111827"/><text x="11" y="14.4" text-anchor="middle" font-size="8.5" font-weight="800" fill="#6366f1" stroke="#fff" stroke-width=".5" paint-order="stroke">AI</text></svg></button>';
+    return auto+'<span class="ai-viz-sg"><i class="ai-viz-gc">밝은 배경</i>'+ks.filter(k=>!B[k].dark).map(sw).join('')+'</span><span class="ai-viz-sg"><i class="ai-viz-gc">어두운 배경</i>'+ks.filter(k=>B[k].dark).map(sw).join('')+'</span>';
+  }
+  function _vizItemSwatches(cur,fn){
+    const I=BTMViz.ITEMS;
+    return ['auto'].concat(Object.keys(I)).map(k=>{
+      const nm=(k==='auto')?'AI 추천 · 내용에 맞춰 AI가 고름':I[k].label;
+      return '<button type="button" class="ai-viz-sw mobile-keep'+(k===cur?' on':'')+'" data-k="'+k+'" title="Item 색상 — '+_ahEsc(nm)+'" aria-label="Item 색상: '+_ahEsc(k==='auto'?'AI 추천':I[k].label)+'" aria-pressed="'+(k===cur)+'" style="background:'+(k==='auto'?'conic-gradient(#2563eb,#16a34a,#f97316,#7c3aed,#be185d,#2563eb)':'linear-gradient(135deg,'+I[k].p1+','+I[k].p2+')')+'" onclick="'+fn+'"></button>';
+    }).join('');
+  }
+  function _vizColorRows(p,fnB,fnI){   /* 'Base 색상' 줄 + 'Item 색상' 줄 — 상자(이 인포그래픽에 적용)와 🎨 패널(새 인포그래픽의 기본값)이 같이 씀 */
+    return '<div class="ai-viz-cr"><span class="ai-viz-ol">Base 색상</span><span class="ai-viz-sws">'+_vizBaseSwatches(p.base,fnB)+'</span></div>'
+      +'<div class="ai-viz-cr"><span class="ai-viz-ol">Item 색상</span><span class="ai-viz-sws">'+_vizItemSwatches(p.item,fnI)+'</span></div>';
   }
   function _vizSegs(items,cur,fn){   /* items: [[값,라벨,title?]] */
     return '<span class="ai-viz-seg">'+items.map(it=>'<button type="button" class="mobile-keep'+(String(it[0])===String(cur)?' on':'')+'" data-v="'+it[0]+'"'+(it[2]?' title="'+it[2]+'"':'')+' onclick="'+fn+'">'+it[1]+'</button>').join('')+'</span>';
@@ -32852,7 +32923,7 @@ ${viz?'':`<RESULT>
       +_vizGroup('헤더','head',p,fn,true)+_vizGroup('문서 양식','lay',p,fn,true)+_vizGroup('표시 형식','form',p,fn,true)+_vizGroup('표 양식','tbl',p,fn,true)+_vizGroup('블록 모양','bk',p,fn,false)+_vizGroup('밀도','dens',p,fn,false);
   }
   function _vizOptsHtml(p,more){
-    return '<span class="ai-viz-ol">스타일</span><span class="ai-viz-sws">'+_vizSwatches(p.theme,"_vizAct(this,'theme',this.dataset.k)")+'</span>'
+    return _vizColorRows(p,"_vizAct(this,'base',this.dataset.k)","_vizAct(this,'item',this.dataset.k)")
       +'<span class="ai-viz-ol">너비</span>'+_vizSegs([[480,'480','좁게 (모바일·카드뉴스)'],[640,'640','보통 (리포트 본문 폭)'],[800,'800','넓게']],p.w,"_vizAct(this,'width',this.dataset.v)")
       +'<span class="ai-viz-ol">상승색</span>'+_vizSegs([['kr','빨강↑','한국식 — 상승 빨강 · 하락 파랑'],['us','초록↑','미국식 — 상승 초록 · 하락 빨강']],p.ud,"_vizAct(this,'ud',this.dataset.v)")
       +'<button type="button" class="ai-viz-b mini'+(more?' on':'')+' mobile-keep" onclick="_vizAct(this,\'more\')" title="헤더(얇은 머리 등)·문서 양식·표형·표 양식·블록 모양·밀도를 고릅니다">🎛 양식 '+(more?'▴':'▾')+'</button>'
@@ -32871,7 +32942,7 @@ ${viz?'':`<RESULT>
     }
     if(spec&&vzs&&vzs[_vizKey(v.body)]){   /* 글을 고쳐 둔 상자 — 고친 명세로 그림(처음 명세는 되돌리기·AI 양식값용). 양식 값은 처음 명세(AI 값)에서 가져오고, 사용자가 고른 양식은 아래 pf 가 덮어씀 */
       let es=null; try{ es=Z.normalize(vzs[_vizKey(v.body)]).spec; }catch(e){}
-      if(es){ ['theme'].concat(_VIZ_A6).forEach(k=>{ if(spec[k]) es[k]=spec[k]; else delete es[k]; }); spec0=spec; spec=es; }
+      if(es){ ['theme','base','item'].concat(_VIZ_A6).forEach(k=>{ if(spec[k]) es[k]=spec[k]; else delete es[k]; }); spec0=spec; spec=es; }
     }
     const lbl=document.createElement('div'); lbl.className='ai-result-label';
     lbl.innerHTML='<span class="ai-res-t">🎨 인포그래픽<span class="ai-res-no"></span> — '+_ahEsc(spec?spec.title:'만들지 못했어요')+'</span>'+(live?_REF_BTN:'');
@@ -32885,10 +32956,10 @@ ${viz?'':`<RESULT>
       const pf=vz?_vizNormOpt(vz[vk]):_vizPrefs();   /* 기록에서 다시 그릴 땐 지금의 기본 양식이 아니라 그때 보던 양식(저장된 게 없으면 AI 가 정한 그대로) */
       box.setAttribute('data-vk',vk);
       box.setAttribute('data-title',spec.title);
-      const ai={}; ['theme'].concat(_VIZ_A6).forEach(k=>{ ai[k]=(spec0||spec)[k]||''; });   /* AI 가 정한 값 — 사용자가 '기본(auto)'로 돌리면 이 값으로 */
+      const ai={}; ['theme','base','item'].concat(_VIZ_A6).forEach(k=>{ ai[k]=(spec0||spec)[k]||''; });   /* AI 가 정한 값 — 사용자가 '기본(auto)'로 돌리면 이 값으로 */
       box.setAttribute('data-ai',JSON.stringify(ai));
       box.setAttribute('data-opt',JSON.stringify(pf));   /* 이 상자의 보기 설정(색·너비·상승색·양식 6축) — 처음엔 마지막에 고른 기본값 */
-      if(pf.theme!=='auto') spec.theme=pf.theme;
+      if(pf.base!=='auto') spec.base=pf.base; if(pf.item!=='auto') spec.item=pf.item;   /* 고른 Base·Item 은 명세에도 적어 둠 — AI 에게 고쳐 달라고 해도 같은 색이 유지됨 */
       _VIZ_A6.forEach(k=>{ if(pf[k]!=='auto') spec[k]=pf[k]; });   /* 고른 양식은 명세에도 적어 둠 — 이후 AI 에게 고쳐 달라고 해도 같은 모양이 유지됨 */
       box.setAttribute('data-spec',JSON.stringify(spec));
       box.setAttribute('data-src',_vizSrcOf(spec));
@@ -32949,7 +33020,7 @@ ${viz?'':`<RESULT>
   /* 그릴 때 쓰는 보기 설정 — 양식 6축은 명세(spec)에 이미 반영돼 있음(고른 값 또는 AI 값), 색·너비·상승색만 여기서 */
   function _vizRenderOpts(box,spec,scale){
     const o=_vizBoxOpt(box), ai=_vizBoxAi(box);
-    return {theme:o.theme==='auto'?(ai.theme||spec.theme||'ocean'):o.theme,width:o.w,ud:o.ud,scale:scale||2};
+    return {theme:ai.theme||spec.theme||'ocean',base:(o.base==='auto'?'':o.base),item:(o.item==='auto'?'':o.item),width:o.w,ud:o.ud,scale:scale||2};
   }
   async function _vizDoRender(box,tok){
     if(tok!==box._tok) return;   /* 그새 더 새 요청(스타일 연속 변경)이 생겼으면 건너뜀 */
@@ -33003,7 +33074,7 @@ ${viz?'':`<RESULT>
     else if(act==='rcmode') _vizSetMode(arg);
     else if(act==='rcedit') _vizBoxRcEdit(box);
     else if(act==='more'){ box.setAttribute('data-more',box.getAttribute('data-more')==='1'?'0':'1'); const op=box.querySelector('.ai-viz-opts'); if(op) op.innerHTML=_vizOptsHtml(_vizBoxOpt(box),box.getAttribute('data-more')==='1'); }
-    else if(act==='theme'||act==='width'||act==='ud'||act==='preset'||act==='rand'||_VIZ_A6.indexOf(act)>=0) _vizSetOpt(box,act,arg);
+    else if(act==='base'||act==='item'||act==='width'||act==='ud'||act==='preset'||act==='rand'||_VIZ_A6.indexOf(act)>=0) _vizSetOpt(box,act,arg);
   };
   /* ── 완성된 인포그래픽에서 유형 버튼으로 결과물 바꾸기 ──
      상자의 [🔄 유형 바꾸기]를 열면 🎨 패널과 같은 유형 버튼(추가·수정·삭제한 문구 포함)이 나오고, 누르면 이 인포그래픽을 '참조'로 삼아 그 유형으로 다시 만들어 달라는 요청이 바로 전송됨.
@@ -33015,11 +33086,11 @@ ${viz?'':`<RESULT>
   }
   function _vizBoxRcRender(box){   /* 유형 버튼 줄 — 열 때마다 지금의 목록(🎨 패널에서 고친 것 포함)으로 다시 그림 */
     const w=box&&box.querySelector&&box.querySelector('.ai-viz-rcw'); if(!w) return;
-    const list=_vizRecipes(), LS=_vizLastRes(_eid);
+    const list=_vizRecipes(), LS=_vizLastRes(_eid), SM=_vizSecMap();
     w.innerHTML='<div class="ai-viz-rch"><span>이 인포그래픽을 참조해 다른 유형으로 다시 만들어요 — 누르면 바로 AI 에게 요청합니다.</span><button type="button" class="mobile-keep" onclick="_vizAct(this,\'rcedit\')" title="유형(요청 문구)을 추가·수정·삭제하려면 🎨 패널을 편집 모드로 엽니다">✏️ 문구 편집</button></div>'
       +'<div class="ai-viz-rcm"><span class="lb">실행 범위</span>'+_vizModeBtns(_vizRunMode(),v=>"_vizAct(this,'rcmode','"+v+"')")+'</div>'
       +'<div class="ai-viz-rcb">'+(list.length
-        ?list.map(r=>'<button type="button" class="mobile-keep'+(_vizIsLast(LS,r)?' last':'')+'" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_vizRcTip(r)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</button>').join('')
+        ?list.map(r=>'<button type="button" class="mobile-keep'+(_vizIsLast(LS,r)?' last':'')+(_vizLinkCur(r)?' lnk':'')+'" data-n="'+_ahEsc(r.t)+'" onclick="_vizAct(this,\'rcgo\')" title="'+_vizRcTip(r)+'">'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+_vizLinkTag(r,SM)+'</button>').join('')
         :'<span class="ai-viz-rcn">등록된 유형이 없어요 — ✏️ 문구 편집에서 추가하세요.</span>')+'</div>';
   }
   function _vizBoxRcToggle(box){ const on=box.getAttribute('data-rc')!=='1'; _vizBoxRcSet(box,on); if(on) _vizBoxRcRender(box); }
@@ -33055,7 +33126,7 @@ ${viz?'':`<RESULT>
      · 칸을 모두 비우면 그 항목은 사라짐(정규화가 빈 항목을 버림). 고친 명세는 다시 BTMViz.normalize 를 거쳐 길이 제한·글자 정리·출처 표기 제거가 똑같이 적용됨.
      · [적용] → 상자의 data-spec/data-src/data-title 을 고친 명세로 바꾸고 다시 그림. 처음 명세는 data-spec0 에 보관(↺ 처음 글로), data-ed="1" 로 '고친 상자' 표시.
        data-src 가 바뀌므로 [↪ 참조]·[🔄 유형 바꾸기]로 AI 에게 가는 내용도 고친 글. 기록(🕘)엔 body.vzs[열쇠] 로 고친 명세를 저장 — 기록 조회·이어서 대화도 고친 글로 그림(양식 값은 처음 명세·body.viz 에서). */
-  const _VZ_AX=['theme'].concat(_VIZ_A6);   /* 명세 속 '양식' 값 — 글 수정과 따로 다룸 */
+  const _VZ_AX=['theme','base','item'].concat(_VIZ_A6);   /* 명세 속 '양식' 값 — 글 수정과 따로 다룸 */
   const _VZ_BT={stats:'수치 카드',points:'핵심 포인트',bar:'막대 차트',line:'선 차트',donut:'도넛 차트',timeline:'타임라인',steps:'단계·흐름',table:'표',compare:'비교',quote:'인용문',callout:'강조 박스',tags:'키워드',gauge:'계기판',text:'본문',heading:'구역 제목'};
   const _vzAt=(root,p)=>p.reduce((o,k)=>(o==null?o:o[k]),root);
   const _vzTone=d=>{ d=String(d||'').trim(); return /^[+▲△⬆↑]/.test(d)?'up':(/^[-−–▼▽⬇↓]/.test(d)?'down':''); };
@@ -33365,7 +33436,7 @@ ${viz?'':`<RESULT>
       if(btn){ btn.disabled=false; btn.textContent='🌐 다국어 생성 ▾'; }
     }
   }
-  function _vizBoxOpt(box){ let o={}; try{ o=JSON.parse(box.getAttribute('data-opt')||'{}')||{}; }catch(e){} return Object.assign(_vizPrefs(),o); }
+  function _vizBoxOpt(box){ let o={}; try{ o=JSON.parse(box.getAttribute('data-opt')||'{}')||{}; }catch(e){} return Object.assign(_vizPrefs(),_vizMigOpt(o)); }
   function _vizBoxAi(box){ try{ return JSON.parse(box.getAttribute('data-ai')||'{}')||{}; }catch(e){ return {}; } }
   function _vizSetOpt(box,k,v){
     let spec; try{ spec=JSON.parse(box.getAttribute('data-spec')); }catch(e){ return; }
@@ -33373,10 +33444,10 @@ ${viz?'':`<RESULT>
     const apply=(key,val)=>{
       if(key==='width'||key==='w'){ const w=+val; if(!_VIZ_WIDTHS.includes(w)) return; o.w=w; changed.w=w; }
       else if(key==='ud'){ const u=(val==='us')?'us':'kr'; o.ud=u; changed.ud=u; }
-      else if(key==='theme'){
-        if(val!=='auto'&&!BTMViz.THEMES[val]) return;
-        o.theme=val; changed.theme=val;
-        spec.theme=(val==='auto')?(ai.theme||''):val; if(!spec.theme) delete spec.theme;   /* 직접 고른 값은 명세에도 적어 둠 — 이후 AI 에게 고쳐 달라고 할 때 같은 모양이 유지됨 */
+      else if(key==='base'||key==='item'){
+        const tb=(key==='base')?BTMViz.BASES:BTMViz.ITEMS; if(val!=='auto'&&!Object.prototype.hasOwnProperty.call(tb,val)) return;
+        o[key]=val; changed[key]=val;
+        spec[key]=(val==='auto')?(ai[key]||''):val; if(!spec[key]) delete spec[key];   /* 직접 고른 값은 명세에도 적어 둠 — 이후 AI 에게 고쳐 달라고 할 때 같은 모양이 유지됨 */
       } else if(_VIZ_A6.indexOf(key)>=0){
         if(!_vizOptOk(key,val)) return;
         o[key]=val; changed[key]=val;
@@ -33387,7 +33458,7 @@ ${viz?'':`<RESULT>
     else if(k==='rand'){   /* 🎲 무작위 양식(색 포함) — 이 상자만, 기본값으로는 저장 안 함 */
       const pk=a=>a[Math.floor(Math.random()*a.length)], ks=a=>BTMViz.OPT[a].map(x=>x[0]);
       apply('head',pk(ks('head').filter(x=>x!=='none'))); apply('lay',pk(ks('lay'))); apply('form',pk(['card','table','card'])); apply('tbl',pk(ks('tbl')));
-      apply('bk',pk(ks('bk'))); apply('dens',pk(['normal','normal','tight','loose'])); apply('theme',pk(Object.keys(BTMViz.THEMES)));
+      apply('bk',pk(ks('bk'))); apply('dens',pk(['normal','normal','tight','loose'])); apply('base',pk(Object.keys(BTMViz.BASES))); apply('item',pk(Object.keys(BTMViz.ITEMS)));
     }
     else apply(k,v);
     box.setAttribute('data-opt',JSON.stringify(o));
@@ -33537,7 +33608,7 @@ ${viz?'':`<RESULT>
     if(!has) inp.textContent='';
     lines.forEach((ln,i)=>{ if(has||i>0) inp.appendChild(document.createElement('br')); inp.appendChild(document.createTextNode(ln)); });
   }
-  const _vizRcTip=r=>{ const q=_vizPrompts(r); return _ahEsc('📝 텍스트: '+q.tx+'\n🎨 인포그래픽: '+q.p).replace(/\n/g,'&#10;'); };   /* 유형 버튼의 말풍선 도움말 — 두 프롬프트 */
+  const _vizRcTip=r=>{ const q=_vizPrompts(r), nm=_vizLinkNames(r); return _ahEsc('📝 텍스트: '+q.tx+'\n🎨 인포그래픽: '+q.p+(nm.length?'\n🔗 연동 섹션: '+nm.join(', '):'')).replace(/\n/g,'&#10;'); };   /* 유형 버튼의 말풍선 도움말 — 두 프롬프트 + 연동 섹션 */
   function _vizModeBtns(cur,fn){ return _VMODES.map(([v,lb,tt])=>'<button type="button" class="mobile-keep'+(v===cur?' on':'')+'" onclick="'+fn(v)+'" title="'+_ahEsc(tt)+'" aria-pressed="'+(v===cur?'true':'false')+'">'+lb+'</button>').join(''); }
   window._vizSetMode=function(v){ if(!_VMODE_NAME[v]) return; try{ localStorage.setItem(_VMODE_KEY,v); }catch(e){} _vizRcRender(); };   /* 🎨 패널·열려 있는 [🔄 유형 바꾸기] 줄 모두 다시 그려짐 */
   function _vizRcNorm(r,keepK){   /* 아이콘(이모지 1~2)·이름(24자)·텍스트 프롬프트 tx(600자)·인포그래픽 프롬프트 p(600자) 검증 — 이름이 없거나 두 프롬프트가 모두 비면 null */
@@ -33548,6 +33619,7 @@ ${viz?'':`<RESULT>
     if(!t||(!p&&!tx)) return null;
     const o={ic:_vizHeadG(r.ic,2)||'🎨',t,p,tx};
     if(keepK&&typeof r.k==='string'&&r.k) o.k=_vizCut(r.k,16);
+    const sc=_vizSecsNorm(r.secs); if(sc.length) o.secs=sc;   /* 연동 섹션(2026-10-21) — 섹션 id 목록 */
     return o;
   }
   function _vizRecipes(){
@@ -33558,13 +33630,111 @@ ${viz?'':`<RESULT>
       out.push(n); } });
     const have=new Set(out.map(r=>r.k).filter(Boolean)), hide=new Set(Array.isArray(st.hide)?st.hide:[]);
     _VIZ_RECIPES.forEach(r=>{ if(!have.has(r.k)&&!hide.has(r.k)) out.push(Object.assign({},r)); });
+    _vizSecClean(out);   /* 연동 섹션 정리 — 리포트에서 없어진 섹션은 빼고, 한 섹션은 한 유형에만 */
     return out;
   }
   function _vizRcPersist(list){   /* 목록에 없는 기본 문구는 '지운 것'(hide)으로 기록 */
+    _vizSecClean(list);   /* 저장 전에도 같은 연동 정리 */
     const hide=_VIZ_RECIPES.filter(d=>!list.some(r=>r.k===d.k)).map(d=>d.k);
     try{ localStorage.setItem(_VRK,JSON.stringify({v:1,list,hide})); return true; }catch(e){ return false; }
   }
   const _vizRcToast=(m,warn)=>_showToast('_ahToast',m,warn?'rgba(180,83,9,.93)':'rgba(21,128,61,.93)');
+  /* ═══ 유형 ↔ 섹션 연동 (2026-10-21) ═══════════════════════════════════════════════════════════
+     유형(요청 문구)마다 리포트의 섹션을 연동해 둘 수 있음 — 그 섹션의 AI 팝업에서 🎨 패널을 열면 ‘연동 유형’이 표시되고([▶ 연동 유형으로 만들기] 한 번으로 실행),
+     AI Stock Radar 📡 업데이트의 자동 인포그래픽도 연동 유형을 씀(연동 유형 → 마지막으로 만든 유형 → 기본 유형 순).
+     · 저장: 유형 객체의 secs:[섹션 id…] (BTMVizRecipes 안). 유형을 지우면 연동도 함께 사라지고, 한 섹션은 한 유형에만 연동(저장·읽을 때 정리 — 목록 앞쪽 유형이 우선).
+     · 섹션 목록은 지금 화면의 ✨ 버튼(onclick="openAIChat('섹션id','이름')")에서 읽음 → 리포트에 AI 섹션을 추가·삭제하면 목록과 연동이 자동으로 따라감
+       (없어진 섹션의 연동은 읽을 때 걸러내고 저장할 때 지움). MindMap(인포그래픽 미지원)·섹션 없는 채팅은 제외. */
+  const _VSEC_RE=/openAIChat\(\s*(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")\s*,\s*(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")/;
+  const _VSEC_ID=/^[A-Za-z0-9_.:-]{1,60}$/, _VSEC_MAX=40;
+  function _vizSections(){   /* 지금 리포트의 AI 섹션 [{id,label}] — 화면(문서) 순서 */
+    const out=[], seen=new Set(), un=s=>String(s).replace(/\\(.)/g,'$1');
+    document.querySelectorAll('[onclick*="openAIChat("]').forEach(el=>{
+      const m=_VSEC_RE.exec(el.getAttribute('onclick')||''); if(!m) return;
+      const id=un(m[1]!=null?m[1]:m[2]), label=un(m[3]!=null?m[3]:m[4]).replace(/\s+/g,' ').trim();
+      if(!id||id===_MM_EID||!_VSEC_ID.test(id)||seen.has(id)) return;
+      seen.add(id); out.push({id,label:label||id});
+    });
+    return out;
+  }
+  function _vizSecMap(){ const m=Object.create(null); _vizSections().forEach(s=>{ m[s.id]=s.label; }); return m; }   /* id → 이름 */
+  function _vizSecsNorm(a){   /* 저장값·입력값 검증 — 섹션 id 글만, 중복 없이 최대 _VSEC_MAX개 */
+    const out=[]; (Array.isArray(a)?a:[]).forEach(x=>{ if(typeof x==='string'&&_VSEC_ID.test(x)&&out.indexOf(x)<0&&out.length<_VSEC_MAX) out.push(x); });
+    return out;
+  }
+  function _vizSecClean(list){   /* 연동 정리 — 지금 리포트에 없는 섹션은 빼고(화면에서 목록을 못 읽었으면 그대로 둠), 한 섹션은 한 유형에만(목록 앞쪽 유형이 우선) */
+    const live=new Set(_vizSections().map(s=>s.id)), used=new Set();
+    list.forEach(r=>{
+      if(!r||!Array.isArray(r.secs)) return;
+      r.secs=r.secs.filter(id=>{ if((live.size&&!live.has(id))||used.has(id)) return false; used.add(id); return true; });
+      if(!r.secs.length) delete r.secs;
+    });
+    return list;
+  }
+  function _vizLinkedType(eid){ if(!eid) return null; return _vizRecipes().find(r=>Array.isArray(r.secs)&&r.secs.indexOf(eid)>=0)||null; }   /* 이 섹션에 연동된 유형(없으면 null) */
+  const _vizLinkCur=r=>!!(_eid&&r&&Array.isArray(r.secs)&&r.secs.indexOf(_eid)>=0);   /* 이 유형이 지금 열린 섹션에 연동돼 있나 */
+  function _vizLinkNames(r,SM){   /* 연동된 섹션 이름들 — 지금 열린 섹션이 맨 앞 */
+    SM=SM||_vizSecMap();
+    const a=(r&&Array.isArray(r.secs))?r.secs:[];
+    return a.filter(id=>id===_eid).concat(a.filter(id=>id!==_eid)).map(id=>SM[id]).filter(Boolean);
+  }
+  function _vizLinkTag(r,SM){   /* 유형 버튼 안의 ‘🔗 섹션 이름들’ 꼬리표 (없으면 빈 글) */
+    const nm=_vizLinkNames(r,SM); if(!nm.length) return '';
+    return '<small class="lk" title="'+_ahEsc('🔗 연동 섹션: '+nm.join(', '))+'">🔗 '+_ahEsc(nm.join(' · '))+'</small>';
+  }
+  function _vizLinkPaint(){   /* 🎨 패널 맨 위 ‘이 섹션에 연동된 유형’ 줄 */
+    const ln=g('aiVizLinkLine'); if(!ln) return;
+    const sec=_eid?_vizSections().find(s=>s.id===_eid):null;
+    if(!sec){ ln.style.display='none'; ln.innerHTML=''; return; }   /* 섹션 없는 채팅·MindMap 은 연동 대상이 아님 */
+    const r=_vizLinkedType(_eid), nm=_ahEsc(sec.label);
+    ln.style.display='flex';
+    if(r){
+      ln.className='avp-link';
+      ln.innerHTML='<span>🔗 ‘'+nm+'’ 섹션에 연동된 유형 <b>'+_ahEsc(r.ic)+' '+_ahEsc(r.t)+'</b> <small>· 실행 범위: '+_ahEsc(_VMODE_NAME[_vizRunMode()])+'</small></span>'
+        +'<button type="button" class="avp-go mobile-keep" onclick="_vizRunLinked()" title="‘'+_ahEsc(r.ic+' '+r.t)+'’ 유형을 지금 고른 실행 범위로 바로 보냅니다 — 입력창에 쓰던 글이 있거나 왼쪽 참고 자료가 비어 있으면 요청 문구만 채워 둬요">▶ 연동 유형으로 만들기</button>';
+    } else {
+      ln.className='avp-link none';
+      ln.innerHTML='<span>🔗 ‘'+nm+'’ 섹션에 연동된 유형이 없어요 — 아래 ＋ 추가·✏️ 편집의 ‘연동 섹션’에서 이 섹션을 유형에 연결할 수 있어요.</span>';
+    }
+  }
+  function _vizToggleMark(){   /* 🎨 버튼 — 지금 섹션에 연동된 유형이 있으면 🔗 표시 */
+    const t=g('aiVizToggle'); if(!t) return;
+    if(!t.hasAttribute('data-t0')) t.setAttribute('data-t0',t.title||'');
+    const r=_eid?_vizLinkedType(_eid):null;
+    t.textContent='🎨 인포그래픽'+(r?' 🔗':'');
+    t.title=r?('이 섹션에 연동된 유형: '+r.ic+' '+r.t+' — 눌러서 ▶ 연동 유형으로 만들기'):t.getAttribute('data-t0');
+  }
+  window._vizRunLinked=function(){   /* [▶ 연동 유형으로 만들기] — 이 섹션에 연동된 유형을 지금 고른 실행 범위로 바로 요청(유형 버튼을 누른 뒤 보내는 것과 같음) */
+    const r=_vizLinkedType(_eid);
+    if(!r){ _vizRcToast('이 섹션에 연동된 유형이 없어요',true); _vizLinkPaint(); return; }
+    if(_busy){ _vizRcToast('AI가 답변하는 중이에요 — 끝난 뒤에 눌러 주세요',true); return; }
+    const inp=g('aiUserInput'), lc=g('aiLeftContent'); if(!inp) return;
+    const mode=_vizRunMode();
+    const clean=!(inp.innerText||'').trim()&&!inp.querySelector('img')&&!_pendingImages.length&&!_pendingRefs.length;   /* 쓰던 글·이미지·참조가 없을 때만 바로 보냄 */
+    const hasLeft=!!_attachedFile||!!(lc&&(lc.innerText||lc.textContent||'').trim());   /* 분석할 왼쪽 참고 자료가 있어야 바로 보냄 */
+    _vizPendAdd(r,mode);   /* 어느 유형을·어떤 범위로 골랐는지 기억 — 보낼 때 ‘마지막 유형’으로 기록하고 그 범위의 규칙을 붙임 */
+    _vizPutLines(inp,_vizComposeLines(r,mode));
+    _vizPanelClose();
+    if(clean&&hasLeft){ window.sendAIMessage(); return; }
+    _focusInputEnd();
+    _vizRcToast(clean?'왼쪽 참고 자료가 비어 있어 요청 문구만 입력창에 채워 뒀어요 — 자료를 넣은 뒤 Enter 로 보내세요':'쓰던 내용이 있어 요청 문구만 입력창에 채워 뒀어요 — 확인한 뒤 Enter 로 보내세요',true);
+  };
+  function _vizSecsRender(r){   /* 유형 편집 칸의 ‘연동 섹션’ 체크 목록 — 전체 섹션을 보여 주고, 이미 다른 유형에 연동된 섹션은 그 유형 이름을 표시하며 고를 수 없게(중복 연동 방지) */
+    const box=g('aiVizRcSecs'); if(!box) return;
+    const secs=_vizSections();
+    if(!secs.length){ box.innerHTML='<span class="avp-none">연동할 수 있는 섹션이 없어요</span>'; return; }
+    const mine=new Set((r&&Array.isArray(r.secs))?r.secs:[]), owner=new Map();
+    _vizRcCur.forEach(x=>{ if(x!==r&&Array.isArray(x.secs)) x.secs.forEach(id=>{ if(!owner.has(id)) owner.set(id,x); }); });
+    box.innerHTML=secs.map(s=>{
+      const o=owner.get(s.id);
+      return '<label class="avp-sec'+(o?' off':'')+'"'+(o?' title="‘'+_ahEsc(o.ic+' '+o.t)+'’ 유형에 이미 연동돼 있어요 — 그 유형에서 먼저 해제하면 여기서 고를 수 있어요"':'')+'>'
+        +'<input type="checkbox" data-eid="'+_ahEsc(s.id)+'"'+(mine.has(s.id)?' checked':'')+(o?' disabled':'')+' onkeydown="_vizRcKey(event)">'
+        +'<span class="nm">'+_ahEsc(s.label)+'</span>'
+        +(s.id===_eid?'<em>지금 열린 섹션</em>':'')
+        +(o?'<span class="by">🔗 ‘'+_ahEsc(o.ic+' '+o.t)+'’ 유형과 연동됨</span>':'')
+        +'</label>';
+    }).join('');
+  }
   /* ═══ 섹션별 '최근 실행한 인포그래픽 유형' (2026-10-18) ═══════════════════════════════════════
      유형(요청 문구)으로 인포그래픽을 요청할 때마다 그 섹션(_eid)의 최근 유형으로 기록 — localStorage.BTMVizLast = {v:1,m:{섹션:{k,ic,t,at}}} (섹션 없는 채팅은 '_').
      🎨 패널을 열면 맨 위 한 줄(#aiVizLastLine)에 이름을 보여 주고, 유형 버튼 줄(🎨 패널·[🔄 유형 바꾸기])에는 '최근' 꼬리표를 붙임. (팝업 제목 옆 알약은 두지 않음 — 요청으로 제거)
@@ -33627,9 +33797,9 @@ ${viz?'':`<RESULT>
   function _vizRcRender(){
     const rc=g('aiVizRecipes'); if(!rc) return;
     const md=g('aiVizMode'); if(md) md.innerHTML='<span class="lb">실행 범위</span>'+_vizModeBtns(_vizRunMode(),v=>"_vizSetMode('"+v+"')")+'<small>유형을 누르면 고른 범위의 프롬프트가 입력창에 채워져요 (두 줄 중 한 줄을 지우면 남은 쪽만 실행)</small>';
-    const list=_vizRcCur=_vizRecipes(), ed=_vizRcMode, LS=_vizLastRes(_eid);
+    const list=_vizRcCur=_vizRecipes(), ed=_vizRcMode, LS=_vizLastRes(_eid), SM=_vizSecMap();
     let h=list.map((r,i)=>{
-      const lab=_ahEsc(r.ic)+' '+_ahEsc(r.t), lc=_vizIsLast(LS,r)?' last':'';
+      const lab=_ahEsc(r.ic)+' '+_ahEsc(r.t)+_vizLinkTag(r,SM), lc=(_vizIsLast(LS,r)?' last':'')+(_vizLinkCur(r)?' lnk':'');
       return ed
         ?'<span class="avp-chip"><button type="button" class="mobile-keep'+lc+'" onclick="_vizRcAct(\'edit\','+i+')" title="눌러서 이름·문구 고치기">'+lab+'</button><button type="button" class="avp-del mobile-keep" onclick="_vizRcAct(\'del\','+i+')" title="이 문구 삭제" aria-label="‘'+_ahEsc(r.t)+'’ 삭제">✕</button></span>'
         :'<button type="button" class="mobile-keep'+lc+'" onclick="_vizRecipe('+i+')" title="'+_vizRcTip(r)+'">'+lab+'</button>';
@@ -33639,6 +33809,7 @@ ${viz?'':`<RESULT>
       +'<button type="button" class="avp-tg'+(ed?' on':'')+' mobile-keep" onclick="_vizRcAct(\'mode\')" title="'+(ed?'편집을 마치고 문구를 눌러 쓰는 상태로 돌아갑니다':'문구를 눌러 고치거나 ✕ 로 삭제합니다')+'">'+(ed?'✓ 편집 끝':'✏️ 편집')+'</button>';
     if(ed||!list.length) h+='<button type="button" class="avp-rs mobile-keep" onclick="_vizRcAct(\'reset\')" title="추가·수정·삭제한 것을 모두 버리고 처음 기본 문구로 되돌립니다">↺ 기본 문구로</button>';
     rc.innerHTML=h;
+    _vizLinkPaint(); _vizToggleMark();   /* ‘이 섹션에 연동된 유형’ 줄·🎨 버튼의 🔗 도 같은 목록으로 */
     _vizLastPaint();   /* 유형 이름·목록이 바뀌었을 수 있으니 '최근 유형' 표시 줄도 다시 */
     document.querySelectorAll('#aiMessages .ai-viz-box[data-rc="1"]').forEach(b=>_vizBoxRcRender(b));   /* 열려 있는 상자의 유형 버튼 줄도 같은 목록으로 */
   }
@@ -33648,6 +33819,7 @@ ${viz?'':`<RESULT>
     ed.setAttribute('data-i',String(r?i:-1));
     g('aiVizRcHd').textContent=r?'✏️ 문구 고치기':'＋ 새 문구 추가';
     g('aiVizRcIc').value=r?r.ic:''; g('aiVizRcT').value=r?r.t:''; g('aiVizRcX').value=r?(r.tx||''):''; g('aiVizRcP').value=r?(r.p||''):'';
+    _vizSecsRender(r);   /* 연동 섹션 체크 목록 — 열 때마다 지금 리포트의 섹션으로 새로 그림 */
     ed.style.display='flex';
     try{ ed.scrollIntoView({block:'nearest'}); }catch(e){}
     setTimeout(()=>{ const t=g('aiVizRcT'); if(t) t.focus(); },30);
@@ -33672,33 +33844,36 @@ ${viz?'':`<RESULT>
     }
     if(act==='del'){
       const r=_vizRcCur[i]; if(!r) return;
-      if(!confirm('‘'+r.t+'’ 문구를 삭제할까요?\n(처음 문구가 필요해지면 [↺ 기본 문구로]로 다시 불러올 수 있어요)')) return;
+      const dn=_vizLinkNames(r);
+      if(!confirm('‘'+r.t+'’ 문구를 삭제할까요?'+(dn.length?'\n(연동된 섹션 '+dn.map(x=>'‘'+x+'’').join(', ')+' 의 연동도 함께 해제돼요)':'')+'\n(처음 문구가 필요해지면 [↺ 기본 문구로]로 다시 불러올 수 있어요)')) return;
       if(!_vizRcPersist(_vizRcCur.filter((_,j)=>j!==i))){ _vizRcToast('삭제하지 못했어요 — 브라우저 저장 공간을 확인해 주세요',true); return; }
       _vizRcClose(); _vizRcRender(); _vizRcToast('🗑 ‘'+r.t+'’ 문구를 삭제했어요'); return;
     }
     if(act==='reset'){
-      if(!confirm('추가·수정·삭제한 문구를 모두 버리고 처음 기본 문구로 되돌릴까요?')) return;
+      if(!confirm('추가·수정·삭제한 문구를 모두 버리고 처음 기본 문구로 되돌릴까요?'+(_vizRcCur.some(x=>x.secs&&x.secs.length)?'\n(섹션 연동도 모두 해제돼요)':''))) return;
       try{ localStorage.removeItem(_VRK); }catch(e){}
       _vizRcMode=false; _vizRcClose(); _vizRcRender(); _vizRcToast('↺ 기본 문구로 되돌렸어요'); return;
     }
     if(act==='save'){
       const ed=g('aiVizRcEd'); if(!ed||ed.style.display==='none') return;
       const idx=+ed.getAttribute('data-i');
-      const n=_vizRcNorm({ic:g('aiVizRcIc').value,t:g('aiVizRcT').value,tx:g('aiVizRcX').value,p:g('aiVizRcP').value},false);
+      const secs=[...ed.querySelectorAll('#aiVizRcSecs input[type=checkbox]:checked:not(:disabled)')].map(x=>x.getAttribute('data-eid'));   /* 체크한 연동 섹션(다른 유형에 이미 연동된 것은 비활성이라 제외) */
+      const n=_vizRcNorm({ic:g('aiVizRcIc').value,t:g('aiVizRcT').value,tx:g('aiVizRcX').value,p:g('aiVizRcP').value,secs},false);
       if(!n){ _vizRcToast('이름과 프롬프트(텍스트·인포그래픽 중 하나 이상)를 입력해 주세요',true); return; }
       const list=_vizRcCur.slice();
+      if(n.secs){ n.secs=n.secs.filter(id=>!list.some((x,j)=>j!==idx&&x.secs&&x.secs.indexOf(id)>=0)); if(!n.secs.length) delete n.secs; }   /* 다른 유형에 이미 연동된 섹션은 못 가져옴(중복 연동 방지) */
       if(list.some((r,j)=>j!==idx&&r.t===n.t)){ _vizRcToast('같은 이름이 이미 있어요 — 다른 이름으로 바꿔 주세요',true); return; }
       if(idx>=0&&list[idx]){ if(list[idx].k) n.k=list[idx].k; list[idx]=n; }
       else{ if(list.length>=_VR_MAX){ _vizRcToast('문구는 최대 '+_VR_MAX+'개까지 둘 수 있어요',true); return; } list.push(n); }
       if(!_vizRcPersist(list)){ _vizRcToast('저장하지 못했어요 — 브라우저 저장 공간을 확인해 주세요',true); return; }
-      _vizRcClose(); _vizRcRender(); _vizRcToast(idx>=0?'✅ 문구를 고쳤어요':'✅ 문구를 추가했어요');
+      _vizRcClose(); _vizRcRender(); _vizRcToast((idx>=0?'✅ 문구를 고쳤어요':'✅ 문구를 추가했어요')+(n.secs?' · 🔗 연동 섹션 '+n.secs.length+'개':''));
     }
   };
   function _vizRenderPanel(){
     const rc=g('aiVizRecipes'), pf=g('aiVizPrefs'); if(!rc||!pf||!window.BTMViz) return;
     _vizRcRender();
     const p=_vizPrefs();
-    pf.innerHTML='<span class="ai-viz-ol">기본 스타일</span><span class="ai-viz-sws">'+_vizSwatches(p.theme,"_vizPanelPref('theme',this.dataset.k)")+'</span>'
+    pf.innerHTML='<div class="ai-viz-cap">🎨 새 인포그래픽의 기본 색상 <small>— 만들어진 이미지 밑에서도 바꿀 수 있어요</small></div>'+_vizColorRows(p,"_vizPanelPref('base',this.dataset.k)","_vizPanelPref('item',this.dataset.k)")
       +'<span class="ai-viz-ol">너비</span>'+_vizSegs([[480,'480'],[640,'640'],[800,'800']],p.w,"_vizPanelPref('w',this.dataset.v)")
       +'<span class="ai-viz-ol">상승색</span>'+_vizSegs([['kr','빨강↑'],['us','초록↑']],p.ud,"_vizPanelPref('ud',this.dataset.v)")
       +'<button type="button" class="ai-viz-b mini'+(_vizPanelMore?' on':'')+' mobile-keep" onclick="_vizPanelPref(\'more\')" title="새로 만드는 인포그래픽의 기본 양식(헤더·문서 양식·표형·표 양식·블록 모양·밀도)">🎛 기본 양식 '+(_vizPanelMore?'▴':'▾')+'</button>'
@@ -33714,7 +33889,7 @@ ${viz?'':`<RESULT>
   window._vizPanelPref=function(k,v){
     if(k==='more') _vizPanelMore=!_vizPanelMore;
     else if(k==='preset'){ const ps=_VIZ_PRESETS[+v]; if(ps){ const patch={}; _VIZ_A6.forEach(a=>{ patch[a]=ps.o[a]||'auto'; }); _vizSavePrefs(patch); } }
-    else if(k==='theme'){ if(v==='auto'||(BTMViz.THEMES&&BTMViz.THEMES[v])) _vizSavePrefs({theme:v}); }
+    else if(k==='base'||k==='item'){ const tb=(k==='base')?BTMViz.BASES:BTMViz.ITEMS; if(v==='auto'||(tb&&Object.prototype.hasOwnProperty.call(tb,v))) _vizSavePrefs({[k]:v}); }
     else if(k==='w'){ if(_VIZ_WIDTHS.includes(+v)) _vizSavePrefs({w:+v}); }
     else if(k==='ud') _vizSavePrefs({ud:v==='us'?'us':'kr'});
     else if(_VIZ_A6.indexOf(k)>=0&&_vizOptOk(k,v)) _vizSavePrefs({[k]:v});
@@ -34787,17 +34962,18 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
   /* ═══ AI Stock Radar 📡 업데이트 → 인포그래픽 자동 제작 (2026-10-18) ═══════════════════════════════
      📡 업데이트(runAiRadarSearch)가 결과를 본문의 '텍스트'에 반영한 뒤 이어서 부르는 단계 — 방금 반영한 본문 글을 왼쪽 참고 자료로 삼아, 이 섹션에서 마지막으로 만든 인포그래픽 유형(BTMVizLast)의
      요청 문구로 인포그래픽을 만들고, 결과 이미지를 본문의 '인포그래픽'에 넣어(기존 인포그래픽 본문은 교체) 인포그래픽 보기로 전환함.
-     · 유형 기록이 없거나 그 유형을 지웠으면 기본 유형(목록 첫 번째)으로. 양식(색·너비·머리 등)은 🎨 패널의 마지막 선택을 그대로 따름(새 상자의 기본 동작).
+     · (2026-10-21) 그 섹션에 연동된 유형이 있으면 그것이 최우선. 연동이 없고 유형 기록도 없거나 그 유형을 지웠으면 기본 유형(목록 첫 번째)으로. 양식(색·너비·머리 등)은 🎨 패널의 마지막 선택을 그대로 따름(새 상자의 기본 동작).
      · AI 가 함께 낸 <RESULT>(정리 텍스트)는 본문 글을 덮어쓰지 않도록 쓰지 않음. 팝업은 화면에 안 보이게(visibility:hidden — 호출한 쪽이 복원).
      · 이 섹션 팝업의 저장된 대화(_chatStore — 다음 📡 업데이트가 이어 쓰는 것)는 자동 제작 전 상태 그대로 되돌림. 대화 자체는 [🕘 기록]에 남음. 실패해도 본문 글·기존 인포그래픽은 그대로.
      · 반환 {ok, name, ic, n, fallback} 또는 {ok:false, msg}. */
-  function _aiAutoVizType(eid){   /* 이 섹션에서 마지막으로 만든 유형 → 지금 유형 목록의 같은 유형, 없으면 기본(목록 첫 번째) */
+  function _aiAutoVizType(eid){   /* 이 섹션에 연동된 유형 → (없으면) 이 섹션에서 마지막으로 만든 유형(지금 유형 목록의 같은 유형) → (없으면) 기본(목록 첫 번째) */
+    const lk=_vizLinkedType(eid); if(lk) return {r:lk,fallback:false,linked:true};   /* 연동 유형이 있으면 그것이 최우선(2026-10-21) */
     const L=_vizLastRes(eid), cur=L&&L.cur;
-    if(cur) return {r:cur,fallback:false};
-    return {r:_vizRecipes()[0]||_VIZ_RECIPES[0],fallback:true};
+    if(cur) return {r:cur,fallback:false,linked:false};
+    return {r:_vizRecipes()[0]||_VIZ_RECIPES[0],fallback:true,linked:false};
   }
   window._aiVizLastFor=function(eid){   /* 설정 창 안내용 — 자동 제작에 쓰일 유형 */
-    try{ const o=_aiAutoVizType(eid); return {ic:o.r.ic,t:o.r.t,fallback:o.fallback}; }catch(e){ return null; }
+    try{ const o=_aiAutoVizType(eid); return {ic:o.r.ic,t:o.r.t,fallback:o.fallback,linked:!!o.linked}; }catch(e){ return null; }
   };
   window._aiAutoInfographic=async function(eid,label,opts){
     opts=opts||{};
@@ -34839,7 +35015,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
       vz.dispatchEvent(new Event('input',{bubbles:true}));
       if(window.BTMVz) BTMVz.show(eid,'viz',{silent:true});
       if(typeof saveData==='function') saveData();
-      return {ok:true,name:r.t,ic:r.ic,n:imgs.length,fallback:ty.fallback};
+      return {ok:true,name:r.t,ic:r.ic,n:imgs.length,fallback:ty.fallback,linked:!!ty.linked};
     }catch(e){
       return fail((e&&e.message)||String(e));
     }finally{
@@ -34893,6 +35069,87 @@ const THEMES={
   sky:     {label:'스카이',   p1:'#075985',p2:'#0ea5e9',bg:'#f0f8fd',card:'#ffffff',ink:'#0c2233',ink2:'#35536a',mute:'#667f93',line:'#d6e9f5',track:'#e2eff8',tint:'#e1f2fc',dark:0},
   mono:    {label:'흑백',     p1:'#161616',p2:'#5e5e5e',bg:'#f3f3f3',card:'#ffffff',ink:'#111111',ink2:'#333333',mute:'#6b6b6b',line:'#d9d9d9',track:'#e4e4e4',tint:'#eeeeee',dark:0},
 };
+/* ── 색 구성: Base(배경 바탕) × Item(포인트 색) ─────────────────────────────────────────────────────
+   옛 테마 한 벌(THEMES)은 'AI 가 고른 테마'와 옛 저장본을 위해 그대로 두고, 사용자는 Base 와 Item 을 따로 고름.
+   · Base = 배경·카드·글자·선 색(밝은 13 + 어두운 13). Item = 포인트 색 p1(진한 쪽)·p2(밝은 쪽) — 어두운 배경에서는 dp1·dp2(있으면)를 써서 글자·막대가 잘 보이게.
+   · 옛 12개 테마 = 밝은 Base 12 × Item 12 의 한 쌍(LEGACY), 미드나잇 = 어두운 미드나잇 × 인디고(어두운 배경용 값이 옛 값과 같음) → 짝을 합성하면 옛 색이 그대로 나옴. */
+const BASES={
+  /* 밝은 배경 */
+  white:    {label:'화이트',dark:0,bg:'#ffffff',card:'#ffffff',ink:'#111827',ink2:'#374151',mute:'#6b7280',line:'#e5e7eb',track:'#eceff3',tint:'#f3f4f6'},
+  neutral:  {label:'뉴트럴',dark:0,bg:'#f3f3f3',card:'#ffffff',ink:'#111111',ink2:'#333333',mute:'#6b6b6b',line:'#d9d9d9',track:'#e4e4e4',tint:'#eeeeee'},
+  cool:     {label:'쿨 그레이',dark:0,bg:'#f1f5f9',card:'#ffffff',ink:'#0f172a',ink2:'#334155',mute:'#64748b',line:'#e2e8f0',track:'#e8edf3',tint:'#eef2f7'},
+  azure:    {label:'스카이',dark:0,bg:'#f0f8fd',card:'#ffffff',ink:'#0c2233',ink2:'#35536a',mute:'#667f93',line:'#d6e9f5',track:'#e2eff8',tint:'#e1f2fc'},
+  ice:      {label:'아이스',dark:0,bg:'#f1f5fb',card:'#ffffff',ink:'#16213a',ink2:'#3b4863',mute:'#6b7790',line:'#e1e7f0',track:'#e8edf5',tint:'#eaf1ff'},
+  peri:     {label:'페리윙클',dark:0,bg:'#f3f3fd',card:'#ffffff',ink:'#16163a',ink2:'#3d3d66',mute:'#707096',line:'#e1e1f6',track:'#e7e7f8',tint:'#ebebfd'},
+  lavender: {label:'라벤더',dark:0,bg:'#f6f3fd',card:'#ffffff',ink:'#201436',ink2:'#473a63',mute:'#7b6f96',line:'#e8e1f6',track:'#ece6f8',tint:'#f0eafe'},
+  rose:     {label:'로즈',dark:0,bg:'#fbf4f6',card:'#ffffff',ink:'#2a1520',ink2:'#593443',mute:'#8f6f7c',line:'#f1e1e7',track:'#f4e6eb',tint:'#fdeaf1'},
+  blush:    {label:'블러시',dark:0,bg:'#fdf3f5',card:'#ffffff',ink:'#2b121a',ink2:'#5c3541',mute:'#946b77',line:'#f6dbe1',track:'#f8e3e8',tint:'#ffe9ee'},
+  peach:    {label:'피치',dark:0,bg:'#fdf6f0',card:'#ffffff',ink:'#2a1a12',ink2:'#5a3f31',mute:'#8f7565',line:'#f3e4d8',track:'#f6e9dd',tint:'#fff1e6'},
+  cream:    {label:'크림',dark:0,bg:'#faf7f2',card:'#ffffff',ink:'#1c1917',ink2:'#44403c',mute:'#857e72',line:'#eadfcc',track:'#efe6d6',tint:'#f6efe3'},
+  sage:     {label:'세이지',dark:0,bg:'#f1f8f3',card:'#ffffff',ink:'#14281c',ink2:'#38503f',mute:'#6a8072',line:'#dfece3',track:'#e6f1e9',tint:'#e8f7ee'},
+  mint:     {label:'민트',dark:0,bg:'#eff8f7',card:'#ffffff',ink:'#10292a',ink2:'#35545a',mute:'#668084',line:'#d5ebe8',track:'#e3f1ef',tint:'#e0f5f2'},
+  /* 어두운 배경 */
+  midnight: {label:'미드나잇',dark:1,bg:'#0b1220',card:'#131c2e',ink:'#e8eef9',ink2:'#c1ccdf',mute:'#8d9bb5',line:'#222e46',track:'#1c2740',tint:'#18233b'},
+  navy:     {label:'네이비',dark:1,bg:'#07112e',card:'#0e1b44',ink:'#e7ebf8',ink2:'#c2cae0',mute:'#909bbb',line:'#1d316d',track:'#17295f',tint:'#122356'},
+  indigo:   {label:'인디고',dark:1,bg:'#0f0b26',card:'#19133a',ink:'#ebe8f7',ink2:'#c7c2e0',mute:'#9790bb',line:'#2f255f',track:'#271e52',tint:'#21194a'},
+  plum:     {label:'플럼',dark:1,bg:'#1c0b23',card:'#2c1337',ink:'#f3e9f7',ink2:'#d7c3df',mute:'#ae91bb',line:'#4c265c',track:'#411f4f',tint:'#3a1a47'},
+  wine:     {label:'와인',dark:1,bg:'#220a10',card:'#36121b',ink:'#f7e8ec',ink2:'#e0c2ca',mute:'#bb909b',line:'#5c2432',track:'#4f1d29',tint:'#471823'},
+  cocoa:    {label:'코코아',dark:1,bg:'#1d110a',card:'#301e12',ink:'#f7eee9',ink2:'#dfcec3',mute:'#baa292',line:'#563825',track:'#492f1d',tint:'#412919'},
+  olive:    {label:'올리브',dark:1,bg:'#1a1d0a',card:'#2c3012',ink:'#f5f7e9',ink2:'#dbdfc3',mute:'#b4ba92',line:'#4f5625',track:'#43491d',tint:'#3b4119'},
+  forest:   {label:'포레스트',dark:1,bg:'#091e13',card:'#103221',ink:'#e8f7f0',ink2:'#c2e0d1',mute:'#90bba6',line:'#22583d',track:'#1b4b33',tint:'#17432d'},
+  teal:     {label:'틸',dark:1,bg:'#071f1e',card:'#0e3433',ink:'#e7f8f8',ink2:'#c2e0df',mute:'#90bbba',line:'#1f5c5a',track:'#184e4c',tint:'#144644'},
+  ocean:    {label:'오션',dark:1,bg:'#071b24',card:'#0d2b3a',ink:'#e7f3f8',ink2:'#c2d6e0',mute:'#90adbb',line:'#1d4b62',track:'#174055',tint:'#12394c'},
+  slate:    {label:'슬레이트',dark:1,bg:'#13171d',card:'#1f252d',ink:'#edeff2',ink2:'#ccd0d7',mute:'#9ea4ae',line:'#38414d',track:'#2f3742',tint:'#29303b'},
+  charcoal: {label:'차콜',dark:1,bg:'#141414',card:'#222222',ink:'#f0f0f0',ink2:'#d1d1d1',mute:'#a6a6a6',line:'#3e3e3e',track:'#343434',tint:'#2e2e2e'},
+  black:    {label:'블랙',dark:1,bg:'#000000',card:'#0d0d0d',ink:'#f5f5f5',ink2:'#cfcfcf',mute:'#8c8c8c',line:'#2a2a2a',track:'#1f1f1f',tint:'#161616'},
+};
+const ITEMS={
+  red:     {label:'빨강',p1:'#7f1d1d',p2:'#dc2626',dp2:'#e14747'},
+  coral:   {label:'코랄',p1:'#9f1239',p2:'#e11d48',dp2:'#e63d62'},
+  orange:  {label:'오렌지',p1:'#9a3412',p2:'#f97316',dp1:'#933111',dp2:'#f96c0b'},
+  gold:    {label:'골드',p1:'#1c1917',p2:'#b45309',dp1:'#49413c',dp2:'#cc5e0a'},
+  yellow:  {label:'옐로',p1:'#713f12',p2:'#ca8a04',c1:'#2563eb'},
+  lime:    {label:'라임',p1:'#365314',p2:'#65a30d'},
+  green:   {label:'그린',p1:'#14532d',p2:'#16a34a'},
+  emerald: {label:'에메랄드',p1:'#064e3b',p2:'#059669'},
+  teal:    {label:'틸',p1:'#134e4a',p2:'#0d9488'},
+  cyan:    {label:'시안',p1:'#155e75',p2:'#0891b2',dp1:'#145a6f'},
+  sky:     {label:'스카이',p1:'#075985',p2:'#0ea5e9',dp1:'#075783',dp2:'#0ea1e3'},
+  blue:    {label:'블루',p1:'#1e3a5f',p2:'#2563eb',dp1:'#23436e',dp2:'#4378ee'},
+  indigo:  {label:'인디고',p1:'#312e81',p2:'#4f46e5',dp1:'#1e3a8a',dp2:'#6366f1'},
+  violet:  {label:'보라',p1:'#4c1d95',p2:'#7c3aed',dp1:'#5320a3',dp2:'#9560f0'},
+  fuchsia: {label:'마젠타',p1:'#701a75',p2:'#c026d3',dp1:'#701a76',dp2:'#ca3ddc'},
+  pink:    {label:'핑크',p1:'#831843',p2:'#db2777',dp2:'#df3f86'},
+  wine:    {label:'와인',p1:'#6b3245',p2:'#be185d',dp2:'#e6367f'},
+  slate:   {label:'슬레이트',p1:'#0f172a',p2:'#475569',dp1:'#2a4176',dp2:'#6c809c'},
+  mono:    {label:'흑백',p1:'#161616',p2:'#5e5e5e',dp1:'#424242',dp2:'#7e7e7e'},
+};
+const LEGACY={ocean:['ice','blue'],forest:['sage','green'],sunset:['peach','orange'],royal:['lavender','violet'],wine:['rose','wine'],slate:['cool','slate'],midnight:['midnight','indigo'],teal:['mint','teal'],indigo:['peri','indigo'],coral:['blush','coral'],gold:['cream','gold'],sky:['azure','sky'],mono:['neutral','mono']};   /* 옛 테마 → [Base, Item] */
+const hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+function composeTheme(bk,ik){   /* Base × Item → 테마 한 벌(옛 THEMES 항목과 같은 모양). 어두운 배경이면 Item 의 어두운 배경용 값을 씀 */
+  const b=BASES[bk], it=ITEMS[ik], d=b.dark?1:0;
+  return {label:b.label+' · '+it.label,p1:(d&&it.dp1)||it.p1,p2:(d&&it.dp2)||it.p2,bg:b.bg,card:b.card,ink:b.ink,ink2:b.ink2,mute:b.mute,line:b.line,track:b.track,tint:b.tint,dark:d,c1:it.c1||''};
+}
+/* 색 확정: 사용자가 고른 Base·Item > 명세의 base·item > AI 가 고른 테마(없으면 ocean)의 짝. 아무것도 안 골랐으면 옛 테마 한 벌 그대로 */
+function resolveTheme(opt,spec){
+  const tk=hasOwn(THEMES,opt.theme)?opt.theme:(hasOwn(THEMES,spec.theme)?spec.theme:'ocean');
+  const bk=hasOwn(BASES,opt.base)?opt.base:(hasOwn(BASES,spec.base)?spec.base:'');
+  const ik=hasOwn(ITEMS,opt.item)?opt.item:(hasOwn(ITEMS,spec.item)?spec.item:'');
+  if(!bk&&!ik) return {key:tk,base:'',item:'',T:THEMES[tk]};
+  const L=LEGACY[tk], b=bk||L[0], i=ik||L[1];
+  return {key:tk,base:b,item:i,T:composeTheme(b,i)};
+}
+/* AI 가 흔히 쓰는 다른 표현 → 우리 키 (한글 이름도 인정) */
+const ALIAS_BASE={dark:'midnight',night:'midnight',darkblue:'navy',deepblue:'navy',darknavy:'navy',black:'black',amoled:'black',darkgray:'charcoal',darkgrey:'charcoal',gray:'neutral',grey:'neutral',lightgray:'neutral',lightgrey:'neutral',light:'white',paper:'white',beige:'cream',ivory:'cream',sand:'cream',darkgreen:'forest',darkpurple:'plum',purple:'plum',burgundy:'wine',maroon:'wine',brown:'cocoa',espresso:'cocoa',coffee:'cocoa',darkteal:'teal',darkocean:'ocean',blue:'ice',lightblue:'ice',pink:'blush',green:'sage',lightgreen:'sage',yellow:'cream',orange:'peach'};
+const ALIAS_ITEM={purple:'violet',magenta:'fuchsia',crimson:'red',scarlet:'red',amber:'gold',brown:'gold',rose:'coral',salmon:'coral',gray:'mono',grey:'mono',black:'mono',navy:'blue',darkblue:'blue',lightblue:'sky',aqua:'cyan',turquoise:'teal',mint:'emerald',olive:'lime',maroon:'wine',burgundy:'wine',charcoal:'slate'};
+function pickKey(v,table,alias){   /* 키·별칭·한글 이름 어느 쪽으로 써도 table 의 키로 — 아니면 빈 글 */
+  const raw=String(v==null?'':v).trim(); if(!raw) return '';
+  const k=raw.toLowerCase().replace(/[\s_\-]+/g,'');
+  if(hasOwn(table,k)) return k;
+  if(alias&&hasOwn(alias,k)&&hasOwn(table,alias[k])) return alias[k];
+  const f=Object.keys(table).find(x=>table[x].label.replace(/\s+/g,'')===raw.replace(/\s+/g,''));
+  return f||'';
+}
 const WIDTHS=[480,640,800];
 const FONT_STACK="'Malgun Gothic','맑은 고딕','Noto Sans KR','Apple SD Gothic Neo','Segoe UI','Segoe UI Emoji','Apple Color Emoji',sans-serif";
 /* 영어·중국어 인포그래픽(다국어 생성)은 그 언어에 맞는 글꼴을 앞에 — 영어는 한글 글꼴의 라틴 글자 대신 Segoe UI 등, 중국어는 간체 글리프가 있는 글꼴(+ lang="zh-CN") */
@@ -35316,7 +35573,9 @@ function normalize(raw){
     subtitle:clean(pick(o,['subtitle','sub','summary','tagline','description']),110),
     tag:clean(pick(o,['tag','kicker','label','category','eyebrow']),36),
     icon:firstChars(pick(o,['icon','emoji']),2),
-    theme:THEMES[th]?th:'',
+    theme:hasOwn(THEMES,th)?th:'',
+    base:pickKey(pick(o,['base','background','baseColor','base_color']),BASES,ALIAS_BASE),
+    item:pickKey(pick(o,['item','accent','accentColor','accent_color','itemColor','item_color']),ITEMS,ALIAS_ITEM),
     head:normOpt(pick(o,['head','header_style','headerStyle','hd']),HEADS,ALIAS.head),
     lay:normOpt(pick(o,['lay','layout','template','doc']),LAYS,ALIAS.lay),
     form:normOpt(pick(o,['form','mode','display']),FORMS,ALIAS.form),
@@ -35667,9 +35926,9 @@ function resolveOpts(spec,opt){
   };
 }
 function makeCtx(spec,opt){
-  const T=THEMES[opt.theme]||THEMES.ocean, W=clamp(parseInt(opt.width,10)||640,360,1000), S=statusColors(T,opt.ud);
+  const T=opt.T||THEMES[opt.theme]||THEMES.ocean, W=clamp(parseInt(opt.width,10)||640,360,1000), S=statusColors(T,opt.ud);
   const R=resolveOpts(spec,opt), s=DENS_S[R.dens];
-  const cat=[T.p2,'#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899','#64748b'];
+  const cat=[T.p2,T.c1||'#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4','#ec4899','#64748b'];
   const iw=Math.floor({card:W-2*20*s-2*18*s-2, report:W-2-2*16*s-2-2*12*s, plain:W-2*24*s, panel:W-2*20*s-3-2*16*s}[R.lay]);
   return Object.assign({T,W,S,ud:opt.ud,cat,narrow:W<560,iw,seq:0,s,fk:R.dens==='tight'?0.88:(R.dens==='loose'?1.05:1)},R);
 }
@@ -36022,9 +36281,9 @@ function headerHtml(spec,c){
 }
 function buildHtml(spec,opt){
   opt=opt||{};
-  const themeKey=THEMES[opt.theme]?opt.theme:(THEMES[spec.theme]?spec.theme:'ocean');
+  const rt=resolveTheme(opt,spec), themeKey=rt.key;
   const ud=opt.ud==='us'?'us':'kr';
-  const c=makeCtx(spec,{theme:themeKey,width:opt.width,ud,lay:opt.lay,form:opt.form,tbl:opt.tbl,head:opt.head,bk:opt.bk,dens:opt.dens});
+  const c=makeCtx(spec,{T:rt.T,theme:themeKey,width:opt.width,ud,lay:opt.lay,form:opt.form,tbl:opt.tbl,head:opt.head,bk:opt.bk,dens:opt.dens});
   const T=c.T;
   const gl=mix(T.ink,T.card,T.dark?0.4:0.22);   /* 격자·보고서 테두리 — 일반 줄(--line)보다 진한 선 */
   const vars='--p1:'+T.p1+';--p2:'+T.p2+';--bg:'+T.bg+';--card:'+T.card+';--ink:'+T.ink+';--ink2:'+T.ink2+';--mute:'+T.mute+';--line:'+T.line+';--track:'+T.track+';--tint:'+T.tint+';--gl:'+gl;
@@ -36034,7 +36293,7 @@ function buildHtml(spec,opt){
   }).join('');
   const sc=scriptOf(spec);   /* 영어·중국어 인포그래픽은 그 언어용 글꼴·lang 으로 */
   const fam=sc==='zh'?FONT_ZH:(sc==='en'?FONT_EN:'');
-  return {theme:themeKey,width:c.W,css:CSS,res:{lay:c.lay,form:c.form,tbl:c.tbl,head:c.head,bk:c.bk,dens:c.dens,script:sc},
+  return {theme:themeKey,base:rt.base,item:rt.item,width:c.W,css:CSS,res:{lay:c.lay,form:c.form,tbl:c.tbl,head:c.head,bk:c.bk,dens:c.dens,script:sc},
     html:'<div class="v-root lay-'+c.lay+' dn-'+c.dens+'"'+(sc==='zh'?' lang="zh-CN"':(sc==='en'?' lang="en"':''))+' style="width:'+c.W+'px;'+vars+(fam?';font-family:'+fam:'')+'">'+headerHtml(spec,c)+'<div class="v-bd">'+blocks+'</div></div>'};
 }
 
@@ -36081,7 +36340,7 @@ async function render(spec,opt){
   const cx=cv.getContext('2d'); cx.imageSmoothingQuality='high'; cx.scale(s,s); cx.drawImage(img,0,0,W,h);
   let dataUrl; try{ dataUrl=cv.toDataURL('image/png'); }catch(e){ throw new Error('이미지를 만들지 못했어요 — '+(e&&e.message||e)); }
   if(!dataUrl||dataUrl.length<200) throw new Error('이미지 데이터가 비어 있어요');
-  return {dataUrl,width:W,height:h,scale:s,theme:built.theme,res:built.res,pxWidth:cv.width,pxHeight:cv.height};
+  return {dataUrl,width:W,height:h,scale:s,theme:built.theme,base:built.base,item:built.item,res:built.res,pxWidth:cv.width,pxHeight:cv.height};
 }
 
 function demo(){
@@ -36095,7 +36354,7 @@ function demo(){
     ]};
 }
 
-return {THEMES,WIDTHS,OPT,parse,normalize,buildHtml,render,demo,scriptOf,_esc:esc,_num:num,_fmt:fmt,_clean:clean};
+return {THEMES,BASES,ITEMS,LEGACY,WIDTHS,OPT,parse,normalize,buildHtml,render,demo,scriptOf,compose:composeTheme,_esc:esc,_num:num,_fmt:fmt,_clean:clean};
 })();
 </script>
 <!-- VIZ-JS-END -->
@@ -40460,7 +40719,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
         <!-- 🎨 인포그래픽 만들기 패널 — 유형 버튼(요청 문구를 입력창에 채움) + 기본 스타일·너비·상승색. 내용은 JS(_vizRenderPanel)가 채움 -->
         <div id="aiVizPanel">
-          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 글과 이미지(PNG)로 정리해 줘요. ‘실행 범위’를 고르고 유형을 누르면 그 범위의 프롬프트가 입력창에 채워지니, 고쳐 쓴 뒤 Enter 로 보내세요. 유형마다 ‘텍스트 프롬프트’(본문 ‘텍스트’용 글)와 ‘인포그래픽 프롬프트’(이미지 구성)를 따로 두며, ＋ 추가·✏️ 편집에서 입력·수정·삭제할 수 있어요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고치고, [🌐 다국어 생성]으로 영어·중국어 버전을 만들 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-h"><span>🎨 인포그래픽 만들기</span><small>왼쪽 ‘현재 내용’(참고 자료)을 AI가 분석해 글과 이미지(PNG)로 정리해 줘요. ‘실행 범위’를 고르고 유형을 누르면 그 범위의 프롬프트가 입력창에 채워지니, 고쳐 쓴 뒤 Enter 로 보내세요. 유형마다 ‘텍스트 프롬프트’(본문 ‘텍스트’용 글)와 ‘인포그래픽 프롬프트’(이미지 구성)를 따로 두며, ＋ 추가·✏️ 편집에서 입력·수정·삭제하고, ‘🔗 연동 섹션’을 골라 두면 그 섹션의 팝업에서 이 유형이 ‘연동 유형’으로 표시돼 바로 만들 수 있어요. 만들어진 이미지는 [📝 본문에 붙여넣기]로 바로 넣을 수 있고, [✏️ 수정]으로 이미지 안의 글을 고치고, [🌐 다국어 생성]으로 영어·중국어 버전을 만들 수 있어요. 헤더(얇은 머리)·표형·표 양식 같은 양식은 아래 🎛 기본 양식이나, 만들어진 이미지 밑의 🎛 양식에서 고르세요. 색은 Base 색상(밝은·어두운 배경)과 Item 색상(포인트 색)을 따로 고를 수 있어요.</small><button type="button" class="avp-x mobile-keep" onclick="_toggleVizPanel()" title="닫기" aria-label="닫기">✕</button></div>
+          <div class="avp-link" id="aiVizLinkLine" style="display:none"></div>
           <div class="avp-last" id="aiVizLastLine"></div>
           <div class="avp-mode" id="aiVizMode"></div>
           <div class="avp-rc" id="aiVizRecipes"></div>
@@ -40474,6 +40734,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
             <textarea id="aiVizRcX" class="mobile-keep" rows="2" maxlength="600" placeholder="예) 핵심 메시지·수치·시사점을 개조식 5줄로 정리해줘." aria-label="텍스트 프롬프트" onkeydown="_vizRcKey(event)"></textarea>
             <label class="avp-el" for="aiVizRcP">🎨 인포그래픽 프롬프트<small>이미지를 어떤 구성으로 만들지 · 비워 두면 기본 문구</small></label>
             <textarea id="aiVizRcP" class="mobile-keep" rows="2" maxlength="600" placeholder="예) 핵심 수치 카드와 막대 차트 중심의 인포그래픽 한 장으로 만들어줘. (Ctrl+Enter 저장 · Esc 닫기)" aria-label="인포그래픽 프롬프트" onkeydown="_vizRcKey(event)"></textarea>
+            <div class="avp-el">🔗 연동 섹션<small>이 유형을 기본으로 쓸 섹션을 고르세요 — 그 섹션의 AI 팝업에서는 이 유형이 ‘연동 유형’으로 표시되고 한 번에 만들어져요 · 한 섹션에는 유형 하나만 연동되고, 목록은 리포트의 AI 섹션에 맞춰 자동으로 바뀌어요</small></div>
+            <div class="avp-secs" id="aiVizRcSecs" role="group" aria-label="연동 섹션"></div>
             <div class="avp-er">
               <button type="button" class="avp-sv mobile-keep" onclick="_vizRcAct('save')">저장</button>
               <button type="button" class="avp-cn mobile-keep" onclick="_vizRcAct('cancel')">취소</button>
