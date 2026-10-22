@@ -4178,7 +4178,7 @@ body.guest-mode #lhPill{display:none!important}
         <input type="month" id="ewMonth" min="2000-01" max="2100-12" title="달력에서 가져올 월을 고르세요" style="width:auto;padding:4px 7px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;color:#1e293b">
         <span style="font-size:11px;color:#64748b">월을 고른 뒤 <b>⬇ 가져오기</b>를 누르세요</span>
       </div>
-      <div style="margin-top:8px;font-size:10px;line-height:1.55;color:#94a3b8">Earnings Whispers 월간 캘린더(<a href="https://www.earningswhispers.com/calmonth" target="_blank" rel="noopener" style="color:#3b82f6;text-decoration:none">earningswhispers.com/calmonth</a>)는 <b>이번 주부터 5주치</b>의 확정 실적발표 기업만 보여 줍니다. 고른 달 중 그 기간에 속한 날짜만 가져오며, 같은 달을 나중에 다시 가져오면 새 날짜가 채워집니다.</div>
+      <div style="margin-top:8px;font-size:10px;line-height:1.55;color:#94a3b8">Earnings Whispers 월간 캘린더(<a href="https://www.earningswhispers.com/calmonth" target="_blank" rel="noopener" style="color:#3b82f6;text-decoration:none">earningswhispers.com/calmonth</a>)는 <b>이번 주부터 5주치</b>의 확정 실적발표 기업만 보여 줍니다. 고른 달 중 그 기간에 속한 날짜만 가져오며, 같은 달을 나중에 다시 가져오면 새 날짜가 채워집니다. 기업명은 날짜별 페이지에서 함께 가져와 <b>기업명(티커)</b>로 표시합니다(보유 종목명·앱에 있는 한글 종목명이 먼저, 나머지는 영문 기업명).</div>
     </div>
     <!-- 저장 바 — 카드가 스크롤돼도 항상 하단에 고정(sticky). 키움증권 탭 = 💾 저장 / Earningwhispers 탭 = ⬇ 가져오기 (버튼이 아니라 묶음째 숨김 — 좁은 화면 CSS 가 버튼의 display 를 강제하므로) -->
     <div style="position:sticky;bottom:0;z-index:2;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:10px 18px 14px;background:var(--bg-muted,#f8fafc)">
@@ -8902,7 +8902,8 @@ window._mscView=async function(key){
      창 안 날짜는 새 값으로 갱신되고, 창 밖(이미 지난) 날짜는 예전에 가져온 값이 그대로 남아 달이 차츰 채워짐.
    · 브라우저는 그 사이트에 직접 접속할 수 없어(CORS) 앱의 다른 조회와 같은 무료 프록시 레이스(r.jina.ai·allorigins·codetabs)로 받고, 모두 안 될 때만 마지막으로 직접 접속을 시도함.
    · 저장 — 키움증권 달과 같은 저장소(BTM_MscDB)에 키 'ew-연-월'(type:'ew')로 넣어 서로 섞이지 않음. file = 가져온 데이터 JSON.
-   · LIST — AI 없이 가져온 데이터로 바로 만듦: 기업마다 한 줄('테슬라(TSLA) 실적발표'), 포트폴리오 종목은 ★ + 같은 날짜 맨 위. 경제일정에는 source:'ew' 로 반영됨. */
+   · 기업명 — 티커만 주는 /api/calMonth 와 달리 날짜별 페이지(/calendar/YYYYMMDD)의 서버 렌더 목록에 기업명이 있어 가져올 때 함께 받아 저장함(아래 '기업명' 블록). 표시는 '기업명(티커)'.
+   · LIST — AI 없이 가져온 데이터로 바로 만듦: 기업마다 한 줄('Lam Research(LRCX) 실적발표'), 포트폴리오 종목은 ★ + 같은 날짜 맨 위. 경제일정에는 source:'ew' 로 반영됨. */
 const EW_KEY_PREFIX='ew-';                                  /* 이 탭의 달 기록 키: 'ew-2026-10' (키움증권 달은 '2026-10' 그대로) */
 const EW_CAL_URL='https://www.earningswhispers.com/calmonth';
 const EW_API_URL='https://www.earningswhispers.com/api/calMonth';
@@ -8931,15 +8932,17 @@ function _ewParseCal(txt){
   });
   return {startDate:start,days};
 }
-/* [[주소, 제한시간(ms), 헤더?], …]를 동시에 요청해 먼저 올바른 응답을 준 하나만 쓰고 나머지는 끊음(무료 프록시에 불필요한 부하를 남기지 않게) */
-function _ewRace(list){
+/* [[주소, 제한시간(ms), 헤더?], …]를 동시에 요청해 먼저 올바른 응답을 준 하나만 쓰고 나머지는 끊음(무료 프록시에 불필요한 부하를 남기지 않게).
+   parse(응답 글) 이 값을 돌려줘야 '올바른' 응답(기본 _ewParseCal — 월간 캘린더 JSON), null 이면 다음 후보를 기다림 */
+function _ewRace(list,parse){
+  parse=parse||_ewParseCal;
   const reg=[];
   const ps=list.map(a=>new Promise((resolve,reject)=>{
     const ctrl=new AbortController(); reg.push(ctrl);
     const tid=setTimeout(()=>{ ctrl.abort(); reject(new Error('timeout')); },a[1]);
     fetch(a[0],{signal:ctrl.signal,headers:a[2]||{}})
       .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.text(); })
-      .then(t=>{ clearTimeout(tid); const p=_ewParseCal(t); if(!p) throw new Error('parse'); resolve(p); })
+      .then(t=>{ clearTimeout(tid); const p=parse(t); if(!p) throw new Error('parse'); resolve(p); })
       .catch(e=>{ clearTimeout(tid); reject(e); });
   }));
   return Promise.any(ps).finally(()=>reg.forEach(c=>{ try{ c.abort(); }catch(_){} }));
@@ -8955,6 +8958,90 @@ async function _ewGetCal(){
   return await _ewRace([[EW_API_URL,7000]]);                          /* 마지막으로 직접 접속 — 지금은 그 사이트가 CORS 를 막아 안 되지만, 허용하는 환경이면 되도록(프록시가 모두 죽었을 때만 시도해 평소엔 콘솔에 CORS 오류가 남지 않음) */
 }
 
+/* ── 기업명 (2026-10-22) — /api/calMonth 는 티커만 주므로 이름은 날짜별 페이지에서 따로 가져옴 ──
+   날짜별 JSON(/api/caldata/날짜)에는 기업명이 있지만 그 사이트가 '같은 사이트에서 온 요청(Referer)'만 받아 프록시로는 막힘(500 오류 페이지).
+   대신 날짜별 페이지(/calendar/YYYYMMDD) HTML 안에 서버가 미리 그려 둔 기업 목록(.cal-ssr-item = .cal-ssr-ticker + .cal-ssr-company)이 있어 그걸 읽음 — r.jina.ai 에
+   X-Return-Format:html 을 주면 받아짐(14일치 약 8초, 월간 캘린더 티커의 99%에 이름이 붙음). 이름은 가져올 때 한 번만 받아 저장(data.names: {티커:기업명, 못 찾으면 ''})하고 그 뒤엔 다시 받지 않음. */
+const _ewSleep=ms=>new Promise(r=>setTimeout(r,ms));
+/* 기업명 다듬기 — 맨 앞 'The '와 맨 뒤 법인 형태(Inc.·Corp.·Corporation·Co.·Ltd.·plc·S.A.·N.V.·A/S·L.P.·'(publ)' …)를 떼고 'and Company' 같은 꼬리도 정리
+   (The Coca-Cola Company → Coca-Cola, Tesla, Inc. → Tesla, Eli Lilly and Company → Eli Lilly). Holdings·Group·Technologies 처럼 이름의 일부인 말은 그대로 둠 */
+const _EW_SUFFIX=/[\s,]+(?:incorporated|inc|corporation|corp|company|co|limited|ltd|llc|l\.l\.c|llp|lp|l\.p|plc|p\.l\.c|sa|s\.a|nv|n\.v|ag|se|a\/s|ab|asa|oyj|bv|b\.v|gmbh|spa|s\.p\.a|ltda|pte|pty|bhd|\(publ\))\.?$/i;
+function _ewCleanName(raw){
+  let s=String(raw==null?'':raw).replace(/\s+/g,' ').trim();
+  if(!s) return '';
+  const orig=s;
+  s=s.replace(/^the\s+/i,'');
+  for(let i=0;i<4;i++){
+    const t=s.replace(_EW_SUFFIX,'').replace(/[\s,]+$/,'').replace(/\s+(?:and|&)$/i,'').trim();
+    if(t===s) break;
+    s=t;
+  }
+  s=s.replace(/[\s,.;:]+$/,'').trim();
+  return s||orig;
+}
+/* 한 티커의 표시 글 — 기업명(티커). 기업명은 ① 내 포트폴리오 종목명 ② 앱에 있는 한글 종목명(TICKER_NAME_MAP) ③ Earnings Whispers 의 영문 기업명(다듬어서) 순.
+   이름을 모르거나 이름이 티커와 글자 그대로 같으면(SLB·BP·AMD …) 'SLB(SLB)' 처럼 겹쳐 쓰지 않고 티커만. 대소문자만 다른 이름(SoFi·Dow)은 그대로 'SoFi(SOFI)' */
+function _ewLabel(sym,hold,names){
+  const nm=String((hold&&hold.get(sym))||TICKER_NAME_MAP[sym]||_ewCleanName(names&&names[sym])||'').trim();
+  return (nm&&nm!==sym)?nm+'('+sym+')':sym;
+}
+/* LIST·경제일정 내용('★ 기업명(티커) 실적발표' · '티커 실적발표') → 티커. 기업명이 붙기 전후로 내용 글이 달라져도 같은 일정을 알아보는 데 씀(체크 이어받기·✕ 체크 해제) */
+function _ewSymOf(content){
+  const s=String(content==null?'':content).replace(/^★\s*/,'').replace(/\s*실적발표\s*$/,'').trim();
+  const m=/\(([A-Za-z0-9][A-Za-z0-9.\-]{0,11})\)$/.exec(s);
+  return (m?m[1]:s).toUpperCase();
+}
+/* 날짜별 페이지 HTML → Map(티커 → 기업명). 기업 목록(.cal-ssr-item)이 없으면 null(막힌 페이지·모양이 바뀐 경우) */
+function _ewParseDay(html){
+  html=String(html==null?'':html);
+  if(html.indexOf('cal-ssr-item')<0) return null;
+  let doc; try{ doc=new DOMParser().parseFromString(html,'text/html'); }catch(e){ return null; }
+  const m=new Map();
+  doc.querySelectorAll('.cal-ssr-item').forEach(li=>{
+    const t=String(((li.querySelector('.cal-ssr-ticker')||{}).textContent)||'').trim().toUpperCase();
+    const c=String(((li.querySelector('.cal-ssr-company')||{}).textContent)||'').replace(/\s+/g,' ').trim();
+    if(t&&!m.has(t)) m.set(t,c);
+  });
+  return m.size?m:null;
+}
+/* 한 날짜의 Map(티커→기업명) — r.jina.ai(HTML) 먼저, 안 되면 allorigins·codetabs 레이스.
+   큰 날짜 페이지(기업 수백 개)는 처음 한 번은 jina 쪽에서 오류가 나도 그 사이 받아 둔 사본으로 다음 시도가 곧바로 성공하는 일이 잦아(시험에서 확인) 잠깐 쉬고 다시 요청함(최대 3번) */
+async function _ewDayNames(iso,ctx){
+  const u='https://www.earningswhispers.com/calendar/'+iso.replace(/-/g,'');
+  for(let i=0;i<3;i++){
+    if(ctx&&ctx.stop) throw new Error('stopped');
+    try{ return await _ewRace([['https://r.jina.ai/'+u,20000,{'X-Return-Format':'html'}]],_ewParseDay); }
+    catch(e){ if(i<2) await _ewSleep(2000+i*1500); }
+  }
+  if(ctx&&(ctx.stop||ctx.fbDead)) throw new Error('stopped');       /* 다른 날짜가 이미 실패했거나 대체 프록시가 이미 죽은 걸 확인했으면 기다리지 않음 */
+  try{
+    return await _ewRace([
+      ['https://api.allorigins.win/raw?url='+encodeURIComponent(u),12000],
+      ['https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u),12000]
+    ],_ewParseDay);
+  }catch(e){ if(ctx) ctx.fbDead=true; throw e; }
+}
+/* dates(YYYY-MM-DD 배열)의 기업명을 3개씩 동시에 받아 {names:{티커:기업명|''}, failed:[못 받은 날짜]} — fresh[날짜] = 그날의 티커들.
+   받았는데 그 티커의 이름이 없으면 '' 로 적어 다시 찾지 않게 하고, 날짜 자체를 못 받았으면 적지 않아(다음에 다시 시도) 연속 3일 실패하면 프록시가 죽은 것으로 보고 나머지는 접음 */
+async function _ewFetchNames(dates,fresh,onProg){
+  const names={}, failed=[], queue=dates.slice(), ctx={stop:false,fbDead:false};
+  let done=0, fails=0;
+  const worker=async()=>{
+    while(queue.length&&!ctx.stop){
+      const d=queue.shift();
+      try{
+        const map=await _ewDayNames(d,ctx);
+        (fresh[d]||[]).forEach(t=>{ names[t]=map.get(t)||''; });
+        fails=0;
+      }catch(e){ failed.push(d); if(++fails>=3) ctx.stop=true; }
+      done++; if(onProg) onProg(done,dates.length);
+    }
+  };
+  await Promise.all(Array.from({length:Math.min(3,dates.length)},worker));
+  queue.forEach(d=>failed.push(d));
+  return {names,failed};
+}
+
 /* 보유 종목 티커(대문자) → 종목명 — 포트폴리오 종목은 LIST에서 ★ 로 표시하고 같은 날짜 맨 위에 둠 */
 function _ewHoldMap(){
   const m=new Map();
@@ -8963,12 +9050,11 @@ function _ewHoldMap(){
 }
 /* 가져온 데이터 → LIST 일정 [{date,type,content}] — 날짜순, 기업마다 한 줄 */
 function _ewEvents(data){
-  const hold=_ewHoldMap(), out=[], seen=new Set(), days=(data&&data.days)||{};
+  const hold=_ewHoldMap(), out=[], seen=new Set(), days=(data&&data.days)||{}, names=(data&&data.names&&typeof data.names==='object')?data.names:{};
   Object.keys(days).sort().forEach(date=>{
     const syms=Array.isArray(days[date])?days[date]:[];
     [...syms.filter(s=>hold.has(s)),...syms.filter(s=>!hold.has(s))].forEach(sym=>{
-      const nm=hold.get(sym)||TICKER_NAME_MAP[sym]||'';
-      const content=(hold.has(sym)?'★ ':'')+(nm&&nm.toUpperCase()!==sym?nm+'('+sym+')':sym)+' 실적발표';
+      const content=(hold.has(sym)?'★ ':'')+_ewLabel(sym,hold,names)+' 실적발표';
       const k=date+'|'+content; if(seen.has(k)) return; seen.add(k);
       out.push({date,type:'미국',content});
     });
@@ -8989,8 +9075,8 @@ async function _ewMakeList(key){
     const rq=m.get(key);
     rq.onsuccess=()=>{
       const cur=rq.result; if(!cur||cur.savedAt!==meta.savedAt) return;
-      const was=new Set((Array.isArray(cur.ecoEvents)?cur.ecoEvents:[]).filter(e=>e&&e.checked).map(e=>e.date+'|'+_ecoStripCountry(e.content)));
-      saved=events.map(e=>was.has(e.date+'|'+e.content)?Object.assign({},e,{checked:true}):e);
+      const was=new Set((Array.isArray(cur.ecoEvents)?cur.ecoEvents:[]).filter(e=>e&&e.checked).map(e=>e.date+'|'+_ewSymOf(e.content)));   /* 날짜+티커로 비교 — 기업명이 붙어 내용 글이 달라져도 체크를 이어받음 */
+      saved=events.map(e=>was.has(e.date+'|'+_ewSymOf(e.content))?Object.assign({},e,{checked:true}):e);
       m.put(Object.assign({},cur,{ecoEvents:saved,ecoSavedAt:cur.savedAt,ecoAt:Date.now()}));
     };
   });
@@ -9031,16 +9117,34 @@ window._ewFetch=async function(){
     const kept=Object.keys(days).length;
     Object.assign(days,fresh);
     const nDays=Object.keys(days).length, nCos=Object.keys(days).reduce((n,d)=>n+days[d].length,0);
-    const blob=new Blob([JSON.stringify({v:1,site:'ew',year,month,windowFrom:winFrom,windowTo:winTo,fetchedAt:Date.now(),days})],{type:'application/json'});
-    const meta=Object.assign({},oldMeta||{},{key,year,month,type:'ew',name:'Earnings Whispers 월간 캘린더 ('+winFrom+' ~ '+winTo+' 기준)',size:blob.size,mime:'application/json',savedAt:Date.now(),nDays,nCos});
+    /* 기업명 — 날짜별 페이지에서 받아 티커에 붙임. 이미 이름을 받아 둔 티커뿐인 날짜는 건너뜀(다시 가져와도 빠르고, 무료 프록시를 덜 부름) */
+    const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+    const oldNames=(oldData&&oldData.names&&typeof oldData.names==='object')?oldData.names:{};
+    const need=Object.keys(fresh).sort().filter(d=>fresh[d].some(t=>!has(oldNames,t)));
+    let nr={names:{},failed:[]};
+    if(need.length){
+      _mscStatus(`⬇ 기업명을 불러오는 중… (0/${need.length}일)`);
+      try{ nr=await _ewFetchNames(need,fresh,(a,b)=>_mscStatus(`⬇ 기업명을 불러오는 중… (${a}/${b}일)`)); }
+      catch(e){ console.warn('[Earningwhispers] 기업명 조회 실패:',e); }
+    }
+    const names={}, allT=new Set();
+    Object.keys(days).forEach(d=>days[d].forEach(t=>{ allT.add(t); if(has(nr.names,t)) names[t]=nr.names[t]; else if(has(oldNames,t)) names[t]=oldNames[t]; }));
+    const nNamed=[...allT].filter(t=>names[t]).length, nNameMiss=[...allT].filter(t=>!has(names,t)).length;   /* 이름을 받은 티커 수 / 아직 못 받은 티커 수 */
+    const blob=new Blob([JSON.stringify({v:2,site:'ew',year,month,windowFrom:winFrom,windowTo:winTo,fetchedAt:Date.now(),days,names})],{type:'application/json'});
+    const meta=Object.assign({},oldMeta||{},{key,year,month,type:'ew',name:'Earnings Whispers 월간 캘린더 ('+winFrom+' ~ '+winTo+' 기준)',size:blob.size,mime:'application/json',savedAt:Date.now(),nDays,nCos,nNamed,nNameMiss});
     await _mscPut(meta,blob);                                          /* 옛 ecoEvents 는 남겨 둠 — 아래에서 LIST를 새로 만들 때 체크를 이어받는 데 씀 */
     let evs=null;
     try{ evs=(await _ewMakeList(key)).events; }catch(e){ console.warn('[Earningwhispers] LIST 생성 실패:',e); }
     await _mscRender(null,null,key);
     const first=ym+'-01', last=ym+'-'+String(new Date(year,month,0).getDate()).padStart(2,'0');
     const partial=(last>winTo||first<winFrom)?` · ※ 제공 기간(${winFrom.slice(5)} ~ ${winTo.slice(5)}) 밖 날짜는 없음`:'';
-    _mscStatus(`✅ ${year}년 ${month}월 가져오기 완료 — ${nDays}일 · ${nCos}개 기업`+(kept?` (지난 ${kept}일은 이전 값 유지)`:'')
-      +(evs?` · 📋 일정 ${evs.length}건 LIST 생성 (LIST 버튼에서 반영할 일정을 체크하세요)`:' · LIST는 만들지 못했습니다 (LIST 버튼에서 다시 시도할 수 있습니다)')+partial,'ok');
+    /* 경제일정에 이미 반영해 둔 일정은 [적용]·📡 업데이트 때 바뀌므로(가져오기가 표를 몰래 고치지 않음) 옛 글(티커만)로 남아 있는 건수를 알려 줌 */
+    let stale=0;
+    if(evs){ const cur=new Map(evs.map(e=>[e.date+'|'+_ewSymOf(e.content),e.content])); stale=ecoData.filter(e=>e.source==='ew'&&String(e.date||'').slice(0,7)===ym).filter(e=>{ const c=cur.get(e.date+'|'+_ewSymOf(e.content)); return c&&c!==e.content; }).length; }
+    const nameTxt=(nNameMiss?` · ⚠ 기업명 ${nNameMiss}개는 못 가져와 티커만 표시(다시 가져오면 채워집니다)`:` · 기업명 ${nNamed}/${allT.size}`)
+      +(stale?` · 경제일정에 이미 반영한 ${stale}건은 LIST의 [적용] 또는 📡 업데이트 때 기업명으로 바뀝니다`:'');
+    _mscStatus(`✅ ${year}년 ${month}월 가져오기 완료 — ${nDays}일 · ${nCos}개 기업`+(kept?` (지난 ${kept}일은 이전 값 유지)`:'')+nameTxt
+      +(evs?` · 📋 일정 ${evs.length}건 LIST 생성 (LIST 버튼에서 반영할 일정을 체크하세요)`:' · LIST는 만들지 못했습니다 (LIST 버튼에서 다시 시도할 수 있습니다)')+partial,nNameMiss?'warn':'ok');
   }catch(e){
     const full=!!e&&e.name==='QuotaExceededError';
     _mscStatus('❌ 저장 실패 — '+(full?'디스크 공간 부족':_mscErrText(e)),'err');
@@ -9056,9 +9160,11 @@ function _ewRowHtml(d){
   const nAll=hasList?d.ecoEvents.length:0, nChk=hasList?d.ecoEvents.filter(e=>e&&e.checked).length:0;
   const pill=hasList?`<span title="경제일정에 반영하려고 체크한 일정 / 가져온 전체 일정" style="font-size:10px;font-weight:600;color:#7c3aed;white-space:nowrap">반영 ${nChk}/${nAll}</span>`:'';
   const info=d.nDays?`<span style="font-size:10px;color:#94a3b8">${d.nDays}일 · ${d.nCos}개 기업</span>`:'';
+  const nm=d.nNameMiss==null?-1:d.nNameMiss;   /* 기업명을 못 받은 티커 수(-1 = 기업명 기능이 생기기 전에 가져온 달) */
+  const nameHint=nm===0?'':`<span title="기업명을 아직 받지 못한 티커는 티커만 표시됩니다 — [⬇ 가져오기]를 다시 누르면 기업명이 채워집니다" style="font-size:10px;color:#b45309">${nm<0?'기업명 없음':'기업명 '+nm+'개 없음'}</span>`;
   return `<div data-msc="${d.key}" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;row-gap:6px;padding:8px 0;border-bottom:1px solid #f1f5f9">
       <span style="font-size:13px;font-weight:600;color:#334155">${d.year}년 ${d.month}월</span>
-      <span title="Earnings Whispers 월간 캘린더에서 가져옴" style="padding:2px 6px;background:#ccfbf1;color:#0f766e;border-radius:4px;font-size:9px;font-weight:700">EW</span>${info}<span style="flex:1"></span>
+      <span title="Earnings Whispers 월간 캘린더에서 가져옴" style="padding:2px 6px;background:#ccfbf1;color:#0f766e;border-radius:4px;font-size:9px;font-weight:700">EW</span>${info}${nameHint}<span style="flex:1"></span>
       ${pill}
       <button class="mobile-keep" onclick="_ewView('${d.key}')" style="padding:3px 10px;background:#e0f2fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#0369a1;cursor:pointer">🔍 보기</button>
       <button onclick="_mscOpenList('${d.key}')" title="가져온 일정을 날짜·구분·내용 LIST로 보고, 경제일정에 반영할 일정을 체크합니다" style="padding:3px 10px;background:#ede9fe;border:none;border-radius:5px;font-size:10px;font-weight:700;color:#6d28d9;cursor:pointer">LIST</button>
@@ -9066,7 +9172,8 @@ function _ewRowHtml(d){
     </div>`;
 }
 
-/* 🔍 보기 — 가져온 한 달치를 월~금 달력 모양으로(날짜마다 기업 티커 칩, ★ = 포트폴리오 종목) */
+/* 🔍 보기 — 가져온 한 달치를 월~금 달력 모양으로. 날짜마다 [기업명(티커)] 목록 또는 [티커만] 칩(위쪽 '표시' 버튼으로 바꿈), ★ = 포트폴리오 종목 */
+let _ewViewMode='name';   /* 🔍 보기의 표시 방식: 'name' = 기업명(티커) | 'tick' = 티커만 — 마지막으로 고른 것을 기억 */
 window._ewView=async function(key){
   let rec;
   try{ rec=await _mscGetBoth(key); }
@@ -9074,33 +9181,44 @@ window._ewView=async function(key){
   const d=rec&&rec.meta, fb=rec&&rec.file&&rec.file.blob;
   if(!d||!fb){ alert('저장된 캘린더를 찾을 수 없습니다.'); return; }
   let data; try{ data=JSON.parse(await fb.text()); }catch(e){ alert('저장된 캘린더 데이터를 읽지 못했습니다. 다시 가져와 주세요.'); return; }
-  const days=(data&&data.days)||{}, year=+d.year, month=+d.month, hold=_ewHoldMap(), todayS=todayStr();
+  const days=(data&&data.days)||{}, names=(data&&data.names&&typeof data.names==='object')?data.names:{}, year=+d.year, month=+d.month, hold=_ewHoldMap(), todayS=todayStr();
   const hasWk=Object.keys(days).some(s=>{ const w=new Date(s+'T00:00:00').getDay(); return w===0||w===6; });
   const cols=hasWk?7:5;
   const first=new Date(year,month-1,1), mon=new Date(first); mon.setDate(1-((first.getDay()+6)%7));
   const last=new Date(year,month,0);
-  let rows='';
-  for(const w=new Date(mon); w<=last; w.setDate(w.getDate()+7)){
-    let tds='', any=false;                 /* any: 이 주에 이 달 날짜가 하나라도 있는가 — 1일이 토·일이면 앞 달만 있는 첫 줄이 생기므로 건너뜀 */
-    for(let i=0;i<cols;i++){
-      const dt=new Date(w); dt.setDate(w.getDate()+i);
-      const ds=_ewIso(dt), inM=dt.getMonth()===month-1, syms=inM?(Array.isArray(days[ds])?days[ds]:[]):[];
-      if(inM) any=true;
-      const chips=syms.map(s=>{
-        const h=hold.has(s), nm=hold.get(s)||TICKER_NAME_MAP[s]||'';
-        return `<span title="${_escHtml(nm?nm+' ('+s+')':s)}" style="display:inline-block;margin:1px 2px 1px 0;padding:1px 5px;border-radius:4px;font-size:10.5px;line-height:1.5;${h?'background:#fef3c7;color:#92400e;font-weight:700':'background:#f1f5f9;color:#1e293b'}">${h?'★ ':''}${_escHtml(s)}</span>`;
-      }).join('');
-      tds+=`<td style="vertical-align:top;border:1px solid #e2e8f0;padding:5px 6px;${inM?'':'background:#f8fafc;'}${inM&&ds<todayS?'opacity:.55;':''}${ds===todayS?'box-shadow:inset 0 0 0 2px #3b82f6;':''}"><div style="font-size:11px;font-weight:700;color:${inM?'#334155':'#cbd5e1'};margin-bottom:2px">${dt.getDate()}${syms.length?`<span style="font-weight:500;color:#94a3b8;font-size:9px;margin-left:4px">${syms.length}</span>`:''}</div>${chips}</td>`;
+  /* 달력 본문 — mode: 'name' 날짜 칸마다 한 줄씩 '기업명(티커)' / 'tick' 티커 칩 */
+  const body=mode=>{
+    let rows='';
+    for(const w=new Date(mon); w<=last; w.setDate(w.getDate()+7)){
+      let tds='', any=false;                 /* any: 이 주에 이 달 날짜가 하나라도 있는가 — 1일이 토·일이면 앞 달만 있는 첫 줄이 생기므로 건너뜀 */
+      for(let i=0;i<cols;i++){
+        const dt=new Date(w); dt.setDate(w.getDate()+i);
+        const ds=_ewIso(dt), inM=dt.getMonth()===month-1, syms=inM?(Array.isArray(days[ds])?days[ds]:[]):[];
+        if(inM) any=true;
+        const items=syms.map(s=>{
+          const h=hold.has(s), lb=_ewLabel(s,hold,names), col=h?'background:#fef3c7;color:#92400e;font-weight:700':'background:#f1f5f9;color:#1e293b';
+          return mode==='name'
+            ? `<div title="${_escHtml(lb)}" style="margin:1px 0;padding:1px 5px;border-radius:4px;font-size:11px;line-height:1.5;word-break:break-word;${col}">${h?'★ ':''}${_escHtml(lb)}</div>`
+            : `<span title="${_escHtml(lb)}" style="display:inline-block;margin:1px 2px 1px 0;padding:1px 5px;border-radius:4px;font-size:10.5px;line-height:1.5;${col}">${h?'★ ':''}${_escHtml(s)}</span>`;
+        }).join('');
+        tds+=`<td style="vertical-align:top;border:1px solid #e2e8f0;padding:5px 6px;${inM?'':'background:#f8fafc;'}${inM&&ds<todayS?'opacity:.55;':''}${ds===todayS?'box-shadow:inset 0 0 0 2px #3b82f6;':''}"><div style="font-size:11px;font-weight:700;color:${inM?'#334155':'#cbd5e1'};margin-bottom:2px">${dt.getDate()}${syms.length?`<span style="font-weight:500;color:#94a3b8;font-size:9px;margin-left:4px">${syms.length}</span>`:''}</div>${items}</td>`;
+      }
+      if(any) rows+='<tr>'+tds+'</tr>';
     }
-    if(any) rows+='<tr>'+tds+'</tr>';
-  }
+    return rows;
+  };
   const HD=['월','화','수','목','금','토','일'];
   const th='background:#f1f5f9;border:1px solid #e2e8f0;padding:6px 4px;font-size:11px;font-weight:700;color:#475569;text-align:center';
   const fmt=ts=>{ const t=new Date(ts); return isNaN(t.getTime())?'':_ewIso(t)+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); };
+  const allT=new Set(); Object.keys(days).forEach(s=>{ if(Array.isArray(days[s])) days[s].forEach(t=>allT.add(t)); });
   const nDays=Object.keys(days).length, nCos=Object.keys(days).reduce((n,s)=>n+(Array.isArray(days[s])?days[s].length:0),0);
+  const nMiss=[...allT].filter(t=>!hold.has(t)&&!TICKER_NAME_MAP[t]&&!Object.prototype.hasOwnProperty.call(names,t)).length;   /* 이름을 알아볼 길이 없는 티커(가져올 때 못 받은 것) */
+  const seg=(m,label)=>`<button type="button" class="mobile-keep" data-ewmode="${m}" style="padding:3px 11px;border:none;font-size:11px;font-weight:700;cursor:pointer">${label}</button>`;
+  const segCss=on=>'padding:3px 11px;border:none;font-size:11px;font-weight:700;cursor:pointer;'+(on?'background:#0f766e;color:#fff':'background:#fff;color:#475569');
   const card=`<div style="background:#fff;color:#1e293b;border-radius:10px;padding:14px 14px 12px;max-width:1180px;margin:0 auto;box-shadow:0 4px 32px rgba(0,0,0,.6)">
-    <div style="font-size:11px;line-height:1.6;color:#64748b;margin-bottom:10px">${nDays}일 · ${nCos}개 기업 — Earnings Whispers가 <b>확정한</b> 실적발표 기업(날짜마다 팔로워가 많은 순)${data.windowFrom?` · 제공 기간 ${_escHtml(data.windowFrom)} ~ ${_escHtml(data.windowTo||'')}`:''}${data.fetchedAt?` · 가져온 시각 ${fmt(data.fetchedAt)}`:''}<br>★ = 내 포트폴리오 종목 · 티커 위에 마우스를 올리면 종목명(알려진 경우)이 보입니다</div>
-    <div style="overflow-x:auto"><table style="width:100%;min-width:${cols===7?980:760}px;border-collapse:collapse;table-layout:fixed"><thead><tr>${HD.slice(0,cols).map(x=>`<th style="${th}">${x}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
+    <div style="font-size:11px;line-height:1.6;color:#64748b;margin-bottom:8px">${nDays}일 · ${nCos}개 기업 — Earnings Whispers가 <b>확정한</b> 실적발표 기업(날짜마다 팔로워가 많은 순)${data.windowFrom?` · 제공 기간 ${_escHtml(data.windowFrom)} ~ ${_escHtml(data.windowTo||'')}`:''}${data.fetchedAt?` · 가져온 시각 ${fmt(data.fetchedAt)}`:''}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap"><span style="font-size:11px;font-weight:700;color:#475569">표시</span><span style="display:inline-flex;border-radius:6px;overflow:hidden;border:1px solid #cbd5e1">${seg('name','기업명(티커)')}${seg('tick','티커만')}</span><span style="font-size:10px;color:#94a3b8">★ = 내 포트폴리오 종목${nMiss?` · <span style="color:#b45309">기업명을 못 가져온 티커 ${nMiss}개는 티커만 보입니다(다시 가져오면 채워집니다)</span>`:''}</span></div>
+    <div style="overflow-x:auto"><table id="ewGridTable" style="width:100%;border-collapse:collapse;table-layout:fixed"><thead><tr>${HD.slice(0,cols).map(x=>`<th style="${th}">${x}</th>`).join('')}</tr></thead><tbody id="ewGridBody"></tbody></table></div>
   </div>`;
 
   const ov=document.createElement('div');
@@ -9116,6 +9234,7 @@ window._ewView=async function(key){
   link.href=EW_CAL_URL; link.target='_blank'; link.rel='noopener'; link.textContent='원본 ↗';
   link.style.cssText='color:#93c5fd;font-size:12px;font-weight:600;text-decoration:none';
   const closeBtn=document.createElement('button');
+  closeBtn.className='mobile-keep';        /* 좁은 화면·게스트에서도 닫을 수 있게 */
   closeBtn.textContent='✕ 닫기';
   closeBtn.style.cssText='background:rgba(255,255,255,.18);border:none;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer';
   closeBtn.onclick=()=>{ document.body.removeChild(ov); };
@@ -9127,6 +9246,15 @@ window._ewView=async function(key){
   content.onclick=e=>{ if(e.target===content) document.body.removeChild(ov); };
   ov.append(hdr,content);
   document.body.appendChild(ov);
+  /* 표시 방식 바꾸기 — 달력 본문만 다시 그림 */
+  const setMode=m=>{
+    _ewViewMode=(m==='tick')?'tick':'name';
+    const tb=content.querySelector('#ewGridBody'); if(tb) tb.innerHTML=body(_ewViewMode);
+    const tbl=content.querySelector('#ewGridTable'); if(tbl) tbl.style.minWidth=(_ewViewMode==='name'?(cols===7?1260:950):(cols===7?980:760))+'px';
+    content.querySelectorAll('[data-ewmode]').forEach(b=>{ b.style.cssText=segCss(b.dataset.ewmode===_ewViewMode); });
+  };
+  content.querySelectorAll('[data-ewmode]').forEach(b=>{ b.onclick=()=>setMode(b.dataset.ewmode); });
+  setMode(_ewViewMode);
 };
 
 /* ── 탭 전환 (키움증권 ↔ Earningwhispers) ──
@@ -9188,7 +9316,7 @@ function buildEcoTable(){
         <option ${row.type==='한국'?'selected':''}>한국</option>
         <option ${row.type==='기타'?'selected':''}>기타</option>
       </select></td>
-      <td><input value="${_escHtml(contentTxt)}" placeholder="이벤트 내용" onchange="${contentOnchange}" style="width:100%"/></td>
+      <td><input value="${_escHtml(contentTxt)}" title="${_escHtml(contentTxt)}" placeholder="이벤트 내용" onchange="${contentOnchange}" style="width:100%"/></td>
       <td style="text-align:center">${srcBadge}</td>
       <td><button onclick="deleteEcoRow(${i})" style="background:#fee2e2;color:#991b1b;border:none;border-radius:3px;padding:1px 5px;cursor:pointer;font-size:10px">✕</button></td>
     `;
@@ -9496,7 +9624,9 @@ async function _ecoUncheckPdfPick(entry){
       rq.onsuccess=()=>{
         const cur=rq.result; if(!cur||!Array.isArray(cur.ecoEvents)) return;
         let hit=false;
-        const evs=cur.ecoEvents.map(e=>{ if(e&&e.checked&&(e.date+'|'+_ecoStripCountry(e.content))===k){ hit=true; const c=Object.assign({},e); delete c.checked; return c; } return e; });
+        const ew=entry.source==='ew', kd=k.slice(0,k.indexOf('|')), kc=k.slice(k.indexOf('|')+1);   /* Earningwhispers 일정은 기업명이 붙기 전후로 내용 글이 달라져도 날짜+티커로 같은 일정을 찾음 */
+        const same=e=>ew?(e.date===kd&&_ewSymOf(e.content)===_ewSymOf(kc)):((e.date+'|'+_ecoStripCountry(e.content))===k);
+        const evs=cur.ecoEvents.map(e=>{ if(e&&e.checked&&same(e)){ hit=true; const c=Object.assign({},e); delete c.checked; return c; } return e; });
         if(hit) st.put(Object.assign({},cur,{ecoEvents:evs}));
       };
     });
