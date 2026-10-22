@@ -1701,6 +1701,21 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
 .ai-ans-row{align-self:flex-start;display:flex;margin:-5px 0 0 2px}
 .ai-ans-btn{height:22px;padding:0 8px;border:none;border-radius:6px;background:transparent;color:#94a3b8;font-size:10.5px;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .12s,color .12s}
 .ai-ans-btn:hover{background:#eef2ff;color:#4f46e5}
+/* ── 본문에 반영할 결과물 고르기 (2026-10-22): 결과물·인포그래픽 상자 머리줄 / 일반 답변 아래 줄의 [☑ 반영] — 체크한 것만 아래 [📝 본문에 반영]에 들어감 ── */
+.ai-pick{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;height:16px;padding:0 8px 0 5px;border:1px solid rgba(255,255,255,.7);border-radius:8px;background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;line-height:14px;letter-spacing:0;white-space:nowrap;cursor:pointer;user-select:none;transition:background .12s,color .12s}
+.ai-pick:hover{background:rgba(255,255,255,.35)}
+.ai-pick:has(.ai-pick-cb:checked){background:#fff;color:#047857}
+.ai-viz-box .ai-pick:has(.ai-pick-cb:checked){color:#be185d}
+.ai-pick-cb{width:12px;height:12px;margin:0;padding:0;flex:none;accent-color:#047857;cursor:pointer}
+.ai-viz-box .ai-pick-cb{accent-color:#be185d}
+#aiChatModal .ai-pick-cb{pointer-events:auto!important}
+.ai-result-label:has(>.ai-pick){flex-wrap:wrap;row-gap:3px}   /* 좁은 폭(폰)에선 [반영]·[참조]가 제목 아랫줄로 내려가 제목이 좁은 한 줄 폭으로 찌그러지지 않게 */
+.ai-result-label:has(>.ai-pick)>.ai-res-t{flex:1 1 120px}
+.ai-result-label>.ai-pick{margin-left:auto}   /* 줄이 나뉘면 [반영][참조] 묶음을 오른쪽 끝으로 */
+.ai-ans-row{align-items:center;flex-wrap:wrap;gap:2px}
+.ai-ans-row .ai-pick{height:22px;padding:0 8px 0 6px;border:none;border-radius:6px;background:transparent;color:#94a3b8;font-size:10.5px}
+.ai-ans-row .ai-pick:hover{background:#eef2ff;color:#4f46e5}
+.ai-ans-row .ai-pick:has(.ai-pick-cb:checked){background:#ecfdf5;color:#047857}
 #aiRefStrip{display:none;flex-direction:column;gap:4px;padding:6px 8px 5px;border:1px solid #c7d2fe;border-bottom:none;border-radius:8px 8px 0 0;background:#f5f3ff;max-height:104px;overflow-y:auto}
 .ai-ref-chip{display:flex;align-items:center;gap:6px;min-width:0;flex-shrink:0;padding:3px 3px 3px 8px;background:#fff;border:1px solid #c7d2fe;border-left:3px solid #6366f1;border-radius:6px;font-size:11px;line-height:1.4;cursor:pointer;transition:background .12s}
 .ai-ref-chip:hover{background:#eef2ff}
@@ -30884,6 +30899,7 @@ async function _fetchClaudeBalance(){
       div.setAttribute('data-src',rawText);
       _addAnsRow(div);
     }
+    _pickAuto(div);   /* 새 답변이 생길 때마다 — 이전에 체크된 결과물은 모두 풀고 이 답변의 결과물만 체크(2026-10-22) */
   }
   const _gp=()=>{try{return JSON.parse(localStorage.getItem(PK)||'[]');}catch(e){return[];}};
   const _sp=a=>localStorage.setItem(PK,JSON.stringify(a));
@@ -31096,6 +31112,7 @@ Rules:
     g('aiSendBtn').disabled=false;
     g('aiChatModal').style.display='flex';
     try{ _vizToggleMark(); }catch(e){}   /* 연동 유형이 있는 섹션이면 🎨 버튼에 🔗(2026-10-21) */
+    _pickSync();   /* [📝 본문에 반영]에 선택 개수(복원된 대화의 체크 상태 기준) */
     _ahBadge();
     setTimeout(()=>{
       const ar=g('aiMessages'); ar.scrollTop=ar.scrollHeight;
@@ -31119,6 +31136,7 @@ Rules:
     const key=_eid??'';
     _sessId='';   /* 비운 뒤의 대화는 새 기록 세션으로 (이미 나눈 대화는 [🕘 기록]에 그대로) */
     if(_chatStore[key]) _chatStore[key]={..._chatStore[key],hist:[],html:'',lastReply:'',lastResult:'',applyVisible:false,sessId:''};
+    _pickSync();
     g('aiUserInput').focus();
   };
 
@@ -31128,6 +31146,7 @@ Rules:
     g('aiMessages').innerHTML='';
     g('aiApplyBtnWrap').style.display='none';
     delete _chatStore[_eid??''];
+    _pickSync();
     _sessId='';
     const el=g(_eid);
     const lc=g('aiLeftContent');
@@ -31525,27 +31544,39 @@ Rules:
      · 인포그래픽 이미지 → 본문의 '인포그래픽' / 인포그래픽용으로 정리한 텍스트(<RESULT>)·그 밖의 모든 AI 결과 → 본문의 '텍스트'. 반영한 쪽 보기로 전환(인포그래픽이 있으면 인포그래픽 보기).
      · 인포그래픽 본문이 없는 곳(차트 노트 등)은 예전처럼 한 본문에 글+이미지
      · 덮어쓰기(2026-10-21)는 인포그래픽 본문에 이미지만 남기고 뒤에 빈 줄을 붙이지 않음(이어쓰기는 앞뒤 빈 줄로 구분)
-     · 덮어쓰기 뒤에는 _vizFitBox 가 텍스트 박스 높이를 이미지에 딱 맞춤(높이를 저장하는 박스만 — 이어쓰기는 안 맞춤) */
+     · 덮어쓰기 뒤에는 _vizFitBox 가 텍스트 박스 높이를 이미지에 딱 맞춤(높이를 저장하는 박스만 — 이어쓰기는 안 맞춤)
+     · 반영할 내용(2026-10-22) = 대화에서 체크(☑ 반영)한 결과물 — 여러 개면 화면 순서대로(글은 '텍스트'에, 그림은 '인포그래픽'에 각각 순서대로). 새 답변이 나오면 그 답변의 결과물만 자동 체크되므로
+       체크를 건드리지 않고 누르면 예전처럼 가장 최근 답변이 들어감(_pickAuto). 아직 그려지는 중이거나 이미지를 만들지 못한 인포그래픽은 빼고 반영(안내 문구에 개수 표시). */
   window._applyToEditor=function(mode){
-    const vizImgs=_vizImgsOfLast();   /* 마지막 답변의 인포그래픽 이미지 */
-    if(!_lastResult&&!_lastReply&&!vizImgs.length) return;
-    if(_eid===_MM_EID){ _ahSaveLeft(); _sendToMindmap(_mmOutlineFromReply(_lastReply)); return; }
+    const all=_pickCollect();   /* 체크한 결과물 — 화면 순서 */
+    const picks=all.filter(it=>it.k==='v'?!!it.src:!!String(it.html||'').trim());   /* 반영할 수 있는 것만 */
+    const skipped=all.length-picks.length;
+    if(!picks.length){
+      const any=!!(g('aiMessages')&&g('aiMessages').querySelector('.ai-pick-cb'));
+      _showToast('_ahToast',all.length?'체크한 인포그래픽이 아직 그려지는 중이거나 이미지를 만들지 못했어요 — 다 그려진 뒤에 눌러 주세요'
+        :(any?'반영할 결과물을 체크해 주세요 — 각 결과물의 [☑ 반영]을 눌러 고를 수 있어요':'반영할 결과물이 없어요'),'rgba(180,83,9,.93)');
+      return;
+    }
+    if(_eid===_MM_EID){
+      const ol=picks.filter(it=>it.k!=='v').map(it=>_mmOutlineFromReply(it.raw)).filter(Boolean).join('\n');
+      if(!ol){ _showToast('_ahToast','MindMap 으로 가져갈 글이 없어요 — 개요가 담긴 결과물을 체크해 주세요','rgba(180,83,9,.93)'); return; }
+      _ahSaveLeft(); _sendToMindmap(ol); return;
+    }
     const el=_eid?g(_eid):null;
-    const imgHtml=vizImgs.map(i=>_vizImgBlockHtml(i.src,i.alt,i.w)).join('');
-    /* 인포그래픽이 있는 답변에서 <RESULT> 가 없으면 설명 글은 채팅용 분석 멘트 — 글 쪽은 반영하지 않음(인포그래픽만) */
-    const _txtHtml=_lastResult||((vizImgs.length||!_lastReply)?'':_md2html(_lastReply));
-    if(!el){ _ahSaveLeft(); _saveResultToMemo(_txtHtml+imgHtml,true); return; }
+    if(!el){ _ahSaveLeft(); _saveResultToMemo(_pickMemoHtml(picks),true); return; }
 
     /* mode 미지정: 항상 덮어쓰기/이어쓰기 선택 다이얼로그 표시 */
     if(!mode){
+      _pickSync();
       g('aiApplyBtn').style.display='none';
       g('aiApplyDlg').style.display='flex';
       return;
     }
 
     _ahSaveLeft();   /* 왼쪽 칼럼 내용도 이 대화의 [🕘 기록]에 함께 저장 */
+    const texts=picks.filter(it=>it.k!=='v');   /* 글 — 정리한 텍스트(<RESULT>)·일반 답변 */
+    const imgHtml=picks.filter(it=>it.k==='v').map(i=>_vizImgBlockHtml(i.src,i.alt,i.w)).join('');
     const vzEl=(imgHtml&&_eid)?g(_eid+'__vz'):null;   /* 인포그래픽 본문 — 있는 섹션(10곳)만 */
-    const rawHtml=_lastResult||(vizImgs.length?'':_md2html(_lastReply));
     const _put=(target,editorHtml)=>{
       if(mode==='append'){
         const existingHtml=(target.innerHTML||'').trim();
@@ -31567,12 +31598,10 @@ Rules:
     };
     let textDone=false, vizDone=false;
     if(vzEl){
-      if(rawHtml){ _put(el,_toEditorBlocks(rawHtml)); textDone=true; }   /* 인포그래픽용으로 정리한 텍스트 → 본문의 '텍스트' */
+      if(texts.length){ _put(el,texts.map(t=>_toEditorBlocks(t.html)).join('<div><br></div>')); textDone=true; }   /* 인포그래픽용으로 정리한 텍스트 → 본문의 '텍스트' */
       _put(vzEl,imgHtml+(mode==='overwrite'?'':'<div><br></div>')); vizDone=true;               /* 인포그래픽 이미지 → 본문의 '인포그래픽' */
     } else {
-      let editorHtml=(rawHtml||!imgHtml)?_toEditorBlocks(rawHtml):'';   /* 글 없이 그림만이면 빈 줄 블록을 안 붙임 */
-      if(imgHtml) editorHtml+=(editorHtml?'<div><br></div>':'')+imgHtml+(mode==='overwrite'?'':'<div><br></div>');
-      _put(el,editorHtml); textDone=true;
+      _put(el,_pickMixedHtml(picks)+((imgHtml&&mode!=='overwrite')?'<div><br></div>':'')); textDone=true;   /* 글 없이 그림만이면 빈 줄 블록을 안 붙임 */
     }
 
     /* 반영한 쪽 보기로 전환 — 인포그래픽이 있으면 인포그래픽 보기, 글만이면 텍스트 보기 */
@@ -31583,11 +31612,11 @@ Rules:
       shown=(m==='viz')?g(_eid+'__vz'):el;
       const _am=g('aiChatModal');
       if(!_am||_am.style.visibility!=='hidden'){   /* AI Stock Radar 자동 반영처럼 팝업이 숨겨진 채 돌 때는 안내 생략 */
-        const sn=_ahSecName();
+        const sn=_ahSecName(), sk=skipped?' · 체크한 것 중 '+skipped+'개는 아직 그려지는 중이거나 비어 있어 뺐어요':'';
         _showToast('_ahToast',
-          textDone&&vizDone?'✅ ‘'+sn+'’ 본문에 반영 — 정리한 텍스트는 ‘텍스트’에, 인포그래픽은 ‘인포그래픽’에 (인포그래픽 보기로 전환)'
-          :vizDone?'✅ ‘'+sn+'’ 본문의 ‘인포그래픽’에 반영했어요 (인포그래픽 보기로 전환)'
-          :'✅ ‘'+sn+'’ 본문의 ‘텍스트’에 반영했어요','rgba(21,128,61,.93)');
+          textDone&&vizDone?'✅ ‘'+sn+'’ 본문에 반영 — 정리한 텍스트는 ‘텍스트’에, 인포그래픽은 ‘인포그래픽’에 (인포그래픽 보기로 전환)'+sk
+          :vizDone?'✅ ‘'+sn+'’ 본문의 ‘인포그래픽’에 반영했어요 (인포그래픽 보기로 전환)'+sk
+          :'✅ ‘'+sn+'’ 본문의 ‘텍스트’에 반영했어요'+sk,'rgba(21,128,61,.93)');
       }
     }
 
@@ -32908,6 +32937,75 @@ Rules:
   /* 보낸 메시지 말풍선 아래에 붙는 ↩ 되돌리기 아이콘 (클릭 → _restoreUserMsg) */
   const _UNDO_ROW='<div class="ai-msg-actions"><button class="ai-msg-undo mobile-keep" onclick="_restoreUserMsg(this)" title="입력창으로 되돌리기 (메시지·이미지·참조 그대로)" aria-label="입력창으로 되돌리기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button></div>';
 
+  /* ═══ 본문에 반영할 결과물 고르기 (2026-10-22) ═══════════════════════════════════════════════
+     대화 안의 결과물마다 [☑ 반영] 체크박스가 있고, 아래쪽 [📝 본문에 반영]은 체크한 것만 본문에 넣음(여러 개면 화면 순서대로 — _applyToEditor).
+     · 대상 = 📋 결과물 상자(정리한 글) · 🎨 인포그래픽 상자 · 결과물 상자가 없는 일반 답변(말풍선 아래 줄). 명세를 읽지 못해 이미지를 만들 수 없는 인포그래픽 상자는 체크박스가 없음.
+     · 새 답변이 나올 때마다(_renderAssistantBubble · 기록에서 이어서 대화) 이전 체크는 모두 풀고 그 답변의 결과물만 자동 체크 — 체크를 건드리지 않고 누르면 예전처럼 '가장 최근 답변'이 들어감.
+     · 선택 상태는 체크박스의 checked '속성'에 둠 — 채팅이 innerHTML 로 저장·복원(_saveChatSession)되므로 property 만 바꾸면 팝업을 닫았다 열 때 사라짐. 읽을 때도 변수가 아니라 DOM(:checked)에서.
+     · 기록 조회 패널(_ahRenderReply withRef=false)의 읽기 전용 상자에는 체크박스를 만들지 않음. */
+  const _PICK_LBL='<label class="ai-pick mobile-keep" title="체크한 결과물만 아래쪽 📝 버튼으로 반영돼요&#10;(새 결과물이 나오면 그 결과물만 자동으로 체크돼요)"><input type="checkbox" class="ai-pick-cb" onchange="_pickChg(this)" aria-label="이 결과물을 본문에 반영"><span>반영</span></label>';
+  function _pickSet(cb,on){ on=!!on; cb.checked=on; cb.toggleAttribute('checked',on); }
+  function _pickCount(){ const a=g('aiMessages'); return a?a.querySelectorAll('.ai-pick-cb:checked').length:0; }
+  function _pickSync(){   /* [📝 본문에 반영] 버튼·'반영 방식' 줄에 선택 개수 표시 */
+    const n=_pickCount(), b=g('aiApplyBtn'), sp=document.querySelector('#aiApplyDlg>span');
+    if(b) b.textContent=(_eid?'📝 본문에 반영':'📝 메모장에 저장')+(n?' · 선택 '+n+'개':'');
+    if(sp) sp.textContent=n?'선택 '+n+'개 · 반영 방식:':'반영 방식:';
+  }
+  window._pickChg=function(cb){ cb.toggleAttribute('checked',cb.checked); _pickSync(); };
+  function _pickAuto(bub){   /* 새 답변 — 이전에 체크된 것은 모두 풀고, 이 답변(bub)의 결과물만 체크 */
+    const area=g('aiMessages'); if(!area) return;
+    area.querySelectorAll('.ai-pick-cb').forEach(cb=>_pickSet(cb,false));
+    if(bub&&area.contains(bub)){
+      let cbs=[...bub.querySelectorAll('.ai-pick-cb')];
+      if(!cbs.length){ const row=bub.nextElementSibling; if(row&&row.classList.contains('ai-ans-row')) cbs=[...row.querySelectorAll('.ai-pick-cb')]; }   /* 결과물 상자 없는 일반 답변 — 말풍선 아래 줄 */
+      cbs.forEach(cb=>_pickSet(cb,true));
+    }
+    _pickSync();
+  }
+  /* 체크한 결과물 → 화면 순서대로 [{k, …}]
+     k='t' 결과물 상자의 글 {raw: AI 가 쓴 <RESULT> 안 원문(MindMap 은 개요 글), html: 새니타이즈한 화면용 HTML}
+     k='a' 결과물 상자 없는 일반 답변 {raw: 답변 원문, html: 마크다운→HTML}
+     k='v' 인포그래픽 {src: PNG dataURL, alt, w} — src 가 '' 이면 아직 그리는 중이거나 이미지를 만들지 못한 상자 */
+  function _pickCollect(){
+    const area=g('aiMessages'), out=[]; if(!area) return out;
+    area.querySelectorAll('.ai-result-box,.ai-ans-row').forEach(el=>{
+      const cb=el.querySelector('.ai-pick-cb'); if(!cb||!cb.checked) return;
+      if(el.classList.contains('ai-ans-row')){
+        const bub=el.previousElementSibling; if(!bub||!bub.classList.contains('ai-msg')) return;
+        const raw=bub.getAttribute('data-src'), r=(raw!=null)?raw:(bub.innerText||'');
+        out.push({k:'a',raw:r,html:_md2html(r)});
+      } else if(el.classList.contains('ai-viz-box')){
+        const im=el.querySelector('.ai-viz-img'), src=im&&im.getAttribute('src');
+        out.push({k:'v',src:(el.getAttribute('data-state')==='ready'&&_vizPngOk(src))?src:'',alt:el.getAttribute('data-title')||'인포그래픽',w:+(im&&im.getAttribute('data-w'))||640});
+      } else {
+        const raw=el.getAttribute('data-src'), cnt=el.querySelector('.ai-result-content');
+        out.push({k:'t',raw:(raw!=null)?raw:(cnt?cnt.textContent:''),html:(raw!=null)?_sanitizeResultHtml(raw):(cnt?cnt.innerHTML:'')});
+      }
+    });
+    return out;
+  }
+  /* 한 본문에 글과 그림을 같이 넣을 때 — 화면 순서대로 이음. 연속한 그림은 붙여 두고, 글↔그림·글↔글 사이는 빈 줄 */
+  function _pickMixedHtml(picks){
+    const parts=[]; let run='';
+    picks.forEach(it=>{
+      if(it.k==='v'){ run+=_vizImgBlockHtml(it.src,it.alt,it.w); return; }
+      if(run){ parts.push(run); run=''; }
+      parts.push(_toEditorBlocks(it.html));
+    });
+    if(run) parts.push(run);
+    return parts.join('<div><br></div>');
+  }
+  /* 메모장 저장용 — 글끼리는 사이에 빈 줄, 그림은 블록이라 그대로 이음 */
+  function _pickMemoHtml(picks){
+    let s='', prev='';
+    picks.forEach(it=>{
+      if(it.k==='v') s+=_vizImgBlockHtml(it.src,it.alt,it.w);
+      else s+=(!prev?'':(prev==='v'?'<br>':'<br><br>'))+it.html;
+      prev=it.k;
+    });
+    return s;
+  }
+
   /* ═══ 결과물·답변 참조 (2026-10-16) ═══════════════════════════════════════════════
      결과물 상자 머리줄(결과물 상자가 없는 일반 답변은 말풍선 아래 줄)의 [↪ 참조] → 그 내용을 입력창 위 칩(#aiRefStrip)으로 가져옴 →
      요청을 써서 보내면 AI 에게 '[참조한 AI 답변]' 블록과 함께 전달되고, 보낸 말풍선엔 인용 블록(.ai-user-ref)으로 남음 — 특정 결과물에 대한 추가 요청용.
@@ -32917,13 +33015,13 @@ Rules:
      · 번호 = #aiMessages 안의 순서(CSS 카운터와 같은 순서) — 원본 찾기(_refGo)·중복 판별도 이 순서 기준 */
   const _REF_MAX=5;   /* 한 번에 가져올 수 있는 참조 수 */
   const _REF_BTN='<button type="button" class="ai-ref-btn mobile-keep" onmousedown="event.preventDefault()" onclick="_refFromBtn(this)" title="이 결과물을 입력창 위에 참조로 가져옵니다 — 이 결과물에 대해 추가로 요청할 수 있어요&#10;(결과물 안의 글자를 드래그해 선택한 뒤 누르면 선택한 부분만 가져와요)" aria-label="이 결과물을 입력창에 참조로 가져오기">↪ 참조</button>';
-  const _ANS_ROW='<div class="ai-ans-row"><button type="button" class="ai-ans-btn mobile-keep" onmousedown="event.preventDefault()" onclick="_refFromBtn(this)" title="이 답변을 입력창 위에 참조로 가져옵니다 — 이 답변에 대해 추가로 요청할 수 있어요&#10;(답변 안의 글자를 드래그해 선택한 뒤 누르면 선택한 부분만 가져와요)" aria-label="이 답변을 입력창에 참조로 가져오기">↪ 답변<span class="ai-ans-no"></span> 참조</button></div>';
+  const _ANS_ROW='<div class="ai-ans-row">'+_PICK_LBL+'<button type="button" class="ai-ans-btn mobile-keep" onmousedown="event.preventDefault()" onclick="_refFromBtn(this)" title="이 답변을 입력창 위에 참조로 가져옵니다 — 이 답변에 대해 추가로 요청할 수 있어요&#10;(답변 안의 글자를 드래그해 선택한 뒤 누르면 선택한 부분만 가져와요)" aria-label="이 답변을 입력창에 참조로 가져오기">↪ 답변<span class="ai-ans-no"></span> 참조</button></div>';
   /* 결과물 상자 머리줄 안쪽 — 제목(+CSS 카운터 번호) / 오른쪽 '↪ 참조'(withRef). 번호는 #aiMessages 안에서만 보임(기록 조회 패널 등은 번호 없음) */
   function _resLabelHtml(eid,withRef,viz){   /* viz: 이 답변에 인포그래픽이 같이 있음 — 결과물은 '인포그래픽용으로 정리한 텍스트'. 본문이 '텍스트'/'인포그래픽' 두 쪽인 섹션은 글 쪽(텍스트)에 반영된다고 밝힘 */
     const dual=!!(eid&&g(eid+'__vz'));
     const what=(eid===_MM_EID)?'MindMap 개요 가져오기에 반영되는 내용'
       :(dual?(viz?'인포그래픽용으로 정리한 텍스트 · 본문의 ‘텍스트’에 반영되는 내용':'본문의 ‘텍스트’에 반영되는 내용'):'본문에 반영되는 내용');
-    return '<span class="ai-res-t">📋 결과물<span class="ai-res-no"></span> — '+what+'</span>'+(withRef?_REF_BTN:'');
+    return '<span class="ai-res-t">📋 결과물<span class="ai-res-no"></span> — '+what+'</span>'+(withRef?_PICK_LBL+_REF_BTN:'');   /* 제목 · [☑ 반영] · [↪ 참조] */
   }
   /* 결과물 상자 없는 일반 답변 말풍선 바로 뒤에 '↪ 답변 #N 참조' 줄 */
   function _addAnsRow(div){ if(div&&div.parentNode&&div.classList&&div.classList.contains('ai-msg')) div.insertAdjacentHTML('afterend',_ANS_ROW); }
@@ -33343,7 +33441,7 @@ ${viz?'':`<RESULT>
       if(es){ ['theme','base','item'].concat(_VIZ_AXES).forEach(k=>{ if(spec[k]) es[k]=spec[k]; else delete es[k]; }); spec0=spec; spec=es; }
     }
     const lbl=document.createElement('div'); lbl.className='ai-result-label';
-    lbl.innerHTML='<span class="ai-res-t">🎨 인포그래픽<span class="ai-res-no"></span> — '+_ahEsc(spec?spec.title:'만들지 못했어요')+'</span>'+(live?_REF_BTN:'');
+    lbl.innerHTML='<span class="ai-res-t">🎨 인포그래픽<span class="ai-res-no"></span> — '+_ahEsc(spec?spec.title:'만들지 못했어요')+'</span>'+(live&&spec?_PICK_LBL:'')+(live?_REF_BTN:'');   /* 이미지를 만들 수 없는 상자(명세 오류)는 체크박스 없음 */
     const cnt=document.createElement('div'); cnt.className='ai-result-content ai-viz-body';
     const stage=document.createElement('div'); stage.className='ai-viz-stage';
     const img=document.createElement('img'); img.className='ai-viz-img'; img.setAttribute('alt',spec?spec.title:'인포그래픽'); img.setAttribute('onclick',"_vizAct(this,'zoom')"); img.title='클릭하면 크게 봅니다';
@@ -35105,6 +35203,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
         _ahRenderReply(_addBubble('assistant',''),m.text,eid,true,o.body.viz,o.body.vzs); last=m.text||'';
       }
     });
+    { const bs=area.querySelectorAll('.ai-msg.assistant'); _pickAuto(bs.length?bs[bs.length-1]:null); }   /* 불러온 대화에서도 마지막 답변의 결과물만 체크 */
     _lastReply=_vizSplit(last).text; const pr=_parseResult(_lastReply); _lastResult=pr.result?_sanitizeResultHtml(pr.result):'';
     g('aiApplyBtnWrap').style.display=last?'block':'none'; g('aiApplyDlg').style.display='none'; g('aiApplyBtn').style.display='';
     _sessId=id;
