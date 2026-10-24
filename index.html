@@ -2575,13 +2575,16 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .sc-line{display:flex;align-items:center;gap:7px}
 .sc-u{font-size:12.5px;font-weight:700;color:#475569}
 #scMakerModal input[type=number]{width:96px;min-height:36px;border:1px solid #cbd5e1;border-radius:8px;padding:5px 10px;font-size:16px;font-weight:800;text-align:right;color:#0f172a;background:#fff;font-family:inherit}
-#scMakerModal #scCpm{width:84px;min-height:32px;font-size:13.5px;font-weight:700}
+#scMakerModal #scCpm,#scMakerModal #scSeg{width:84px;min-height:32px;font-size:13.5px;font-weight:700}
 #scMakerModal select{width:100%;min-height:34px;border:1px solid #cbd5e1;border-radius:8px;padding:4px 8px;font-size:12.5px;background:#fff;color:#1e293b;font-family:inherit}
 #scMakerModal textarea{min-height:64px;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.55;resize:vertical;background:#fff;color:#1e293b}
 #scMakerModal input[type=number]:focus,#scMakerModal select:focus,#scMakerModal textarea:focus,#scHistModal #shQ:focus{outline:none;border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.18)}
 #scMakerModal input:disabled,#scMakerModal select:disabled,#scMakerModal textarea:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed}
 .sc-hint{font-size:11px;color:#64748b;min-height:16px}
 .sc-hint b{color:#b45309}
+#scWhatHint{min-height:0}
+#scWhatHint:empty{display:none}
+.sc-f.off{opacity:.5}
 .sc-grp{font-size:10px;font-weight:800;color:#94a3b8;letter-spacing:.4px;margin:9px 0 4px}
 .sc-grp:first-child{margin-top:0}
 .sc-sr{display:flex;align-items:center;gap:8px;padding:5px 9px;margin-bottom:4px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:12px;transition:background .1s,border-color .1s}
@@ -2663,9 +2666,25 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .sc-hi-x:hover{background:#fee2e2;color:#dc2626}
 .sc-tag{padding:0 7px;border-radius:8px;background:#fef3c7;color:#b45309;font-weight:800;font-size:10px;line-height:16px}
 .sc-tag.run{background:#dbeafe;color:#1d4ed8}
+.sc-tag.part{background:#e0f2fe;color:#0369a1}
 .sc-dact{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .sc-dmeta{font-size:11.5px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:8px 11px;margin-bottom:14px;line-height:1.7}
 .sc-dmeta b{color:#b45309;font-weight:800}
+/* ③ 스토리보드 — 스타일·분위기 상자와 챕터별 시간 구간(하늘색 계열로 ①②와 구분) */
+.sc-bb{border:1px solid #bae6fd;border-radius:10px;margin:0 0 10px;overflow:hidden;background:#fff}
+.sc-bb-h{padding:6px 12px;background:#f0f9ff;border-bottom:1px solid #bae6fd;font-size:12.5px;font-weight:800;color:#075985}
+.sc-bb .sc-doc{padding:9px 14px 10px}
+.sc-ch.bd .sc-ch-h{background:#f0f9ff;border-bottom-color:#bae6fd;color:#075985}
+.sc-ch.bd .sc-ch-h .tc{background:#e0f2fe;color:#0369a1}
+.sc-ch.bd.run{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.16)}
+.sc-ch.bd .sc-ch-h .sc-mini{height:24px;padding:0 9px;font-size:11px}
+.sc-warn{font-style:normal;font-size:10.5px;color:#b45309;font-weight:700}
+.sc-seg{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed #e2e8f0}
+.sc-seg:first-child{border-top:none;padding-top:2px}
+.sc-seg .tc{flex:0 0 auto;font-family:ui-monospace,Consolas,Menlo,monospace;font-size:11px;font-weight:800;color:#0369a1;background:#e0f2fe;border-radius:5px;padding:2px 7px;white-space:nowrap;margin-top:2px}
+.sc-seg .tx{flex:1;min-width:0}
+.sc-seg .tx p{margin:0 0 3px;font-size:13px;line-height:1.75}
+@media(max-width:560px){.sc-seg{flex-direction:column;gap:3px}}
 @media(max-width:860px){
   .sc-body{flex-direction:column}
   .sc-side{width:auto;max-height:46%;border-right:none;border-bottom:1px solid #e2e8f0}
@@ -4805,7 +4824,6 @@ body.guest-mode #lhPill{display:none!important}
       <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;flex-shrink:0">
         <span id="stid-calendar" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">■ 경제 일정</span>
         <span style="display:flex;align-items:center;gap:6px">
-          <span id="ecoStatus" style="font-size:9px;color:#94a3b8;font-weight:normal"></span>
           <button class="btn mobile-keep"
             style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#1e40af;border:none;border-radius:3px;font-weight:700"
             onclick="openMscModal()" title="월간 증시 캘린더 관리">📅 월간캘린더</button>
@@ -7031,7 +7049,6 @@ function toggleEcoUpdate(){
     _stopEco=true; _isUpdatingEco=false;
     _hideUpdateSpinner();
     _setBtnReady(g('ecoAutoBtn'),'rgba(255,255,255,.18)');
-    const st=g('ecoStatus'); if(st) st.textContent='중단됨';
     const ea=g('ecoScrollArea'); if(ea) ea.classList.remove('update-dim');
   } else { autoUpdateEco(); }
 }
@@ -10151,9 +10168,7 @@ window._mscListClose=function(force){
 async function autoUpdateEco(){
   _isUpdatingEco=true; _stopEco=false;
   const btn=g('ecoAutoBtn');
-  const status=g('ecoStatus');
   _setBtnStop(btn,'rgba(255,255,255,.18)');
-  status.textContent='조회중...';
 
   const ecoArea=g('ecoScrollArea');
   if(ecoArea){ ecoArea.classList.add('update-dim'); _showUpdateSpinner(ecoArea); }
@@ -10168,7 +10183,6 @@ async function autoUpdateEco(){
   let pdfEvents=[];
   try{ pdfEvents=await _ecoCheckedPdfEvents(todayStr2); }
   catch(e){ console.warn('[경제일정] 월간 캘린더 LIST에서 체크한 일정을 읽지 못했습니다:',e); }
-  status.title=`월간 캘린더 LIST(키움증권·Earningwhispers)에서 체크한 일정 ${pdfEvents.length}건 + 수동 일정 + 고정 거시 이벤트 (웹 조회 없음)`;
 
   /* ③ 고정 거시 이벤트 — 오늘~2개월 */
   const macro=MACRO_EVENTS.filter(e=>e.date&&e.date>=todayStr2&&e.date<=cutoffStr);
@@ -10196,14 +10210,46 @@ async function autoUpdateEco(){
 
   _isUpdatingEco=false;
   _setBtnReady(btn,'#1e40af');
-  const now=new Date();
-  const _krCnt=ecoData.filter(e=>e.type==='한국').length;
-  const _pdfCnt=ecoData.filter(e=>e.source==='pdf').length;
-  const _ewCnt=ecoData.filter(e=>e.source==='ew').length;
-  const _pdfTxt=_pdfCnt?` | PDF:${_pdfCnt}건`:'';
-  const _ewTxt=_ewCnt?` | EW:${_ewCnt}건`:'';
-  status.textContent=_stopEco?'중단됨':`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} (${ecoData.length}건${_pdfTxt}${_ewTxt}${_krCnt?` | 한국:${_krCnt}건`:''})`;
 }
+
+/* ── 경제일정 리스트: 마우스 휠은 리스트가 아니라 '화면'을 스크롤 (2026-10-24) ──────────────────────────────────
+   예전엔 리스트(#ecoScrollArea) 위에서 휠을 굴리면 리스트가 먼저 움직여서, 화면을 내리다가 커서가 리스트 위에 걸리면 화면은 멈추고 리스트만 스크롤됐음.
+   이제 리스트는 오른쪽 스크롤바(막대 끌기 · 위아래 삼각형 버튼 · 막대 빈 곳 클릭)로만 움직이고, 리스트 위(스크롤바 위 포함)에서 휠을 굴리면 리스트 대신 화면(페이지)이 위아래로 스크롤됨.
+   · 브라우저 기본 휠 동작은 가장 안쪽 스크롤 영역(리스트)부터 움직이므로 기본 동작을 막고(passive:false) 리스트 바깥에서 가장 가까운 스크롤 영역(보통 문서)을 직접 스크롤함.
+     그 영역이 이미 끝까지 갔으면 더 바깥으로 넘김(기본 동작의 스크롤 체인과 같음). 휠 한 칸=브라우저가 알려 준 만큼(보통 100px)을 부드러운 이동 효과 없이 바로 이동.
+   · Ctrl(확대·축소)·Shift(가로 스크롤)·Alt 를 누른 휠, 터치·키보드 스크롤은 건드리지 않음. */
+(function(){
+  const ID='ecoScrollArea';
+  function canScroll(p,dy){
+    const oy=getComputedStyle(p).overflowY;
+    if(oy!=='auto'&&oy!=='scroll'&&oy!=='overlay') return false;
+    const max=p.scrollHeight-p.clientHeight;
+    if(max<=1) return false;
+    return dy<0?p.scrollTop>0:p.scrollTop<max-1;
+  }
+  function target(from,dy){   /* 리스트 바깥에서 이 방향으로 더 갈 수 있는 가장 가까운 스크롤 영역 — 없으면 문서 */
+    for(let p=from.parentElement;p&&p!==document.body&&p!==document.documentElement;p=p.parentElement){
+      if(canScroll(p,dy)) return p;
+    }
+    return document.scrollingElement||document.documentElement;
+  }
+  function onWheel(e){
+    if(e.defaultPrevented||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey) return;
+    const k=e.deltaMode===1?20:(e.deltaMode===2?window.innerHeight:1);   /* 줄·쪽 단위로 오면 px 로 */
+    const dx=e.deltaX*k, dy=e.deltaY*k;
+    if(!dx&&!dy) return;
+    e.preventDefault();
+    const t=target(e.currentTarget,dy);
+    if(t===document.scrollingElement||t===document.documentElement) window.scrollBy(dx,dy); else t.scrollBy(dx,dy);
+  }
+  function bind(){
+    const ea=document.getElementById(ID);
+    if(!ea||ea._pageWheel) return;
+    ea._pageWheel=true;
+    ea.addEventListener('wheel',onWheel,{passive:false});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+})();
 
 /* ─────────── 포트폴리오 ─────────── */
 const CATS_DEFAULT=['반도체_메모리','반도체_파운드리','반도체_CPU','반도체_네트워크','반도체_광학','반도체_냉각',
@@ -41652,6 +41698,12 @@ window.BTMMmHist={open,close,onSave,refresh,mergeArchives,infoOf,keyOf,list:()=>
        분량 기준 = 공백 제외 글자 수 ÷ 말 속도(기본 330자/분) · [화면: …] 줄은 글자 수에 안 셈.
    · 🕘 스크립트 이력 — IndexedDB 'BTM_ScriptDB'(scripts)에 자동 보관(보고서 끝날 때·챕터마다·완료 때) → 목록·검색·상세·복사·TXT 저장·삭제·'이 설정으로 만들기'.
    · 모달은 처음 열 때 만들어 body 에 붙임(#scMakerModal·#scHistModal). 게스트 화면에선 메뉴를 숨김(body.guest-mode).
+   · 만들 것 선택 (2026-10-24) — 왼쪽 '만들 것'의 [① 종합 분석 보고서]·[② 영상 스크립트] 체크(cfg.rep·cfg.scr, 기본 둘 다·최소 하나)로 선택한 것만 작성. 스크립트만 만들 땐 화면에 있는 같은 조건의 보고서(reusableReport)를 바탕으로, 없으면 선택 섹션 원자료(digestBlocks)만으로 챕터를 씀.
+   · 스크립트 [복사]는 나레이션만(narrationText — 챕터 소제목·시간표시·[화면: …] 같은 상황 지시 제외). [전체 복사]·[TXT 저장]은 소제목·화면 지시까지 넣은 전체(scriptText·composeText).
+   · ③ 스토리보드 (2026-10-24) — '만들 것'의 세 번째 체크(cfg.board, 기본 꺼짐)·장면 길이(cfg.seg 초)·스타일·컨셉(cfg.bstyle). 예시 형식(스타일 → 시간 구간별 장면 묘사 → 분위기·전달 요소·피할 요소)으로 AI 영상 생성 도구에 붙여 넣을 프롬프트를 만듦.
+       ① 스타일·분위기 설계서 1회(SYS_BIBLE) → ② 스크립트 챕터를 장면 길이 단위 구간으로 쪼개 12구간씩 요청(boardUser — 구간별 나레이션·화면 지시는 글자 수 비례로 배정, assignNarr). 구간 시간은 코드가 계산해 주고 결과가 구간 수와 같으면 시간을 그 값으로 고정(finalizeBlocks).
+       스토리보드만 선택하면 화면의 완성된 스크립트에 덧붙여 같은 이력 기록에 저장(boardBase·beginBoard), 스크립트가 없으면 챕터 구성+원자료로 만듦(mode 'plan'). 이력 상세의 [🎞 스토리보드 만들기]는 그 기록을 화면 결과로 불러옴.
+       복사: 섹션 [복사]=스타일→스토리보드→분위기 전체, 챕터 [복사]=그 챕터만(시간은 00:00 부터)에 스타일·분위기를 붙인 독립 프롬프트(boardText).
    · 수정 요령: 이 블록(표식 BTMSCRIPT-JS-BEGIN~END)과 위쪽 BTMSCRIPT-CSS 블록만 고치면 됨
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
@@ -41660,9 +41712,14 @@ if(window.BTMScript) return;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const LS_CFG='BTMScriptCfg', MAP_KEY='scriptMaker', DB_NAME='BTM_ScriptDB', STORE='scripts';
-const DEF_CFG={len:10,cpm:330,secs:['indices','eco','market','theme'],extra:''};
+const MIN_SEG=3, MAX_SEG=60, DEF_SEG=8, BOARD_UNIT=12, MAX_BSEG=480;   /* 스토리보드 — 장면(구간) 길이(초) 범위·기본, 한 번에 요청하는 구간 수, 전체 구간 상한 */
+const DEF_CFG={len:10,cpm:330,secs:['indices','eco','market','theme'],extra:'',rep:true,scr:true,board:false,seg:DEF_SEG,bstyle:''};
 const MAX_LEN=120, MAX_UNIT=2400, MIN_CH=1.0, ADJ_TOL=0.25;
 const CUE_RE=/^\s*[\[［(（]\s*화면\s*[:：]/;
+/* 나레이션만 복사할 때 걷어내는 '상황' 지시 — [화면: …]·(화면: …) 와, 줄 전체가 [ … ] 로 감싸인 연출·소제목 표기([효과음]·[자막: …]·[오프닝] 등) */
+const CUE_SQ=/[\[［]\s*화면\s*[:：][^\]］]*[\]］]/g, CUE_PR=/[(（]\s*화면\s*[:：][^)）]*[)）]/g, BRACKET_LINE=/^[\[［][^\]］]*[\]］]$/;
+/* 스토리보드 결과의 구간 머리줄 — 00:00–00:08 (앞뒤에 **·[ ]·번호가 붙어도 읽음) */
+const TIME_RE=/^[\s#*\[(（［①-⑳]*(?:\d{1,3}[.)]\s+)?(\d{1,2}:\d{2}(?::\d{2})?)\s*[–—~\-－]\s*(\d{1,2}:\d{2}(?::\d{2})?)[\s\])）］*]*[:：]?/;
 
 /* ── 반영할 수 있는 섹션 — 핵심 4개(기본 선택) + 선택 섹션 ── */
 const SECS=[
@@ -41690,15 +41747,25 @@ const META={
 };
 const LIM={indices:3000,eco:5000,watch:3000,market:7000,theme:7000,warren:5000,radar:6000,tech:6000,strategy:6000};
 const labelOf=k=>(SECS.find(s=>s.k===k)||{label:k}).label;
+/* 결과(화면 ctx·이력 기록)에 보여줄 부분 — 만들 것 선택이 없던 옛 기록은 둘 다. 보고서는 스크립트만 만들며 가져다 쓴 것도 보여줌 */
+const showRep=c=>(c.cfg||{}).rep!==false||!!String(c.report||'').trim();
+const showScr=c=>(c.cfg||{}).scr!==false||(c.plan||[]).some(u=>u.text);
+const boardUnits=c=>(c.board&&c.board.units)||[];
+const boardCount=c=>boardUnits(c).reduce((a,u)=>a+(u.blocks||[]).length,0);
+const showBoard=c=>(c.cfg||{}).board===true||boardCount(c)>0;
+const hasContent=c=>!!c&&!!(String(c.report||'').trim()||(c.plan||[]).some(u=>u.text)||boardCount(c)||(c.board&&c.board.bible));
+const boardOnly=cfg=>!!cfg.board&&!cfg.rep&&!cfg.scr;
 
 /* ═════════ 설정 저장 ═════════ */
 function loadCfg(){
   let c={}; try{ c=JSON.parse(localStorage.getItem(LS_CFG)||'{}')||{}; }catch(e){}
   const secs=Array.isArray(c.secs)?c.secs.filter(k=>SECS.some(s=>s.k===k)):DEF_CFG.secs.slice();
-  return {len:+c.len>=1?Math.round(+c.len*10)/10:DEF_CFG.len, cpm:+c.cpm>=150?Math.round(+c.cpm):DEF_CFG.cpm, secs, extra:typeof c.extra==='string'?c.extra:''};
+  let rep=c.rep!==false, scr=c.scr!==false; const board=c.board===true; if(!rep&&!scr&&!board) rep=scr=true;   /* 만들 것 — 기본 보고서+스크립트(스토리보드는 꺼짐), 모두 꺼진 저장값은 기본으로 */
+  return {len:+c.len>=1?Math.round(+c.len*10)/10:DEF_CFG.len, cpm:+c.cpm>=150?Math.round(+c.cpm):DEF_CFG.cpm, secs, extra:typeof c.extra==='string'?c.extra:'', rep, scr, board,
+    seg:+c.seg>=MIN_SEG&&+c.seg<=MAX_SEG?Math.round(+c.seg):DEF_SEG, bstyle:typeof c.bstyle==='string'?c.bstyle:''};
 }
 function saveCfg(c){ try{ localStorage.setItem(LS_CFG,JSON.stringify(c)); }catch(e){} }
-const sigOf=c=>JSON.stringify([c.len,c.cpm,(c.secs||[]).slice().sort(),c.extra||'']);
+const sigOf=c=>JSON.stringify([c.len,c.cpm,(c.secs||[]).slice().sort(),c.extra||'',c.rep!==false,c.scr!==false,c.board===true,c.board===true?c.seg:0,c.board===true?c.bstyle||'':'']);
 
 /* ═════════ 자료 모으기 — 화면의 섹션 내용을 글로 ═════════ */
 function repDate(){ const v=($('reportDate')||{}).value||''; return /^\d{4}-\d{2}-\d{2}$/.test(v)?new Date(v+'T00:00:00'):new Date(new Date().toDateString()); }
@@ -41825,6 +41892,9 @@ ${o.join('\n')}
 분량은 공백 포함 약 3,000~4,500자입니다.`;
 }
 function dataBlocks(c,keys){ return keys.filter(k=>c.pack[k]).map(k=>'■ '+labelOf(k)+'\n'+c.pack[k]).join('\n\n'); }
+/* 보고서 없이 스크립트만 만들 때의 원자료 — own(이 챕터가 맡은 섹션)을 뺀 나머지 섹션을 lim 자까지 줄여서. 오프닝·시나리오·마무리처럼 맡은 섹션이 없는 챕터는 모든 섹션을 DIG_ALL 자까지 */
+const DIG_ALL=1800, DIG_OTHER=500;
+function digestBlocks(c,own,lim){ return c.secs.filter(k=>own.indexOf(k)<0&&c.pack[k]).map(k=>'■ '+labelOf(k)+'\n'+trunc(c.pack[k],lim)).join('\n\n'); }
 function reportUser(c){
   return `[기준일] ${dLabel(c.base)}
 [영상 길이] ${c.cfg.len}분 (영상 제작 가이드는 이 길이를 기준으로 구성)
@@ -41833,11 +41903,11 @@ ${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
 [원자료]
 ${dataBlocks(c,c.secs)}`;
 }
-const SYS_CHAPTER=`당신은 구독자 신뢰도가 높은 증시 유튜브 채널의 진행자 겸 시황 분석 전문가입니다. 이미 완성된 "종합 분석 보고서"를 바탕으로, 영상 스크립트의 한 챕터를 소리 내어 읽을 나레이션으로 작성합니다.
+const sysChapter=rep=>`당신은 구독자 신뢰도가 높은 증시 유튜브 채널의 진행자 겸 시황 분석 전문가입니다. ${rep?'이미 완성된 "종합 분석 보고서"를 바탕으로':'아래 [참고 원자료]를 바탕으로'}, 영상 스크립트의 한 챕터를 소리 내어 읽을 나레이션으로 작성합니다.
 
 [원칙]
 1. 구어체 존댓말(~입니다, ~죠, ~보시죠)로, 카메라 앞의 시청자에게 말하듯 자연스럽게 쓰세요. 문장은 짧게(한 문장 40자 안팎), 어려운 용어는 바로 풀어서 설명하세요. 숫자는 소리 내어 읽기 쉽게 단위를 붙여 쓰세요.
-2. 수치·일정·종목명·사실은 [종합 분석 보고서]와 [참고 원자료]에 있는 것만 쓰세요. 새 수치나 사건을 지어내지 마세요. 해석은 "~로 보입니다", "~일 가능성이 있습니다"처럼 단정하지 않게 말하세요.
+2. 수치·일정·종목명·사실은 ${rep?'[종합 분석 보고서]와 [참고 원자료]':'[참고 원자료]'}에 있는 것만 쓰세요. 새 수치나 사건을 지어내지 마세요. 해석은 "~로 보입니다", "~일 가능성이 있습니다"처럼 단정하지 않게 말하세요.
 3. 종목 추천, 수익 보장, 확정적 예측은 금지합니다. 투자 판단은 시청자의 몫임을 존중하세요.
 4. 원자료의 개인 보유 종목·수량·평단·계좌 정보는 말하지 말고 일반론으로 바꾸세요(공개 영상입니다).
 5. 앞 챕터의 내용을 반복하지 말고, 앞 챕터의 마지막 문장에서 자연스럽게 이어 시작하세요(첫 챕터 제외).
@@ -41854,7 +41924,9 @@ function chapterUser(c,u,i){
   if(u.first) role+='\n[첫 챕터입니다] 첫 문장은 오늘 시장에서 가장 강한 한 줄(후킹)로 시작하고, 짧게 인사한 뒤 이번 영상에서 다룰 내용을 예고하세요.';
   if(u.last) role+='\n[마지막 챕터입니다] 핵심 3줄 요약 → 구독·좋아요 안내 → "본 영상은 투자 권유가 아니며 모든 투자 판단과 책임은 투자자 본인에게 있다"는 취지의 면책 멘트 순서로 마무리하세요.';
   const prev=i>0&&c.plan[i-1].text?tailText(c.plan[i-1].text,420):'';
-  const data=dataBlocks(c,u.data);
+  const rep=!!c.report;   /* 보고서 없이 스크립트만 만드는 경우 — 원자료만 근거로 */
+  let data=dataBlocks(c,u.data), rest='';
+  if(!rep){ if(u.data.length) rest=digestBlocks(c,u.data,DIG_OTHER); else data=digestBlocks(c,[],DIG_ALL); }
   return `[영상 정보] 총 ${c.cfg.len}분 · 기준일 ${dLabel(c.base)} · 챕터 ${i+1}/${c.plan.length}: "${u.title}" (예상 구간 ${fmtTime(sec)}~${fmtTime(end)})
 [이 챕터의 목표 분량] 공백 제외 약 ${u.target}자 (${Math.round(u.target*0.9)}~${Math.round(u.target*1.1)}자)
 [이 챕터에서 다룰 내용] ${u.focus}${role}
@@ -41862,9 +41934,8 @@ ${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
 [전체 챕터 구성]
 ${outline}
 ${prev?'\n[앞 챕터의 마지막 부분 — 여기서 자연스럽게 이어 쓰기]\n'+prev+'\n':''}
-[종합 분석 보고서]
-${c.report}
-${data?'\n[참고 원자료]\n'+data:''}`;
+${rep?'[종합 분석 보고서]\n'+c.report:''}
+${data?'\n[참고 원자료]\n'+data:''}${rest?'\n\n[다른 챕터에서 다룰 자료의 일부 — 이 챕터와 연결해 해석할 때만 참고하고, 이 챕터에서 따로 풀어 설명하지 마세요]\n'+rest:''}`;
 }
 const SYS_ADJUST=`아래 나레이션 초안의 분량을 조정하세요. 내용·톤·사실관계는 그대로 두고 지정한 글자 수(공백 제외)에 맞게 늘리거나 줄이세요. 늘릴 때는 새 수치나 사건을 만들지 말고 설명·비유·시청자에게 던지는 질문으로 보강하고, 줄일 때는 중복과 사족부터 덜어내세요. [화면: …] 줄은 그대로 유지하세요. 조정한 나레이션만 출력하세요(제목·설명·마크다운·글자 수 표기 금지).`;
 function adjustUser(c,u){
@@ -41888,6 +41959,17 @@ function cleanReport(t){
   return s.replace(/\n{3,}/g,'\n\n').trim();
 }
 function narrChars(t){ return String(t||'').split('\n').filter(l=>!CUE_RE.test(l)).join('').replace(/\s+/g,'').length; }
+/* 나레이션만 — 챕터 소제목·시간표시와 '상황' 지시([화면: …]·[ … ] 한 줄)를 뺀 읽을 글. 문단 사이 빈 줄은 그대로 */
+function narrLine(raw){
+  const l=String(raw).replace(CUE_SQ,'').replace(CUE_PR,'').replace(/[ \t]{2,}/g,' ').trim();   /* 줄 앞·중간에 붙은 [화면: …] 도 지움 */
+  return !l||BRACKET_LINE.test(l)||!/[\p{L}\p{N}]/u.test(l)?'':l;   /* 지시만 있던 줄·[ … ] 로만 된 줄·글자 없는 찌꺼기는 버림 */
+}
+function narrOnly(t){
+  const o=[];
+  String(t||'').replace(/\r/g,'').split('\n').forEach(raw=>{ if(!raw.trim()){ o.push(''); return; } const l=narrLine(raw); if(l) o.push(l); });
+  return o.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+function narrationText(c){ return (c.plan||[]).map(u=>narrOnly(u.text)).filter(Boolean).join('\n\n'); }
 /* 앞 챕터의 마지막 n자(화면 지시 줄 제외) — 문장 중간에서 시작하지 않게 첫 문장 끝에서부터 */
 function tailText(t,n){
   let s=String(t||'').split('\n').filter(l=>!CUE_RE.test(l)).join('\n').trim();
@@ -41897,6 +41979,225 @@ function tailText(t,n){
 }
 function fmtTime(sec){ sec=Math.max(0,Math.round(sec)); const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(s).padStart(2,'0'); }
 function fmtDur(sec){ sec=Math.max(0,Math.round(sec)); const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60; return h?h+'시간 '+m+'분':m?m+'분'+(s?' '+s+'초':''):s+'초'; }
+
+/* ═════════ 스토리보드 — ① 스타일·분위기 설계서 → ② 시간 구간별 장면 묘사(스크립트 챕터 단위) ═════════ */
+const SYS_BIBLE=`당신은 영상 감독 겸 스토리보드 작가입니다. 아래 정보를 바탕으로 시황 분석 유튜브 영상 전체에 일관되게 적용할 "스타일(Style)"과 "분위기(Tone)" 설계서를 작성합니다. 이 설계서는 AI 영상 생성 도구의 프롬프트에 그대로 붙여 넣어 쓰이므로, 눈에 보이는 것을 구체적인 문장으로 쓰세요.
+
+[원칙]
+1. [스타일·컨셉 요청]이 있으면 그것을 가장 우선해 따르세요. 없으면 시황 분석 영상에 어울리는 시각 스타일을 하나로 정해 영상 내내 일관되게 유지하세요(예: 사실적인 영화풍, 프리미엄 금융 뉴스룸, 정돈된 모션 그래픽).
+2. 스타일에는 반드시 담으세요: 전체 화풍(무엇이어야 하는지와 무엇이 아닌지를 함께), 조명·색감·질감, 카메라와 화면 구성 원칙, 반복해서 등장하는 인물·캐릭터·소품·그래픽 요소의 고정 설정(이름·복장·색상·화면에 적힌 글자까지 구체적으로 — 모든 장면에서 똑같이 유지), 차트·표·자막 같은 화면 그래픽의 서체·색상 규칙(상승·하락 색 등).
+3. 화면에 나오는 글자(자막·라벨·이름표)는 짧은 단어나 숫자로 정하고, 또렷하게 읽히게 표현한다고 쓰세요.
+4. 분위기에는 영상 전체의 톤 한 문단과, "다음 요소들이 시각적으로 명확하게 전달되어야 한다."로 시작하는 목록(영상의 핵심 메시지·장면 소재 4~7개), "다음과 같은 요소는 절대 피한다."로 시작하는 목록(품질을 떨어뜨리는 요소 6~10개 — 영상에 맞게 고르세요. 예: 어색한 질감, 장난감 같은 환경, 과장된 움직임, 같은 인물의 중복 등장, 장면마다 달라지는 외형·그래픽, 읽을 수 없거나 깨진 글자, 깜빡이는 디테일, 갑작스러운 장면 연결과 연속성 오류)을 쓰세요.
+5. 새로운 수치·사건·종목을 지어내지 마세요. 영상 정보에 있는 것만 쓰고, 매수·매도를 권하는 것처럼 보이는 연출은 피하세요.
+6. 한국어 평서문("~한다")으로 쓰고, 인사말·설명·사족은 쓰지 마세요.
+
+[출력 형식] 아래 두 제목을 그대로 쓰세요(마크다운은 제목과 "- " 목록만 사용).
+## 스타일 (Style)
+(2~3개 문단)
+## 분위기 (Tone)
+(영상 전체의 톤 한 문단)
+다음 요소들이 시각적으로 명확하게 전달되어야 한다.
+- …
+다음과 같은 요소는 절대 피한다.
+- …`;
+const sysBoardSeg=scr=>`당신은 영상 감독 겸 스토리보드 작가입니다. ${scr?'이미 확정된 영상 스크립트의 한 챕터':'영상의 한 챕터'}를 정해진 시간 구간마다 한 블록씩 장면 묘사로 옮깁니다. 결과는 AI 영상 생성 도구의 프롬프트로 쓰이므로, 눈에 보이는 것만 구체적으로 쓰세요.
+
+[원칙]
+1. [스타일·분위기 설계서]를 모든 구간에 똑같이 적용하세요. 반복해서 등장하는 인물·캐릭터·소품·그래픽의 이름·복장·색상·화면 글자는 설계서와 동일하게 쓰고, 구간마다 바꾸지 마세요.
+2. ${scr?'각 구간의 [나레이션]이 말하는 내용이 그 시간의 화면에서 보이도록 장면을 구성하세요. [화면 지시]가 있으면 반드시 반영하세요. 나레이션이 없는 구간은 앞 구간의 장면을 이어 가며 연출만 바꾸세요.':'[이 챕터에서 다룰 내용]과 [참고 원자료]를 구간 순서대로 나누어 시각화하세요. 나레이션 문장 자체는 쓰지 마세요.'}
+3. 각 구간은 2~4문장(약 120~300자)으로, 한 줄에 한 문장씩 쓰세요. 인물·그래픽의 위치·동작·표정, 화면에 나타나는 글자·숫자(짧고 정확하게, 큰따옴표로 표기), 조명과 카메라 움직임을 구체적으로 쓰세요. 현재형 평서문("~한다")으로 씁니다.
+4. 수치·종목명·일정은 ${scr?'나레이션과 설계서':'제공된 자료와 설계서'}에 있는 것만 쓰세요. 새 숫자를 만들거나 매수·매도를 권하는 것처럼 보이는 연출은 쓰지 마세요.
+5. 한 화면에 나오는 글자는 3~4개 이내로 짧고 또렷하게 쓰세요. 읽을 수 없거나 깨진 글자, 깜빡이는 디테일, 갑작스러운 장면 전환과 연속성 오류가 생기지 않게 앞 구간과 자연스럽게 이어 쓰세요.
+6. 나레이션 문장을 그대로 옮기지 말고, 화면에 보이는 것만 묘사하세요.
+
+[출력 형식]
+- 주어진 구간을 순서대로, 구간마다 "시간 범위만 쓴 한 줄" 다음에 장면 묘사를 쓰세요.
+- 시간 범위는 주어진 그대로 쓰고, 구간을 빠뜨리거나 합치거나 늘리지 마세요.
+- 제목·번호·마크다운·설명·인사말은 쓰지 마세요.
+
+[작성 예시 — 형식만 참고하세요]
+00:00–00:08
+어두운 네이비 톤의 모던한 방송 스튜디오. 화면 중앙에 "S&P 500"이라는 흰색 굵은 글자가 또렷하게 나타난다.
+글자 아래로 최근 한 달의 상승 흐름을 보여주는 에메랄드 그린 선 차트가 왼쪽에서 오른쪽으로 부드럽게 그려진다.
+카메라는 선의 끝점을 향해 천천히 다가가고, 끝점에는 작은 금색 점이 은은하게 빛난다.`;
+const fmtRange=(s,e)=>fmtTime(s)+'–'+fmtTime(e);
+const toSec=t=>{ const p=String(t).split(':').map(Number); return p.length===3?p[0]*3600+p[1]*60+p[2]:p[0]*60+p[1]; };
+const baseLabel=c=>typeof c.base==='string'?c.base:dLabel(c.base);
+const plainMd=s=>String(s||'').replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#{1,6}\s+/gm,'').replace(/^\s*[-•]\s+/gm,'* ').trim();   /* 복사용 — 예시처럼 '* ' 목록 */
+const bibleBlock=b=>b?[b.style&&'## 스타일 (Style)\n'+b.style,b.tone&&'## 분위기 (Tone)\n'+b.tone].filter(Boolean).join('\n'):'';
+function lastBlockText(u){ const bl=(u&&u.blocks)||[], b=bl[bl.length-1], t=b?b.t.replace(/\n/g,' '):''; return b?'(직전 장면 '+fmtRange(b.s,b.e)+') '+(t.length>320?t.slice(0,320)+'…':t):''; }   /* 시간 범위만 쓴 줄로 시작하면 쓸 구간의 머리줄과 헷갈리므로 한 줄에 이어 씀 */
+/* 스크립트 → 문장 목록(글자 수·바로 앞 [화면: …] 지시 포함) — 소수점(5.2%)에서는 끊지 않고 마침표 뒤 공백에서만 끊음 */
+function cueText(l){ return l.replace(/^[\[［(（]\s*화면\s*[:：]\s*/,'').replace(/\s*[\]］)）]\s*$/,'').trim(); }
+function sentUnits(text){
+  const o=[]; let cue='';
+  String(text||'').replace(/\r/g,'').split('\n').forEach(raw=>{
+    const l=raw.trim(); if(!l) return;
+    if(CUE_RE.test(l)){ cue+=(cue?' / ':'')+cueText(l); return; }
+    const nl=narrLine(l); if(!nl) return;
+    (nl.match(/[\s\S]*?[.!?。](?=\s|$)|[\s\S]+$/g)||[nl]).forEach(s=>{ s=s.trim(); if(s){ o.push({t:s,n:s.replace(/\s+/g,'').length,cue}); cue=''; } });
+  });
+  if(cue&&o.length) o[o.length-1].cue+=(o[o.length-1].cue?' / ':'')+cue;
+  return o;
+}
+/* 문장을 글자 수 비례 시각(= 스크립트 시간표시와 같은 기준)으로 구간에 배정 — 문장 가운데 시각이 속한 구간 */
+function assignNarr(text,t0,D,segs){
+  const ss=sentUnits(text), tot=ss.reduce((a,x)=>a+x.n,0); if(!tot) return;
+  let cum=0;
+  ss.forEach(x=>{
+    const tm=t0+D*(cum+x.n/2)/tot; cum+=x.n;
+    let k=segs.findIndex(g=>tm<g.e); if(k<0) k=segs.length-1;
+    const g=segs[k]; g.narr+=(g.narr?' ':'')+x.t; if(x.cue) g.cue+=(g.cue?' / ':'')+x.cue;
+  });
+}
+/* 스크립트(없으면 챕터 목표 분량) 시간에 맞춰 장면 길이 단위로 구간을 나누고, BOARD_UNIT 개씩 한 번에 요청할 묶음(unit)으로 만듦 */
+function buildBoard(c){
+  const cpm=c.cfg.cpm, seg=c.cfg.seg, units=[], chap=[]; let acc=0;
+  c.plan.forEach((P,pi)=>{
+    const has=!!P.text, chars=has?P.chars:P.target, t0=acc/cpm*60, D=chars/cpm*60; acc+=chars;
+    const n=Math.max(1,Math.round(D/seg)), b=[];
+    for(let k=0;k<=n;k++){ let v=Math.round(t0+D*k/n); if(k===0&&chap.length) v=chap[chap.length-1].end; if(k&&v<=b[k-1]) v=b[k-1]+1; b.push(v); }
+    const segs=[]; for(let k=0;k<n;k++) segs.push({s:b[k],e:b[k+1],narr:'',cue:''});
+    if(has) assignNarr(P.text,t0,D,segs);
+    chap.push({pi,title:P.title,start:b[0],end:b[n]});
+    const parts=Math.ceil(n/BOARD_UNIT), per=Math.ceil(n/parts);
+    for(let p=0;p<parts;p++){ const sg=segs.slice(p*per,(p+1)*per); if(!sg.length) break; units.push({pi,part:p+1,parts,title:P.title,start:sg[0].s,end:sg[sg.length-1].e,n:sg.length,segs:sg,blocks:[],state:'wait'}); }
+  });
+  return {chap,units};
+}
+function newBoard(c){ const b=buildBoard(c); return {bible:null,bibleDone:false,done:false,mode:c.plan.some(u=>u.text)?'script':'plan',chap:b.chap,units:b.units}; }
+/* 스토리보드만 만들 때 덧붙일 결과 — 화면의 스크립트가 끝까지 만들어져 있을 때(모든 챕터 완료·글 있음) */
+function boardBase(){ const p=S.ctx; return p&&!S.running&&p.plan&&p.plan.length&&p.plan.every(u=>u.state==='done'&&u.text)?p:null; }
+function beginBoard(c,cfg){
+  c.cfg.board=true; c.cfg.seg=cfg.seg; c.cfg.bstyle=cfg.bstyle;
+  c.board=null; c.reportDone=true; c.shr={rw:0,sw:0,bw:100}; c.sig=sigOf(cfg); c.status='run';
+}
+/* 예상 장면 수·AI 호출 수(설계서 1회 + 묶음마다 1회) */
+function boardShape(cfg,aug){
+  let ds;
+  if(aug){ const c=S.ctx; ds=c.plan.map(u=>u.chars/c.cfg.cpm*60); }
+  else ds=buildPlan(cfg.len,cfg.cpm,activeSecs(cfg)).map(u=>u.target/cfg.cpm*60);
+  let n=0,calls=1; ds.forEach(d=>{ const k=Math.max(1,Math.round(d/cfg.seg)); n+=k; calls+=Math.ceil(k/BOARD_UNIT); });
+  return {n,calls};
+}
+const boardStarted=c=>!!(c.board&&(c.board.bibleDone||c.board.units.some(u=>u.state==='done')));
+function bibleUser(c){
+  const B=c.board, scr=B.mode==='script', total=B.chap.length?B.chap[B.chap.length-1].end:0;
+  let basis='';
+  if(c.report) basis+='\n[종합 분석 보고서]\n'+trunc(c.report,3500)+'\n';
+  if(scr){ const n=narrationText(c); if(n) basis+='\n[스크립트 앞부분 — 말투와 분위기 참고]\n'+n.slice(0,700)+'\n'; }
+  else if(!c.report){ const d=digestBlocks(c,[],900); if(d) basis+='\n[참고 원자료 요약]\n'+d+'\n'; }
+  return `[영상 정보] 총 ${fmtTime(total)} (목표 ${c.cfg.len}분) · 기준일 ${baseLabel(c)} · 장면(구간) 길이 약 ${c.cfg.seg}초
+[챕터 구성]
+${B.chap.map((x,i)=>(i+1)+'. '+x.title+' ('+fmtRange(x.start,x.end)+')').join('\n')}
+[스타일·컨셉 요청] ${c.cfg.bstyle||'(없음 — 시황 분석 영상에 어울리는 스타일을 직접 정하세요)'}
+${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}${basis}`;
+}
+function boardUser(c,u,k){
+  const B=c.board, scr=B.mode==='script', ch=B.chap[u.pi], P=c.plan[u.pi], prev=k>0?lastBlockText(B.units[k-1]):'';
+  let body;
+  if(scr) body='[구간별 나레이션과 화면 지시]\n'+u.segs.map(g=>fmtRange(g.s,g.e)+'\n나레이션: '+(g.narr||'(없음 — 앞 구간의 장면을 이어 감)')+(g.cue?'\n화면 지시: '+g.cue:'')).join('\n');
+  else{
+    const own=dataBlocks(c,P.data||[]);
+    body='[이 챕터에서 다룰 내용] '+P.focus+(c.report?'\n\n[종합 분석 보고서]\n'+trunc(c.report,3500):'')+(own?'\n\n[참고 원자료]\n'+own:'')+'\n\n[작성할 구간 — 이 순서대로 한 블록씩]\n'+u.segs.map(g=>fmtRange(g.s,g.e)).join('\n');
+  }
+  return `[영상 정보] 총 ${c.cfg.len}분 · 기준일 ${baseLabel(c)} · 챕터 ${u.pi+1}/${c.plan.length}: "${u.title}" (챕터 구간 ${fmtRange(ch.start,ch.end)}) · 이번에 쓸 구간 ${fmtRange(u.start,u.end)} (${u.segs.length}개)
+[스타일·분위기 설계서 — 모든 구간에 똑같이 적용]
+${bibleBlock(B.bible)}
+
+${body}${prev?'\n\n[앞 구간의 마지막 장면 — 여기서 자연스럽게 이어 쓰기]\n'+prev:''}`;
+}
+/* 결과 읽기 — 설계서(## 스타일·## 분위기)와 구간 블록(시간 범위 줄 + 설명 줄들) */
+function parseBible(t){
+  const s=String(t||'').replace(/\r/g,'').replace(/^\s*```[a-z]*\s*\n?/i,'').replace(/\n?```\s*$/,'');
+  const a=/^(?:#{1,3}\s*스타일[^\n]*|스타일\s*\(Style\)\s*)$/m.exec(s), b=/^(?:#{1,3}\s*분위기[^\n]*|분위기\s*\(Tone\)\s*)$/m.exec(s);
+  if(!a&&!b) return {style:s.trim(),tone:''};
+  const style=a?s.slice(a.index+a[0].length,b&&b.index>a.index?b.index:undefined):'', tone=b?s.slice(b.index+b[0].length,a&&a.index>b.index?a.index:undefined):'';
+  return {style:style.trim(),tone:tone.trim()};
+}
+function parseBlocks(t){
+  const out=[]; let cur=null;
+  String(t||'').replace(/\r/g,'').split('\n').forEach(raw=>{
+    const l=raw.trim(); if(!l||/^```/.test(l)) return;
+    const m=TIME_RE.exec(l);
+    if(m){ cur={s:toSec(m[1]),e:toSec(m[2]),t:''}; out.push(cur); const rest=l.slice(m[0].length).replace(/^[\s:：\-–—]+/,'').replace(/\*\*/g,'').trim(); if(rest) cur.t=rest; return; }
+    if(!cur) return;   /* 첫 시간 줄 앞의 군더더기는 버림 */
+    const x=l.replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#{1,6}\s+/,'').replace(/^[-*•]\s+/,'');
+    if(x) cur.t+=(cur.t?'\n':'')+x;
+  });
+  return out;
+}
+function finalizeBlocks(raw,u){
+  let bl=parseBlocks(raw).filter(b=>b.t.trim());
+  if(!bl.length){ const t=String(raw||'').replace(/\r/g,'').replace(/^\s*```[a-z]*\s*\n?/i,'').replace(/\n?```\s*$/,'').replace(/\*\*(.+?)\*\*/g,'$1').trim(); if(t) bl=[{s:u.start,e:u.end,t}]; }
+  else if(bl.length===u.segs.length) bl.forEach((b,i)=>{ b.s=u.segs[i].s; b.e=u.segs[i].e; });   /* 구간 수가 같으면 시간은 계산해 준 값으로 맞춤 */
+  return bl;
+}
+/* 복사용 글 — 예시 형식(스타일 → 스토리보드 → 분위기). pi 를 주면 그 챕터만, 시간은 00:00 부터 */
+function boardText(c,pi){
+  const B=c.board; if(!B) return '';
+  const us=boardUnits(c).filter(u=>(u.blocks||[]).length&&(pi==null||u.pi===pi)); if(!us.length) return '';
+  const base=pi==null?0:us[0].start, o=[];
+  if(B.bible&&B.bible.style) o.push('스타일 (Style)',plainMd(B.bible.style),'');
+  o.push('스토리보드 (Storyboard)');
+  us.forEach(u=>u.blocks.forEach(b=>o.push(fmtRange(b.s-base,b.e-base),b.t,'')));
+  if(B.bible&&B.bible.tone) o.push('분위기 (Tone)',plainMd(B.bible.tone));
+  return o.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+/* 화면 */
+function segHtml(b){ return '<div class="sc-seg"><span class="tc">'+fmtRange(b.s,b.e)+'</span><div class="tx">'+String(b.t).split('\n').map(l=>'<p>'+esc(l)+'</p>').join('')+'</div></div>'; }
+function boardHtml(c,hist){
+  const B=c.board, live=S.running&&S.ctx===c, wait=t=>'<div class="sc-wait">'+t+'</div>';
+  const bb=(h,body)=>'<div class="sc-bb"><div class="sc-bb-h">'+h+'</div><div class="sc-doc">'+body+'</div></div>';
+  if(!B) return wait(live?'대기 중':'—');
+  let h=bb('스타일 (Style)',B.bible&&B.bible.style?mdLite(B.bible.style):wait(live?'스타일·분위기 설계 중…':'—'));
+  const groups=[];
+  B.units.forEach(u=>{ let g=groups[groups.length-1]; if(!g||g.pi!==u.pi){ g={pi:u.pi,title:u.title,us:[]}; groups.push(g); } g.us.push(u); });
+  groups.forEach(g=>{
+    const st=g.us.some(u=>u.state==='run')?'run':g.us.some(u=>u.state==='done')?'done':'wait';
+    const n=g.us.reduce((a,u)=>a+u.blocks.length,0), exp=g.us.reduce((a,u)=>a+(u.n||0),0), warn=g.us.some(u=>u.warn);
+    const body=g.us.map(u=>u.blocks.length?u.blocks.map(segHtml).join(''):wait(u.state==='run'?'작성 중…':'대기 중')).join('');
+    h+='<div class="sc-ch bd '+st+'"><div class="sc-ch-h"><span class="tc">'+fmtTime(g.us[0].start)+'</span><b>'+esc(g.title)+'</b>'+(warn?'<em class="sc-warn">구간 수가 달라요 ('+n+'/'+exp+')</em>':'')
+      +'<span class="d">'+(n?n+'구간 · ':'')+fmtRange(g.us[0].start,g.us[g.us.length-1].end)+'</span>'
+      +(n?'<button type="button" class="sc-mini mobile-keep" data-act="'+(hist?'dCopyBrdCh':'copyBrdCh')+'" data-pi="'+g.pi+'" title="이 챕터만 — 스타일·분위기를 붙인 독립 프롬프트로 복사해요(시간은 00:00부터)">복사</button>':'')
+      +'</div><div class="sc-ch-b">'+body+'</div></div>';
+  });
+  if(B.bible&&B.bible.tone) h+=bb('분위기 (Tone)',mdLite(B.bible.tone));
+  return h;
+}
+function boardMeta(c){
+  const us=boardUnits(c); if(!us.length) return '';
+  const n=boardCount(c), exp=us.reduce((a,u)=>a+(u.n||0),0);
+  return '장면 '+n+(exp&&n<exp?' / '+exp:'')+'개 · 약 '+c.cfg.seg+'초 단위 · '+fmtRange(us[0].start,us[us.length-1].end);
+}
+function paintBoard(){
+  const c=S.ctx, el=$('scBrd'); if(!c||!el) return;
+  el.innerHTML=boardHtml(c,false);
+  const m=$('scBrdMeta'); if(m) m.textContent=boardMeta(c);
+}
+/* 설계서 1회 → 구간 묶음마다 1회 요청 — 실패·중단하면 끝낸 묶음까지 남기고 이어서 만들 수 있음 */
+async function runBoard(c,sig){
+  const B=c.board, sh=c.shr, K=1+B.units.length, base=sh.rw+sh.sw;
+  const pr=(k,f)=>base+sh.bw*(k+Math.min(1,Math.max(0,f)))/K;
+  if(!B.bibleDone){
+    const lab='③ 스토리보드 — 스타일·분위기 설계 중…';
+    setProg(pr(0,0),lab); paintBoard();
+    const raw=await ai(SYS_BIBLE,bibleUser(c),t=>{ B.bible=parseBible(t); setProg(pr(0,t.length/1500),lab); paintSoon(); },sig);
+    B.bible=parseBible(raw);
+    if(!B.bible.style&&!B.bible.tone) throw new Error('AI 가 빈 응답을 보냈어요');
+    B.bibleDone=true; paintBoard(); await persist();
+  }
+  for(let k=0;k<B.units.length;k++){
+    const u=B.units[k]; if(u.state==='done') continue;
+    u.state='run'; u.blocks=[]; u.warn=false; paintBoard();
+    const lab='③ 스토리보드 작성 중 — '+(k+1)+'/'+B.units.length+' · '+u.title+' '+fmtRange(u.start,u.end);
+    setProg(pr(k+1,0),lab);
+    const raw=await ai(sysBoardSeg(B.mode==='script'),boardUser(c,u,k),t=>{ u.blocks=parseBlocks(t); setProg(pr(k+1,u.blocks.length/u.n),lab); paintSoon(); },sig);
+    u.blocks=finalizeBlocks(raw,u);
+    if(!u.blocks.length) throw new Error('AI 가 빈 응답을 보냈어요');
+    u.warn=u.blocks.length!==u.n; u.state='done'; paintBoard(); await persist();
+  }
+  B.done=true;
+}
 
 /* ═════════ 화면 그리기 ═════════ */
 function mdLite(src){
@@ -41946,15 +42247,16 @@ function paintScript(){
 }
 function paintSoon(){
   if(S.raf) return;
-  S.raf=requestAnimationFrame(()=>{ S.raf=0; paintReport(); paintScript(); const o=$('scOut'); if(o&&S.follow) o.scrollTop=o.scrollHeight; });
+  S.raf=requestAnimationFrame(()=>{ S.raf=0; paintReport(); paintScript(); paintBoard(); const o=$('scOut'); if(o&&S.follow) o.scrollTop=o.scrollHeight; });
 }
 function renderOut(){
   const out=$('scOut'); if(!out) return;
   const c=S.ctx;
-  if(!c){ out.innerHTML='<div class="sc-empty"><div class="big">🎬</div>왼쪽에서 영상 길이와 반영할 섹션을 고른 뒤 <b>[만들기]</b>를 누르세요.<br>① 종합 분석 보고서를 만들고, 그 아래 ② 영상 길이에 맞는 스크립트를 이어서 만들어요.<div class="sub">만든 결과는 자동으로 [🕘 스크립트 이력]에 저장됩니다.</div></div>'; return; }
-  out.innerHTML='<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta" id="scRepMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyRep">복사</button></div><div class="sc-doc" id="scRep"></div></section>'
-    +'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta" id="scScrMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyScr">복사</button></div><div class="sc-doc" id="scScr"></div></section>';
-  paintReport(); paintScript();
+  if(!c){ out.innerHTML='<div class="sc-empty"><div class="big">🎬</div>왼쪽에서 만들 것(① 종합 분석 보고서 · ② 영상 스크립트 · ③ 스토리보드)과 영상 길이, 반영할 섹션을 고른 뒤 <b>[만들기]</b>를 누르세요.<br>여러 개를 고르면 ① 종합 분석 보고서 → ② 영상 길이에 맞는 스크립트 → ③ 그 스크립트의 스토리보드 순서로 이어서 만들어요.<div class="sub">만든 결과는 자동으로 [🕘 스크립트 이력]에 저장됩니다.</div></div>'; return; }
+  out.innerHTML=(showRep(c)?'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta" id="scRepMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyRep">복사</button></div><div class="sc-doc" id="scRep"></div></section>':'')
+    +(showScr(c)?'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta" id="scScrMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">복사</button></div><div class="sc-doc" id="scScr"></div></section>':'')
+    +(showBoard(c)?'<section class="sc-sec"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta" id="scBrdMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">복사</button></div><div class="sc-doc" id="scBrd"></div></section>':'');
+  paintReport(); paintScript(); paintBoard();
 }
 
 /* ═════════ 글 합치기 · 복사 · 저장 ═════════ */
@@ -41964,13 +42266,15 @@ function scriptText(c){
   return o.join('\n').trim();
 }
 function composeText(c){
-  const t=scriptTotals(c), o=[];
+  const t=scriptTotals(c), o=[], rep=showRep(c), scr=showScr(c), brd=showBoard(c)&&!!boardText(c);
   o.push('■ 시황 분석 유튜브 영상 기획안');
-  o.push('기준일: '+(typeof c.base==='string'?c.base:dLabel(c.base))+' · 영상 길이 목표 '+c.cfg.len+'분 · 말 속도 '+c.cfg.cpm+'자/분');
+  o.push('기준일: '+(typeof c.base==='string'?c.base:dLabel(c.base))+' · 영상 길이 목표 '+c.cfg.len+'분'+(scr?' · 말 속도 '+c.cfg.cpm+'자/분':''));
   o.push('반영 섹션: '+c.secs.map(labelOf).join(', '));
   if(c.cfg.extra) o.push('추가 요청: '+c.cfg.extra);
-  o.push('','━━━━━━━━ ① 종합 분석 보고서 ━━━━━━━━',(c.report||'(작성되지 않음)').trim(),'');
-  o.push('━━━━━━━━ ② 영상 스크립트 (목표 '+t.target.toLocaleString()+'자 · 실제 '+t.chars.toLocaleString()+'자 · 약 '+fmtDur(t.sec)+') ━━━━━━━━',scriptText(c));
+  if(rep) o.push('','━━━━━━━━ ① 종합 분석 보고서 ━━━━━━━━',(c.report||'(작성되지 않음)').trim(),'');
+  else o.push('');
+  if(scr) o.push('━━━━━━━━ ② 영상 스크립트 (목표 '+t.target.toLocaleString()+'자 · 실제 '+t.chars.toLocaleString()+'자 · 약 '+fmtDur(t.sec)+') ━━━━━━━━',scriptText(c));
+  if(brd) o.push('','━━━━━━━━ ③ 스토리보드 (장면 '+boardCount(c)+'개 · 약 '+c.cfg.seg+'초 단위) ━━━━━━━━',boardText(c));
   return o.join('\n').replace(/\n{3,}/g,'\n\n').trim()+'\n';
 }
 async function copyText(t,msg){
@@ -41978,12 +42282,24 @@ async function copyText(t,msg){
   catch(e){ const ta=document.createElement('textarea'); ta.value=t; ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove(); }
   toast(msg||'복사했어요');
 }
+/* 스토리보드 [복사] — pi 가 없으면 스타일→스토리보드→분위기 전체, 있으면 그 챕터만(스타일·분위기를 붙인 독립 프롬프트) */
+function copyBoard(c,pi){
+  const t=boardText(c,pi);
+  if(!t){ toast('복사할 스토리보드가 아직 없어요'); return; }
+  copyText(t,pi==null?'스토리보드를 복사했어요':'이 챕터의 스토리보드를 복사했어요 (스타일·분위기 포함)');
+}
+/* 스크립트 [복사] — 챕터 소제목·시간표시·[화면: …] 같은 상황 지시는 빼고 실제로 말하는 나레이션만 */
+function copyNarration(c){
+  const t=narrationText(c);
+  if(!t){ toast('복사할 나레이션이 아직 없어요'); return; }
+  copyText(t,'나레이션만 복사했어요 ('+t.replace(/\s+/g,'').length.toLocaleString()+'자)');
+}
 function downloadTxt(name,text){
   const b=new Blob(['﻿'+text],{type:'text/plain;charset=utf-8'}), a=document.createElement('a');
   a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click();
   setTimeout(()=>{ try{ URL.revokeObjectURL(a.href); }catch(e){} a.remove(); },1500);
 }
-const fileName=c=>'시황스크립트_'+String(typeof c.base==='string'?c.base:dLabel(c.base)).replace(/\(.\)/,'')+'_'+c.cfg.len+'분.txt';
+const fileName=c=>(showScr(c)?'시황스크립트_':showRep(c)?'시황보고서_':'시황스토리보드_')+String(typeof c.base==='string'?c.base:dLabel(c.base)).replace(/\(.\)/,'')+'_'+c.cfg.len+'분.txt';
 
 /* ═════════ 이력 저장소(IndexedDB) ═════════ */
 let _db=null;
@@ -42002,15 +42318,17 @@ const dbPut=rec=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction
 const dbAll=()=>openDb().then(d=>new Promise((res,rej)=>{ const q=d.transaction(STORE,'readonly').objectStore(STORE).getAll(); q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.ts-a.ts)); q.onerror=()=>rej(q.error); }));
 const dbDel=id=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction(STORE,'readwrite'); t.objectStore(STORE).delete(id); t.oncomplete=()=>res(); t.onerror=t.onabort=()=>rej(t.error||new Error('삭제 실패')); }));
 function recOf(c){
-  return {id:c.id,ts:c.ts,upd:Date.now(),date:dLabel(c.base),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
-    plan:c.plan.map(u=>({title:u.title,key:u.key,target:u.target,chars:u.chars,text:u.text,state:u.state})),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0)};
+  return {id:c.id,ts:c.ts,upd:Date.now(),date:baseLabel(c),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
+    plan:c.plan.map(u=>({title:u.title,key:u.key,target:u.target,chars:u.chars,text:u.text,state:u.state})),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0),
+    board:c.board?{bible:c.board.bible,bibleDone:c.board.bibleDone,done:c.board.done,mode:c.board.mode,
+      units:c.board.units.map(u=>({pi:u.pi,part:u.part,parts:u.parts,title:u.title,start:u.start,end:u.end,n:u.segs?u.segs.length:u.n,warn:!!u.warn,state:u.state,blocks:u.blocks}))}:null};   /* segs(구간별 나레이션)는 저장하지 않음 — 다시 만들 때 스크립트에서 계산 */
 }
 function persist(){
-  const c=S.ctx; if(!c||(!c.report&&!c.plan.some(u=>u.text))) return Promise.resolve();
+  const c=S.ctx; if(!hasContent(c)) return Promise.resolve();
   return dbPut(recOf(c)).catch(e=>{ if(!S.dbWarned){ S.dbWarned=true; toast('이력 저장에 실패했어요 — '+((e&&e.message)||'')); } });
 }
 /* 이력 레코드 → 화면용 ctx 형태(복사·TXT 저장 재사용) */
-function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u))}; }
+function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u)),board:r.board||null}; }
 
 /* ═════════ 만들기 팝업 ═════════ */
 function provOptions(){
@@ -42019,12 +42337,15 @@ function provOptions(){
 }
 function makerHtml(){
   const row=s=>'<label class="sc-sr" data-k="'+s.k+'"><input type="checkbox" class="mobile-keep" data-k="'+s.k+'"><span class="nm">'+esc(s.label)+'</span><span class="st"></span></label>';
+  const what=(w,label)=>'<label class="sc-sr" data-w="'+w+'"><input type="checkbox" class="mobile-keep" data-w="'+w+'"><span class="nm">'+label+'</span><span class="st"></span></label>';
   return '<div class="sc-card" role="document">'
-   +'<div class="sc-head"><span class="sc-title">🎬 스크립트 만들기</span><span class="sc-sub">시황 분석 유튜브 영상 · ① 종합 분석 보고서 → ② 영상 스크립트</span><button type="button" class="sc-x mobile-keep" data-act="close" title="닫기 (Esc)">✕</button></div>'
+   +'<div class="sc-head"><span class="sc-title">🎬 스크립트 만들기</span><span class="sc-sub">시황 분석 유튜브 영상 · ① 종합 분석 보고서 → ② 영상 스크립트 → ③ 스토리보드</span><button type="button" class="sc-x mobile-keep" data-act="close" title="닫기 (Esc)">✕</button></div>'
    +'<div class="sc-body">'
    +'<div class="sc-side"><div class="sc-sbody">'
+   +'<div class="sc-f"><div class="sc-lb">만들 것 <span class="sc-opt">· 선택한 것만 작성</span></div><div id="scWhat">'+what('rep','① 종합 분석 보고서')+what('scr','② 영상 스크립트')+what('board','③ 스토리보드')+'</div><div class="sc-hint" id="scWhatHint"></div></div>'
+   +'<div class="sc-f" id="scBoardF" style="display:none"><div class="sc-lb">스토리보드 설정 <span class="sc-opt">· 장면 단위로 묘사해요</span></div><div class="sc-line"><span class="sc-u">장면 길이</span><input id="scSeg" type="number" min="'+MIN_SEG+'" max="'+MAX_SEG+'" step="1" inputmode="numeric" class="mobile-keep" aria-label="장면 길이(초)" title="스토리보드 한 구간(장면)의 길이 — AI 영상 도구가 한 번에 만드는 클립 길이에 맞추면 편해요"><span class="sc-u">초</span></div><textarea id="scBStyle" rows="3" class="mobile-keep" placeholder="스타일·컨셉 (선택) 예) 사실적인 실사 영화풍, 의인화한 동물 진행자가 시황을 전하는 영상 … 비워 두면 AI 가 영상에 맞게 정해요"></textarea></div>'
    +'<div class="sc-f"><div class="sc-lb">영상 길이</div><div class="sc-line"><input id="scLen" type="number" min="1" max="'+MAX_LEN+'" step="1" inputmode="decimal" class="mobile-keep" aria-label="영상 길이(분)"><span class="sc-u">분</span></div><div class="sc-hint" id="scHint"></div></div>'
-   +'<div class="sc-f"><div class="sc-lb">말 속도 <span class="sc-opt">· 스크립트 분량 계산용</span></div><div class="sc-line"><input id="scCpm" type="number" min="150" max="600" step="10" inputmode="numeric" class="mobile-keep" aria-label="말 속도(자/분)" title="1분에 말하는 글자 수(공백 제외). 보통 300~360 — 천천히 말하는 편이면 낮추세요"><span class="sc-u">자/분</span></div></div>'
+   +'<div class="sc-f" id="scCpmF"><div class="sc-lb">말 속도 <span class="sc-opt">· 스크립트 분량 계산용</span></div><div class="sc-line"><input id="scCpm" type="number" min="150" max="600" step="10" inputmode="numeric" class="mobile-keep" aria-label="말 속도(자/분)" title="1분에 말하는 글자 수(공백 제외). 보통 300~360 — 천천히 말하는 편이면 낮추세요"><span class="sc-u">자/분</span></div></div>'
    +'<div class="sc-f"><div class="sc-lb">반영할 섹션 <span class="sc-links"><a data-act="secCore">기본 4개</a><a data-act="secAll">전체</a><a data-act="secNone">해제</a></span></div><div id="scSecs"><div class="sc-grp">핵심</div>'+SECS.filter(s=>s.core).map(row).join('')+'<div class="sc-grp">추가 (선택)</div>'+SECS.filter(s=>!s.core).map(row).join('')+'</div></div>'
    +'<div class="sc-f"><div class="sc-lb">AI</div><select id="scProv" class="mobile-keep" aria-label="AI 공급자">'+provOptions()+'</select></div>'
    +'<div class="sc-f"><div class="sc-lb">추가 요청 <span class="sc-opt">· 선택</span></div><textarea id="scExtra" rows="3" class="mobile-keep" placeholder="예) 채널 이름·말투, 강조하고 싶은 종목·이슈, 피하고 싶은 표현 …"></textarea></div>'
@@ -42040,9 +42361,13 @@ function ensureMaker(){
   el.innerHTML=makerHtml(); document.body.appendChild(el); _mk=el;
   el.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-act]'); if(b) makerAct(b.getAttribute('data-act'),b); });
   const sync=()=>{ saveCfg(readCfg()); updateHint(); syncGo(); };
-  ['scLen','scCpm'].forEach(id=>$(id).addEventListener('input',sync));
+  ['scLen','scCpm','scSeg'].forEach(id=>$(id).addEventListener('input',sync));
   $('scSecs').addEventListener('change',sync);
-  $('scExtra').addEventListener('input',()=>{ saveCfg(readCfg()); syncGo(); });
+  $('scWhat').addEventListener('change',e=>{
+    if(!$('scWhat').querySelector('input:checked')){ e.target.checked=true; showErr('만들 것은 하나 이상 선택해야 해요. 바꾸려면 다른 항목을 먼저 체크하세요.',true); return; }   /* 모두 끌 수는 없음 */
+    showErr(''); sync();
+  });
+  ['scExtra','scBStyle'].forEach(id=>$(id).addEventListener('input',()=>{ saveCfg(readCfg()); updateHint(); syncGo(); }));
   $('scProv').addEventListener('change',e=>{ saveProv(e.target.value); });
   $('scOut').addEventListener('scroll',()=>{ const o=$('scOut'); S.follow=(o.scrollHeight-o.scrollTop-o.clientHeight)<90; });
   return el;
@@ -42050,6 +42375,9 @@ function ensureMaker(){
 function saveProv(v){ let m={}; try{ m=JSON.parse(localStorage.getItem('BTMAiProviderMap')||'{}')||{}; }catch(e){} m[MAP_KEY]=v; try{ localStorage.setItem('BTMAiProviderMap',JSON.stringify(m)); }catch(e){} }
 function fillForm(cfg){
   $('scLen').value=cfg.len; $('scCpm').value=cfg.cpm; $('scExtra').value=cfg.extra||'';
+  $('scSeg').value=cfg.seg>=MIN_SEG&&cfg.seg<=MAX_SEG?cfg.seg:DEF_SEG; $('scBStyle').value=cfg.bstyle||'';
+  const none=cfg.rep===false&&cfg.scr===false&&cfg.board!==true;   /* 모두 꺼진 값은 기본(보고서+스크립트)으로 */
+  $('scWhat').querySelectorAll('input[data-w]').forEach(cb=>{ const w=cb.getAttribute('data-w'); cb.checked=none?w!=='board':w==='board'?cfg.board===true:cfg[w]!==false; });
   SECS.forEach(s=>{
     const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'), row=cb.closest('.sc-sr'), inf=secInfo(s.k);
     cb.disabled=inf.n===0; cb.checked=inf.n>0&&cfg.secs.indexOf(s.k)>=0;
@@ -42060,25 +42388,60 @@ function fillForm(cfg){
 function readCfg(){
   const prev=loadCfg(), secs=[];
   SECS.forEach(s=>{ const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'); if(cb&&!cb.disabled){ if(cb.checked) secs.push(s.k); } else if(prev.secs.indexOf(s.k)>=0) secs.push(s.k); });
-  return {len:Math.round(parseFloat($('scLen').value)*10)/10,cpm:parseInt($('scCpm').value,10),secs,extra:($('scExtra').value||'').trim()};   /* 영상 길이는 소수 한 자리(2.5분)까지 */
+  const on=(w,d)=>{ const cb=$('scWhat').querySelector('input[data-w="'+w+'"]'); return cb?cb.checked:d; };
+  return {len:Math.round(parseFloat($('scLen').value)*10)/10,cpm:parseInt($('scCpm').value,10),secs,extra:($('scExtra').value||'').trim(),rep:on('rep',true),scr:on('scr',true),board:on('board',false),seg:parseInt($('scSeg').value,10),bstyle:($('scBStyle').value||'').trim()};   /* 영상 길이는 소수 한 자리(2.5분)까지 */
 }
 const activeSecs=cfg=>cfg.secs.filter(k=>secInfo(k).n>0);
 function validate(cfg){
-  if(!(cfg.len>=1&&cfg.len<=MAX_LEN)) return '영상 길이는 1~'+MAX_LEN+'분 사이의 숫자로 입력해 주세요(2.5처럼 소수도 돼요).';
-  if(!(cfg.cpm>=150&&cfg.cpm<=600)) return '말 속도는 150~600자/분 사이로 입력해 주세요(보통 300~360).';
-  if(!activeSecs(cfg).length) return '반영할 섹션을 하나 이상 선택해 주세요(내용이 있는 섹션만 고를 수 있어요).';
+  if(!cfg.rep&&!cfg.scr&&!cfg.board) return '만들 것을 하나 이상 선택해 주세요(종합 분석 보고서 · 영상 스크립트 · 스토리보드).';
+  const aug=boardOnly(cfg)&&boardBase();   /* 화면의 스크립트에 덧붙이는 경우 — 영상 길이·말 속도·섹션은 그 스크립트 기준이라 따지지 않음 */
+  if(cfg.board&&!(cfg.seg>=MIN_SEG&&cfg.seg<=MAX_SEG)) return '장면 길이는 '+MIN_SEG+'~'+MAX_SEG+'초 사이의 숫자로 입력해 주세요.';
+  if(!aug&&!(cfg.len>=1&&cfg.len<=MAX_LEN)) return '영상 길이는 1~'+MAX_LEN+'분 사이의 숫자로 입력해 주세요(2.5처럼 소수도 돼요).';
+  if(!aug&&(cfg.scr||cfg.board)&&!(cfg.cpm>=150&&cfg.cpm<=600)) return '말 속도는 150~600자/분 사이로 입력해 주세요(보통 300~360).';
+  if(!aug&&!activeSecs(cfg).length) return '반영할 섹션을 하나 이상 선택해 주세요(내용이 있는 섹션만 고를 수 있어요).';
+  if(cfg.board){ const n=boardShape(cfg,aug).n; if(n>MAX_BSEG) return '스토리보드 장면이 약 '+n+'개로 너무 많아요(최대 '+MAX_BSEG+'개). 장면 길이를 늘리거나 영상 길이를 줄여 주세요.'; }
   return '';
 }
+/* 스크립트만 만들 때 바탕으로 쓸 보고서 — 화면에 있는 결과(S.ctx)가 같은 섹션·같은 내용·같은 추가 요청으로 끝까지 만든 보고서일 때만(내용을 고쳤으면 옛 보고서라 쓰지 않음) */
+const hashOf=s=>{ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return h; };
+const packSig=(pack,keys)=>keys.map(k=>k+':'+hashOf(pack[k]||'')).join('|');
+function reusableReport(cfg){
+  const p=S.ctx; if(!p||!p.reportDone||!String(p.report||'').trim()||(p.cfg.extra||'')!==(cfg.extra||'')) return '';
+  const cur={}; activeSecs(cfg).forEach(k=>{ cur[k]=trunc(rawBlock(k),LIM[k]||6000); });
+  return packSig(cur,SECS.map(s=>s.k).filter(k=>cur[k]))===p.psig?p.report:'';
+}
+/* 체크박스 아래 안내 — 어떤 자료를 바탕으로 만드는지 */
+function whatHint(cfg,aug){
+  const t=[];
+  if(cfg.scr&&!cfg.rep) t.push(reusableReport(cfg)?'화면에 있는 종합 분석 보고서를 바탕으로 스크립트를 만들어요.':'종합 분석 보고서 없이, 선택한 섹션의 원자료로 스크립트를 만들어요.');
+  if(cfg.board){
+    if(cfg.scr) t.push('만든 스크립트로 이어서 스토리보드를 만들어요.');
+    else if(aug) t.push('화면에 있는 스크립트('+aug.cfg.len+'분)를 바탕으로 스토리보드를 만들어 그 결과에 덧붙여요.');
+    else t.push('스크립트 없이, 챕터 구성과 '+(cfg.rep?'새로 만든 보고서':'선택한 섹션의 원자료')+'로 스토리보드를 만들어요.');
+  }
+  return t.join(' ');
+}
 function updateHint(){
-  const h=$('scHint'); if(!h) return; const cfg=readCfg();
+  const h=$('scHint'); if(!h) return; const cfg=readCfg(), aug=boardOnly(cfg)&&boardBase();
+  $('scBoardF').style.display=cfg.board?'':'none';
+  $('scCpmF').classList.toggle('off',!(cfg.scr||cfg.board));   /* 스크립트·스토리보드를 안 만들면 말 속도는 쓰이지 않음 */
+  const st=$('scWhat').querySelectorAll('.st');
+  st[0].textContent='3,000~4,500자'; st[1].textContent=''; st[2].textContent='';
+  $('scWhatHint').textContent=whatHint(cfg,aug);
   if(validate(cfg)){ h.textContent=''; return; }
-  const plan=buildPlan(cfg.len,cfg.cpm,activeSecs(cfg)), tot=plan.reduce((a,u)=>a+u.target,0), ch=new Set(plan.map(u=>u.ci)).size;
-  h.innerHTML='목표 약 <b>'+tot.toLocaleString()+'자</b> · 챕터 '+ch+'개 · AI 호출 약 '+(1+plan.length)+'회';
+  if(!cfg.scr&&!cfg.board){ h.innerHTML='종합 분석 보고서만 · AI 호출 약 <b>1회</b>'; return; }
+  const bits=[]; let calls=cfg.rep?1:0;
+  if(cfg.scr){
+    const plan=buildPlan(cfg.len,cfg.cpm,activeSecs(cfg)), tot=plan.reduce((a,u)=>a+u.target,0), ch=new Set(plan.map(u=>u.ci)).size;
+    st[1].textContent='약 '+tot.toLocaleString()+'자'; bits.push('목표 약 <b>'+tot.toLocaleString()+'자</b> · 챕터 '+ch+'개'); calls+=plan.length;
+  }
+  if(cfg.board){ const bs=boardShape(cfg,aug); st[2].textContent='장면 약 '+bs.n+'개'; bits.push('스토리보드 장면 약 <b>'+bs.n+'개</b>'); calls+=bs.calls; }
+  h.innerHTML=bits.join(' · ')+' · AI 호출 약 '+calls+'회';
 }
 function syncGo(){
   const go=$('scGo'), rs=$('scRestart'); if(!go) return;
-  const can=!S.running&&S.canResume&&S.ctx&&S.ctx.sig===sigOf(readCfg());
-  go.textContent=can?'▶ 이어서 만들기':(S.ctx&&S.ctx.status==='done'?'🎬 다시 만들기':'🎬 만들기');
+  const cfg=readCfg(), can=!S.running&&S.canResume&&S.ctx&&S.ctx.sig===sigOf(cfg), aug=boardOnly(cfg)&&boardBase();
+  go.textContent=can?'▶ 이어서 만들기':aug?(aug.board&&aug.board.done?'🎞 스토리보드 다시 만들기':'🎞 스토리보드 만들기'):(S.ctx&&S.ctx.status==='done'?'🎬 다시 만들기':'🎬 만들기');
   rs.style.display=can?'':'none';
 }
 function setRunning(b){
@@ -42118,11 +42481,13 @@ function makerAct(act,btn){
     SECS.forEach(s=>{ const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'); if(cb&&!cb.disabled) cb.checked=act==='secAll'?true:act==='secNone'?false:!!s.core; });
     saveCfg(readCfg()); updateHint(); syncGo();
   }
-  else if(act==='copyAll'||act==='txt'||act==='copyRep'||act==='copyScr'){
-    const c=S.ctx; if(!c||(!c.report&&!c.plan.some(u=>u.text))){ toast('아직 복사할 내용이 없어요'); return; }
+  else if(act==='copyAll'||act==='txt'||act==='copyRep'||act==='copyScr'||act==='copyBrd'||act==='copyBrdCh'){
+    const c=S.ctx; if(!hasContent(c)){ toast('아직 복사할 내용이 없어요'); return; }
     if(act==='copyAll') copyText(composeText(c),'전체를 복사했어요');
     else if(act==='copyRep') copyText((c.report||'').trim(),'보고서를 복사했어요');
-    else if(act==='copyScr') copyText(scriptText(c),'스크립트를 복사했어요');
+    else if(act==='copyScr') copyNarration(c);
+    else if(act==='copyBrd') copyBoard(c);
+    else if(act==='copyBrdCh') copyBoard(c,+btn.getAttribute('data-pi'));
     else downloadTxt(fileName(c),composeText(c));
   }
 }
@@ -42136,12 +42501,20 @@ function newCtx(cfg){
   const pack={}, act=[];
   cfg.secs.forEach(k=>{ const t=rawBlock(k); if(t){ pack[k]=trunc(t,LIM[k]||6000); act.push(k); } });
   const secs=SECS.map(s=>s.k).filter(k=>act.indexOf(k)>=0);
-  return {id:'sc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),cfg:{len:cfg.len,cpm:cfg.cpm,secs:cfg.secs.slice(),extra:cfg.extra},secs,pack,base:repDate(),
-    plan:buildPlan(cfg.len,cfg.cpm,secs),report:'',reportDone:false,status:'run',provider:'',sig:sigOf(cfg)};
+  const rep=cfg.rep!==false, scr=cfg.scr!==false, brd=cfg.board===true, old=!rep&&scr?reusableReport(cfg):'';   /* 스크립트만 만들면 화면에 있는 같은 조건의 보고서를 바탕으로 */
+  return {id:'sc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),cfg:{len:cfg.len,cpm:cfg.cpm>=150?cfg.cpm:DEF_CFG.cpm,secs:cfg.secs.slice(),extra:cfg.extra,rep,scr,board:brd,seg:brd?cfg.seg:DEF_SEG,bstyle:brd?cfg.bstyle||'':''},secs,pack,psig:packSig(pack,secs),base:repDate(),
+    plan:scr||brd?buildPlan(cfg.len,cfg.cpm,secs):[],report:old,reportDone:!!old,board:null,shr:sharesOf(rep,scr,brd),status:'run',provider:'',sig:sigOf(cfg)};   /* 스토리보드만 만들 땐 챕터 구성(plan)만 있고 글은 없음 */
 }
-function progFor(c,i,curFrac){   /* 보고서가 15%, 스크립트 챕터가 나머지 85%(목표 글자 수 비례) */
+function sharesOf(rep,scr,brd){   /* 진행률 막대 몫(%) — 보고서·스크립트·스토리보드 */
+  if(rep&&scr&&brd) return {rw:10,sw:55,bw:35};
+  if(rep&&scr) return {rw:15,sw:85,bw:0};
+  if(scr&&brd) return {rw:0,sw:60,bw:40};
+  if(rep&&brd) return {rw:15,sw:0,bw:85};
+  return {rw:rep?100:0,sw:scr?100:0,bw:brd?100:0};
+}
+function progFor(c,i,curFrac){   /* 보고서를 같이 만들면 보고서가 15%·스크립트 챕터가 나머지 85%(목표 글자 수 비례), 스크립트만이면 챕터가 100% — 몫은 c.shr */
   const sum=c.plan.reduce((a,u)=>a+u.target,0)||1, done=c.plan.slice(0,i).reduce((a,u)=>a+u.target,0);
-  return 15+85*(done+c.plan[i].target*Math.min(1,curFrac))/sum;
+  return c.shr.rw+c.shr.sw*(done+c.plan[i].target*Math.min(1,curFrac))/sum;
 }
 async function run(fresh){
   if(S.running) return;
@@ -42154,6 +42527,7 @@ async function run(fresh){
   const resume=!fresh&&S.canResume&&S.ctx&&S.ctx.sig===sigOf(cfg);
   let c;
   if(resume) c=S.ctx;
+  else if(boardOnly(cfg)&&boardBase()){ c=S.ctx; beginBoard(c,cfg); }   /* 스토리보드만 — 화면의 완성된 스크립트에 덧붙임(같은 이력 기록에 저장) */
   else {
     c=newCtx(cfg);
     if(!c.secs.length){ showErr('선택한 섹션에 내용이 없어요. 섹션에 내용을 채우거나 다른 섹션을 선택해 주세요.'); return; }
@@ -42166,17 +42540,20 @@ async function run(fresh){
   const sig=S.ctrl.signal;
   setRunning(true); renderOut();
   try{
-    if(!c.reportDone){
+    if(c.cfg.rep!==false&&!c.reportDone){
+      const span=c.shr.rw-2;   /* 보고서 몫(%) — 보고서만 만들면 진행률 막대 전체, 스크립트도 만들면 15% */
       setProg(2,'① 종합 분석 보고서 작성 중…'); paintReport();
-      const raw=await ai(sysReport(c),reportUser(c),t=>{ c.report=t; setProg(2+13*Math.min(1,t.length/3600),'① 종합 분석 보고서 작성 중…'); paintSoon(); },sig);
-      c.report=cleanReport(raw); c.reportDone=true; paintReport(); await persist();
+      const raw=await ai(sysReport(c),reportUser(c),t=>{ c.report=t; setProg(2+span*Math.min(1,t.length/3600),'① 종합 분석 보고서 작성 중…'); paintSoon(); },sig);
+      c.report=cleanReport(raw);
+      if(!c.report.trim()) throw new Error('AI 가 빈 응답을 보냈어요');
+      c.reportDone=true; paintReport(); await persist();
     }
-    for(let i=0;i<c.plan.length;i++){
+    for(let i=0;c.cfg.scr!==false&&i<c.plan.length;i++){   /* 스토리보드만 만들 때의 plan 은 챕터 구성일 뿐 — 스크립트는 쓰지 않음 */
       const u=c.plan[i]; if(u.state==='done') continue;
       u.state='run'; u.text=''; u.chars=0; paintScript();
       const lab='② 스크립트 작성 중 — '+(i+1)+'/'+c.plan.length+' · '+u.title;
       setProg(progFor(c,i,0),lab);
-      const raw=await ai(SYS_CHAPTER,chapterUser(c,u,i),t=>{ u.text=cleanNarr(t,u); u.chars=narrChars(u.text); setProg(progFor(c,i,u.chars/u.target),lab); paintSoon(); },sig);
+      const raw=await ai(sysChapter(!!c.report),chapterUser(c,u,i),t=>{ u.text=cleanNarr(t,u); u.chars=narrChars(u.text); setProg(progFor(c,i,u.chars/u.target),lab); paintSoon(); },sig);
       u.text=cleanNarr(raw,u); u.chars=narrChars(u.text);
       if(!u.text.trim()) throw new Error('AI 가 빈 응답을 보냈어요');
       if(u.target>=250&&Math.abs(u.chars-u.target)/u.target>ADJ_TOL){
@@ -42188,21 +42565,26 @@ async function run(fresh){
       }
       u.state='done'; paintScript(); await persist();
     }
+    if(c.cfg.board===true&&!(c.board&&c.board.done)){ if(!c.board) c.board=newBoard(c); await runBoard(c,sig); }
     c.status='done'; S.canResume=false;
-    const t=scriptTotals(c);
-    setProg(100,'완료 · 스크립트 '+t.chars.toLocaleString()+'자 · 약 '+fmtDur(t.sec)+' (목표 '+c.cfg.len+'분)');
+    const t=scriptTotals(c), bits=[];
+    if(cfg.scr) bits.push('스크립트 '+t.chars.toLocaleString()+'자 · 약 '+fmtDur(t.sec)+' (목표 '+c.cfg.len+'분)');
+    else if(cfg.rep) bits.push('종합 분석 보고서 '+c.report.replace(/\s+/g,'').length.toLocaleString()+'자');
+    if(cfg.board) bits.push('스토리보드 '+boardCount(c).toLocaleString()+'구간');
+    setProg(100,'완료 · '+bits.join(' · '));
     await persist(); toast('만들었어요 — 이력에 저장했어요');
   }catch(err){
     const aborted=err&&err.name==='AbortError';
     c.plan.forEach(u=>{ if(u.state==='adjust') u.state='done'; else if(u.state==='run'){ u.state='wait'; u.text=''; u.chars=0; } });   /* 조정 중에 멈추면 초안을 인정, 쓰던 중에 멈추면 그 챕터는 이어서 만들 때 처음부터 */
+    if(c.board){ c.board.units.forEach(u=>{ if(u.state==='run'){ u.state='wait'; u.blocks=[]; u.warn=false; } }); if(!c.board.bibleDone) c.board.bible=null; }   /* 쓰던 구간·설계서는 이어서 만들 때 처음부터 */
     c.status='partial';
-    S.canResume=!!(c.report||c.plan.some(u=>u.state==='done'));
+    S.canResume=!!(c.report||c.plan.some(u=>u.state==='done')||boardStarted(c));
     const pr=parseFloat(($('scPb')||{style:{}}).style.width)||0;
     if(aborted) setProg(pr,'중단됨 — 지금까지의 내용은 이력에 저장됐어요');
     else { setProg(pr,'오류로 멈췄어요'); showErr('오류: '+((err&&err.message)||err)+(S.canResume?'  — [▶ 이어서 만들기]로 멈춘 곳부터 계속할 수 있어요.':'')); }
     await persist();
   }finally{
-    S.ctrl=null; setRunning(false); paintReport(); paintScript(); syncGo();
+    S.ctrl=null; setRunning(false); paintReport(); paintScript(); paintBoard(); syncGo(); updateHint();
   }
 }
 
@@ -42221,7 +42603,7 @@ function ensureHist(){
     if(e.target===el){ closeHistory(); return; }
     const b=e.target.closest&&e.target.closest('[data-act]'); if(!b) return;
     const row=b.closest('[data-id]'), id=(row||b).getAttribute('data-id')||(_histView&&_histView.id);
-    histAct(b.getAttribute('data-act'),id);
+    histAct(b.getAttribute('data-act'),id,b);
   });
   $('shQ').addEventListener('input',()=>renderHistList());
   return el;
@@ -42230,11 +42612,19 @@ function previewOf(r){
   const rep=String(r.report||'');
   let m=/한 줄 결론\s*[:：]\s*(.+)/.exec(rep);
   let t=m?m[1]:(rep.split('\n').map(x=>x.trim()).find(x=>x&&!/^#/.test(x))||'');
+  if(!t){ const u=(r.plan||[]).find(x=>x.text); if(u) t=narrOnly(u.text).split('\n').find(Boolean)||''; }   /* 보고서 없이 스크립트만 만든 기록은 첫 나레이션 줄 */
+  if(!t&&r.board&&r.board.bible) t=plainMd(r.board.bible.style).split('\n').find(Boolean)||'';   /* 스토리보드만 만든 기록은 스타일 첫 줄 */
   t=t.replace(/\*\*/g,'').replace(/^[-•*]\s*/,'').trim();
   return t.length>120?t.slice(0,120)+'…':t;
 }
 const timeOf=ts=>{ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
 const dateOfTs=ts=>{ const d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const partTag=r=>{
+  const a=showRep(r), b=showScr(r), d=showBoard(r);
+  const t=a&&b?(d?'스토리보드 포함':''):[a&&'보고서',b&&'스크립트',d&&'스토리보드'].filter(Boolean).join('·')+((a?1:0)+(b?1:0)+(d?1:0)===1?'만':'');
+  return t?'<span class="sc-tag part">'+t+'</span>':'';
+};
+const sizeOf=r=>[showScr(r)?'스크립트 '+(r.chars||0).toLocaleString()+'자':showRep(r)?'보고서 '+String(r.report||'').replace(/\s+/g,'').length.toLocaleString()+'자':'',showBoard(r)?'스토리보드 '+boardCount(r).toLocaleString()+'구간':''].filter(Boolean).join(' · ');
 function statusTag(r){
   const live=S.running&&S.ctx&&S.ctx.id===r.id;
   if(live) return '<span class="sc-tag run">작성 중</span>';
@@ -42255,9 +42645,9 @@ async function renderHistList(){
   let day='', h='';
   rows.forEach(r=>{
     const d=dateOfTs(r.ts); if(d!==day){ day=d; h+='<div class="sc-day">'+esc(d)+' 생성</div>'; }
-    h+='<div class="sc-hi" data-id="'+esc(r.id)+'" data-act="open"><div class="sc-hi-main"><div class="sc-hi-t">기준일 '+esc(r.date)+' · '+r.cfg.len+'분 영상 '+statusTag(r)+'<span class="tm">'+timeOf(r.ts)+'</span></div>'
+    h+='<div class="sc-hi" data-id="'+esc(r.id)+'" data-act="open"><div class="sc-hi-main"><div class="sc-hi-t">기준일 '+esc(r.date)+' · '+r.cfg.len+'분 영상 '+statusTag(r)+partTag(r)+'<span class="tm">'+timeOf(r.ts)+'</span></div>'
       +'<div class="sc-hi-p">'+esc(previewOf(r)||'(보고서 없음)')+'</div>'
-      +'<div class="sc-hi-m"><b>섹션</b> '+esc((r.secs||[]).map(labelOf).join(' · '))+' · 스크립트 '+(r.chars||0).toLocaleString()+'자 · '+esc(provLabel(r.provider))+'</div></div>'
+      +'<div class="sc-hi-m"><b>섹션</b> '+esc((r.secs||[]).map(labelOf).join(' · '))+' · '+sizeOf(r)+' · '+esc(provLabel(r.provider))+'</div></div>'
       +'<button type="button" class="sc-hi-x mobile-keep" data-act="del" title="삭제">✕</button></div>';
   });
   body.innerHTML=h;
@@ -42267,15 +42657,17 @@ async function showDetail(id){
   let rec=null; try{ rec=(await dbAll()).find(r=>r.id===id); }catch(e){}
   if(!rec){ toast('이력을 찾지 못했어요'); renderHistList(); return; }
   _histView=rec;
-  const c=ctxOfRec(rec), t=scriptTotals(c), body=$('shBody');
+  const c=ctxOfRec(rec), t=scriptTotals(c), body=$('shBody'), rep=showRep(c), scr=showScr(c), brd=showBoard(c);
+  const canBoard=c.plan.length>0&&c.plan.every(u=>u.state==='done'&&u.text);   /* 끝까지 만든 스크립트가 있어야 그 기록으로 스토리보드를 만들 수 있음 */
   $('shTitle').textContent='🕘 '+rec.date+' · '+rec.cfg.len+'분 영상'; $('shSub').textContent=dateOfTs(rec.ts)+' '+timeOf(rec.ts)+' 생성'; $('shBar').style.display='none'; _hs.querySelector('.sc-back').style.display='';
-  body.innerHTML='<div class="sc-dact"><button type="button" class="sc-mini pri mobile-keep" data-act="dCopyAll">전체 복사</button><button type="button" class="sc-mini mobile-keep" data-act="dCopyRep">보고서 복사</button><button type="button" class="sc-mini mobile-keep" data-act="dCopyScr">스크립트 복사</button><button type="button" class="sc-mini mobile-keep" data-act="dTxt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="dReuse" title="이 영상 길이·섹션·말 속도로 새로 만들기 화면을 엽니다">↩ 이 설정으로 만들기</button><span class="sc-sp"></span><button type="button" class="sc-mini dng mobile-keep" data-act="dDel">삭제</button></div>'
-    +'<div class="sc-dmeta"><b>반영 섹션</b> '+esc((rec.secs||[]).map(labelOf).join(', '))+' · <b>말 속도</b> '+rec.cfg.cpm+'자/분 · <b>AI</b> '+esc(provLabel(rec.provider))+(rec.cfg.extra?'<br><b>추가 요청</b> '+esc(rec.cfg.extra):'')+(rec.status!=='done'?'<br><span class="sc-tag">'+(rec.status==='error'?'오류':'중단됨')+'</span> 끝까지 만들어지지 않은 기록이에요.':'')+'</div>'
-    +'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta">'+(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+'</span></div><div class="sc-doc">'+(c.report?mdLite(c.report):'<div class="sc-wait">—</div>')+'</div></section>'
-    +'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta">'+rec.cfg.len+'분 · '+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')</span></div><div class="sc-doc">'+scriptHtml(c)+'</div></section>';
+  body.innerHTML='<div class="sc-dact"><button type="button" class="sc-mini pri mobile-keep" data-act="dCopyAll">전체 복사</button>'+(rep?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyRep">보고서 복사</button>':'')+(scr?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">스크립트 복사</button>':'')+(brd?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">스토리보드 복사</button>':'')+'<button type="button" class="sc-mini mobile-keep" data-act="dTxt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="dReuse" title="이 영상 길이·섹션·말 속도로 새로 만들기 화면을 엽니다">↩ 이 설정으로 만들기</button>'+(canBoard?'<button type="button" class="sc-mini mobile-keep" data-act="dBoard" title="이 기록의 스크립트를 바탕으로 스토리보드를 만들어 이 기록에 덧붙여요">🎞 스토리보드 '+(brd?'다시 ':'')+'만들기</button>':'')+'<span class="sc-sp"></span><button type="button" class="sc-mini dng mobile-keep" data-act="dDel">삭제</button></div>'
+    +'<div class="sc-dmeta"><b>반영 섹션</b> '+esc((rec.secs||[]).map(labelOf).join(', '))+(scr||brd?' · <b>말 속도</b> '+rec.cfg.cpm+'자/분':'')+(brd?' · <b>장면 길이</b> 약 '+(rec.cfg.seg||DEF_SEG)+'초':'')+' · <b>AI</b> '+esc(provLabel(rec.provider))+(rec.cfg.extra?'<br><b>추가 요청</b> '+esc(rec.cfg.extra):'')+(brd&&rec.cfg.bstyle?'<br><b>스토리보드 스타일 요청</b> '+esc(rec.cfg.bstyle):'')+(rec.status!=='done'?'<br><span class="sc-tag">'+(rec.status==='error'?'오류':'중단됨')+'</span> 끝까지 만들어지지 않은 기록이에요.':'')+'</div>'
+    +(rep?'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta">'+(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+'</span></div><div class="sc-doc">'+(c.report?mdLite(c.report):'<div class="sc-wait">—</div>')+'</div></section>':'')
+    +(scr?'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta">'+rec.cfg.len+'분 · '+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')</span></div><div class="sc-doc">'+scriptHtml(c)+'</div></section>':'')
+    +(brd?'<section class="sc-sec"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta">'+esc(boardMeta(c))+'</span></div><div class="sc-doc">'+boardHtml(c,true)+'</div></section>':'');
   body.scrollTop=0;
 }
-async function histAct(act,id){
+async function histAct(act,id,btn){
   if(act==='close') closeHistory();
   else if(act==='back') renderHistList();
   else if(act==='new'){ closeHistory(); openMaker(); }
@@ -42289,12 +42681,19 @@ async function histAct(act,id){
     const c=ctxOfRec(_histView);
     if(act==='dCopyAll') copyText(composeText(c),'전체를 복사했어요');
     else if(act==='dCopyRep') copyText((c.report||'').trim(),'보고서를 복사했어요');
-    else if(act==='dCopyScr') copyText(scriptText(c),'스크립트를 복사했어요');
+    else if(act==='dCopyScr') copyNarration(c);
+    else if(act==='dCopyBrd') copyBoard(c);
+    else if(act==='dCopyBrdCh') copyBoard(c,+btn.getAttribute('data-pi'));
     else if(act==='dTxt') downloadTxt(fileName(c),composeText(c));
-    else if(act==='dReuse'){
+    else if(act==='dReuse'||act==='dBoard'){
       if(S.running){ toast('지금 스크립트를 만드는 중이라 설정을 바꿀 수 없어요'); return; }
-      const cfg={len:_histView.cfg.len,cpm:_histView.cfg.cpm,secs:(_histView.cfg.secs||[]).slice(),extra:_histView.cfg.extra||''};
+      const r=_histView, bd=act==='dBoard';
+      const cfg={len:r.cfg.len,cpm:r.cfg.cpm,secs:(r.cfg.secs||[]).slice(),extra:r.cfg.extra||'',rep:!bd&&r.cfg.rep!==false,scr:!bd&&r.cfg.scr!==false,board:bd||r.cfg.board===true,seg:r.cfg.seg>=MIN_SEG&&r.cfg.seg<=MAX_SEG?r.cfg.seg:DEF_SEG,bstyle:r.cfg.bstyle||''};
+      if(bd){   /* 이 기록을 화면 결과로 불러와 스토리보드만 덧붙여 만들 수 있게 함(같은 기록에 저장) */
+        S.ctx=Object.assign(c,{cfg:Object.assign({},r.cfg),pack:{},reportDone:true,shr:{rw:0,sw:0,bw:100},sig:'',psig:''}); S.canResume=false;
+      }
       saveCfg(cfg); closeHistory(); openMaker(cfg);
+      if(bd) setProg(0,'이력의 스크립트를 불러왔어요 — [🎞 스토리보드 만들기]를 누르세요');
     }
   }
 }
@@ -42311,7 +42710,8 @@ document.addEventListener('keydown',e=>{
 window.openScriptMaker=()=>openMaker();
 window.openScriptHistory=()=>openHistory();
 window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),
-  _dbg:{buildPlan,sysReport,reportUser,chapterUser,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur}};
+  _dbg:{buildPlan,sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
+    buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur}};
 })();
 /* ═══ BTMSCRIPT-JS-END ═══ */
 </script>
