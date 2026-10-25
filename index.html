@@ -2843,8 +2843,11 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .tl-au.low{border-color:#f59e0b;box-shadow:inset 0 0 0 1px #f59e0b}.tl-au.stale{border-style:dashed;border-color:#fbbf24}
 .tl-au canvas{display:block;width:100%;height:100%}
 .tl-row.t{height:18px}
-.tl-tt{position:absolute;top:2px;bottom:2px;border-radius:4px;background:repeating-linear-gradient(135deg,#7c2d12,#7c2d12 6px,#92400e 6px,#92400e 12px);border:1px solid #f59e0b;color:#fef3c7;font-size:10px;line-height:12px;padding:0 5px;overflow:hidden;white-space:nowrap;cursor:pointer}
+.tl-tt{position:absolute;top:2px;bottom:2px;border-radius:4px;background:repeating-linear-gradient(135deg,#7c2d12,#7c2d12 6px,#92400e 6px,#92400e 12px);border:1px solid #f59e0b;color:#fef3c7;font-size:10px;line-height:12px;padding:0 5px;overflow:hidden;white-space:nowrap;cursor:grab;user-select:none}
 .tl-tt.sel{box-shadow:0 0 0 2px #fbbf24;z-index:2}
+.tl-tt span{pointer-events:none}.tl-tt .e{position:absolute;top:0;bottom:0;width:7px;max-width:35%;cursor:ew-resize}.tl-tt .e.l{left:0}.tl-tt .e.r{right:0}.tl-tt .e:hover{background:rgba(255,255,255,.38)}
+.tl-tt.open{cursor:default}
+.tl-tt-x{position:absolute;top:2px;bottom:2px;box-sizing:border-box;border:1px dashed #f59e0b;border-left:0;border-radius:0 4px 4px 0;background:repeating-linear-gradient(135deg,rgba(124,45,18,.4),rgba(124,45,18,.4) 6px,rgba(146,64,14,.4) 6px,rgba(146,64,14,.4) 12px);pointer-events:none}
 .vs-sn.cur{box-shadow:0 0 0 1px #f59e0b}
 .tl-row.c{min-height:22px}
 .tl-ic{position:absolute;height:16px;border-radius:4px;border:1px solid #475a80;background:#1e2b4a;color:#e2e8f0;font-size:10px;line-height:14px;padding:0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:grab;box-sizing:border-box;user-select:none}
@@ -2884,7 +2887,7 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .tl-ph{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#f43f5e;pointer-events:none;z-index:6}
 .tl-ph::before{content:'';position:absolute;top:0;left:-5px;border:6px solid transparent;border-top-color:#f43f5e}
 .tl-guide{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed #fbbf24;display:none;z-index:7;pointer-events:none}
-.tl-guide::after{content:attr(data-t);position:absolute;top:-1px;left:4px;font-size:10px;background:#fbbf24;color:#1a1204;padding:0 5px;border-radius:4px}
+.tl-guide::after{content:attr(data-t);position:absolute;top:-1px;left:4px;font-size:10px;background:#fbbf24;color:#1a1204;padding:0 5px;border-radius:4px;white-space:nowrap}
 /* 대화상자 */
 .vs-dg{display:none;position:absolute;inset:0;z-index:20;background:rgba(2,6,14,.62);align-items:center;justify-content:center}
 .vs-dg.on{display:flex}
@@ -43178,6 +43181,8 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
        타임라인 [구성] 줄은 인포그래픽 블록(항목이 여럿이면 항목마다)을 칩으로 보여 주고 끌어서 시점을 바꿈. 생성은 구성요소 세분화·단계별 clip(AI 최대 4개, 규칙은 블록 5개부터 3~4개씩). 머리의 [📜 스크립트]·[🎞 스토리보드]는 지금 프로젝트 내용을 보여 줌.
    · 타임라인 요소 개별 선택·삭제 (2026-10-25, v102) — 장면·인포그래픽·구성요소(칩·항목)·자막·음성(문장)·배경음악·챕터 타이틀을 눌러 하나씩 고르면(UI.tsel, .tsel 테두리·도구줄 안내) [🗑 삭제]·Delete/Backspace·오른쪽 클릭 메뉴로 지움(tlDelete) — 모두 되돌리기 1번(+아래 알림의 [되돌리기]).
        음성은 deleteSentence(나레이션·음성·자막을 빼고 뒤를 당김, 걸린 클립·블록 시점은 이웃 문장으로, 그 문장만 담은 장면은 함께). saveProject 는 되돌려 살아난 파일을 DB 에 다시 넣음.
+   · 챕터 타이틀 길이·위치 끌기 (2026-10-26, v103) — 타임라인 [타이틀] 줄 블록의 몸통을 끌면 위치, 오른쪽 끝은 길이(뒤 내용이 밀리거나 당겨짐), 왼쪽 끝은 시작(끝은 그대로). 챕터마다 p.ttl[챕터]={dur,pre,post}(길이·앞 쉼·뒤 쉼)로 저장하고
+       layout() 이 챕터 사이를 앞 쉼+길이+뒤 쉼으로 짬(안 정하면 v100 과 같음). [타이틀] 탭에서 숫자로도 고침. 오프닝은 0초에 고정이라 길이만.
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
@@ -43463,7 +43468,7 @@ const chapOf=(p,sc)=>{ const s=p.sents[sc.first]; return s?(p.chap[s.ci]||''):''
 function layout(p){
   p=p||P; if(!p) return;
   const c=p.cfg, S=p.sents, cm=new Map(p.chunks.map(k=>[k.id,k])), T=titleOn(p)?titleDur(p):0, tl=[]; let cur=c.lead;
-  if(T&&S.length&&!ttOff(p,S[0].ci)){ cur=Math.max(c.lead,T); tl.push({ci:S[0].ci,i:0,ta:0,tb:r3(cur),te:r3(cur),open:true}); }   /* 오프닝 타이틀 — 0초부터 길이만큼(소리 없음), 그 뒤에 첫 문장 */
+  if(T&&S.length&&!ttOff(p,S[0].ci)){ cur=Math.max(c.lead,titleLen(p,S[0].ci)); tl.push({ci:S[0].ci,i:0,ta:0,tb:r3(cur),te:r3(cur),open:true,L:r3(cur),a:0,b:0,a0:0,E:0,g:0}); }   /* 오프닝 타이틀 — 0초부터 길이만큼(소리 없음), 그 뒤에 첫 문장. 길이는 챕터별로 따로 정할 수 있음(titleLen) */
   S.forEach((s,i)=>{
     const k=cm.get(s.cid), al=s.al, has=!!(al&&k&&k.bid&&k.state==='done');
     s.has=has; let dur,vs,ve;
@@ -43472,7 +43477,10 @@ function layout(p){
     s.s=r3(cur); s.e=r3(cur+dur); s.vs=r3(vs); s.ve=r3(ve);
     const nx=S[i+1], gap=s.pause!=null?s.pause:(!nx?0:nx.ci!==s.ci?c.gap.chap:nx.pa!==s.pa?c.gap.para:c.gap.sent);
     cur=s.e+gap;
-    if(T&&nx&&nx.ci!==s.ci&&!ttOff(p,nx.ci)){ cur=s.e+Math.max(gap,T+0.2); tl.push({ci:nx.ci,i:i+1,ta:r3(cur-T),tb:r3(cur),te:r3(cur),open:false}); }   /* 챕터 사이 — 다음 챕터 첫 문장 바로 앞 T초가 타이틀(소리 없음) */
+    if(T&&nx&&nx.ci!==s.ci&&!ttOff(p,nx.ci)){   /* 챕터 사이 = 앞 쉼 + 타이틀 길이(소리 없음) + 뒤 쉼. 기본은 앞 쉼 = max(쉬는 시간, 길이+0.2)−길이, 뒤 쉼 = 0 → 다음 챕터 첫 문장 바로 앞이 타이틀 */
+      const L=titleLen(p,nx.ci), pr=ttNum(p,nx.ci,'pre'), b=ttNum(p,nx.ci,'post')||0, a0=Math.max(gap,L+0.2)-L;
+      cur=s.e+(pr!=null?pr+L:Math.max(gap,L+0.2))+b; tl.push({ci:nx.ci,i:i+1,ta:r3(cur-b-L),tb:r3(cur-b),te:r3(cur-b),open:false,L,a:pr!=null?pr:a0,b,a0,E:s.e,g:gap});
+    }
   });
   p.dur=r3(cur+c.tail);
   const sc=p.scenes, vo=c.offs.vid||0;
@@ -43482,8 +43490,8 @@ function layout(p){
   p._titles=tl;
   if(sc.length) tl.forEach(q=>{   /* 타이틀 앞뒤의 장면 — 앞 장면이 보이는 길이는 타이틀 시작까지, 다음 장면이 타이틀이 끝난 뒤에 시작하면 그 시작까지 타이틀이 덮음 */
     const ja=sceneIdx(q.ta,p), jb=sceneIdx(q.tb,p), xa=sc[ja];
-    if(!q.open&&xa&&xa.s<q.ta-0.3&&xa.e<=q.tb+1.0) xa._ve=q.ta;
-    if(ja===jb&&xa&&xa.e>q.tb+0.02&&xa.e-q.tb<=1.0) q.te=r3(xa.e);
+    if(!q.open&&xa&&xa.s<q.ta-0.3&&xa.e<=q.tb+1.0+q.b) xa._ve=q.ta;
+    if(ja===jb&&xa&&xa.e>q.tb+0.02&&xa.e-q.tb<=1.0+q.b) q.te=r3(xa.e);   /* 뒤 쉼이 있으면 그만큼 더 멀리 있는 다음 장면 시작까지 타이틀 그림을 유지 */
   });
   p._cues=null; p._cm=null; p._sm=null; igTimes(p);
 }
@@ -45699,6 +45707,13 @@ function menuSummary(){   /* 한 번에 만들기가 쓸, 각 메뉴에 저장�
    · v98 의 '첫 내용 장면 타이틀 카드(iopen)'는 이 기능으로 대체(addOpeners 삭제) ── */
 function titleOn(p){ const t=p&&p.cfg&&p.cfg.title; return !!(t&&t.on); }
 function titleDur(p){ return clamp(+(p.cfg.title&&p.cfg.title.dur)||2.5,1,6); }
+const TT_MIN=0.5, TT_MAX=10;
+function titleLen(p,ci){   /* 이 챕터 타이틀 길이 — 챕터마다 따로 정했으면(p.ttl[ci].dur) 그 값, 아니면 공통 길이(cfg.title.dur) */
+  const o=p.ttl&&p.ttl[ci], v=o&&o.dur!=null?+o.dur:NaN; return v>0?clamp(v,TT_MIN,TT_MAX):titleDur(p);
+}
+function ttNum(p,ci,k){   /* 챕터별 앞 쉼(pre)·뒤 쉼(post) — 정하지 않았으면 null */
+  const o=p.ttl&&p.ttl[ci], v=o&&o[k]!=null?+o[k]:NaN; return v>=0?Math.min(v,30):null;
+}
 const ttOff=(p,ci)=>!!(p.ttl&&p.ttl[ci]&&p.ttl[ci].off);
 function titleDef(p,ci){   /* 글을 따로 고치지 않았을 때 들어가는 글 */
   const n=(p.chap||[]).length, nm=cleanChap(p.chap[ci])||String(p.chap[ci]||'');
@@ -45720,12 +45735,12 @@ function drawTitle(g,w,h,t,ti){
   }catch(e){ if(!window.__titleErr){ window.__titleErr=e; console.warn('챕터 타이틀 그리기 오류',e); } g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; }
 }
 function titledStart(sc){ const a=P._titles; if(!a||!a.length) return false; for(let i=0;i<a.length;i++){ const q=a[i]; if(sc.s>=q.ta&&sc.s<=q.te+0.06) return true; } return false; }   /* 타이틀 뒤에 시작하는 장면 — 검정 페이드·크로스페이드는 건너뜀(타이틀이 걷히면서 이어짐) */
-function titleMutes(){ const a=(P&&P._titles)||[]; return a.map(q=>({a:Math.max(0,q.ta-0.15),b:q.tb})); }   /* 소리를 끄는 구간 — 타이틀이 나타나기 조금 전부터 */
+function titleMutes(){ const a=(P&&P._titles)||[]; return a.map(q=>({a:Math.max(0,q.ta-0.15),b:q.tb,c:Math.max(q.tb,q.te)})); }   /* 소리를 끄는 구간 — 타이틀이 나타나기 조금 전부터. b = 배경음악이 돌아오는 때, c = AI 영상 소리가 돌아오는 때(뒤 쉼 동안 타이틀 그림이 가린 앞 장면의 소리는 계속 끔) */
 function scheduleTitleGates(from){   /* 소리 끄기 — 배경음악(gT, 이어 재생 설정이면 제외)과 AI 영상 소리(gC)를 타이틀 동안 0 으로. 음량·덕킹·페이드 자동화와 섞이지 않게 맨 끝 단계의 게이트로 걸어 둠 */
   const ms=titleMutes(); if(!ms.length) return;
-  const gate=(node,down,up)=>{ if(!node) return; const g=node.gain, T0=ENG.T0, in0=ms.some(m=>m.a<=from&&from<m.b); g.cancelScheduledValues(0); g.setValueAtTime(in0?0:1,T0);
-    ms.forEach(m=>{ if(m.b<=from) return; if(m.a>from) g.setTargetAtTime(0,T0+(m.a-from),down); g.setTargetAtTime(1,T0+(m.b-from),up); }); };
-  gate(ENG.gC,0.03,0.12); if(!(P.cfg.title&&P.cfg.title.keepBgm)) gate(ENG.gT,0.05,0.3);
+  const gate=(node,down,up,k)=>{ if(!node) return; const g=node.gain, T0=ENG.T0, in0=ms.some(m=>m.a<=from&&from<m[k]); g.cancelScheduledValues(0); g.setValueAtTime(in0?0:1,T0);
+    ms.forEach(m=>{ if(m[k]<=from) return; if(m.a>from) g.setTargetAtTime(0,T0+(m.a-from),down); g.setTargetAtTime(1,T0+(m[k]-from),up); }); };
+  gate(ENG.gC,0.03,0.12,'c'); if(!(P.cfg.title&&P.cfg.title.keepBgm)) gate(ENG.gT,0.05,0.3,'b');
 }
 function applyTitle(on,dur){   /* 대화상자에서 [시작] 을 누를 때 — 바뀐 게 있으면 시간표를 다시 짬. 바뀌었으면 true */
   const t=P.cfg.title, d=clamp(+dur||2.5,1,6), ch=!!t.on!==!!on||Math.abs((+t.dur||2.5)-d)>1e-6;
@@ -45737,9 +45752,13 @@ const ttInit=c=>({ttl:!!c.title.on||!c.title.user,tdur:c.title.dur||2.5});   /* 
 function ttRow(d){
   return D_('챕터 타이틀',dchk('ttl',d.ttl,'오프닝과 각 챕터 시작에 타이틀 화면 넣기')+' <span class="hint">소리 없이</span> '+dnum('tdur',d.tdur,{min:1,step:0.5})+' 초<div class="hint">타이틀이 나오는 동안 나레이션·배경음악·영상 소리를 모두 끄고 제목만 보여 줘서 챕터가 넘어가는 느낌을 줘요(약 2~3초). 모양은 인포그래픽 스타일을 따라요.</div>');
 }
-function setTitleField(path,v){   /* tt:<챕터>:<t|k|s|on> */
+function setTitleField(path,v){   /* tt:<챕터>:<t|k|s|on|dur|pre|post> */
   const a=path.split(':'), ci=+a[1], k=a[2]; P.ttl=P.ttl||{}; const o=P.ttl[ci]||(P.ttl[ci]={});
   if(k==='on'){ if(v) delete o.off; else o.off=true; setTimeout(()=>renderInspector(true),0); return 'lay'; }
+  if(k==='dur'||k==='pre'||k==='post'){   /* 길이·앞 쉼·뒤 쉼(초) — 비우면 기본으로 */
+    if(v==null||!isFinite(+v)||(k==='dur'&&+v<=0)) delete o[k]; else o[k]=k==='dur'?r3(clamp(+v,TT_MIN,TT_MAX)):r3(clamp(+v,0,30));
+    if(!Object.keys(o).length) delete P.ttl[ci]; setTimeout(()=>renderInspector(true),0); return 'lay';
+  }
   o[k]=String(v==null?'':v); if(!o[k].trim()) delete o[k];
   (P._titles||[]).forEach(q=>{ q._ig=null; }); return 'draw';
 }
@@ -45749,17 +45768,17 @@ function inspTitle(){
   const tot=list.reduce((a,q)=>a+(q.tb-q.ta),0);
   let h='<div class="vs-ih"><b>챕터 타이틀</b><span>오프닝과 각 챕터 시작 — 소리 없이 타이틀만</span></div>';
   h+=F.row('사용',F.chk('cfg.title.on',on,'오프닝과 각 챕터 시작에 타이틀 화면 넣기'));
-  h+=F.row('길이',F.num('cfg.title.dur',tt.dur,{min:1,max:6,step:0.5}),'초 — 이 동안 소리를 모두 꺼요(약 2~3초 권장)');
+  h+=F.row('길이',F.num('cfg.title.dur',tt.dur,{min:1,max:6,step:0.5}),'초 — 이 동안 소리를 모두 꺼요(약 2~3초 권장). 챕터마다 따로 정한 길이는 그대로예요');
   h+=F.row('소리',F.chk('cfg.title.keepBgm',!!tt.keepBgm,'배경음악은 끄지 않고 이어서 재생'),'기본은 나레이션·배경음악·영상 소리를 모두 끔');
   h+=F.row('디자인',F.sel('cfg.info.style',ic.style||'news',STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'인포그래픽 스타일과 같은 모양(모든 프로젝트 공통)');
   h+='<div class="vs-note'+(on?'':' err')+'">'+(on?'타이틀 <b>'+list.length+'개</b> · 소리 없이 타이틀만 나오는 시간은 모두 '+tot.toFixed(1)+'초예요.':'타이틀이 꺼져 있어요 — 챕터가 바로 이어져요.')+'</div>';
-  h+='<div class="vs-sec">챕터별 글 <span class="hint">비워 두면 챕터 이름·날짜가 들어가요. 타임라인의 [타이틀] 줄을 눌러도 와요</span></div>';
+  h+='<div class="vs-sec">챕터별 글·길이·위치 <span class="hint">비워 두면 챕터 이름·날짜가 들어가요. 타임라인의 [타이틀] 줄에서 몸통을 끌면 위치, 양 끝을 끌면 길이가 바뀌어요</span></div>';
   h+=cis.map(ci=>{
     const q=list.find(x=>x.ci===ci), o=(P.ttl&&P.ttl[ci])||{}, df=titleDef(P,ci), off=ttOff(P,ci), dim=!on||off;
     return '<div class="vs-sn'+(dim?' no':'')+(ci===UI.ttSel?' cur':'')+'" data-ci="'+ci+'"><div class="r"><span class="t">'+(q?fmtT(q.ta,1):'—')+'</span><span class="b '+(dim?'no':'ok')+'">'+(dim||!q?'타이틀 없음':'타이틀 '+(q.tb-q.ta).toFixed(1)+'초')+'</span>'+F.btn('ttPlay','▶',{d:String(ci),title:'이 타이틀부터 재생',dis:!q})+'<span class="vs-sp"></span>'+F.chk('tt:'+ci+':on',!off,'넣기')+'</div>'
-      +F.row('제목',F.txt('tt:'+ci+':t',o.t||'',{ph:df.t}))+F.row('윗글',F.txt('tt:'+ci+':k',o.k||'',{ph:df.k||'(없음)'}))+F.row('아래 글',F.txt('tt:'+ci+':s',o.s||'',{ph:df.s||'(없음)'}))+'</div>';
+      +F.row('제목',F.txt('tt:'+ci+':t',o.t||'',{ph:df.t}))+F.row('윗글',F.txt('tt:'+ci+':k',o.k||'',{ph:df.k||'(없음)'}))+F.row('아래 글',F.txt('tt:'+ci+':s',o.s||'',{ph:df.s||'(없음)'}))+(q&&!dim?ttTimeRows(ci,q,o):'')+'</div>';
   }).join('');
-  h+='<div class="vs-btns">'+F.btn('ttReset','↺ 모든 글을 처음대로',{d:'*',title:'고친 제목·윗글·아래 글·넣기 표시를 모두 처음 상태로'})+'</div>';
+  h+='<div class="vs-btns">'+F.btn('ttReset','↺ 모든 글을 처음대로',{d:'*',title:'고친 제목·윗글·아래 글·넣기 표시를 모두 처음 상태로'})+F.btn('ttTimeReset','↺ 모든 길이·위치를 처음대로',{d:'*',dis:!Object.keys(P.ttl||{}).some(k=>ttHasTime(P.ttl[k])),title:'챕터마다 따로 정한 길이·앞 쉼·뒤 쉼을 지우고 공통 길이·기본 위치로'})+'</div>';
   return h;
 }
 /* ══ /v100 ══ */
@@ -46044,7 +46063,7 @@ function tselPaint(){   /* 타임라인의 테두리·도구줄(삭제 단추·�
   let lab='';
   if(UI.tsel&&P){ const els=tselEls(); if(!els.length) UI.tsel=null; else{ els.forEach(e=>e.classList.add('tsel')); lab=tselLabel(); } }
   const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)':'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
-  const h=$('vsTlHint'); if(h) h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· Delete 로 삭제</i>':'요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정';
+  const h=$('vsTlHint'); if(h) h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · Delete 로 끄기':'Delete 로 삭제')+'</i>':'요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정';
 }
 function tselSet(k,id,pi){ UI.tsel={k,id:String(id),pi:pi==null?-1:pi}; tselPaint(); }
 function tselClear(){ if(UI.tsel){ UI.tsel=null; tselPaint(); } }
@@ -46135,6 +46154,51 @@ function tlMenu(e){
   _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
 }
 /* ══ /v102 ══ */
+/* ══ v103 (2026-10-26) — 타임라인의 챕터 타이틀을 끌어서 길이·위치 바꾸기 ═════════════════════════════════════════════════════
+   · [타이틀] 줄 블록 — 몸통을 끌면 위치, 오른쪽 끝을 끌면 길이(뒤 내용이 밀리거나 당겨짐), 왼쪽 끝을 끌면 시작(끝은 그대로). Alt = 달라붙지 않음. 오프닝은 0초에 고정이라 길이만
+   · 저장 p.ttl[챕터]={dur,pre,post} — dur=타이틀 길이(초, 없으면 공통 길이), pre=앞 챕터 나레이션이 끝난 뒤 타이틀이 나오기까지(앞 쉼, 없으면 max(쉬는 시간,길이+0.2)−길이),
+     post=타이틀이 끝난 뒤 이 챕터 나레이션이 시작되기까지(뒤 쉼, 없으면 0 — 그동안 타이틀 그림은 그대로이고 소리는 켜짐). 기본값과 같아지면 지워서 설정을 따라가게 함
+   · layout(): 챕터 사이 = 앞 쉼 + 길이 + 뒤 쉼(아무것도 안 정하면 v100 과 똑같은 시간표). p._titles 항목에 L·a·b·a0·E·g(길이·앞 쉼·뒤 쉼·기본 앞 쉼·앞 문장 끝·앞 쉬는 시간)이 더 붙음
+   · 몸통을 끌면 같은 틈 안에서 앞 쉼↔뒤 쉼이 바뀌고(틈 크기 그대로), 뒤 쉼이 모자라게 오른쪽으로 더 끌면 틈이 커져 뒤 내용이 밀림. 왼쪽은 앞 문장이 끝나는 곳까지 ── */
+function ttSelect(ci){   /* 타임라인의 타이틀을 누르면 그 챕터를 고르고 [타이틀] 탭을 엶 */
+  UI.ttSel=+ci; document.querySelectorAll('#vsTlIn .tl-tt').forEach(e=>e.classList.toggle('sel',+e.dataset.ci===UI.ttSel));
+  if(UI.tab!=='tt'){ UI.tab='tt'; renderTabs(); } renderInspector(true);
+  const ro=document.querySelector('#vsInsp .vs-sn[data-ci="'+UI.ttSel+'"]'); if(ro&&ro.scrollIntoView) ro.scrollIntoView({block:'nearest'});
+}
+const ttHasTime=o=>!!(o&&(o.dur!=null||o.pre!=null||o.post!=null));
+function ttResetKeys(id,keys){   /* id = 챕터 번호 또는 '*'(모두) — 지정한 키만 지움(글·넣기 표시와 길이·위치는 따로 처음대로) */
+  if(!P.ttl) return; const cis=id==='*'?Object.keys(P.ttl):[String(id)];
+  cis.forEach(ci=>{ const o=P.ttl[ci]; if(!o) return; keys.forEach(k=>{ delete o[k]; }); if(!Object.keys(o).length) delete P.ttl[ci]; });
+}
+function ttDragCalc(d,dt,snap){   /* 끌기 결과 — {L 길이, a 앞 쉼, b 뒤 쉼, ta·tb 새 시작·끝, R 뒤 내용이 밀리는 양(초)}. 저장은 ttApply */
+  const q=d.q0; let L=q.L, a=q.a, b=q.b;
+  if(d.k==='ttr'){   /* 오른쪽 끝 — 길이(앞 쉼·뒤 쉼은 그대로라 뒤 내용이 같이 밀리거나 당겨짐) */
+    L=q.L+dt; if(snap) L=snapTo(d.lpts,L,Math.min(6/UI.pps,0.15)); L=r3(clamp(L,TT_MIN,TT_MAX));
+  }else if(!q.open){   /* 오프닝은 0초에 고정 */
+    let ta=q.ta+dt; if(snap) ta=snapTo(d.tpts,ta,Math.min(8/UI.pps,0.4));
+    if(d.k==='ttl'){ a=r3(clamp(ta-q.E,0,Math.max(0,q.a+q.L-TT_MIN))); L=r3(q.a+q.L-a); }   /* 왼쪽 끝 — 끝은 그대로, 시작만 옮겨 앞 쉼↔길이 */
+    else{ a=r3(Math.max(0,ta-q.E)); b=r3(Math.max(0,q.b-(a-q.a))); }   /* 몸통 — 같은 틈 안에서 앞 쉼↔뒤 쉼, 뒤 쉼이 모자라면 틈이 커짐 */
+  }
+  const ta=r3(q.E+a), tb=r3(ta+L);
+  return {L,a,b,ta,tb,R:r3((a+L+b)-(q.a+q.L+q.b))};
+}
+function ttApply(q,r){   /* 끌기 결과를 p.ttl 에 저장 — 기본값과 같은 항목은 지워서 설정을 따라가게 함 */
+  P.ttl=P.ttl||{}; const o=P.ttl[q.ci]||(P.ttl[q.ci]={});
+  if(Math.abs(r.L-titleDur(P))<0.005) delete o.dur; else o.dur=r3(r.L);
+  if(!q.open){
+    if(Math.abs(r.a-(Math.max(q.g,r.L+0.2)-r.L))<0.005) delete o.pre; else o.pre=r3(r.a);
+    if(r.b<0.005) delete o.post; else o.post=r3(r.b);
+  }
+  if(!Object.keys(o).length) delete P.ttl[q.ci];
+}
+function ttTimeRows(ci,q,o){   /* [타이틀] 탭 챕터 칸의 길이·앞 쉼·뒤 쉼 — 타임라인에서 끌어도 같은 값이 바뀜 */
+  return F.row('길이',F.num('tt:'+ci+':dur',o.dur==null?'':o.dur,{min:TT_MIN,max:TT_MAX,step:0.1,ph:String(r2(titleDur(P)))}),'초 — 소리 없이 타이틀만 나오는 시간(비우면 위의 공통 길이)')
+    +(q.open?'<div class="hint">오프닝 타이틀은 맨 앞(0초)에 고정이에요 — 길이만 바꿔요</div>'
+      :F.row('앞 쉼',F.num('tt:'+ci+':pre',o.pre==null?'':o.pre,{min:0,max:30,step:0.1,ph:String(r2(q.a0))}),'초 — 앞 챕터 나레이션이 끝난 뒤 타이틀이 나오기까지')
+       +F.row('뒤 쉼',F.num('tt:'+ci+':post',o.post==null?'':o.post,{min:0,max:30,step:0.1,ph:'0'}),'초 — 타이틀이 끝난 뒤 이 챕터 나레이션이 시작되기까지(그림은 그대로)'))
+    +(ttHasTime(o)?'<div class="vs-btns">'+F.btn('ttTimeReset','↺ 길이·위치를 처음대로',{d:String(ci),title:'이 챕터의 길이·앞 쉼·뒤 쉼을 지우고 기본으로'})+'</div>':'');
+}
+/* ══ /v103 ══ */
 /* ── INFO-END ── */
 
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
@@ -46501,7 +46565,7 @@ function syncReport(){
     if(v.kind==='video'&&v.bid){ const pl=fitPlan(c); if(pl.rate<0.75||pl.rate>1.3) add('warn',c.s,'장면 '+(j+1)+' 영상 속도가 '+pl.rate.toFixed(2)+'배로 어색할 수 있어요'); if(pl.hold>1.5) add('info',c.s,'장면 '+(j+1)+' 영상이 '+pl.hold.toFixed(1)+'초 먼저 끝나 마지막 화면이 멈춰 있어요(맞춤: 반복·늘리기 선택 가능)'); }
     if(v.gen&&v.gen.state==='err') add('err',c.s,'장면 '+(j+1)+' 화면 생성 실패: '+(v.gen.err||'').slice(0,60));
   });
-  if(titleOn(p)) add('info',0,'챕터 타이틀 '+(p._titles||[]).length+'개 — 각 '+titleDur(p)+'초 동안 소리를 끄고 타이틀만 보여 줘요'+(p.cfg.title.keepBgm?'(배경음악은 이어짐)':''));
+  if(titleOn(p)){ const ts=p._titles||[], ls=ts.map(q=>r2(q.tb-q.ta)), same=ls.every(x=>x===ls[0]); add('info',0,'챕터 타이틀 '+ts.length+'개 — '+(same&&ls.length?'각 '+ls[0]+'초 동안':'챕터마다 길이가 달라요(합쳐서 '+r2(ls.reduce((a,b)=>a+b,0))+'초). 그 동안')+' 소리를 끄고 타이틀만 보여 줘요'+(p.cfg.title.keepBgm?'(배경음악은 이어짐)':'')); }
   else add('info',0,'챕터 타이틀이 꺼져 있어요 — 오프닝·챕터 시작에 소리 없는 타이틀 화면을 넣으려면 [타이틀] 탭에서 켜세요');
   const nv=p.scenes.filter(c=>['none','card'].indexOf(c.vis.kind||'none')>=0&&!igsOfScene(c).some(g=>!isOver(g.mode))).length; if(nv) add('info',0,'AI 영상·이미지·파일·인포그래픽이 아직 없는 장면 '+nv+'개 — 카드 화면으로 나와요');
   (p.igs||[]).forEach((g,gi)=>{
@@ -46602,7 +46666,8 @@ function renderTimeline(){
   const step=pps>=100?1:pps>=50?2:pps>=26?5:pps>=13?10:30; let rl='';
   for(let t=0;t<=P.dur;t+=step) rl+='<i class="tk" style="left:'+(t*pps)+'px"><b>'+fmtT(t)+'</b></i>';
   const px=t=>Math.round(t*pps);
-  const trow=(P._titles||[]).map(q=>{ const sp=titleSpec(P,q.ci), wd=px(q.te)-px(q.ta); return '<div class="tl-tt'+(q.ci===UI.ttSel?' sel':'')+'" data-ci="'+q.ci+'" style="left:'+px(q.ta)+'px;width:'+Math.max(6,wd-1)+'px" title="'+esc('챕터 타이틀 · '+sp.t+' — 소리 없이 '+(q.tb-q.ta).toFixed(1)+'초 (눌러서 고치기)')+'">'+(wd>34?'🔇 '+esc(sp.t):'')+'</div>'; }).join('');
+  const trow=(P._titles||[]).map(q=>{ const sp=titleSpec(P,q.ci), wd=px(q.tb)-px(q.ta), tail=px(q.te)-px(q.tb);   /* 블록 = 소리 없는 구간 [ta,tb], 뒤 쉼 동안 그림만 남는 구간 [tb,te] 은 옅은 꼬리 */
+    return '<div class="tl-tt'+(q.open?' open':'')+(q.ci===UI.ttSel?' sel':'')+'" data-ci="'+q.ci+'" style="left:'+px(q.ta)+'px;width:'+Math.max(6,wd-1)+'px" title="'+esc('챕터 타이틀 · '+sp.t+' — 소리 없이 '+(q.tb-q.ta).toFixed(1)+'초'+(q.open?' · 맨 앞(0초)에 고정 — 오른쪽 끝을 끌어 길이를 바꿔요':' · 끌어서 옮기고, 양 끝을 끌어 길이를 바꿔요')+' (Alt = 달라붙지 않음, Delete = 끔)')+'">'+(q.open?'':'<i class="e l"></i>')+'<span>'+(wd>34?'🔇 '+esc(sp.t):'')+'</span><i class="e r"></i></div>'+(tail>1?'<div class="tl-tt-x" style="left:'+(px(q.tb)-1)+'px;width:'+(tail+1)+'px"></div>':''); }).join('');
   const vrow=P.scenes.map((c,j)=>'<div class="tl-sc k-'+(c.vis.kind||'none')+(j===UI.sel?' sel':'')+'" data-j="'+j+'" style="left:'+px(c.s)+'px;width:'+Math.max(3,px(c.e)-px(c.s)-1)+'px">'+(pps>=14||(c.e-c.s)*pps>26?'<span>'+(j+1)+'</span>':'')+(j>0?'<i class="tl-h" data-j="'+j+'" title="끌어서 장면 시작 위치 바꾸기"></i>':'')+'</div>').join('');
   const lanes=[]; (P.igs||[]).slice().sort((a,b)=>a.s-b.s).forEach(g=>{ let k=lanes.findIndex(x=>x<=g.s+0.02); if(k<0){ k=lanes.length; lanes.push(0); } lanes[k]=g.e; g._lane=k; });
   const gh=Math.max(40,Math.max(1,lanes.length)*24+8); const comps=compList(), nlc=compLayout(comps,pps), chh=Math.max(22,nlc*18+6); host.style.height=(170+gh+chh)+'px'; { const lb=$('vsTllG'); if(lb) lb.style.height=gh+'px'; const lc=$('vsTllC'); if(lc) lc.style.height=chh+'px'; }
@@ -46663,7 +46728,7 @@ function inspVis(){
   if(k==='none'||k==='card'){ const cd=v.card||{};
     h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}))+F.row('배경색',F.col('sc.cc1',cd.c1||'#1b2a41')+F.col('sc.cc2',cd.c2||'#2f4a73')+F.btn('ccReset','자동색')); }
   { const gs=igsOfScene(c); h+='<div class="vs-sec">이 장면의 인포그래픽 <span class="hint">'+gs.length+'개 — 타임라인 [인포] 줄에서 편집해요</span></div>'+(gs.length?'<div class="vs-btns">'+gs.map(x=>F.btn('igSel',esc(igName(x)),{d:x.id})).join('')+'</div>':'')+'<div class="vs-btns">'+F.btn('infoMk','📊 이 장면 자동 구성')+F.btn('igNew','＋ 인포그래픽 추가')+'</div>'; }
-  h+='<div class="vs-sec">챕터 타이틀 <span class="hint">'+(titleOn(P)?'켜짐 · 챕터마다 '+titleDur(P)+'초 소리 없이':'꺼짐')+'</span></div><div class="vs-btns">'+F.btn('tab','🏷 타이틀 설정',{d:'tt'})+'</div>';
+  h+='<div class="vs-sec">챕터 타이틀 <span class="hint">'+(titleOn(P)?'켜짐 · 기본 '+titleDur(P)+'초 소리 없이':'꺼짐')+'</span></div><div class="vs-btns">'+F.btn('tab','🏷 타이틀 설정',{d:'tt'})+'</div>';
   return h;
 }
 function inspSub(){
@@ -46940,7 +47005,8 @@ async function act(a,btn){
     case 'zin': setZoom(UI.pps*1.4); break; case 'zout': setZoom(UI.pps/1.4); break;
     case 'zfit': { const s=$('vsTls'); if(s) setZoom((s.clientWidth-60)/Math.max(1,P.dur)); break; }
     case 'ttPlay': { const q=(P._titles||[]).find(x=>x.ci===+id); if(q) startPlay(Math.max(0,q.ta-0.5),'preview',Math.min(P.dur,q.te+2.5)); break; }
-    case 'ttReset': { if(id==='*') P.ttl={}; else if(P.ttl) delete P.ttl[id]; layout(P); commit('챕터 타이틀 글'); renderAll(); break; }
+    case 'ttReset': { ttResetKeys(id,['t','k','s','off']); layout(P); commit('챕터 타이틀 글'); renderAll(); break; }
+    case 'ttTimeReset': { ttResetKeys(id,['dur','pre','post']); layout(P); commit('챕터 타이틀 길이·위치'); renderAll(); break; }
     case 'selPrev': selectScene(UI.sel-1,true); break; case 'selNext': selectScene(UI.sel+1,true); break;
     case 'startPh': { if(UI.sel>0){ setSceneStart(UI.sel,ENG.playing?nowT():ENG.pos); commit('장면 시작'); refresh('insp'); } break; }
     case 'splitPh': { const t=ENG.playing?nowT():ENG.pos, j=sceneIdx(t); if(splitScene(j,t)){ UI.sel=j+1; commit('장면 나누기'); renderAll(); } else toast('장면 가장자리에서 0.4초 이상 떨어진 곳에서 나눠 주세요'); break; }
@@ -47030,14 +47096,21 @@ let DRAG=null;
 const tlX=e=>{ const r=$('vsTlIn').getBoundingClientRect(); return (e.clientX-r.left)/UI.pps; };
 function tlDown(e){
   if(!P||UI.busy==='export'||e.button>0) return; const t=e.target, host=$('vsTlIn'); let d=null;
-  const cu=t.closest&&t.closest('.tl-cu'), gi=t.closest&&t.closest('.tl-ig'), ic=t.closest&&t.closest('.tl-ic');
+  const cu=t.closest&&t.closest('.tl-cu'), gi=t.closest&&t.closest('.tl-ig'), ic=t.closest&&t.closest('.tl-ic'), tq=t.closest&&t.closest('.tl-tt');
   if(t.classList.contains('tl-h')){ const j=+t.dataset.j; d={k:'cut',j,t:P.scenes[j].s}; }
   else if(cu){ const sid=cu.dataset.sid, edge=t.classList.contains('e')?(t.classList.contains('l')?'cl':'cr'):'cm'; d={k:edge,sid}; if(sid.indexOf('x:')===0){ const x=P.xsubs.find(q=>q.id===sid.slice(2)); if(!x) return; d.x=x; d.s0=x.s; d.e0=x.e; } else{ const s=P.sents.find(q=>q.id===sid); if(!s) return; d.ds=s.sub.ds||0; d.de=s.sub.de||0; } }
   else if(gi){ const gg=igById(gi.dataset.id); if(!gg) return; const edge=t.classList.contains('e')?(t.classList.contains('l')?'igl':'igr'):'igm'; d={k:edge,id:gg.id,s0:gg.s,e0:gg.e,pts:igSnapPts(gg.id),snap:!e.altKey}; UI.ig=gg.id; }
   else if(ic){ const gg=igById(ic.dataset.g), it=gg&&gg.items.find(x=>x.id===ic.dataset.i); if(!gg||!it) return; const pi=ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1, pp=pi>=0?it.parts[pi]:null; if(pi>=0&&!pp) return; const t0=pp?partTime(P,pp,it):blockT0(P,it), m0=pp?partMention(P,pp):mentionT0(P,it); d={k:'ic',g:gg.id,i:it.id,pi,t0,off:m0==null?leadOf(it):m0-t0,pts:icSnapPts(gg,it),snap:!e.altKey,lo:Math.max(0,gg.s),hi:Math.max(gg.s+0.3,gg.e-0.3)}; UI.ig=gg.id; UI.igIt=it.id; UI.igPt=pi; }
+  else if(tq){   /* 챕터 타이틀 — 몸통=위치, 양 끝=길이 (오프닝은 0초에 고정이라 길이만) */
+    const q=(P._titles||[]).find(x=>x.ci===+tq.dataset.ci); if(!q) return; ttSelect(q.ci);
+    const edge=t.classList.contains('e')?(t.classList.contains('l')?'ttl':'ttr'):'ttm', tp=[q.ta,q.E], lp=[q.L,titleDur(P)];
+    if(edge==='ttm'&&!q.open) tp.push(q.E+q.a0,q.ta+q.b);   /* 달라붙는 곳 — 앞 문장이 끝나는 곳·기본 위치·다음 나레이션 바로 앞 */
+    for(let n=1;n<=TT_MAX;n++) lp.push(n);   /* 길이는 기본 길이와 정수 초에 달라붙음 */
+    d={k:edge,ci:q.ci,q0:{ci:q.ci,ta:q.ta,tb:q.tb,te:q.te,L:q.L,a:q.a,b:q.b,a0:q.a0,E:q.E,g:q.g,open:!!q.open},tpts:tp.sort((x,y)=>x-y),lpts:lp.sort((x,y)=>x-y),snap:!e.altKey,was:ENG.playing&&ENG.mode==='preview'};
+    if(d.was) pausePlay(); seekTo(Math.max(0,tlX(e)));
+  }
   else if(t.closest('[data-seek]')){
     const sc=t.closest('.tl-sc'); if(sc&&!sc.classList.contains('sel')){ UI.sel=+sc.dataset.j; selectScene(UI.sel,false); }
-    const tq=t.closest&&t.closest('.tl-tt'); if(tq){ UI.ttSel=+tq.dataset.ci; document.querySelectorAll('#vsTlIn .tl-tt').forEach(e=>e.classList.toggle('sel',+e.dataset.ci===UI.ttSel)); if(UI.tab!=='tt'){ UI.tab='tt'; renderTabs(); } renderInspector(true); const ro=document.querySelector('#vsInsp .vs-sn[data-ci="'+UI.ttSel+'"]'); if(ro&&ro.scrollIntoView) ro.scrollIntoView({block:'nearest'}); }
     d={k:'seek',was:ENG.playing&&ENG.mode==='preview'}; if(d.was) pausePlay(); seekTo(Math.max(0,tlX(e)));
   }
   tlSelFrom(t);   /* 누른 요소를 고름(빈 곳이면 선택 풀기) — 장면을 누르면 selectScene 이 선택을 풀기 때문에 맨 끝에서 */
@@ -47047,6 +47120,13 @@ function tlMove(e){
   if(!DRAG) return; const d=DRAG, dt=(e.clientX-d.x0)/UI.pps, g=$('vsGuide');
   if(d.k==='seek'){ seekTo(Math.max(0,tlX(e))); return; }
   if(d.k==='cut'){ const lo=P.scenes[d.j-1].s+0.3, hi=(d.j+1<P.scenes.length?P.scenes[d.j+1].s:P.dur)-0.3; d.nt=clamp(d.t+dt,lo,Math.max(lo,hi)); g.style.display='block'; g.style.left=(d.nt*UI.pps)+'px'; g.setAttribute('data-t',fmtT(d.nt,1)); return; }
+  if(d.k==='ttm'||d.k==='ttl'||d.k==='ttr'){   /* 챕터 타이틀 끌기 — 몸통=위치, 오른쪽 끝=길이, 왼쪽 끝=시작(끝은 그대로) */
+    const el=document.querySelector('#vsTlIn .tl-tt[data-ci="'+d.ci+'"]'); if(!el) return; const r=ttDragCalc(d,dt,d.snap); d.res=r;
+    if(d.q0.open&&d.k==='ttm'&&Math.abs(dt)*UI.pps>6&&!d.hinted){ d.hinted=true; toast('오프닝 타이틀은 0초에 고정이에요 — 오른쪽 끝을 끌어 길이를 바꿔요'); }
+    const tx=el.nextElementSibling; if(tx&&tx.classList.contains('tl-tt-x')) tx.style.display='none';
+    el.style.left=Math.round(r.ta*UI.pps)+'px'; el.style.width=Math.max(6,Math.round(r.tb*UI.pps)-Math.round(r.ta*UI.pps)-1)+'px';
+    const gx=d.k==='ttr'?r.tb:r.ta; g.style.display='block'; g.style.left=(gx*UI.pps)+'px'; g.setAttribute('data-t',fmtT(gx,1)+' · '+r.L.toFixed(1)+'초'+(Math.abs(r.R)>=0.05?' · 뒤 내용 '+(r.R>0?'+':'')+r.R.toFixed(1)+'초':'')); return;
+  }
   if(d.k==='ic'){   /* 구성요소 칩 끌기 — 시점(나타나는 시각)을 옮김, 말하는 시각(문장 경계)에 달라붙음 */
     const el=document.querySelector('#vsTlIn .tl-ic[data-i="'+d.i+'"][data-p="'+d.pi+'"]'); if(!el) return; let nt=d.t0+dt;
     if(d.snap){ const th=8/UI.pps; nt=snapTo(d.pts,nt+d.off,th)-d.off; }
@@ -47068,6 +47148,12 @@ function tlUp(e){
   const dt=(e.clientX-d.x0)/UI.pps;
   if(d.k==='seek'){ if(d.was) startPlay(ENG.pos); return; }
   if(d.k==='cut'){ if(d.nt!=null&&Math.abs(dt)>0.02){ setSceneStart(d.j,d.nt); commit('컷 이동'); renderAll(); } return; }
+  if(d.k==='ttm'||d.k==='ttl'||d.k==='ttr'){
+    const r=d.res, q=d.q0, ch=r&&(Math.abs(r.L-q.L)>0.004||Math.abs(r.a-q.a)>0.004||Math.abs(r.b-q.b)>0.004);
+    if(ch){ ttApply(q,r); layout(P); commit(d.k==='ttm'?'챕터 타이틀 위치':'챕터 타이틀 길이'); renderAll(); if(UI.tab==='tt') renderInspector(true); const nq=(P._titles||[]).find(x=>x.ci===q.ci); seekTo(Math.max(0,nq?nq.ta:ENG.pos)); }
+    else{ renderTimeline(); if(d.was) startPlay(ENG.pos); }   /* 눌렀다 뗌 = 선택(이미 눌렀을 때 골랐고 재생헤드도 옮겼음) */
+    return;
+  }
   if(d.k==='ic'){
     const gg=igById(d.g), it=gg&&gg.items.find(x=>x.id===d.i);
     if(gg&&it&&d.nt!=null&&Math.abs(d.nt-d.t0)>0.02){ if(d.pi>=0) shiftPart(it.parts[d.pi],d.nt-d.t0); else shiftItem(it,d.nt-d.t0); sortItems(gg); layout(P); igPoster(gg); UI.ig=gg.id; UI.igIt=it.id; UI.igPt=d.pi; commit('구성요소 시점'); renderAll(); seekTo(Math.max(0,d.nt+0.05)); }
@@ -47160,7 +47246,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,titleOn,titleDur,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD}};
+    igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
