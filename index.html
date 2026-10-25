@@ -2875,6 +2875,18 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-aitb tr.cur td{background:#14283f}
 .vs-aitb .warn,.vs-aisum .warn,.vs-note .warn{color:#fbbf24}
 @media(max-width:700px){.vs-aisum{grid-template-columns:1fr}}
+/* v99 — 인포그래픽 스타일 갤러리 · 설정 초기화 줄 · 저장된 설정 요약 */
+.vs-sty-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0}
+.vs-sty{background:#111c30;border:1px solid #1f2d46;border-radius:9px;padding:4px 4px 7px;cursor:pointer;color:#cbd5e1;text-align:center;font-family:inherit}
+.vs-sty:hover{background:#17253d;border-color:#35507c}
+.vs-sty.on{border-color:#f59e0b;box-shadow:0 0 0 1px #f59e0b inset;background:#1b2742}
+.vs-sty .th{display:block;aspect-ratio:16/9;background:#0b1322 center/cover no-repeat;border-radius:6px;margin-bottom:4px}
+.vs-sty b{display:block;font-size:11px;line-height:1.55;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:640px){.vs-sty-grid{grid-template-columns:repeat(2,1fr)}}
+.vs-rst{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0 2px;padding-top:9px;border-top:1px dashed #243149}
+.vs-sumry{margin:8px 0;padding:8px 10px;border-radius:8px;background:#0f1b30;border:1px solid #223653;font-size:11.5px;line-height:1.7}
+.vs-sumry .t{display:block;color:#cbd5e1;margin-bottom:2px}
+.vs-sumry div{display:flex;gap:8px}.vs-sumry div b{flex:0 0 52px;color:#9fb0c9}.vs-sumry div span{color:#e2e8f0}
 </style>
 <!-- BTMVIDEO-CSS-END -->
 <!-- BTMLH-CSS-BEGIN -->
@@ -42983,7 +42995,7 @@ const DEF_CFG={
   sub:{on:true,font:FONTS[0][0],size:46,color:'#ffffff',stroke:'#000000',strokeW:7,bg:'#000000',bgA:0,pos:'bottom',off:7,maxW:84,lines:2,bold:true,anim:'fade'},
   look:{trans:'fade',transDur:0.35,fit:'auto',motion:'kenburns',clipVol:0,filter:{b:1,c:1,s:1}},
   bgm:{bid:'',name:'',vol:0.16,duck:0.35,fadeIn:1.5,fadeOut:3,loop:true},
-  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true},prompts:{info:'',sub:''}
+  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false}
 };
 function loadPref(){ let p={}; try{ p=JSON.parse(localStorage.getItem(LS_PREF)||'{}')||{}; }catch(e){} return deepMerge(clone(DEF_CFG),p.cfg||{}); }
 function savePref(cfg){ try{ const c=clone(cfg); delete c.bgm; delete c.offs; localStorage.setItem(LS_PREF,JSON.stringify({cfg:c})); }catch(e){} }
@@ -43350,7 +43362,7 @@ function commit(label){   /* 바꾼 직후 호출 — 되돌리기 기록에 쌓
   if(H.cur) H.undo.push(H.cur); if(H.undo.length>60) H.undo.shift(); H.redo.length=0; H.cur=s;
   P.updated=Date.now(); UI.saved=false; paintSaved(); scheduleSave();
 }
-function restore(s){ P=JSON.parse(s); H.cur=s; layout(P); UI.sel=clamp(UI.sel,0,Math.max(0,P.scenes.length-1)); canvasSize(); renderAll(); scheduleSave(); UI.saved=false; paintSaved(); igPostersAll(); }
+function restore(s){ P=JSON.parse(s); H.cur=s; savePref(P.cfg); layout(P); UI.sel=clamp(UI.sel,0,Math.max(0,P.scenes.length-1)); canvasSize(); renderAll(); scheduleSave(); UI.saved=false; paintSaved(); igPostersAll(); }
 function undo(){ if(!H.undo.length) return; H.redo.push(H.cur); restore(H.undo.pop()); }
 function redo(){ if(!H.redo.length) return; H.undo.push(H.cur); restore(H.redo.pop()); }
 let _svT=0;
@@ -43366,7 +43378,7 @@ async function saveProject(){
 function fixProject(p){   /* 옛 형식 보정 */
   p.cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); p.xsubs=p.xsubs||[]; p.chunks=p.chunks||[]; p.scenes=p.scenes||[];
   p.scenes.forEach(c=>{ c.vis=c.vis||{kind:'none'}; c.trans=c.trans||{t:'inherit',d:0}; c.alt=c.alt||[]; });
-  p.sents.forEach(s=>{ s.sub=s.sub||{text:null,ds:0,de:0,hide:false}; }); p.char=p.char||null; p.igs=p.igs||[]; igMigrate(p);
+  p.sents.forEach(s=>{ s.sub=s.sub||{text:null,ds:0,de:0,hide:false}; }); p.char=p.char||null; p.igs=p.igs||[]; igMigrate(p); p.igs.forEach(g=>{ if(!g.sty) g.sty='news'; });
   p.chunks.forEach(k=>{ if(k.state==='run') k.state=k.bid?'done':'none'; });
   p.scenes.forEach(c=>{ if(c.vis.gen&&c.vis.gen.state==='run') c.vis.gen.state='err',c.vis.gen.err='중단됨(창을 닫았어요)'; });
   return p;
@@ -43526,15 +43538,17 @@ function sortItems(ig){   /* 나오는 순서대로 — 화면의 자리 순서�
 const sortClips=p=>{ if(p.igs) p.igs.sort((a,b)=>(a.s-b.s)||(a.e-b.e)); };
 
 /* ── 색 ── */
-function infoPal(ci){
-  const cf=P.cfg.info||{}, bk=STY_B[cf.base], ik=STY_I[cf.item], hue=ACC_H[(ci||0)%ACC_H.length], kr=cf.ud!=='us', dark=bk?!!bk[1]:cf.theme!=='light';
-  const accent=/^#[0-9a-f]{6}$/i.test(cf.accent||'')?cf.accent:(ik?(dark?ik[2]:ik[1]):(dark?'hsl('+hue+',88%,64%)':'hsl('+hue+',78%,38%)'));
+function infoPal(ci,sty){
+  const cf=P.cfg.info||{}, bk=STY_B[cf.base], ik=STY_I[cf.item], hue=ACC_H[(ci||0)%ACC_H.length], kr=cf.ud!=='us', sp=(!bk&&sty&&SPAL[sty])||null, dark=bk?!!bk[1]:(sp?sp.dark:cf.theme!=='light');
+  const own=/^#[0-9a-f]{6}$/i.test(cf.accent||'')?cf.accent:(ik?(dark?ik[2]:ik[1]):'');   /* 직접 고른 포인트색이 있으면 스타일 기본색보다 우선 */
+  const accent=own||(sp&&sp.accent)||(dark?'hsl('+hue+',88%,64%)':'hsl('+hue+',78%,38%)');
   const base={dark,hue,accent,up:kr?(dark?'#ff6b6b':'#dc2626'):(dark?'#4ade80':'#16a34a'),down:kr?(dark?'#60a5fa':'#2563eb'):(dark?'#ff6b6b':'#dc2626'),flat:dark?'#cbd5e1':'#475569',shadow:dark?'rgba(0,0,0,.38)':'rgba(15,23,42,.14)'};
   if(bk){
     const acc2=/^#/.test(accent)?accent:(dark?'#6aa8ff':'#2563eb');
     return Object.assign(base,{bg1:bk[2],bg2:mixHex(bk[2],acc2,dark?0.20:0.12),blob:dark?'rgba(255,255,255,.07)':rgbaOf(acc2,.14),blob0:dark?'rgba(255,255,255,0)':rgbaOf(acc2,0),
       panel:rgbaOf(bk[3],dark?0.70:0.88),panelLine:bk[6],card:dark?mixHex(bk[3],'#ffffff',0.06):bk[3],cardLine:bk[6],track:bk[7],text:bk[4],mute:bk[5],cardSolid:bk[3]});
   }
+  if(sp){ const o=Object.assign({},sp); delete o.dark; delete o.accent; return Object.assign(base,o); }   /* 바탕색이 '자동'이면 스타일 고유 색 구성 */
   return Object.assign(base,{
     bg1:dark?'hsl('+hue+',46%,10%)':'hsl('+hue+',55%,97%)', bg2:dark?'hsl('+((hue+28)%360)+',52%,20%)':'hsl('+((hue+22)%360)+',55%,90%)',
     blob:dark?'rgba(255,255,255,.08)':'hsla('+hue+',85%,60%,.18)', blob0:dark?'rgba(255,255,255,0)':'hsla('+hue+',85%,60%,0)',
@@ -43572,7 +43586,14 @@ function drawRich(g,line,x,y,hl,colA,colB,fA,fB){   /* 줄 안의 강조어만 �
   const re=new RegExp('('+words.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g');
   let cx=x; line.split(re).forEach(seg=>{ if(!seg) return; const isH=words.indexOf(seg)>=0; g.font=isH?fB:fA; g.fillStyle=isH?colB:colA; g.fillText(seg,cx,y); cx+=g.measureText(seg).width; });
 }
-function cardBox(E,x,y,w,h,bk,al){ const g=E.g, p=E.pal; g.save(); if(al!=null) g.globalAlpha*=al; roundRect(g,x,y,w,h,0.024*bk); g.fillStyle=p.card; g.fill(); g.lineWidth=Math.max(1,0.0018*bk); g.strokeStyle=p.cardLine; g.stroke(); g.restore(); }
+function cardBox(E,x,y,w,h,bk,al){   /* 카드 바탕 — 스타일마다 모양이 다름: glass(기본) · flat(매거진: 가는 선) · slide(흰 카드+그림자) · dash(위쪽 형광 선) */
+  const g=E.g, p=E.pal, ck=(E.sk&&E.sk.card)||'glass'; g.save(); if(al!=null) g.globalAlpha*=al;
+  if(ck==='flat'){ g.strokeStyle=p.cardLine; g.lineWidth=Math.max(1,0.0022*bk); g.beginPath(); g.moveTo(x,y+0.5); g.lineTo(x+w,y+0.5); g.stroke(); g.fillStyle=p.accent; g.fillRect(x,y-0.5,Math.min(0.12*bk,w*0.2),Math.max(2,0.006*bk)); }
+  else if(ck==='slide'){ g.save(); g.shadowColor='rgba(15,23,42,.12)'; g.shadowBlur=0.022*bk; g.shadowOffsetY=0.005*bk; roundRect(g,x,y,w,h,0.012*bk); g.fillStyle=p.card; g.fill(); g.restore(); roundRect(g,x,y,w,h,0.012*bk); g.lineWidth=Math.max(1,0.0018*bk); g.strokeStyle=p.cardLine; g.stroke(); }
+  else if(ck==='dash'){ roundRect(g,x,y,w,h,0.010*bk); g.fillStyle=p.card; g.fill(); g.lineWidth=Math.max(1,0.002*bk); g.strokeStyle=p.cardLine; g.stroke(); g.fillStyle=p.accent; g.fillRect(x+0.012*bk,y,Math.min(0.18*bk,w*0.3),Math.max(2,0.005*bk)); }
+  else{ roundRect(g,x,y,w,h,0.024*bk); g.fillStyle=p.card; g.fill(); g.lineWidth=Math.max(1,0.0018*bk); g.strokeStyle=p.cardLine; g.stroke(); }
+  g.restore();
+}
 function strip(E,x,y,h,col,bk){ const g=E.g; g.fillStyle=col; roundRect(g,x,y,0.008*bk,h,0.004*bk); g.fill(); }
 function pill(E,x,y,s,fs,fg,bg,al){   /* 둥근 알약 글 — 너비를 돌려줌. al: 'l'|'r'|'c' 기준점 */
   const g=E.g; g.font='700 '+fs.toFixed(1)+'px '+E.font; const tw=g.measureText(s).width, pw=tw+fs*1.1, ph=fs*1.55;
@@ -43597,15 +43618,15 @@ const wrapN=(E,s,w,fs,wt,n)=>{ E.g.font=wt+' '+fs.toFixed(1)+'px '+E.font; retur
 MEAS.stat=(E,it,iw,k)=>({h:0.225*E.B*k});
 MEAS.hero=(E,it,iw,k)=>({h:0.44*E.B*k});
 MEAS.move=(E,it,iw,k)=>({h:0.285*E.B*k});
-MEAS.line=(E,it,iw,k)=>({h:0.37*E.B*k});
-MEAS.donut=(E,it,iw,k)=>({h:0.32*E.B*k});
-MEAS.gauge=(E,it,iw,k)=>({h:(it.label?0.47:0.42)*E.B*k});
+MEAS.line=(E,it,iw,k)=>({h:0.37*E.B*k*bigf(E)});
+MEAS.donut=(E,it,iw,k)=>({h:0.32*E.B*k*bigf(E)});
+MEAS.gauge=(E,it,iw,k)=>({h:(it.label?0.47:0.42)*E.B*k*bigf(E)});
 MEAS.vs=(E,it,iw,k)=>({h:0.31*E.B*k});
-MEAS.point=(E,it,iw,k)=>{ const fs=0.040*E.B*k, ls=wrapN(E,it.text,iw-0.110*E.B*k,fs,'700',3); return {h:ls.length*fs*1.3+0.030*E.B*k,fs,ls}; };
+MEAS.point=(E,it,iw,k)=>{ const fs=0.040*E.B*k*ptk(E), ls=wrapN(E,it.text,iw-0.110*E.B*k,fs,'700',3); return {h:ls.length*fs*1.3+0.030*E.B*k,fs,ls}; };
 MEAS.quote=(E,it,iw,k)=>{ const bk=E.B*k, fs=0.060*bk, ls=wrapN(E,it.text,iw-0.16*bk,fs,'800',3); return {h:ls.length*fs*1.25+0.07*bk+(it.by?0.04*bk:0),fs,ls}; };
 MEAS.title=(E,it,iw,k)=>{ const bk=E.B*k, fs=0.080*bk, ls=wrapN(E,it.text,iw-0.04*bk,fs,'800',3); return {h:ls.length*fs*1.2+0.04*bk+(it.sub?0.06*bk:0),fs,ls}; };
 MEAS.heat=(E,it,iw,k)=>{ const bk=E.B*k, n=(it.parts||[]).length, cols=Math.min(Math.max(1,n),clamp(Math.round(iw/(0.30*bk)),2,5)), rows=Math.ceil(Math.max(1,n)/cols), th=0.115*bk; return {h:(it.label?HDR*bk:0)+rows*th+(rows-1)*0.012*bk+0.04*bk,cols,rows,th}; };
-MEAS.event=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,(it.parts||[]).length); return {h:bk*((it.label?HDR:0)+n*0.082+(n-1)*0.008+0.04)}; };
+MEAS.event=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,(it.parts||[]).length), tl=E.sk&&E.sk.tl; return {h:bk*((it.label?HDR:0)+(tl?n*0.098+0.05:n*0.082+(n-1)*0.008+0.04))}; };
 MEAS.level=(E,it,iw,k)=>{ const bk=E.B*k, n=(it.parts||[]).length; return {h:bk*((it.label?HDR:0)+Math.max(0.30,n*0.075)+0.04)}; };
 MEAS.scenario=(E,it,iw,k)=>{
   const bk=E.B*k, ps=(it.parts||[]).slice(0,3), n=Math.max(1,ps.length), cw=(iw-0.05*bk-0.04*bk*(n-1))/n, fs=0.030*bk; let mx=1;
@@ -43661,7 +43682,7 @@ DRAW.move=(E,c,it)=>{
 DRAW.point=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k, k=rv(s,0.42);
   g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.05*bk,0);
-  roundRect(g,c.x,c.y,c.w,c.h,0.022*bk); g.fillStyle=pal.card; g.fill(); g.lineWidth=Math.max(1,0.0018*bk); g.strokeStyle=pal.cardLine; g.stroke();
+  if(E.sk&&E.sk.card&&E.sk.card!=='glass') cardBox(E,c.x,c.y,c.w,c.h,bk); else{ roundRect(g,c.x,c.y,c.w,c.h,0.022*bk); g.fillStyle=pal.card; g.fill(); g.lineWidth=Math.max(1,0.0018*bk); g.strokeStyle=pal.cardLine; g.stroke(); }
   const ah=(c.h-0.04*bk)*rv(s,0.5); g.fillStyle=pal.accent; roundRect(g,c.x+0.014*bk,c.y+(c.h-ah)/2,0.008*bk,ah,0.004*bk); g.fill();
   const lh=c.fs*1.3, x0=c.x+(it.style==='num'?0.096:0.080)*bk, ty=c.y+0.015*bk;
   if(it.style==='num'){ const r=0.0185*bk, cy=ty+lh*0.5; g.fillStyle=pal.accent; g.beginPath(); g.arc(c.x+0.055*bk,cy,r,0,Math.PI*2); g.fill(); dtx(g,String(c.num||1),c.x+0.055*bk,cy,0.026*bk,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle'); }
@@ -43693,6 +43714,7 @@ DRAW.bar=(E,c,it)=>{   /* 등락 막대 — 한 묶음. 양수·음수가 섞이
   const s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k, tone=itemTone(it), tc=toneCol(pal,tone)||pal.accent;
   g.save(); g.globalAlpha*=rv(s,0.4);
   const px=c.x+0.024*bk, iw=c.w-0.048*bk, lw=iw*0.27, vw=iw*0.20, tx0=px+lw+0.012*bk, tw=Math.max(10,iw-lw-vw-0.024*bk), th=c.h*0.40, ty=c.y+(c.h-th)/2;
+  if(c.first&&E.sk&&E.sk.grid){ g.save(); g.strokeStyle=alphaOf(pal.mute,0.18); g.lineWidth=1; g.setLineDash([3,4]); g.beginPath(); for(let q=0;q<=4;q++){ const gx=Math.round(tx0+tw*q/4)+0.5; g.moveTo(gx,c.gy+0.012*bk); g.lineTo(gx,c.gy+c.gh-0.012*bk); } g.stroke(); g.setLineDash([]); g.restore(); }
   dtf(g,String(it.label||''),px,c.y+c.h/2,lw,0.031*bk,'700',pal.text,font,'left','middle',0.6);
   g.fillStyle=pal.track; roundRect(g,tx0,ty,tw,th,th/2); g.fill();
   const v=+it.v||0, both=c.mxp>0&&c.mxn>0, tot=(c.mxp+c.mxn)||1, x0=both?tx0+tw*c.mxn/tot:tx0, scale=both?tw/tot:tw/(Math.max(c.mxp,c.mxn)||1);
@@ -43798,6 +43820,7 @@ DRAW.vs=(E,c,it)=>{
   g.restore();
 };
 DRAW.event=(E,c,it)=>{
+  if(E.sk&&E.sk.tl) return drawEventTL(E,c,it);
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=it.parts||[];
   popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
   const x0=c.x+0.03*bk, iw=c.w-0.06*bk, rh=0.082*bk, y0=c.y+(it.label?HDR*bk:0)+0.02*bk;
@@ -43813,6 +43836,7 @@ DRAW.event=(E,c,it)=>{
   g.restore();
 };
 DRAW.flow=(E,c,it)=>{
+  if(E.sk&&E.sk.tl) return drawFlowTL(E,c,it);
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,5), n=ps.length, m=c.m;
   popBegin(E,c,s0,bk,0.3); hdrDraw(E,c,it,bk); const y0=c.y+(it.label?(HDR+0.018)*bk:0);
   if(m.horiz){
@@ -43932,22 +43956,23 @@ function charSprite(im,dw,dh){   /* 캐릭터 그림을 그릴 크기로 한 번
 
 /* ── 배치 — 블록들을 패널 안에 위에서 아래로(수치 카드는 가로로 나란히) 놓고, 모자라면 배율 k 를 줄이고 남으면 조금 키움 ── */
 function igFlow(E,items,iw,ah,kMax,kMin){
-  const B=E.B, place=k=>{
+  const B=E.B, grid=!!(E.sk&&E.sk.grid2), bg=bigf(E), isTile=it=>grid?!!TILEG[it.type]:it.type==='stat', place=k=>{   /* grid: 대시보드 스타일 — 수치·지표 블록을 3열 격자 타일로 */
     const gap=0.02*B*k, cells=[]; let y=0, i=0, numC=0;
     while(i<items.length){
       const it=items[i];
-      if(it.type==='stat'){
-        let n=0; while(i+n<items.length&&items[i+n].type==='stat') n++;
-        const minW=0.30*B*k, colsMax=clamp(Math.floor((iw+gap)/(minW+gap)),1,4), rows=Math.ceil(n/colsMax), base=Math.floor(n/rows), extra=n%rows; let idx=i;
+      if(isTile(it)){
+        let n=0; while(i+n<items.length&&isTile(items[i+n])) n++;
+        const minW=(grid?0.42:0.30)*B*k, colsMax=clamp(Math.floor((iw+gap)/(minW+gap)),1,grid?3:4), rows=Math.ceil(n/colsMax), base=Math.floor(n/rows), extra=n%rows; let idx=i;
         for(let r=0;r<rows;r++){
-          const c=base+(r<extra?1:0), cw=Math.min(0.62*B*k,(iw-gap*(c-1))/c), tot=cw*c+gap*(c-1), ox=(iw-tot)/2, ch=0.225*B*k;
-          for(let q=0;q<c;q++){ cells.push({t:'stat',i:idx,x:ox+q*(cw+gap),y,w:cw,h:ch,k}); idx++; }
+          const c=base+(r<extra?1:0), cw=grid?(iw-gap*(c-1))/c:Math.min(0.62*B*k,(iw-gap*(c-1))/c), tot=cw*c+gap*(c-1), ox=(iw-tot)/2; let ch=0.225*B*k;
+          if(grid){ ch=0; for(let q=0;q<c;q++){ const t2=items[idx+q], mf2=MEAS[t2.type]; ch=Math.max(ch,mf2?mf2(E,t2,cw,k).h:0.225*B*k); } }
+          for(let q=0;q<c;q++){ const t2=items[idx]; cells.push({t:grid?t2.type:'stat',i:idx,x:ox+q*(cw+gap),y,w:cw,h:ch,k,m:grid&&MEAS[t2.type]?MEAS[t2.type](E,t2,cw,k):undefined}); idx++; }
           y+=ch+gap;
         }
         i+=n;
       }else if(it.type==='bar'||it.type==='row'){
         let n=0; while(i+n<items.length&&items[i+n].type===it.type) n++;
-        const isBar=it.type==='bar', rowH=(isBar?0.066:0.072)*B*k, rg=(isBar?0.010:0.008)*B*k, gp=0.018*B*k, gh=n*rowH+(n-1)*rg+gp*2;
+        const isBar=it.type==='bar', rowH=(isBar?0.066:0.072)*B*k*(isBar?bg:1), rg=(isBar?0.010:0.008)*B*k, gp=0.018*B*k, gh=n*rowH+(n-1)*rg+gp*2;
         let mxp=0, mxn=0; if(isBar) for(let q=0;q<n;q++){ const v=+items[i+q].v||0; if(v>0) mxp=Math.max(mxp,v); else mxn=Math.max(mxn,-v); }
         for(let q=0;q<n;q++) cells.push({t:it.type,i:i+q,x:0,y:y+gp+q*(rowH+rg),w:iw,h:rowH,k,gy:y,gh,first:q===0,last:q===n-1,n,mxp,mxn});
         y+=gh+gap; i+=n;
@@ -43962,8 +43987,8 @@ function igFlow(E,items,iw,ah,kMax,kMin){
   let pl=null; for(let k=kMax;k>=kMin-1e-6;k-=0.06){ pl=place(k); if(pl.total<=ah) break; }
   return pl;
 }
-function headMeasure(g,ig,iw,B,font,small){
-  const fsK=(small?0.024:0.027)*B, title=String(ig.title||'').trim(), kick=String(ig.kicker||'').trim(); let fsT=(small?0.044:0.060)*B, tl=[];
+function headMeasure(g,ig,iw,B,font,small,sk){   /* sk(스타일)를 주면 윗글이 비었을 때 스타일 이름이 윗글로 들어가고, 제목 크기도 스타일에 맞춤 */
+  const fsK=(small?0.024:0.027)*B, title=String(ig.title||'').trim(), kick=String(ig.kicker||(sk&&sk.kick)||'').trim(); let fsT=(small?0.044:0.060)*B*((sk&&sk.titleK)||1), tl=[];
   if(title){ for(let n=0;n<9;n++){ g.font='800 '+fsT.toFixed(1)+'px '+font; tl=wrapLines(g,title,iw); if(tl.length<=2||fsT<=0.030*B) break; fsT*=0.92; } tl=tl.slice(0,2); }
   return {kick,fsK,tl,fsT,h:(kick?fsK*1.55:0)+(tl.length?tl.length*fsT*1.2+0.018*B:0)};
 }
@@ -43976,27 +44001,34 @@ function chipOf(it){   /* 겹치기 형태(띠·배지)에 쓸 한 줄 요약 */
   if(t==='vs'){ const a=ps[0]||{}, b=ps[1]||{}; return {l:it.label||((a.l||'')+' vs '+(b.l||'')),v:(a.v||'')+' : '+(b.v||''),d:'',tone:''}; }
   if(t==='level'){ const cur=ps.find(p=>p.tone==='cur')||ps[0]||{}; return {l:it.label||cur.l||'',v:cur.v==null?'':fmtN(+cur.v),d:'',tone:''}; }
   if(t==='event'){ const p=ps[0]||{}; return {l:p.d||it.label||'',v:p.t||'',d:'',tone:'',txt:true}; }
+  if(t==='cmp'){ const r=ps[0]||{}; return {l:it.label||((it.a||'')+' vs '+(it.b||'')),v:(r.a||'')+' : '+(r.b||''),d:'',tone:''}; }
+  if(t==='map'){ const p=ps[0]||{}, v=nz(p.v); return {l:it.label||p.l||'',v:v==null?String(p.t||''):(v>0?'+':'')+v+'%',d:'',tone:v==null?'':v>0?'up':v<0?'down':''}; }
   if(t==='point'||t==='quote'||t==='title') return {l:'',v:'',d:'',txt:true,text:it.text||it.sub||'',tone:''};
   const p0=ps[0]||{}; return {l:it.label||'',v:String(p0.l||p0.t||''),d:'',tone:'',txt:true};
 }
 const _ilc=new Map();
 function igSig(ig){ return JSON.stringify(ig.items||[],(k,v)=>(k==='at'||k==='dt'||k==='id')?undefined:v); }
-function igLay(g,w,h,ig){   /* 배치 계산(캐시) — 글자 길이·자막 자리·블록 구성이 같으면 다시 계산하지 않음 */
-  const sub=P.cfg.sub, key=[w,h,ig.mode,ig.title||'',ig.kicker||'',sub.font,sub.on?(sub.pos+'|'+sub.off+'|'+sub.lines+'|'+sub.size):'-',igSig(ig)].join('§');
+function igLay(g,w,h,ig){   /* 배치 계산(캐시) — 글자 길이·자막 자리·블록 구성·스타일·캐릭터 사용이 같으면 다시 계산하지 않음 */
+  const sub=P.cfg.sub, key=[w,h,ig.mode,styOf(ig),P.cfg.info.nochar?1:0,ig.title||'',ig.kicker||'',sub.font,sub.on?(sub.pos+'|'+sub.off+'|'+sub.lines+'|'+sub.size):'-',igSig(ig)].join('§');
   let L=_ilc.get(key); if(L) return L;
   L=buildIgLay(g,w,h,ig); _ilc.set(key,L); if(_ilc.size>120) _ilc.delete(_ilc.keys().next().value); return L;
 }
 function buildIgLay(g,w,h,ig){
-  const font=P.cfg.sub.font, sub=P.cfg.sub, B=Math.min(h,w*0.75), m=Math.round(0.042*B), mode=MODE_OF[ig.mode]?ig.mode:'left', items=ig.items||[];
+  const sty=styOf(ig), sk=ISTY[sty], font=sk.font==='serif'?SERIF:P.cfg.sub.font, sub=P.cfg.sub, B=Math.min(h,w*0.75), m=Math.round(0.042*B), mode0=MODE_OF[ig.mode]?ig.mode:'left', mode=(P.cfg.info.nochar&&(mode0==='left'||mode0==='right'))?'full':mode0, items=ig.items||[];   /* 캐릭터 미적용이면 left·right 도 패널을 화면 전체로 */
   let top=m, bot=h-m;
   if(sub.on){ const blk=sub.lines*sub.size*1.28*h/1080+0.012*h, off=h*sub.off/100; if(sub.pos==='bottom') bot=Math.min(bot,h-off-blk); else if(sub.pos==='top') top=Math.max(top,off+blk); }
   bot=Math.max(bot,top+B*0.5);
-  const E={g,B,font,cf:P.cfg.info,p:P}, L={mode,B,m,font,w,h,top,bot,cells:[],chips:[],panel:null,col:null,bar:null,head:null};
+  const E={g,B,font,cf:P.cfg.info,p:P,sty,sk}, L={mode,B,m,font,w,h,top,bot,cells:[],chips:[],panel:null,col:null,bar:null,head:null,band:null,foot:null,sty};
   if(mode==='left'||mode==='right'||mode==='full'){
-    const x0=mode==='right'?w*0.30+m*0.5:m, x1=mode==='left'?w*0.70-m*0.5:w-m, panel={x:x0,y:top,w:Math.max(80,x1-x0),h:bot-top,r:0.032*B};
-    const pad=Math.round(0.034*B), iw=panel.w-pad*2, head=headMeasure(g,ig,iw,B,font), ay0=panel.y+pad+head.h+(head.h?0.022*B:0), ah=panel.y+panel.h-pad-ay0, pl=igFlow(E,items,iw,ah,1.3,0.4), oy=ay0+Math.max(0,ah-pl.total)*0.5;
+    const x0=mode==='right'?w*0.30+m*0.5:m, x1=mode==='left'?w*0.70-m*0.5:w-m, panel={x:x0,y:top,w:Math.max(80,x1-x0),h:bot-top,r:(sk.card==='flat'?0.004:sk.card==='dash'?0.016:sk.card==='slide'?0.022:0.032)*B};
+    const pad=Math.round(0.034*B), iw=panel.w-pad*2, head=headMeasure(g,ig,iw,B,font,false,sk);
+    let ay0, ah, band=null, foot=null;
+    if(sk.band){   /* 프레젠테이션: 제목 띠 + 아래 쪽 번호 줄 */
+      const bh=Math.round(pad*1.5+head.h); band={x:panel.x,y:panel.y,w:panel.w,h:bh,r:panel.r}; foot=Math.round(0.05*B); ay0=panel.y+bh+0.026*B; ah=panel.y+panel.h-pad*0.6-ay0-foot;
+    }else{ ay0=panel.y+pad+head.h+(head.h?0.022*B:0); ah=panel.y+panel.h-pad-ay0; }
+    const pl=igFlow(E,items,iw,ah,1.3,0.4), oy=ay0+Math.max(0,ah-pl.total)*0.5;
     pl.cells.forEach(c=>{ c.x+=panel.x+pad; c.y+=oy; if(c.gy!=null) c.gy+=oy; });
-    Object.assign(L,{panel,col:mode==='full'?null:{x:mode==='left'?w*0.70:0,w:w*0.30,top,bot},cells:pl.cells,k:pl.k,head:Object.assign(head,{x:panel.x+pad,y:panel.y+pad,w:iw})});
+    Object.assign(L,{panel,col:mode==='full'?null:{x:mode==='left'?w*0.70:0,w:w*0.30,top,bot},cells:pl.cells,k:pl.k,band,foot:foot?{x:panel.x+pad,y:panel.y+panel.h-pad*0.6-foot*0.9,w:iw,h:foot}:null,head:Object.assign(head,{x:panel.x+pad,y:panel.y+(band?pad*0.75:pad),w:iw})});
   }else if(mode==='hero'){
     const iw=w-m*2, head=headMeasure(g,ig,iw,B,font,true), ay0=top+head.h+(head.h?0.03*B:0), ah=bot-ay0, fw=Math.min(iw,1.5*B), pl=igFlow(E,items,fw,ah,2.0,0.5), ox=m+(iw-fw)/2, oy=ay0+Math.max(0,ah-pl.total)*0.5;
     pl.cells.forEach(c=>{ c.x+=ox; c.y+=oy; if(c.gy!=null) c.gy+=oy; });
@@ -44052,12 +44084,17 @@ function drawChip(E,r,it,sz){   /* 겹치기 칩 한 개: 큰 글(수치)이 있
 /* ── 배경·패널을 한 번만 구워 둠(그림자 번짐 같은 무거운 그리기를 매 프레임 하지 않게 + 움직이는 배경이 없어 영상 인코더에도 가벼움) ── */
 const _igb=new Map();
 function igBack(w,h,ig,L,pal,ci){
-  const cf=P.cfg.info, key=[w,h,L.mode,ig.bg,cf.base,cf.item,cf.theme,cf.accent,cf.ud,ci,L.panel?[L.panel.x,L.panel.y,L.panel.w,L.panel.h].join(','):'',L.bar?[L.bar.x,L.bar.y,L.bar.w,L.bar.h].join(','):''].join('|');
+  const cf=P.cfg.info, sty=L.sty||'news', key=[w,h,L.mode,ig.bg,cf.base,cf.item,cf.theme,cf.accent,cf.ud,ci,sty,L.panel?[L.panel.x,L.panel.y,L.panel.w,L.panel.h].join(','):'',L.bar?[L.bar.x,L.bar.y,L.bar.w,L.bar.h].join(','):'',L.band?L.band.h:''].join('|');
   let c=_igb.get(key); if(c) return c;
   c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d'), B=L.B, solid=!isOver(L.mode)&&ig.bg!=='scene';
   if(solid){
     const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,pal.bg1); gr.addColorStop(1,pal.bg2); g.fillStyle=gr; g.fillRect(0,0,w,h);
-    [[0.18,0.22,0.62],[0.82,0.30,0.74],[0.55,0.92,0.68]].forEach(b=>{ const cx=w*b[0], cy=h*b[1], r=B*b[2], rg=g.createRadialGradient(cx,cy,0,cx,cy,r); rg.addColorStop(0,pal.blob); rg.addColorStop(1,pal.blob0); g.fillStyle=rg; g.fillRect(0,0,w,h); });
+    if(sty!=='magazine') [[0.18,0.22,0.62],[0.82,0.30,0.74],[0.55,0.92,0.68]].forEach(b=>{ const cx=w*b[0], cy=h*b[1], r=B*b[2], rg=g.createRadialGradient(cx,cy,0,cx,cy,r); rg.addColorStop(0,pal.blob); rg.addColorStop(1,pal.blob0); g.fillStyle=rg; g.fillRect(0,0,w,h); });
+    if(sty==='dash'){   /* 대시보드: 가는 격자무늬 바탕 */
+      g.strokeStyle=alphaOf(pal.accent,0.07); g.lineWidth=1; const st=Math.max(18,0.05*B); g.beginPath(); for(let x=0;x<w;x+=st){ g.moveTo(x+0.5,0); g.lineTo(x+0.5,h); } for(let y=0;y<h;y+=st){ g.moveTo(0,y+0.5); g.lineTo(w,y+0.5); } g.stroke();
+    }else if(sty==='map'){   /* 지도: 위도·경도 눈금선 */
+      g.strokeStyle=alphaOf(pal.accent,0.07); g.lineWidth=1; g.beginPath(); for(let q=1;q<12;q++){ const x=Math.round(w*q/12)+0.5; g.moveTo(x,0); g.lineTo(x,h); } for(let q=1;q<6;q++){ const y=Math.round(h*q/6)+0.5; g.moveTo(0,y); g.lineTo(w,y); } g.stroke();
+    }
     if(L.mode==='title'){
       const a=alphaOf(/^#/.test(pal.accent)||/^hsl/.test(pal.accent)?pal.accent:'#3b82f6',1);
       const cg=g.createRadialGradient(w*0.86,h*0.46,0,w*0.86,h*0.46,B*0.8); cg.addColorStop(0,alphaOf(pal.accent,0.34)); cg.addColorStop(1,alphaOf(pal.accent,0)); g.fillStyle=cg; g.fillRect(0,0,w,h);
@@ -44069,31 +44106,63 @@ function igBack(w,h,ig,L,pal,ci){
     const over=isOver(L.mode)||ig.bg==='scene'; g.save(); g.shadowColor=pal.shadow; g.shadowBlur=0.045*B; g.shadowOffsetY=0.012*B; roundRect(g,rc.x,rc.y,rc.w,rc.h,rc.r); g.fillStyle=over?alphaOf(pal.cardSolid,pal.dark?0.84:0.92):pal.panel; g.fill(); g.restore();
     roundRect(g,rc.x,rc.y,rc.w,rc.h,rc.r); g.lineWidth=Math.max(1,0.002*B); g.strokeStyle=pal.panelLine; g.stroke();
   };
-  if(L.panel) glass(L.panel); if(L.bar) glass(L.bar);
+  if(L.panel){
+    const pn=L.panel, over=isOver(L.mode)||ig.bg==='scene';
+    if(sty==='magazine'&&!over){   /* 종이 + 위 굵은 선·아래 가는 선 */
+      g.save(); g.shadowColor=pal.shadow; g.shadowBlur=0.03*B; g.shadowOffsetY=0.008*B; g.fillStyle=pal.panel; g.fillRect(pn.x,pn.y,pn.w,pn.h); g.restore();
+      g.strokeStyle=pal.panelLine; g.lineWidth=Math.max(1,0.002*B); g.strokeRect(pn.x+0.5,pn.y+0.5,pn.w-1,pn.h-1);
+      g.fillStyle=pal.accent; g.fillRect(pn.x,pn.y,pn.w,Math.max(4,0.011*B)); g.fillStyle=alphaOf(pal.text,0.85); g.fillRect(pn.x+0.034*B,pn.y+pn.h-0.034*B,pn.w-0.068*B,Math.max(1,0.0022*B));
+    }else{
+      glass(pn);
+      if(sty==='chart'&&!over){   /* 차트: 모눈종이 */
+        g.save(); roundRect(g,pn.x,pn.y,pn.w,pn.h,pn.r); g.clip(); g.strokeStyle=alphaOf(pal.mute,0.13); g.lineWidth=1; const st=Math.max(16,0.045*B); g.beginPath(); for(let x=pn.x+st;x<pn.x+pn.w;x+=st){ g.moveTo(Math.round(x)+0.5,pn.y); g.lineTo(Math.round(x)+0.5,pn.y+pn.h); } for(let y=pn.y+st;y<pn.y+pn.h;y+=st){ g.moveTo(pn.x,Math.round(y)+0.5); g.lineTo(pn.x+pn.w,Math.round(y)+0.5); } g.stroke(); g.restore();
+      }else if(sty==='dash'&&!over){   /* 대시보드: 형광 테두리 */
+        g.save(); g.shadowColor=alphaOf(pal.accent,0.55); g.shadowBlur=0.03*B; roundRect(g,pn.x,pn.y,pn.w,pn.h,pn.r); g.lineWidth=Math.max(1.5,0.003*B); g.strokeStyle=alphaOf(pal.accent,0.55); g.stroke(); g.restore();
+      }else if(sty==='slide'&&L.band&&!over){   /* 슬라이드: 위쪽 제목 띠 */
+        g.save(); roundRect(g,pn.x,pn.y,pn.w,pn.h,pn.r); g.clip(); g.fillStyle=pal.accent; g.fillRect(pn.x,pn.y,pn.w,L.band.h); g.fillStyle=alphaOf('#ffffff',0.22); g.fillRect(pn.x,pn.y+L.band.h-Math.max(2,0.005*B),pn.w,Math.max(2,0.005*B)); g.restore();
+      }
+    }
+  }
+  if(L.bar) glass(L.bar);
   _igb.set(key,c); if(_igb.size>30) _igb.delete(_igb.keys().next().value); return c;
 }
 
 /* ── 클립 한 개의 한 프레임 (o.all = 모든 블록을 이미 나온 상태로, 페이드 없음: 썸네일용) ── */
+function drawHead(E,L,ig,lt,o){   /* 제목·윗글 — 스타일마다 다름(슬라이드는 띠 위 흰 글, 매거진은 세리프+가는 선) */
+  const g=E.g, pal=E.pal, font=E.font, B=L.B, H=L.head, sk=E.sk; if(!H) return;
+  const inv=!!L.band, kcol=inv?'rgba(255,255,255,.85)':pal.accent, tcol=inv?'#ffffff':pal.text;
+  g.save(); if(L.panel){ g.beginPath(); roundRect(g,L.panel.x,L.panel.y,L.panel.w,L.panel.h,L.panel.r); g.clip(); }
+  g.globalAlpha*=o.all?1:rv(lt,0.35); let y=H.y; const ls=sk.track&&('letterSpacing' in g);
+  if(H.kick){ if(ls) g.letterSpacing=(0.0035*B).toFixed(1)+'px'; dtf(g,sk.upper?H.kick.toUpperCase():H.kick,H.x,y,H.w,H.fsK,'700',kcol,font,'left','top',0.6); if(ls) g.letterSpacing='0px'; y+=H.fsK*1.55; }
+  if(H.tl.length){
+    H.tl.forEach((l,i)=>dtx(g,l,H.x,y+i*H.fsT*1.2,H.fsT,'800',tcol,font)); y+=H.tl.length*H.fsT*1.2+0.006*B;
+    if(sk.rule){ g.fillStyle=alphaOf(pal.text,0.8); g.fillRect(H.x,y,H.w,Math.max(1,0.0022*B)); g.fillStyle=pal.accent; g.fillRect(H.x,y-Math.max(1,0.0022*B)*0.5,Math.min(H.w*0.12,0.12*B),Math.max(3,0.0075*B)); }
+    else if(!inv){ g.fillStyle=pal.accent; roundRect(g,H.x,y,Math.min(H.w*0.22,0.20*B),0.0075*B,0.004*B); g.fill(); }
+  }
+  g.restore();
+}
+function drawFoot(E,L,ig,o){   /* 슬라이드: 아래 줄 — 영상 제목 · 쪽 번호 */
+  const g=E.g, pal=E.pal, font=E.font, B=L.B, F0=L.foot; if(!F0) return;
+  const full=(P.igs||[]).filter(x=>!isOver(x.mode)&&x.mode!=='title').sort((a,b)=>(a.s-b.s)||(a.e-b.e)), n=full.indexOf(ig)+1, ty=F0.y+F0.h*0.5;
+  g.save(); g.fillStyle=alphaOf(pal.mute,0.35); g.fillRect(F0.x,F0.y,F0.w,1);
+  dtf(g,String(P.title||'').slice(0,40),F0.x,ty+0.004*B,F0.w*0.7,0.024*B,'600',pal.mute,font,'left','middle',0.6);
+  if(n>0&&full.length>1) dtx(g,n+' / '+full.length,F0.x+F0.w,ty+0.004*B,0.026*B,'800',pal.accent,font,'right','middle');
+  g.restore();
+}
 function drawClip(g,w,h,ig,t,o){
   o=o||{}; const lt=t-ig.s; let al=1;
   if(!o.all){ al=Math.min(rv(lt,0.45),clamp((ig.e-t)/0.32,0,1)); if(al<=0.004) return; }
-  const s0=sentById(P,ig.a&&ig.a.sid), ci=s0?s0.ci:0, pal=infoPal(ci), cf=P.cfg.info, L=igLay(g,w,h,ig), B=L.B, font=L.font;
-  const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all};
+  const s0=sentById(P,ig.a&&ig.a.sid), ci=s0?s0.ci:0, L=igLay(g,w,h,ig), sty=L.sty, sk=ISTY[sty], pal=infoPal(ci,sty), cf=P.cfg.info, B=L.B, font=L.font;
+  const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all,sty,sk};
   E.sinceAt=tm=>{ if(E.all) return 99; if(tm==null) return t-ig.s; return tm<ig.s-0.05?99:t-Math.max(tm,ig.s); };
   E.sinceBlock=it=>E.sinceAt(blockT0(P,it));
   g.save(); g.globalAlpha*=al; g.drawImage(igBack(w,h,ig,L,pal,ci),0,0);
   if(L.col) drawInfoChar(g,L,t,pal,o);
   if(L.mode==='title'){ drawTitleCard(E,L,ig); g.restore(); return; }
-  const H=L.head;
-  if(H){
-    g.save(); if(L.panel){ g.beginPath(); roundRect(g,L.panel.x,L.panel.y,L.panel.w,L.panel.h,L.panel.r); g.clip(); }
-    g.globalAlpha*=o.all?1:rv(lt,0.35); let y=H.y;
-    if(H.kick){ dtf(g,H.kick,H.x,y,H.w,H.fsK,'700',pal.accent,font,'left','top',0.6); y+=H.fsK*1.55; }
-    if(H.tl.length){ H.tl.forEach((l,i)=>dtx(g,l,H.x,y+i*H.fsT*1.2,H.fsT,'800',pal.text,font)); y+=H.tl.length*H.fsT*1.2+0.006*B; g.fillStyle=pal.accent; roundRect(g,H.x,y,Math.min(H.w*0.22,0.20*B),0.0075*B,0.004*B); g.fill(); }
-    g.restore();
-  }
+  drawHead(E,L,ig,lt,o);
   if(L.panel&&!isOver(L.mode)){ g.save(); g.beginPath(); roundRect(g,L.panel.x,L.panel.y,L.panel.w,L.panel.h,L.panel.r); g.clip(); }
   L.cells.forEach(c=>{ const it=E.items[c.i]; if(!it) return; const f=DRAW[c.t]; if(f) f(E,c,it); });
+  if(L.foot) drawFoot(E,L,ig,o);
   if(L.panel&&!isOver(L.mode)) g.restore();
   if(L.badge){ const b=L.badge, s=E.sinceAt(blockT0(P,E.items[0]||{})); const k=o.all?1:rv(lt,0.4); g.save(); g.globalAlpha*=k; roundRect(g,b.x,b.y,b.w,b.h,b.h*0.22); g.fillStyle=pal.accent; g.fill(); dtf(g,b.text,b.x+b.w/2,b.y+b.h/2,b.w-0.03*B,b.fs,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle',0.5); g.restore(); void s; }
   L.chips.forEach(r=>{ const it=E.items[r.i]; if(it) drawChip(E,r,it,r.sz); });
@@ -44250,7 +44319,7 @@ function ruleBlocks(ss,ctx){
   /* 일정 */
   const evp=[]; ss.forEach((s,si)=>{ const dm=/(\d{1,2})월\s?(\d{1,2})일|(\d{1,2})\/(\d{1,2})/.exec(s.text), wk=/(다음|이번)\s?주\s?(월|화|수|목|금)요일/.exec(s.text);
     if((dm||wk)&&EVT_RE.test(s.text)){ const m=dm||wk, d=dm?((dm[1]||dm[3])+'/'+(dm[2]||dm[4])):m[2], kw=(EVT_RE.exec(s.text)||[''])[0], lv=/FOMC|CPI|PCE|고용|금리 결정/.test(kw)?3:/실적|연설|청문회/.test(kw)?2:1;
-      const rest=s.text.replace(m[0],'').replace(/\s+/g,' ').trim(); evp.push({d,t:clipS(newsT(keyClause(rest).clause||rest),22),lv,at:mkAt(si,m.index),dt:0}); claim(si,m.index,m.index+m[0].length); } });
+      const rest=stripLead(s.text.replace(m[0],'').replace(/\s+/g,' ').trim()); evp.push({d,t:clipS(newsT(keyClause(rest).clause||rest),22),lv,at:mkAt(si,m.index),dt:0}); claim(si,m.index,m.index+m[0].length); } });
   if(evp.length) items.push(mk('event',0,0,{label:'일정',parts:evp.slice(0,5),at:evp[0].at}));
   /* 수치 — 숫자+단위. 오르내림 말이 바로 붙으면 '변화', 조사가 붙으면 '수준'. 변화는 앞 수치 카드의 delta 로 합침 */
   const stats=[], seen=new Set(); let usedS=new Set(); ss.forEach((s,si)=>{
@@ -44278,16 +44347,17 @@ function ruleBlocks(ss,ctx){
   const cands=ss.map((s,si)=>({s,si,sc:usedS.has(si)||claimed[si].length?-1:(s.text.match(new RegExp(R_CUE.source,'g'))||[]).length})).filter(c=>c.sc>=1).sort((a,b)=>b.sc-a.sc||a.si-b.si).slice(0,Math.max(0,Math.min(3,6-pc)));
   cands.forEach(c=>{ const k=keyClause(c.s.text); if(k.clause) items.push(mk('point',c.si,k.idx,ptFrom(k))); });
   if(items.length<2&&ss.length){ const si=ss.findIndex((s,i)=>!usedS.has(i)&&!claimed[i].length&&hasSubstance(s.text)&&!items.some(it=>it.type==='point'&&it.at.sid===s.id)); if(si>=0){ const k=keyClause(ss[si].text); if(k.clause) items.push(mk('point',si,k.idx,ptFrom(k))); } }
-  return items;
+  return styleRules(ctx.style||(P.cfg.info&&P.cfg.info.style)||'news',ss,ctx,items,{mk,mkAt});
 }
 function ruleSpecs(ss,ctx,o){
-  const tmp={items:ruleBlocks(ss,ctx)}; sortItems(tmp); let items=tmp.items.slice(0,6);
+  const sty=(o&&o.style)||ctx.style||(P.cfg.info&&P.cfg.info.style)||'news', sk=ISTY[sty]||ISTY.news; ctx.style=sty;
+  const tmp={items:ruleBlocks(ss,ctx)}; sortItems(tmp); let items=tmp.items.slice(0,sty==='dash'?8:6);
   if(!items.length&&ss.length){ const si=ss.findIndex(s=>hasSubstance(s.text)); if(si>=0){ const k=keyClause(ss[si].text); if(k.clause) items=[Object.assign({id:uid('i'),type:'point',at:{sid:ss[si].id,f:0},dt:0},ptFrom(k))]; } }
   if(!items.length) return [];   /* 화면에 올릴 핵심이 없는 장면 */
-  const rich=items.filter(x=>['heat','event','scenario','line','donut'].indexOf(x.type)>=0).length, nums=items.filter(x=>['stat','row','bar','gauge','move'].indexOf(x.type)>=0).length, pts=items.filter(x=>x.type==='point').length;
+  const rich=items.filter(x=>['heat','event','scenario','line','donut','map','cmp'].indexOf(x.type)>=0).length, nums=items.filter(x=>['stat','row','bar','gauge','move'].indexOf(x.type)>=0).length, pts=items.filter(x=>x.type==='point').length;
   let mode; const par=(ctx.j||0)%2===0?'left':'right';
-  if(items.length&&nums===1&&!rich&&pts<=1&&items.length<=2) mode='hero';
-  else if(rich||items.length>=5||nums>=3) mode='full'; else mode=par;
+  if(items.length&&nums===1&&!rich&&pts<=1&&items.length<=2&&(sty==='news'||sty==='magazine')) mode='hero';
+  else if(sk.mode==='full'||rich||items.length>=5||nums>=3) mode='full'; else mode=par;
   return [{mode,title:ctx.ch,kicker:'',i0:0,i1:ss.length-1,items}];
 }
 
@@ -44326,10 +44396,12 @@ const SYS_INFO=`당신은 한국어 증시 뉴스 방송(유튜브 시황 브리
  bar: {"type":"bar","label":"나스닥","v":1.8,"value":"+1.8%","s":1,"q":"나스닥은 1.8%"} — 등락률 비교(3개 이상이면 bar 를 연달아)
  row: {"type":"row","label":"코스피","value":"2,610","delta":"-0.4%","s":1,"q":"코스피"} — 지수·종목 현황판(연달아)
  heat: {"type":"heat","label":"업종","parts":[{"l":"반도체","v":3.2,"s":1,"q":"반도체"},{"l":"에너지","v":-1.5,"s":2,"q":"에너지"}]} — 업종·테마 강약
+ map: {"type":"map","label":"주요국 증시","parts":[{"l":"미국","v":1.2,"s":1,"q":"미국"},{"l":"한국","v":-0.4,"s":2,"q":"한국"}]} — 나라·지역별 등락을 세계 지도 위에(2곳 이상, l 은 이 이름만: 미국·캐나다·멕시코·브라질·아르헨티나·칠레·콜롬비아·영국·독일·프랑스·이탈리아·스페인·스위스·네덜란드·유럽·러시아·우크라이나·튀르키예·중동·사우디·이스라엘·이란·이집트·남아공·인도·중국·홍콩·대만·한국·일본·베트남·태국·말레이시아·인도네시아·필리핀·싱가포르·호주·뉴질랜드)
  donut: {"type":"donut","label":"수급","parts":[{"l":"외국인","v":45,"s":1,"q":"외국인"},{"l":"기관","v":35,"s":2,"q":"기관"}]} — 비중
  gauge: {"type":"gauge","label":"공포탐욕지수","v":72,"min":0,"max":100,"preset":"fg","note":"탐욕","s":1,"q":"72"} — 심리·위험 지표(preset: fg·vix·rsi·plain)
  line: {"type":"line","label":"지수 흐름","unit":"","parts":[{"l":"월","y":5300,"s":1,"q":"5,300"},{"l":"화","y":5350,"s":1,"q":"5,350"},{"l":"수","y":5412,"s":2,"q":"5,412"}]} — 추세(나레이션에 3개 이상 값이 순서대로 나올 때만)
  vs: {"type":"vs","label":"미국 vs 한국","note":"","parts":[{"l":"미국","v":"5,412","d":"+1.2%","s":1,"q":"미국"},{"l":"한국","v":"2,610","d":"-0.4%","s":2,"q":"한국"}]} — 두 대상 비교
+ cmp: {"type":"cmp","label":"미국 vs 한국","a":"미국","b":"한국","parts":[{"l":"지수 등락","a":"+1.2%","b":"-0.4%","s":1,"q":"미국"},{"l":"기준금리","a":"4.50%","b":"3.00%","s":2,"q":"금리"}]} — 두 대상을 항목별로 나란히 비교(항목 2~5개, 양쪽에 같은 항목·같은 단위)
  event: {"type":"event","label":"이번 주 일정","parts":[{"d":"11/7","t":"FOMC 금리 결정","lv":3,"s":1,"q":"FOMC"}]} — 일정(중요도 lv 1~3)
  flow: {"type":"flow","label":"","parts":[{"t":"금리 인하 기대","s":1,"q":"금리 인하"},{"t":"유동성 증가","s":2,"q":"유동성"},{"t":"성장주 강세","s":3,"q":"성장주"}]} — 원인→결과(2~5단계, 각 14자 이내)
  scenario: {"type":"scenario","label":"","parts":[{"l":"강세","p":30,"t":"조건 20자 이내","tone":"up","s":1,"q":"강세"},{"l":"기본","p":50,"t":"…","s":2,"q":"기본"},{"l":"약세","p":20,"t":"…","tone":"down","s":3,"q":"약세"}]} — 전망·시나리오
@@ -44342,14 +44414,15 @@ const SYS_INFO=`당신은 한국어 증시 뉴스 방송(유튜브 시황 브리
 2. 내용에 맞는 형태를 고른다: 숫자 하나 → hero/stat, 여러 지수 → bar/row, 업종 → heat, 비중 → donut, 심리 지표 → gauge, 일정 → event, 인과 → flow, 전망 → scenario, 가격대 → level. 같은 형태만 반복하지 말고 다양하게.
 3. 한 clip 에 블록은 1~4개, 글은 짧게, 말하는 순서대로. 숫자가 거의 없는 장면은 point 2~4개나 quote.
 4. s·q 는 반드시 문장에 실제로 있는 번호·글이어야 한다.
-5. [사용자 추가 요청]이 있으면 위 규칙(JSON 형식·나레이션에 없는 사실 금지·뉴스체)을 지키는 범위에서 반영한다.`;
+5. [사용자 추가 요청]이 있으면 위 규칙(JSON 형식·나레이션에 없는 사실 금지·뉴스체)을 지키는 범위에서 반영한다.
+6. [인포그래픽 스타일]이 있으면 그 스타일의 구성 지침(블록 종류·개수·mode)을 따른다.`;
 function igCtx(sc){   /* ss = 화면에 옮길 '내용 있는' 문장만(인사·마무리·진행 멘트 제외), all = 장면의 모든 문장 */
   const all=sentsOf(P,sc), ss=contentOf(all), s0=P.sents[sc.first]||{}, sib=P.scenes.filter(c=>(P.sents[c.first]||{}).ci===s0.ci), cue=(all.find(s=>s.cue)||{}).cue, j=P.scenes.indexOf(sc);
-  return {ss,all,ch:cleanChap(chapOf(P,sc)),chFull:chapOf(P,sc),nth:sib.indexOf(sc)+1,total:sib.length,cue,vk:(sc.vis&&sc.vis.kind)||'none',j,first:sib[0]===sc,pos:j===0?'first':j===P.scenes.length-1?'last':'mid'};
+  return {ss,all,ch:cleanChap(chapOf(P,sc)),chFull:chapOf(P,sc),nth:sib.indexOf(sc)+1,total:sib.length,cue,vk:(sc.vis&&sc.vis.kind)||'none',j,first:sib[0]===sc,pos:j===0?'first':j===P.scenes.length-1?'last':'mid',style:(P.cfg.info&&P.cfg.info.style)||'news'};
 }
 function infoUser(ctx){
   const hv=ctx.vk==='image'||ctx.vk==='video', up=String((P.cfg.prompts&&P.cfg.prompts.info)||'').trim();
-  return '[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'');
+  return '[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'');
 }
 const toneOK=t=>{ t=String(t||'').toLowerCase(); return /^(up|down|flat|acc|cur)$/.test(t)?t:''; };
 function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체·글자 길이 제한·형식 점검·문장 번호와 글로 시각 계산). 쓸 수 없으면 null */
@@ -44371,6 +44444,8 @@ function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체�
     case 'flow': it.label=LN(r.label,14); it.parts=parts(5,p=>{ const t=LN(p.t,16); return t?{t}:null; }); if(it.parts.length<2) return null; break;
     case 'scenario': it.label=LN(r.label,14); it.parts=parts(3,p=>{ const l=LN(p.l,8); return l?{l,p:nz(p.p),t:LN(p.t,24),tone:toneOK(p.tone)}:null; }); if(it.parts.length<2) return null; break;
     case 'level': it.label=LN(r.label,14); it.parts=parts(6,p=>{ const v=nz(p.v), l=LN(p.l,8); return v!=null&&l?{l,v,tone:toneOK(p.tone)}:null; }); if(it.parts.length<2) return null; break;
+    case 'cmp': it.label=LN(r.label,18); it.a=LN(r.a,10); it.b=LN(r.b,10); it.parts=parts(6,p=>{ const l=LN(p.l,12), a=L(p.a,12), b=L(p.b,12); return l&&(a||b)?{l,a,b}:null; }); if(!it.a||!it.b||!it.parts.length) return null; break;
+    case 'map': it.label=LN(r.label,14); it.parts=parts(8,p=>{ const g0=geoFind(p.l), v=nz(p.v), t=LN(p.t,8); return g0&&(v!=null||t)?{l:g0.n,v,t,tone:toneOK(p.tone)}:null; }); if(it.parts.length<2) return null; break;
     case 'quote': it.text=LN(r.text,40); it.by=LN(r.by,16); if(!it.text) return null; it.at=anch(r.s,r.q,[r.text]); break;
     case 'title': it.text=LN(r.text,30); it.sub=LN(r.sub,30); if(!it.text) return null; it.at=anch(r.s,r.q,[r.text]); break;
     default: { it.type='point'; it.text=LN(r.text||r.label||r.value,40); if(!it.text) return null; it.style=r.style==='num'?'num':''; const hl=Array.isArray(r.hl)?r.hl:(r.hl?[r.hl]:[]); it.hl=hl.map(x=>String(x||'').trim()).filter(Boolean).map(x=>it.text.indexOf(x)>=0?x:newsT(x)).filter(x=>x&&it.text.indexOf(x)>=0).slice(0,3); it.at=anch(r.s,r.q,[r.text||r.label||r.value]); }
@@ -44425,10 +44500,10 @@ function specToClip(sp,mode,sc,ctx){
     if(f1!==all[all.length-1]||i1<ss.length-1) te=Math.min(sc.e,Math.max(f1.ve,b)+HOLD);   /* 뒤에 마무리 멘트가 있으면 마지막 내용 문장이 끝난 뒤 잠깐 두고 걷음 */
     if(te<ts+1.0) te=Math.min(sc.e,ts+1.0);
   }
-  return {id:uid('g'),name:'',mode,bg:isOver(mode)?'scene':'solid',a:anchorAtTime(P,ts),b:anchorAtTime(P,te),title:sp.title||'',kicker:sp.kicker||'',items,src:'rule'};
+  return {id:uid('g'),name:'',mode,bg:isOver(mode)?'scene':'solid',a:anchorAtTime(P,ts),b:anchorAtTime(P,te),title:sp.title||'',kicker:sp.kicker||'',items,src:'rule',sty:ctx.style||(P.cfg.info&&P.cfg.info.style)||'news'};
 }
 async function buildClips(sc,o,signal){   /* 장면 하나의 인포그래픽 만들기 — 핵심이 없는 장면(인사·마무리·진행 멘트뿐)은 건너뜀, AI 가 안 되면 규칙으로. 이 장면 안에 있던 클립은 바꿔 놓음 */
-  const ctx=igCtx(sc), ss=ctx.ss; let specs=null, src='rule';
+  const ctx=igCtx(sc), ss=ctx.ss; if(o.style) ctx.style=o.style; let specs=null, src='rule';
   if(ss.length&&o.mode==='ai'&&!o.dead){
     try{ specs=await aiSpecs(ss,ctx,o,signal); src='ai'; }
     catch(e){ if(e&&e.name==='AbortError') throw e; o.fails=(o.fails||0)+1; o.err=(e&&e.message)||String(e); if(/Key|키/.test(o.err)||o.fails>=3) o.dead=true; specs=null; }
@@ -44440,14 +44515,15 @@ async function buildClips(sc,o,signal){   /* 장면 하나의 인포그래픽 �
   layout(P); (o.made=o.made||[]).push.apply(o.made,made);
 }
 function varyClips(list){   /* 같은 형태가 연달아 나오지 않게(전체 틀끼리) 번갈아 바꿈 */
-  const solid=list.filter(g=>!isOver(g.mode)&&g.mode!=='title').sort((a,b)=>a.s-b.s); let p1='', p2='';
+  const solid=list.filter(g=>!isOver(g.mode)&&g.mode!=='title'&&ISTY[styOf(g)].mode!=='full').sort((a,b)=>a.s-b.s);   /* 전체 화면이 기본인 스타일(차트·대시보드·지도…)은 형태를 바꾸지 않음 */ let p1='', p2='';
   solid.forEach(g=>{ if((g.mode===p1&&g.mode===p2)||((g.mode==='left'||g.mode==='right')&&g.mode===p1)){ g.mode={left:'right',right:'left',full:'left',hero:'full'}[g.mode]||g.mode; } p2=p1; p1=g.mode; });
 }
 async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐릭터 처리 → 대기열(qRun)로 장면마다 만들기 → 형태 섞기 */
   if(!P||!items.length) return false;
   if(Q.on||UI.busy){ toast('다른 작업이 끝난 뒤에 해 주세요'); return false; }
   o=Object.assign({lay:'auto',mode:'ai',char:'keep',open:true,remember:false},o||{});
-  if(o.remember){ P.cfg.info.lay=o.lay; P.cfg.info.mode=o.mode; P.cfg.info.open=o.open; savePref(P.cfg); }
+  if(o.remember){ P.cfg.info.lay=o.lay; P.cfg.info.mode=o.mode; P.cfg.info.open=o.open; if(o.style&&ISTY[o.style]) P.cfg.info.style=o.style; savePref(P.cfg); }
+  if(o.char==='none') P.cfg.info.nochar=true; else if(o.char==='default'||o.char==='ai') P.cfg.info.nochar=false;   /* 캐릭터 미적용 / 쓰기 */
   if(o.char==='default'&&P.char) P.char=null;
   if(o.char==='ai'){
     if(!geminiKey()) toast('Gemini API Key 가 없어 캐릭터는 지금 설정 그대로 둬요');
@@ -44459,7 +44535,7 @@ async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐�
       if(ab){ progress(0,'중단했어요'); return false; }
     }
   }
-  const run={mode:o.mode,lay:o.lay,open:o.open,fails:0,dead:false,err:'',made:[],skipped:[]};
+  const run={mode:o.mode,lay:o.lay,open:o.open,style:(o.style&&ISTY[o.style])?o.style:(P.cfg.info.style||'news'),fails:0,dead:false,err:'',made:[],skipped:[]};
   items.forEach(it=>{ it.o=run; });
   await qRun(items);
   if(run.lay==='auto') varyClips(run.made);
@@ -44505,6 +44581,8 @@ function defaultBlock(type,t0){
     case 'flow': Object.assign(b,{label:'',parts:pr([{t:'원인'},{t:'과정'},{t:'결과'}])}); break;
     case 'scenario': Object.assign(b,{label:'시나리오',parts:pr([{l:'강세',p:30,t:'조건',tone:'up'},{l:'기본',p:50,t:'조건',tone:''},{l:'약세',p:20,t:'조건',tone:'down'}])}); break;
     case 'level': Object.assign(b,{label:'가격대',parts:pr([{l:'저항',v:110,tone:'up'},{l:'현재',v:100,tone:'cur'},{l:'지지',v:90,tone:'down'}])}); break;
+    case 'cmp': Object.assign(b,{label:'비교',a:'A',b:'B',parts:pr([{l:'항목 1',a:'+1.2%',b:'-0.4%'},{l:'항목 2',a:'4.50%',b:'3.00%'}])}); break;
+    case 'map': Object.assign(b,{label:'주요국 등락률',parts:pr([{l:'미국',v:1.2},{l:'한국',v:-0.4},{l:'일본',v:0.8},{l:'중국',v:-0.9}])}); break;
     case 'quote': Object.assign(b,{text:'핵심 한마디',by:''}); break;
     case 'title': Object.assign(b,{text:'큰 제목',sub:''}); break;
     default: b.type='point'; Object.assign(b,{text:'강조할 내용',hl:[],style:''});
@@ -44520,7 +44598,7 @@ function convertItem(it,t){   /* 블록 종류 바꾸기 — 같은 이름의 �
 function newClip(mode,type,s,dur,src,ss,ctx){
   const e=Math.min(P.dur,s+dur); let items=[defaultBlock(type,s+0.3)], title='', kicker='';
   if(src==='rule'||src==='ai'){ const sp=ctx&&ctx.specs&&ctx.specs[0]; if(sp){ items=sp.items; title=sp.title||''; kicker=sp.kicker||''; } }
-  const g={id:uid('g'),name:'',mode,bg:isOver(mode)?'scene':'solid',a:anchorAtTime(P,s),b:anchorAtTime(P,Math.max(s+0.5,e)),title,kicker,items,src:src==='hand'?'hand':src};
+  const g={id:uid('g'),name:'',mode,bg:isOver(mode)?'scene':'solid',a:anchorAtTime(P,s),b:anchorAtTime(P,Math.max(s+0.5,e)),title,kicker,items,src:src==='hand'?'hand':src,sty:(ctx&&ctx.style)||P.cfg.info.style||'news'};
   (P.igs=P.igs||[]).push(g); layout(P); sortClips(P); return g;
 }
 function igMigrate(p){   /* v96 의 '장면 화면 종류 info' → 클립으로 옮김 */
@@ -44563,6 +44641,7 @@ function igEditor(g){
   let h='<div class="vs-sec">선택한 인포그래픽 <span class="hint">'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+r2(g.e-g.s)+'초 · '+(g.src==='ai'?'AI 가 요약':g.src==='hand'?'직접 만듦':'규칙으로 추출')+'</span></div>';
   h+=F.row('이름',F.txt(pre+'name',g.name||'',{ph:'(선택) 타임라인에 보일 이름'}));
   h+=F.row('형태',F.sel(pre+'mode',g.mode,MODES.map(m=>[m[0],m[2]+' '+m[1]])));
+  h+=F.row('스타일',F.sel(pre+'sty',styOf(g),STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'이 인포그래픽의 모양 — 새로 만들 때 기본 스타일은 아래 [캐릭터·모양]에서');
   h+=F.row('배경',F.sel(pre+'bg',g.bg||'solid',[['solid','전용 배경(기본)'],['scene','장면 화면 위에 겹침']]),isOver(g.mode)?'겹치기 형태는 늘 장면 화면 위':'');
   h+=F.row('시작·끝',F.num(pre+'s',r2(g.s),{min:0,step:0.1})+F.btn('igPhS','재생헤드로',{d:g.id})+'<span class="hint">~</span>'+F.num(pre+'e',r2(g.e),{min:0,step:0.1})+F.btn('igPhE','재생헤드로',{d:g.id}),'초 — 타임라인에서 끌어도 돼요');
   h+=F.row('제목',F.txt(pre+'title',g.title||'',{ph:'패널 맨 위 제목'}));
@@ -44578,7 +44657,7 @@ function inspIg(){
   const igs=P.igs||[], cur=igs.find(x=>x.id===UI.ig)||null, t=ENG.playing?nowT():ENG.pos;
   let h='<div class="vs-ih"><b>인포그래픽</b><span>'+igs.length+'개 · 타임라인 [인포] 줄에서 끌어 옮기고 늘이고 줄여요</span></div>';
   h+='<div class="vs-btns">'+F.btn('igNew','＋ 인포그래픽 추가',{c:'pri',title:'재생헤드 위치에 새 인포그래픽'})+F.btn('infoMk','📊 이 장면 자동 구성',{title:'선택한 장면의 나레이션으로 자동 구성(마지막에 쓴 설정)'})+'</div>';
-  h+='<div class="vs-iglist" id="vsIgList">'+(igs.length?igs.map(g=>{ const on=t>=g.s&&t<g.e, m=MODE_OF[g.mode]||MODES[0]; return '<div class="vs-igr'+(g.id===UI.ig?' sel':'')+(on?' now':'')+'" data-a="igSel" data-id="'+g.id+'"><span class="th"'+(g._poster?' style="background-image:url('+g._poster+')"':'')+'>'+(g._poster?'':m[2])+'</span><span class="m"><b>'+esc(igName(g))+'</b><i>'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+m[2]+' '+MODE_SHORT[g.mode]+'</i></span>'+F.btn('igPlay','▶',{d:g.id,title:'이 구간 재생'})+F.btn('igDel','🗑',{d:g.id,c:'dng',title:'삭제'})+'</div>'; }).join(''):'<div class="vs-empty sm">아직 없어요 — ＋ 로 추가하거나 ③ 화면 만들기에서 \'인포그래픽 화면\'을 고르면 장면마다 자동으로 만들어요</div>')+'</div>';
+  h+='<div class="vs-iglist" id="vsIgList">'+(igs.length?igs.map(g=>{ const on=t>=g.s&&t<g.e, m=MODE_OF[g.mode]||MODES[0]; return '<div class="vs-igr'+(g.id===UI.ig?' sel':'')+(on?' now':'')+'" data-a="igSel" data-id="'+g.id+'"><span class="th"'+(g._poster?' style="background-image:url('+g._poster+')"':'')+'>'+(g._poster?'':m[2])+'</span><span class="m"><b>'+esc(igName(g))+'</b><i>'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+m[2]+' '+MODE_SHORT[g.mode]+' · '+ISTY[styOf(g)].ic+'</i></span>'+F.btn('igPlay','▶',{d:g.id,title:'이 구간 재생'})+F.btn('igDel','🗑',{d:g.id,c:'dng',title:'삭제'})+'</div>'; }).join(''):'<div class="vs-empty sm">아직 없어요 — ＋ 로 추가하거나 ③ 화면 만들기에서 \'인포그래픽 화면\'을 고르면 장면마다 자동으로 만들어요</div>')+'</div>';
   if(cur) h+=igEditor(cur); else if(igs.length) h+='<div class="hint pad">위 목록에서 고르거나 타임라인의 인포 줄을 눌러 선택하세요.</div>';
   return h+inspInfoLook(!cur);
 }
@@ -44587,6 +44666,8 @@ function inspInfoLook(open){
   let h='<details class="vs-det"'+(open?' open':'')+'><summary>📊 캐릭터·모양 (모든 인포그래픽 공통)</summary>';
   h+='<div class="vs-chrow"><canvas id="vsChPrev" width="96" height="120"></canvas><div class="m"><b>'+(!ch?'기본 캐릭터':ch.src==='ai'?'AI 캐릭터':'내 그림')+'</b><span>'+(ch?ch.w+'×'+ch.h+(ch.cut?' · 배경 지움':'')+(ch.busy>BUSY_MAX?' · 질감이 많아 들썩임은 쉬어요(영상 녹화가 밀리는 것을 막아요)':''):'코드로 그린 캐릭터 · 무료')+'</span></div></div>';
   h+='<div class="vs-btns">'+F.btn('charAI','🎨 AI 로 그리기',{dis:!key,title:key?'스토리보드 스타일 글로 캐릭터를 그려요(이미지 1장)':'Gemini API Key 가 필요해요'})+F.btn('charUp','📎 내 그림 올리기')+F.btn('charDef','기본 캐릭터로',{dis:!ch})+'</div>';
+  h+=F.row('기본 스타일',F.sel('cfg.info.style',cf.style||'news',STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'새 인포그래픽에 쓸 스타일 — 만든 클립은 [인포] 편집창에서 따로 바꿔요');
+  h+=F.row('캐릭터',F.chk('cfg.info.nochar',!!cf.nochar,'캐릭터 미적용 — 캐릭터 없이 패널을 화면 전체로 그려요'));
   h+=F.row('캐릭터 설명',F.ta('p.charPrompt',P.charPrompt||'',{rows:3,ph:'AI 로 그릴 때 쓸 설명 — 비우면 스토리보드의 스타일 글을 써요'}));
   h+=F.row('배경 지우기',F.chk('cfg.info.cut',cf.cut,'올린 그림·AI 그림의 단색 배경을 투명하게'));
   h+=F.row('크기',F.rng('cfg.info.cs',cf.cs,0.6,1.3,0.05),'캐릭터 칸 안에서');
@@ -44597,6 +44678,7 @@ function inspInfoLook(open){
   h+=F.row('등락 색',F.sel('cfg.info.ud',cf.ud,[['kr','한국식 — 상승 빨강 · 하락 파랑'],['us','미국식 — 상승 초록 · 하락 빨강']]));
   h+=F.row('숫자',F.chk('cfg.info.count',cf.count,'나올 때 숫자가 올라가며 표시'));
   h+=F.row('글 문체',F.chk('cfg.info.news',cf.news!==false,'뉴스체로 다듬기 — 명사형 헤드라인, 인사·접속어·종결어미 제거'),'새로 만들 때 적용 · 만든 것은 [📰 뉴스체로]');
+  h+=prefResetRow('vis');
   return h+'</details>';
 }
 
@@ -44609,6 +44691,7 @@ function setIgField(path,v){
       switch(k){
         case 'name': g.name=String(v||'').slice(0,40); return 'draw';
         case 'mode': g.mode=v; g.bg=isOver(v)?'scene':(g.bg==='scene'&&!isOver(v)?'solid':g.bg); return 'insp';
+        case 'sty': g.sty=ISTY[v]?v:'news'; return 'insp';
         case 'bg': g.bg=v; return 'draw';
         case 'title': g.title=String(v||'').slice(0,60); return 'draw';
         case 'kicker': g.kicker=String(v||'').slice(0,60); return 'draw';
@@ -44636,7 +44719,7 @@ async function infoAct(a,id,btn){
   const c=P.scenes[UI.sel], ids=String(id||'').split(':'), g=igById(ids[0]), t=ENG.playing?nowT():ENG.pos;
   const done=(label,sel)=>{ if(g&&sel!==false) igPoster(g); commit(label); renderAll(); };
   switch(a){
-    case 'infoMk': if(c) await runInfo([{id:c.id,kind:'info'}],{lay:P.cfg.info.lay,mode:P.cfg.info.mode,char:'keep',open:P.cfg.info.open!==false}); break;
+    case 'infoMk': if(c) await runInfo([{id:c.id,kind:'info'}],{lay:P.cfg.info.lay,mode:P.cfg.info.mode,char:'keep',open:P.cfg.info.open!==false,style:P.cfg.info.style}); break;
     case 'igSel': if(g){ UI.ig=g.id; UI.tab='ig'; renderTabs(); renderInspector(true); renderTimeline(); seekTo(Math.max(0,g.s+0.05)); } break;
     case 'igPlay': if(g) startPlay(Math.max(0,g.s-0.2),'preview',Math.min(P.dur,g.e+0.2)); break;
     case 'igNew': dlgIgNew(); break;
@@ -44661,6 +44744,8 @@ async function infoAct(a,id,btn){
     case 'aiSubs': await runSubs(id==='scene'?'scene':'all'); break;
     case 'aiSubsReset': resetSubs(id==='scene'?'scene':'all'); break;
     case 'aiVoicePreset': { const x=VOICE_PRESETS[+id]; if(x){ P.cfg.voice.style=x[1]; savePref(P.cfg); commit('음성 프롬프트'); const dg=$('vsDlg'); if(dg&&dg.classList.contains('on')&&dg.querySelector('.vs-aisum')) showAiDlg(); renderInspector(true); } } break;
+    case 'prefReset': resetPref(id||'all'); break;
+    case 'istySel': { const d0=UI.dd; if(d0&&ISTY[id]){ d0.istyle=id; DLG_PREF.istyle(id); savePref(P.cfg); if('vmode' in d0) showVisualDlg(); else if('akind' in d0) showAutoDlg(); } } break;
     case 'infoAccAuto': P.cfg.info.accent=''; savePref(P.cfg); commit('강조색'); igPostersAll(); renderInspector(true); if(!ENG.playing) paintFrame(ENG.pos); break;
     case 'charUp': $('vsFChar').click(); break;
     case 'charDef': P.char=null; commit('캐릭터'); igPostersAll(); renderInspector(true); if(!ENG.playing) paintFrame(ENG.pos); break;
@@ -44678,7 +44763,7 @@ async function infoAct(a,id,btn){
 async function igRegen(g,mode){   /* 이 클립 구간의 나레이션으로 블록을 다시 만듦(형태·시간은 그대로) */
   if(UI.busy){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
   const ss0=P.sents.filter(s=>s.e>g.s&&s.s<g.e); if(!ss0.length){ toast('이 구간에 나레이션이 없어요'); return; } let ss=contentOf(ss0); if(!ss.length){ ss=ss0; toast('이 구간은 인사·마무리·진행 멘트뿐이지만 요청하신 대로 만들게요'); }
-  const sc=P.scenes[sceneIdx(g.s)]||P.scenes[0], ctx=igCtx(sc); ctx.ss=ss; ctx.all=ss0;
+  const sc=P.scenes[sceneIdx(g.s)]||P.scenes[0], ctx=igCtx(sc); ctx.ss=ss; ctx.all=ss0; ctx.style=g.sty||ctx.style;
   UI.busy='gen'; UI.ctl=new AbortController(); paintBusy(); progress(0.2,mode==='ai'?'AI 가 요약하는 중…':'규칙으로 뽑는 중…'); let specs=null, src=mode;
   try{
     if(mode==='ai'){ try{ specs=await aiSpecs(ss,ctx,{},UI.ctl.signal); }catch(e){ if(e&&e.name==='AbortError') throw e; toast('AI 요약 실패 — 규칙으로 만들어요: '+String((e&&e.message)||'').slice(0,60)); src='rule'; } }
@@ -44699,10 +44784,10 @@ async function charFromFile(file){
 function infoTextAi(){ try{ return !!studioAi().key; }catch(e){ return false; } }   /* 글 AI(영상 스튜디오 🤖 AI 에서 고른 것)에 키가 있나 */
 function infoOptRows(d){
   const ch=P.char?(P.char.src==='ai'?'AI 캐릭터':'내 그림'):'기본 캐릭터', ai=studioAi(), has=!!ai.key, nf=P.scenes.filter(c=>!contentOf(sentsOf(P,c)).length).length;
-  return D_('구성',dsel('ilay',d.ilay,[['auto','자동 — 내용·장면 화면에 맞춰 형태를 골라 섞어요(권장)'],['left','왼쪽 70% 패널 + 오른쪽 캐릭터'],['right','오른쪽 70% 패널 + 왼쪽 캐릭터'],['full','전체 화면 패널'],['hero','큰 수치 위주(화면 가득)'],['over','겹치기 — 장면 화면 위 띠·카드']]))
+  return styleGallery(d)+D_('구성',dsel('ilay',d.ilay,[['auto','자동 — 내용·장면 화면에 맞춰 형태를 골라 섞어요(권장)'],['left','왼쪽 70% 패널 + 오른쪽 캐릭터'],['right','오른쪽 70% 패널 + 왼쪽 캐릭터'],['full','전체 화면 패널'],['hero','큰 수치 위주(화면 가득)'],['over','겹치기 — 장면 화면 위 띠·카드']]))
     +D_('내용',dsel('imode',d.imode,[['ai','AI 가 나레이션을 보고 설계(권장)'],['rule','규칙으로 추출(무료·즉시)']]))
     +D_('챕터 타이틀',dchk('iopen',d.iopen,'챕터의 첫 내용 장면에 타이틀 카드(약 2.2초 · 내용을 가리지 않을 때만)'))
-    +D_('캐릭터',dsel('ichar',d.ichar,[['keep','지금 설정 그대로 ('+ch+')'],['default','기본 캐릭터로(무료)'],['ai','AI 로 새로 그리기(이미지 1장)']]))
+    +D_('캐릭터',dsel('ichar',d.ichar,[['keep','지금 설정 그대로 ('+(P.cfg.info.nochar?'캐릭터 미적용':ch)+')'],['default','기본 캐릭터로(무료)'],['ai','AI 로 새로 그리기(이미지 1장)'],['none','캐릭터 미적용 — 패널을 화면 전체로']]))
     +D_('요청 글',F.ta('cfg.prompts.info',P.cfg.prompts.info,{rows:2,ph:'(선택) AI 에게 요구할 내용 — 예) 숫자는 크게, 문체는 속보 헤드라인처럼 짧게'}))
     +'<div class="vs-note'+((d.imode==='ai'&&!has)||(d.ichar==='ai'&&!geminiKey())?' err':'')+'">'
     +(d.imode==='ai'?(has?'글 AI <b>'+esc(ai.name)+'</b> 로 장면마다 1번 요청해요(위쪽 🤖 버튼에서 바꿀 수 있고, 비용은 아주 적어요). 실패하면 그 장면은 규칙으로 만들어요.':esc(ai.name)+' API Key 가 없어서 규칙으로 만들어요(🤖 AI 에서 연결된 다른 AI 를 고르거나 관리 메뉴 › 🧩 AI 공급자에서 키를 넣으세요).'):'AI 호출 없이 규칙으로 뽑아요(숫자·업종·일정·심리 지표·이전→지금).')
@@ -44726,7 +44811,7 @@ async function igGo(){
     const ss0=P.sents.filter(x=>x.e>s&&x.s<s+dur), ss=contentOf(ss0).length?contentOf(ss0):ss0; if(!ss.length){ toast('이 구간에 나레이션이 없어요 — 예시 블록으로 만들게요'); d.gsrc='hand'; }
     else{ const sc=P.scenes[sceneIdx(s)]||P.scenes[0], ctx=igCtx(sc); ctx.ss=ss; ctx.all=ss0; let specs=null;
       if(d.gsrc==='ai'){ UI.busy='gen'; UI.ctl=new AbortController(); paintBusy(); progress(0.2,'AI 가 요약하는 중…'); try{ specs=await aiSpecs(ss,ctx,{},UI.ctl.signal); }catch(e){ if(!(e&&e.name==='AbortError')) toast('AI 요약 실패 — 규칙으로 만들어요: '+String((e&&e.message)||'').slice(0,60)); } finally{ UI.busy=''; UI.ctl=null; paintBusy(); progress(0,''); } }
-      if(!specs) specs=ruleSpecs(ss,ctx,{}); ctxx={specs}; }
+      if(!specs) specs=ruleSpecs(ss,ctx,{}); ctxx={specs,style:ctx.style}; }
   }
   const g=newClip(d.gmode,d.gtype,s,dur,d.gsrc==='hand'?'hand':d.gsrc,null,ctxx); UI.ig=g.id; UI.tab='ig'; igPoster(g); commit('인포그래픽 추가'); renderAll(); seekTo(g.s+0.6);
 }
@@ -44991,12 +45076,376 @@ function addOpeners(sceneIds){
     else return;
     if(te-ts<1.0) return;
     const s0=P.sents[first.first]||{};
-    P.igs.push({id:uid('g'),name:'',mode:'title',bg:'solid',a:anchorAtTime(P,ts),b:anchorAtTime(P,te),title:'',kicker:P.chap.length>1?'CHAPTER '+String(ci+1).padStart(2,'0'):'',items:[{id:uid('i'),type:'title',text:ctx.ch||ctx.chFull,sub:String(P.base||''),at:{sid:s0.id,f:0},dt:0}],src:'rule'});
+    P.igs.push({id:uid('g'),name:'',mode:'title',bg:'solid',sty:main.sty||'news',a:anchorAtTime(P,ts),b:anchorAtTime(P,te),title:'',kicker:P.chap.length>1?'CHAPTER '+String(ci+1).padStart(2,'0'):'',items:[{id:uid('i'),type:'title',text:ctx.ch||ctx.chFull,sub:String(P.base||''),at:{sid:s0.id,f:0},dt:0}],src:'rule'});
     layout(P); if(shift&&te-0.3>main.s){ main.a=anchorAtTime(P,te-0.3); layout(P); }
   });
   layout(P);
 }
 /* ══ /v98 ══ */
+
+/* ══ v99 (2026-10-25) — 메뉴별 공통 설정·초기화 · 캐릭터 미적용 · 인포그래픽 스타일 8종 ═══════════════════════════════════════
+   · 설정(한 번에 만들기·음성·자막·화면): 값은 P.cfg 에 있고(프로젝트에도 저장·되돌리기) 바꿀 때마다 savePref 가 LS_PREF 에 복사 →
+     startProject 가 프로젝트를 열 때 PREF_GROUPS 의 경로를 덮어씀(applyMenuPrefs). 초기화 = 그 메뉴의 경로를 DEF_CFG 값으로(resetPref)
+   · 캐릭터 미적용: cfg.info.nochar — left·right 를 full 로 그림(buildIgLay)
+   · 인포그래픽 스타일: cfg.info.style(새 클립 기본) · ig.sty(클립별) — 팔레트·틀·글꼴(ISTY/SPAL), 카드 모양(cardBox), 블록 변형(타임라인·차트 격자·대시보드 격자),
+     새 블록 map(세계 지도)·cmp(비교표), 규칙·AI 구성 지침(styleRules/STY_GUIDE)
+   ─────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* ── 인포그래픽 스타일 8종 ── */
+const SERIF='"Nanum Myeongjo","Noto Serif KR","Batang","Times New Roman",serif';
+const STY_ORDER=['news','chart','timeline','compare','dash','map','magazine','slide'];
+/* kick=윗글이 비었을 때 쓰는 이름 · mode=규칙 구성의 기본 형태(full=전체 화면) · card=카드 모양 · big=차트 크기 배율 · grid=모눈 · grid2=격자 타일 · tl=타임라인 변형 · band=제목 띠 · ptK=요점 글자 배율 */
+const ISTY={
+  news:{n:'뉴스 카드',ic:'📰',d:'방송 뉴스처럼 핵심 수치·요점을 카드로 차곡차곡 보여 줘요(기본 모양).',kick:'',mode:'alt',card:'glass'},
+  chart:{n:'데이터 차트',ic:'📊',d:'수치를 막대·선·도넛·게이지 같은 차트로 크게 보여 줘요. 밝은 모눈종이 바탕.',kick:'DATA CHART',mode:'full',card:'glass',big:1.28,grid:true,upper:true,track:true},
+  timeline:{n:'타임라인',ic:'🕘',d:'날짜·순서가 있는 내용을 세로 타임라인으로 이어서 보여 줘요.',kick:'TIMELINE',mode:'alt',card:'glass',tl:true,upper:true,track:true},
+  compare:{n:'비교 분석',ic:'⚖️',d:'두 대상(미국 vs 한국 등)을 항목별로 나란히 비교해요.',kick:'COMPARE',mode:'full',card:'glass',upper:true,track:true},
+  dash:{n:'통계 대시보드',ic:'🧮',d:'핵심 지표를 격자 타일로 한눈에 보여 줘요. 어두운 대시보드 화면.',kick:'DASHBOARD',mode:'full',card:'dash',grid2:true,upper:true,track:true},
+  map:{n:'지도 기반',ic:'🗺️',d:'세계 지도 위에 나라·지역별 등락을 색과 숫자로 표시해요.',kick:'MARKET MAP',mode:'full',card:'glass',upper:true,track:true},
+  magazine:{n:'매거진',ic:'📖',d:'큰 제목·세리프 글꼴·얇은 선으로 잡지 기사처럼 꾸며요.',kick:'FEATURE',mode:'full',card:'flat',font:'serif',titleK:1.16,rule:true,upper:true,track:true},
+  slide:{n:'프레젠테이션',ic:'🖥️',d:'제목 띠와 큰 글씨, 쪽 번호가 있는 슬라이드 모양으로 요점을 정리해요.',kick:'',mode:'full',card:'slide',band:true,ptK:1.12}
+};
+/* 바탕색이 '자동'일 때만 쓰는 스타일 고유 색 구성(직접 고른 Base·Item 색이 있으면 그 색이 우선) */
+const SPAL={
+  chart:{dark:false,accent:'#2563eb',bg1:'#edf2f9',bg2:'#e1e9f4',blob:'rgba(37,99,235,.10)',blob0:'rgba(37,99,235,0)',panel:'rgba(255,255,255,.97)',panelLine:'#cfd9ea',card:'#ffffff',cardLine:'#d9e1ee',track:'#e4eaf4',text:'#0f172a',mute:'#5b6b84',cardSolid:'#ffffff',shadow:'rgba(15,23,42,.14)'},
+  timeline:{dark:true,accent:'#2dd4bf',bg1:'#07161a',bg2:'#0b2a2c',blob:'rgba(45,212,191,.09)',blob0:'rgba(45,212,191,0)',panel:'rgba(255,255,255,.07)',panelLine:'rgba(255,255,255,.16)',card:'rgba(255,255,255,.085)',cardLine:'rgba(255,255,255,.15)',track:'rgba(255,255,255,.13)',text:'#f1f5f9',mute:'rgba(203,225,228,.74)',cardSolid:'#14282c',shadow:'rgba(0,0,0,.4)'},
+  compare:{dark:true,accent:'#a78bfa',bg1:'#0c0a1f',bg2:'#1a1442',blob:'rgba(167,139,250,.10)',blob0:'rgba(167,139,250,0)',panel:'rgba(255,255,255,.07)',panelLine:'rgba(255,255,255,.16)',card:'rgba(255,255,255,.085)',cardLine:'rgba(255,255,255,.15)',track:'rgba(255,255,255,.13)',text:'#f5f3ff',mute:'rgba(221,214,254,.74)',cardSolid:'#1d1840',shadow:'rgba(0,0,0,.4)'},
+  dash:{dark:true,accent:'#22d3ee',bg1:'#050a14',bg2:'#0a1530',blob:'rgba(34,211,238,.10)',blob0:'rgba(34,211,238,0)',panel:'rgba(12,22,42,.94)',panelLine:'#1f3a66',card:'#0e1a31',cardLine:'#21406e',track:'#1a2c4d',text:'#e6edf9',mute:'#8da2c6',cardSolid:'#0e1a31',shadow:'rgba(0,0,0,.5)'},
+  map:{dark:true,accent:'#38bdf8',bg1:'#05111e',bg2:'#0a2236',blob:'rgba(56,189,248,.09)',blob0:'rgba(56,189,248,0)',panel:'rgba(9,26,43,.90)',panelLine:'#1b3d5e',card:'#0d2238',cardLine:'#1d405f',track:'#17324d',text:'#e8f2fb',mute:'#8fb0cc',cardSolid:'#0d2238',shadow:'rgba(0,0,0,.45)'},
+  magazine:{dark:false,accent:'#b91c1c',bg1:'#efe9dc',bg2:'#e6dece',blob:'rgba(120,90,40,.06)',blob0:'rgba(120,90,40,0)',panel:'#fffdf8',panelLine:'#cfc5b2',card:'#fffdf8',cardLine:'#d9cfbc',track:'#e8e0d0',text:'#1c1917',mute:'#78716c',cardSolid:'#fffdf8',shadow:'rgba(60,40,10,.10)'},
+  slide:{dark:false,accent:'#2563eb',bg1:'#e3e9f3',bg2:'#d8e1ef',blob:'rgba(37,99,235,.08)',blob0:'rgba(37,99,235,0)',panel:'#ffffff',panelLine:'#cdd7e8',card:'#f3f6fb',cardLine:'#dbe3f0',track:'#e3e9f3',text:'#0f172a',mute:'#5b6b84',cardSolid:'#f3f6fb',shadow:'rgba(15,23,42,.16)'}
+};
+const styOf=ig=>{ const s=(ig&&ig.sty)||(P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news'; return ISTY[s]?s:'news'; };
+const TILEG={stat:1,move:1,gauge:1,donut:1,vs:1};   /* 대시보드 격자에 타일로 들어가는 블록 */
+const bigf=E=>(E.sk&&E.sk.big)||1, ptk=E=>(E.sk&&E.sk.ptK)||1;
+
+/* ── 세계 지도 — Natural Earth 110m 국가 경계(공개 자료)를 1° 격자로 옮겨 국가 번호를 담은 점 지도.
+   GEO_RAST: 위도 84°N→58°S(142줄) × 경도 −180→180°(360칸), 줄은 '|' 로 나누고 칸은 [번호,길이] 두 글자씩(GB64) — 0=바다 1=기타 땅 2…=GEO_CODES 의 나라 ── */
+const GB64='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
+const GEO_W=360, GEO_H=142, GEO_LAT0=84;
+const GEO_CODES=["", "XX", "USA", "CAN", "MEX", "BRA", "ARG", "CHL", "COL", "GBR", "IRL", "DEU", "FRA", "ITA", "ESP", "PRT", "NLD", "BEL", "CHE", "AUT", "SWE", "NOR", "FIN", "DNK", "POL", "GRC", "UKR", "RUS", "TUR", "SAU", "ARE", "IRN", "IRQ", "ISR", "QAT", "KWT", "OMN", "YEM", "EGY", "ZAF", "NGA", "IND", "PAK", "CHN", "JPN", "KOR", "PRK", "TWN", "VNM", "THA", "MYS", "IDN", "PHL", "AUS", "NZL"];
+const GEO_RAST='0_0_0B1E0_0_0_0C|0_0R3P0912011P0_0_0_08|0_0N3P021o0_0_0_|0_0I3S1q0VL90IR40eR60_0G|0_0931073N041m0SLF0_01R600R10_0C|0_023204340033003I011r0TL800L10_0CR40_0A|0x3301330C320539051q0WL302L20_0DR30_09|0u390231043B003B061o0_0GR70SRE0_02|0z3B0238003C0J1e0_0AR80MRP0MR700R20U|0s3405330D31013B0L1b0_0AR40PRP0PR107R10T|0s39073201340035003200370K1Z0_08R40LRc03R40BR30Z|0r3K0139023E0J1W0_09R30CR300R100Rp09R90U|R20J200T35003E0336023I0E1X0_08R509R400Ru00RK0QR0|0H2D0J30083F0435003L0C1T00110iL70MR307R600R_RL0J|0F2M32013G013F00390334023A0B1V0eL7M2L1R30OR401R_Rb00R800|R2092P3Z05320036013404380D1P0fL2K0L0K1M5RA04R104R_R_R0|R4092N3x03310138091K0kL1K7M5RA02R200RO00R_Rf|R9032O3w073B071J091104120QL1K8M5R_R_RL|R9012Q3u053A0032091E0D190OL2K800M5R404R_R_RB|04R2042P3x013D0C1B0F190NL3K700M6R_R_RL|0723042L3o0232003207370B1A0J130OL3K700M8R_R_RK00|0D2O3m07310130003401350D180kL6K502M9R_R_RK|0D2O3l0C3000360K170kL6K502M8R_R_RG04|0C2I00253k0F380M120lL6K601M6R_R_03RB07|0H280022072231203e0F3802320_03L6K60314R_R-04R40E|0H2000260D243e0D3G0t9207L301K50513R_Ro0FR40G|0K260H203e00300C3F0s930AN1K503110012R_Rm0FR60G|0I230N203i093F0s9309N200K40316R_Rk0FR70G|0G230Q213k043I0q9408N100N1K10519R_Rf0HR60H|0E210V3m013M0lA190009407B200B001O4R217RX15R_R10HR60H|0k30013l023M0jA3009404G1B6O918RR1BR013R_R00CR30J|0k30023l013N0iA3009601G2B6O818RS1HRfh4RH0BR20K|0p3_380iA1029600H0G1B8O8Q312Q2RF12R71HRI12RIh6RG0BR10L|0p3_3400310n9401C1H2B612O7QBRC1YR611R413RGh7RD00R10Z|0q3x013202350oC7B615O3QGR61dR11IR412hCRB00R20Y|0r3020302T3S04350lCCB4J314QHR61ch11RhER801R00a|0s2c3K04360mCAI2B0J51BQ8R91bh31ShER501R00a|0t2c3E2135003005300oC7I3D3J01EQ600RA11011Th71PhGR402R10Z|0t2e3B22370vC8D51EQ101RG011Uh81NhHR403i00a|0t2f352800320yC8D5011D03R101R9021ThD1GhJR503i200i00X|0s2g322803300tE6C901D3001D09R8021ThE1EhJR403i50X|0s2f32280zE9C104C1D402190C13R2031RhL15hLk0R007i30Z|0t2r0yF2E804C101D40114P010P0S101S503S113R0100210001Nhnk109i10b|0s2p0_F1E706D103D411P300SH16011Lh010hh00h2k409i10b|0t2n0_F2E607D104D102P301SHV014021Khj00h2k30Bi10b|0t2m0_00F2E60ED102P301SHV310041Khg06k2j009i20b|0u2l0_01F1E6081001D304P202SHV50210V31Fhl02j305i000i20c|0v2j0_04E4011A0AP003S914W2VF1Ag3hj03j305i40c|0v2j0_0512001C0BP305100114W4VE1Ag5hf05j301i80c|0w2i0_041H0K110015W4VE19g2f4hf04j102i70e|0y2e0_041J0N13W6VE18g3f4hf07i60h|0-412Y0_051P03120BX012W7VD17g5f2hh06i20l|0-4423412O0_061Q0214c201c101X011T3W6VC16g5f4hg07i10l|0_4100472N0_061Yc912T4W4VD13g7f5hf0v|0_41004820412B022000220_061Yc910T7W2Z001VAg011g8f612hc0v|0_0041004B240B220_031ac9TD01VAg9f813h7f2hP0v|0_0042004A220D220_011cc800TE01VAg6fC14f012f411hL0w|0_0142004A210D2200110z1dc801TD02V2a0V5g6fG10f613hK0x|0_0340004C0E210_001dc900TEY002U1V4g8fH10f412hL0x|0_0341014A0H110y1ecA00TE01U1a009g3fG13f113hK00l10v|0_044101490I100y1ecA01TDU3a208fK11f115hI01l10v|0_09470C160y1fcB01TFa408fJ19h2m4h803l00w|0_0948064206130w1r01TFa408fJ0218h010m4h40_02|0M200n48054308130u1r01TFa30DfD041Cm101h10_04|0N200m4904430C140p1s01TDa30EfC0614n212m101h20_04|0_0B4G0712001600110m1r02T7b2a40FfB0813n213m001h208q20u|0_0D4A1209100x1t02T0b0T3b4a20GfA0913n610m00Cq20u|0_0F48120_061t02T0b9a00If80B14n511m00Bq20u|0_0I400141180_011u01b90Kf70D100011n610m10Aq10v|0_0M40180_001x00b60Nf50H10n511m10Aq20u|0_0P160_011Ke11ab40Pf60G10n215m109q30t|0_0R140A800r1Ke91Tb00Tf40H10n000n114m10Aq000q20r|0_0S130882120o1Ke91T03120Nf40H10n00212m20Cq000q10r|0_0T1206821B0j1Ie81b0Of30H10n00210m30Aq001q10t|0_0T13011101821000190k1Ge91b0Of200100Gn005m10Aq002q100q00r|0_0V16831D0j1Fe81c0Of100120Fn203m00Gq30q|0_0X110010851D0i1Fe81b0T110Gn10Kq40q|0_0b871C0i1Ee61d0T110Ho0n00Do105q20q|0_0b891DC10f1A03e31d0jp201o20B10o205q00r|0_0b89165015C20f120Ae21d0kp300o30910o30y|0_0b8A125315C1500x1c0lp300o208o2p10z|0_0a8B125315C0520w1b0np3o206o3p20z|0_0a8852125410570w1Z0qp4o004p0o4p304p001p10o|0_0Z12865J0w1Y0sp404p801p401p10o|0_0Y16835M0t1X0tp404p800p100p102p101p20j|0_0Y16845O0q1W0vp403p701p307p202p10e|0_0Y1A5R0o1V0xp403p601p209p200p41007110R|0_0Y19805V0l1T0zp305p401p302p000p200p81206100R|0_0X1A5X0l1S0zp30Cp30Bp51404110Q|0_0Y175b0k1Q0_00p10Cp100p00Ap001p315001301100O|0_0Y175b0k1R0_00p300p10Lp002p216001103110M|0_0Z155c0l1Q0_01p80Mp21608110K|0_0a145c0l1Q0_06p400p100p2011109p100p012011209110I|0_0a155b0l1Q0_0Ep101p1100F10031209110H|0_0b1652125S0m1R0_0Hp00N1209110G|0_0b1C5R0n1R0_0Qr107r00a|0_0c1C5P0o1R07100_0Fr604r10Z|0_0c1F5M0n1S06110_0Fr603r20Z|0_0d1F5K0o1S05120_0Ar200r604r30K100C|0_0d1F5K0o1S04140_08rC03r40J100C|0_0f1F5I0n1S03150_07rF02r40K100911|0_0h1D5I0n1Q05150_07rN0U1100|0_0i711A5I0o1O06150_06rP0W|0_0j71195I0o1N07140_06rR0V|0_0j701A5H0q1L08140_02rW0E110D|0_0j71195G0r1M06150_01rY0E110C|0_0i7210611061155E0s1Ed11406140_01ra0E100C|0_0i7365145B0v1Cd41306140_00rb0S|0_0i726814570x1Cd41306140_00rd0Q|0_0i726912560z15d011d011d51109110_03rc0Q|0_0i716A1260550-14d010d8110_0Frd0Q|0_0i716B1060560-14dC0_0Grd0P|0_0h716D570_d012dC0_0Grd0P|0_0h716C570_00dA11d20_0Irc0P|0_0h716B11550_02dD0_0Jrb0Q|0_0h716B12530_04dB0_0Krb0Q|0_0h716B14500_05dA0_0LrB05rJ0Q|0_0h716B13500_06d90_0Mr809rH0R|0_0h716B140_06d30_0Sr40ErF0Ls005|0_0g726C0_0_0_02rC0Ls104|0_0g716D0_0_0_03rA0Ns004|0_0f726D0_0_0_04r90Ns200s000|0_0f726C0_0_0_06r60Ps400|0_0f71690_0_0_0hs202|0_0f71690_0_0_0Dr00Qs001s102|0_0f71660_0_0_0Hr30Ls403|0_0f71680_0_0_0Fr20Ms205|0_0f71660_0_0_0Ir10Ks306|0_0e73650_0_0_0ds407|0_0e72640_0_0_0es408|0_0e72640_0_0_0fs209|0_0e72660_0_0_0q|0_0d73650_0_0_0r|0_0d72650_0_06120_0i|0_0d72640_0_0_0t|0_0e726207120_0_0_0j|0_0e7606100_0_0_0l|0_0f74600_0_0_0t|0_0g73630_0_0_0q|0_0j720_0_0_0s|0_0_0_0_0_0d|0_0_0_0_0_0d';
+let _geoR=null;
+function geoRaster(){ if(_geoR) return _geoR; const a=new Uint8Array(GEO_W*GEO_H); GEO_RAST.split('|').forEach((r,y)=>{ let x=0; for(let i=0;i+1<r.length;i+=2){ const id=GB64.indexOf(r[i]), n=GB64.indexOf(r[i+1])+1; a.fill(id,y*GEO_W+x,y*GEO_W+x+n); x+=n; } }); _geoR=a; return a; }
+/* n=표시 이름(AI 에게도 이 이름만 쓰게 함) · c=국가 코드(점 색칠) · la·lo=라벨 위치 · al=별칭(쉼표, 소문자) — 지수 이름도 그 나라로 */
+const GEO=[
+  {n:'미국',c:['USA'],la:39,lo:-98,al:'미국,us,usa,나스닥,다우,s&p,s&p500,스탠더드앤푸어스,러셀,뉴욕증시,뉴욕'},
+  {n:'캐나다',c:['CAN'],la:57,lo:-103,al:'캐나다,canada,tsx'},
+  {n:'멕시코',c:['MEX'],la:23.5,lo:-102,al:'멕시코,mexico'},
+  {n:'브라질',c:['BRA'],la:-11,lo:-52,al:'브라질,brazil,보베스파'},
+  {n:'아르헨티나',c:['ARG'],la:-35,lo:-65,al:'아르헨티나,argentina'},
+  {n:'칠레',c:['CHL'],la:-33,lo:-71,al:'칠레,chile'},
+  {n:'콜롬비아',c:['COL'],la:4,lo:-73,al:'콜롬비아,colombia'},
+  {n:'영국',c:['GBR'],la:54,lo:-2.5,al:'영국,uk,ftse,런던,britain'},
+  {n:'독일',c:['DEU'],la:51,lo:10.3,al:'독일,germany,dax,닥스'},
+  {n:'프랑스',c:['FRA'],la:46.5,lo:2.5,al:'프랑스,france,cac'},
+  {n:'이탈리아',c:['ITA'],la:42.8,lo:12.5,al:'이탈리아,italy'},
+  {n:'스페인',c:['ESP'],la:40.2,lo:-3.7,al:'스페인,spain'},
+  {n:'스위스',c:['CHE'],la:46.8,lo:8.2,al:'스위스,switzerland'},
+  {n:'네덜란드',c:['NLD'],la:52.2,lo:5.5,al:'네덜란드,netherlands'},
+  {n:'유럽',c:['DEU','FRA','ITA','ESP','PRT','NLD','BEL','CHE','AUT','SWE','NOR','FIN','DNK','POL','GRC','IRL','GBR'],la:50,lo:14,al:'유럽,유로존,유럽연합,유로스톡스,europe,eurozone,stoxx,eu'},
+  {n:'러시아',c:['RUS'],la:60,lo:95,al:'러시아,russia'},
+  {n:'우크라이나',c:['UKR'],la:49,lo:32,al:'우크라이나,ukraine'},
+  {n:'튀르키예',c:['TUR'],la:39,lo:35,al:'튀르키예,터키,turkey'},
+  {n:'중동',c:['SAU','ARE','IRN','IRQ','ISR','QAT','KWT','OMN','YEM'],la:27,lo:47,al:'중동,middle east'},
+  {n:'사우디',c:['SAU'],la:24,lo:45,al:'사우디아라비아,사우디,saudi'},
+  {n:'이스라엘',c:['ISR'],la:31,lo:35,al:'이스라엘,israel'},
+  {n:'이란',c:['IRN'],la:32.5,lo:54,al:'이란,iran'},
+  {n:'이집트',c:['EGY'],la:26.5,lo:30,al:'이집트,egypt'},
+  {n:'남아공',c:['ZAF'],la:-29,lo:24,al:'남아프리카공화국,남아프리카,남아공,south africa'},
+  {n:'인도',c:['IND'],la:22,lo:79,al:'인도,india,센섹스,니프티'},
+  {n:'중국',c:['CHN'],la:35,lo:103,al:'중국,china,상하이,상해,선전,csi,본토'},
+  {n:'홍콩',c:[],la:22.3,lo:114.2,al:'홍콩,hong kong,hongkong,항셍,항생'},
+  {n:'대만',c:['TWN'],la:23.7,lo:121,al:'대만,taiwan,가권'},
+  {n:'한국',c:['KOR'],la:36.4,lo:127.8,al:'한국,korea,코스피,코스닥,서울'},
+  {n:'일본',c:['JPN'],la:37,lo:138,al:'일본,japan,닛케이,도쿄,토픽스'},
+  {n:'베트남',c:['VNM'],la:16,lo:107.5,al:'베트남,vietnam'},
+  {n:'태국',c:['THA'],la:15,lo:101,al:'태국,thailand'},
+  {n:'말레이시아',c:['MYS'],la:4,lo:102,al:'말레이시아,malaysia'},
+  {n:'인도네시아',c:['IDN'],la:-2,lo:117,al:'인도네시아,indonesia'},
+  {n:'필리핀',c:['PHL'],la:12.5,lo:122,al:'필리핀,philippines'},
+  {n:'싱가포르',c:[],la:1.35,lo:103.8,al:'싱가포르,singapore'},
+  {n:'호주',c:['AUS'],la:-25.5,lo:134,al:'호주,오스트레일리아,australia'},
+  {n:'뉴질랜드',c:['NZL'],la:-41,lo:173,al:'뉴질랜드,new zealand'}
+];
+const GEO_NOT=/^(?:은행|채|국채|산|형|식)/;   /* '한국은행'·'미국채'·'미국산' 은 나라 이야기가 아님 */
+const _GA=[]; GEO.forEach(g=>g.al.split(',').forEach(a=>{ a=a.trim(); if(a) _GA.push({a,g,lat:/^[a-z0-9&.\s]+$/.test(a)}); })); _GA.sort((x,y)=>y.a.length-x.a.length);
+const _geoEsc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const _geoRe=new RegExp('(?:'+_GA.filter(x=>!x.lat).map(x=>_geoEsc(x.a)).join('|')+')|(?<![A-Za-z])(?:'+_GA.filter(x=>x.lat).map(x=>_geoEsc(x.a)).join('|')+')(?![A-Za-z])','gi');
+function geoFind(s){   /* 이름(AI 가 준 글 포함) → GEO 항목. 못 찾으면 null */
+  const raw=String(s==null?'':s).trim(); if(!raw) return null; const t=raw.toLowerCase().replace(/\s+/g,''); const ex=GEO.find(r=>r.n===raw||r.n===t); if(ex) return ex;
+  for(const x of _GA){ const a=x.a.replace(/\s+/g,''); if(x.lat){ if(t===a) return x.g; } else if(t.indexOf(a)>=0) return x.g; }
+  return null;
+}
+function geoScan(text){   /* 문장 안의 나라·지수 이름 위치 */
+  const out=[]; let m; _geoRe.lastIndex=0;
+  while((m=_geoRe.exec(text))){ const a=m[0].toLowerCase(), hit=_GA.find(x=>x.a===a); if(hit&&!GEO_NOT.test(text.slice(m.index+m[0].length,m.index+m[0].length+4))) out.push({g:hit.g,i:m.index,e:m.index+m[0].length,s:m[0]}); if(m[0].length===0) _geoRe.lastIndex++; }
+  return out;
+}
+
+/* ── 새 블록 — map(세계 지도) · cmp(비교표) ── */
+BT.cmp={n:'비교표(A vs B)',f:[['label','제목'],['a','왼쪽 이름'],['b','오른쪽 이름']],parts:[['l','항목'],['a','왼쪽 값'],['b','오른쪽 값']]};
+BT.map={n:'지도(나라별 등락)',f:[['label','제목']],parts:[['l','나라·지역'],['v','등락(%)','num'],['t','글(숫자 없을 때)']]};
+BT_ORDER.splice(BT_ORDER.indexOf('vs')+1,0,'cmp'); BT_ORDER.splice(BT_ORDER.indexOf('heat')+1,0,'map');
+function mapView(geos,mw,mh){   /* 표시할 나라들을 감싸는 영역 → {lonL,latT,sc(도당 픽셀)} — 세계를 벗어나지 않게 */
+  let lo0=1e9,lo1=-1e9,la0=1e9,la1=-1e9; geos.forEach(g=>{ lo0=Math.min(lo0,g.lo); lo1=Math.max(lo1,g.lo); la0=Math.min(la0,g.la); la1=Math.max(la1,g.la); });
+  if(!geos.length){ lo0=-170; lo1=170; la0=-50; la1=75; }
+  const padLo=Math.max(22,(lo1-lo0)*0.2), padLa=Math.max(16,(la1-la0)*0.3);
+  let LO=lo1-lo0+padLo*2, LA=la1-la0+padLa*2; LO=Math.max(LO,115); LA=Math.max(LA,115*mh/mw);
+  const cLo=(lo0+lo1)/2, cLa=(la0+la1)/2, sc=Math.min(mw/LO,mh/LA), vw=mw/sc, vh=mh/sc, WB=GEO_LAT0-GEO_H;
+  const lonL=vw>=360?-180-(vw-360)/2:clamp(cLo-vw/2,-180,180-vw), latT=vh>=GEO_H?GEO_LAT0+(vh-GEO_H)/2:clamp(cLa+vh/2,WB+vh,GEO_LAT0);
+  return {lonL,latT,sc};
+}
+const _mapC=new Map();
+function mapEntry(w,h,view,pal){   /* 점 지도를 한 번만 구워 둠(바탕 점) + 나라별 점 목록 */
+  const key=[Math.round(w),Math.round(h),view.lonL.toFixed(2),view.latT.toFixed(2),view.sc.toFixed(3),pal.dark?1:0].join('|'); let e=_mapC.get(key); if(e) return e;
+  const ras=geoRaster(), sc=view.sc, step=Math.max(1,Math.round(6.4/sc)), r=Math.max(1.2,step*sc*0.36), dots=[];
+  const c0=Math.max(0,Math.floor(view.lonL+180)), c1=Math.min(GEO_W-1,Math.ceil(view.lonL+180+w/sc)), r0=Math.max(0,Math.floor(GEO_LAT0-view.latT)), r1=Math.min(GEO_H-1,Math.ceil(GEO_LAT0-view.latT+h/sc));
+  for(let by=r0-(r0%step);by<=r1;by+=step) for(let bx=c0-(c0%step);bx<=c1;bx+=step){
+    let id=0; for(let yy=0;yy<step&&!id;yy++) for(let xx=0;xx<step;xx++){ const cx=bx+xx, cy=by+yy; if(cx<GEO_W&&cy<GEO_H){ const v=ras[cy*GEO_W+cx]; if(v){ id=v; break; } } }
+    if(!id) continue; const x=(-180+bx+step/2-view.lonL)*sc, y=(view.latT-(GEO_LAT0-(by+step/2)))*sc; if(x<-r||y<-r||x>w+r||y>h+r) continue; dots.push([x,y,id]);
+  }
+  const cv=document.createElement('canvas'); cv.width=Math.max(2,Math.round(w)); cv.height=Math.max(2,Math.round(h)); const g=cv.getContext('2d');
+  g.fillStyle=pal.dark?'rgba(150,185,215,.34)':'rgba(70,90,120,.32)'; dots.forEach(d=>{ g.beginPath(); g.arc(d[0],d[1],r,0,Math.PI*2); g.fill(); });
+  e={cv,dots,r,reg:new Map()}; _mapC.set(key,e); if(_mapC.size>16) _mapC.delete(_mapC.keys().next().value); return e;
+}
+function regDots(e,geo){ let a=e.reg.get(geo.n); if(!a){ const set=new Set(geo.c.map(cd=>GEO_CODES.indexOf(cd)).filter(i=>i>0)); a=e.dots.filter(d=>set.has(d[2])); e.reg.set(geo.n,a); } return a; }
+MEAS.map=(E,it,iw,k)=>{ const bk=E.B*k; return {h:Math.min(0.72*bk,iw*0.48)+(it.label?HDR*bk:0)}; };
+DRAW.map=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k;
+  popBegin(E,c,s0,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const ps=(it.parts||[]).map((p,i)=>({p,i,geo:geoFind(p.l)})).filter(x=>x.geo), mx=c.x+0.012*bk, my=c.y+(it.label?HDR*bk:0)+0.006*bk, mw=c.w-0.024*bk, mh=c.h-(my-c.y)-0.014*bk;
+  if(mw<40||mh<30){ g.restore(); return; }
+  const view=mapView(ps.map(x=>x.geo),mw,mh), ent=mapEntry(mw,mh,view,pal);
+  g.save(); roundRect(g,mx,my,mw,mh,0.014*bk); g.clip(); g.drawImage(ent.cv,mx,my,mw,mh);
+  ps.forEach(x=>{ const sp=partSince(E,it,x.p,x.i); if(sp<=0) return; const v=nz(x.p.v), tone=x.p.tone||(v==null?'':v>=0?'up':'down'), col=toneCol(pal,tone)||pal.accent, f=rv(sp,0.6); g.fillStyle=alphaOf(col,0.92*f); regDots(ent,x.geo).forEach(d=>{ g.beginPath(); g.arc(mx+d[0],my+d[1],ent.r*1.2,0,Math.PI*2); g.fill(); }); });
+  const fl=0.030*bk, fv=0.032*bk, px0=0.012*bk, hh=0.054*bk, placed=[], infos=ps.map(x=>{
+    const v=nz(x.p.v), vt=v==null?String(x.p.t||''):(v>=0?'+':'')+fmtN(v,Math.abs(v)>=10?1:2)+'%', tone=x.p.tone||(v==null?'':v>=0?'up':'down'); g.font='800 '+fl.toFixed(1)+'px '+font; const w1=g.measureText(x.geo.n).width; g.font='800 '+fv.toFixed(1)+'px '+font; const w2=vt?g.measureText(vt).width:0;
+    return {x,vt,tone,w1,w2,w:px0*2+w1+(vt?0.012*bk+w2:0),px:mx+(x.geo.lo-view.lonL)*view.sc,py:my+(view.latT-x.geo.la)*view.sc};
+  });
+  infos.forEach(o=>{   /* 라벨 자리 — 겹치지 않는 곳을 차례로 찾음(모든 나라를 한꺼번에 계산하므로 나중에 나타나도 자리가 안 바뀜) */
+    const cand=[[0.016*bk,-hh-0.010*bk],[0.016*bk,0.012*bk],[-o.w-0.016*bk,-hh-0.010*bk],[-o.w-0.016*bk,0.012*bk],[-o.w/2,-hh-0.026*bk],[-o.w/2,0.026*bk],[0.016*bk,-hh*2-0.02*bk],[-o.w-0.016*bk,-hh*2-0.02*bk]]; let pick=null;
+    for(const cd of cand){ const r={x:o.px+cd[0],y:o.py+cd[1],w:o.w,h:hh}; if(r.x<mx+2||r.y<my+2||r.x+r.w>mx+mw-2||r.y+r.h>my+mh-2) continue; if(placed.some(q=>r.x<q.x+q.w&&r.x+r.w>q.x&&r.y<q.y+q.h&&r.y+r.h>q.y)) continue; pick=r; break; }
+    if(!pick){ const cd=cand[0]; pick={x:clamp(o.px+cd[0],mx+2,mx+mw-o.w-2),y:clamp(o.py+cd[1],my+2,my+mh-hh-2),w:o.w,h:hh}; } o.r=pick; placed.push(pick);
+  });
+  infos.forEach(o=>{
+    const sp=partSince(E,it,o.x.p,o.x.i); if(sp<=0) return; const f=rv(sp,0.45), col=toneCol(pal,o.tone)||pal.accent, r=o.r;
+    g.save(); g.globalAlpha*=f;
+    const pr=sp<1.4?(sp*1.3)%1:0; if(pr>0){ g.strokeStyle=alphaOf(col,0.6*(1-pr)); g.lineWidth=2; g.beginPath(); g.arc(o.px,o.py,0.012*bk+0.05*bk*pr,0,Math.PI*2); g.stroke(); }
+    g.fillStyle=pal.cardSolid; g.beginPath(); g.arc(o.px,o.py,0.0135*bk,0,Math.PI*2); g.fill(); g.fillStyle=col; g.beginPath(); g.arc(o.px,o.py,0.0095*bk,0,Math.PI*2); g.fill();
+    g.save(); g.shadowColor='rgba(0,0,0,.3)'; g.shadowBlur=0.012*bk; roundRect(g,r.x,r.y,r.w,r.h,hh*0.32); g.fillStyle=alphaOf(pal.cardSolid,0.95); g.fill(); g.restore(); roundRect(g,r.x,r.y,r.w,r.h,hh*0.32); g.lineWidth=Math.max(1.5,0.003*bk); g.strokeStyle=alphaOf(col,0.85); g.stroke();
+    dtx(g,o.x.geo.n,r.x+px0,r.y+hh/2,fl,'800',pal.text,font,'left','middle'); if(o.vt) dtx(g,o.vt,r.x+px0+o.w1+0.012*bk,r.y+hh/2,fv,'800',col,font,'left','middle');
+    g.restore();
+  });
+  const ly=my+mh-0.032*bk; g.fillStyle=pal.up; g.beginPath(); g.arc(mx+0.026*bk,ly,0.007*bk,0,7); g.fill(); dtx(g,'상승',mx+0.04*bk,ly,0.024*bk,'700',pal.mute,font,'left','middle'); g.fillStyle=pal.down; g.beginPath(); g.arc(mx+0.112*bk,ly,0.007*bk,0,7); g.fill(); dtx(g,'하락',mx+0.126*bk,ly,0.024*bk,'700',pal.mute,font,'left','middle');
+  g.restore(); g.restore();
+};
+MEAS.cmp=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,Math.min(6,(it.parts||[]).length)); return {h:bk*((it.label?0.040:0)+0.150+n*0.105+0.030)}; };
+DRAW.cmp=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,6);
+  popBegin(E,c,s0,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk);
+  const A=pal.accent, Bc=pal.dark?'#fbbf24':'#d97706', mid=c.x+c.w/2, pad=0.03*bk, half=c.w/2-pad-0.034*bk;
+  if(it.label) dtf(g,String(it.label),mid,c.y+0.016*bk,c.w*0.8,0.026*bk,'700',pal.mute,font,'center','top',0.6);
+  const hy=c.y+(it.label?0.050:0.018)*bk, hc=hy+0.034*bk;
+  dtf(g,String(it.a||''),c.x+pad+half/2,hc,half*0.94,0.050*bk,'800',A,font,'center','middle',0.5); dtf(g,String(it.b||''),mid+0.034*bk+half/2,hc,half*0.94,0.050*bk,'800',Bc,font,'center','middle',0.5);
+  g.fillStyle=pal.track; roundRect(g,mid-0.030*bk,hc-0.026*bk,0.060*bk,0.052*bk,0.026*bk); g.fill(); dtx(g,'VS',mid,hc,0.024*bk,'800',pal.mute,font,'center','middle');
+  g.fillStyle=A; roundRect(g,c.x+pad,hy+0.070*bk,half,0.006*bk,0.003*bk); g.fill(); g.fillStyle=Bc; roundRect(g,mid+0.034*bk,hy+0.070*bk,half,0.006*bk,0.003*bk); g.fill();
+  const y0=hy+0.092*bk, rh=(c.y+c.h-0.016*bk-y0)/Math.max(1,ps.length), maxL=half-0.17*bk;
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const y=y0+i*rh, k=rv(sp,0.45), va=nz(p.a), vb=nz(p.b), mx=Math.max(Math.abs(va||0),Math.abs(vb||0))||1, f=rv(sp-0.05,0.7), by=y+rh*0.52, bh=rh*0.30;
+    g.save(); g.globalAlpha*=k; g.translate(0,(1-k)*0.02*bk);
+    dtf(g,String(p.l||''),mid,y+rh*0.10,c.w*0.5,0.027*bk,'700',pal.mute,font,'center','top',0.6);
+    const la=va==null?0:Math.max(0.01*bk,Math.abs(va)/mx*maxL*f), lb=vb==null?0:Math.max(0.01*bk,Math.abs(vb)/mx*maxL*f);
+    g.strokeStyle=alphaOf(pal.mute,0.30); g.lineWidth=1; g.beginPath(); g.moveTo(Math.round(mid)+0.5,by-0.008*bk); g.lineTo(Math.round(mid)+0.5,by+bh+0.008*bk); g.stroke();
+    if(va!=null){ g.fillStyle=A; roundRect(g,mid-0.014*bk-la,by,la,bh,bh/2); g.fill(); } if(vb!=null){ g.fillStyle=Bc; roundRect(g,mid+0.014*bk,by,lb,bh,bh/2); g.fill(); }
+    const fv=0.040*bk, ay=by+bh/2; dtf(g,String(p.a==null?'':p.a),mid-0.024*bk-la,ay,half-la,fv,'800',A,font,'right','middle',0.5); dtf(g,String(p.b==null?'':p.b),mid+0.024*bk+lb,ay,half-lb,fv,'800',Bc,font,'left','middle',0.5);
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── 타임라인 스타일 — 일정(event)은 세로 타임라인, 흐름(flow)은 번호 있는 선 ── */
+function drawEventTL(E,c,it){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=it.parts||[];
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const y0=c.y+(it.label?HDR*bk:0)+0.026*bk, rh=0.098*bk, dateW=Math.min(0.21*bk,c.w*0.24), rx=c.x+0.04*bk+dateW+0.045*bk; let last=-1; ps.forEach((p,i)=>{ if(partSince(E,it,p,i)>0) last=i; });
+  if(last>0){ const ya=y0+rh*0.5, yPrev=y0+rh*(last-0.5), yLast=y0+rh*(last+0.5), fr=rv(partSince(E,it,ps[last],last),0.5); g.strokeStyle=alphaOf(pal.accent,0.55); g.lineWidth=Math.max(2,0.005*bk); g.lineCap='round'; g.beginPath(); g.moveTo(rx,ya); g.lineTo(rx,yPrev+(yLast-yPrev)*fr); g.stroke(); }
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const cy=y0+i*rh+rh*0.5, k=rv(sp,0.45), lv=clamp(Math.round(nz(p.lv)||0),0,3), r=0.015*bk*(1+0.16*lv);
+    g.save(); g.globalAlpha*=k; g.translate((1-k)*0.05*bk,0);
+    dtf(g,String(p.d||''),c.x+0.04*bk+dateW,cy,dateW,0.036*bk,'800',pal.accent,font,'right','middle',0.5);
+    g.fillStyle=pal.cardSolid; g.beginPath(); g.arc(rx,cy,r+0.007*bk,0,Math.PI*2); g.fill(); g.fillStyle=pal.accent; g.beginPath(); g.arc(rx,cy,r,0,Math.PI*2); g.fill();
+    dtf(g,String(p.t||''),rx+0.034*bk,cy,c.x+c.w-0.04*bk-(rx+0.034*bk),0.038*bk,'700',pal.text,font,'left','middle',0.55);
+    g.restore();
+  });
+  g.restore();
+}
+function drawFlowTL(E,c,it){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,5), m=c.m;
+  popBegin(E,c,s0,bk,0.3); hdrDraw(E,c,it,bk); const y0=c.y+(it.label?(HDR+0.018)*bk:0), r=0.026*bk, txt=pal.dark?'#0b1220':'#ffffff';
+  const vis=ps.map((p,i)=>partSince(E,it,p,i)), last=vis.reduce((a,v,i)=>v>0?i:a,-1);
+  if(m.horiz){
+    const x0=c.x+0.025*bk, ry=y0+0.034*bk, X=i=>x0+i*(m.nw+0.05*bk)+m.nw/2;
+    if(last>0){ g.strokeStyle=alphaOf(pal.accent,0.55); g.lineWidth=Math.max(2,0.006*bk); g.lineCap='round'; g.beginPath(); g.moveTo(X(0),ry); g.lineTo(X(last-1)+(X(last)-X(last-1))*Math.max(0.15,rv(vis[last],0.5)),ry); g.stroke(); }
+    ps.forEach((p,i)=>{ const sp=vis[i]; if(sp<=0) return; const k=rv(sp,0.45), x=X(i); g.save(); g.globalAlpha*=k; g.translate(0,(1-k)*0.02*bk);
+      g.fillStyle=pal.accent; g.beginPath(); g.arc(x,ry,r,0,Math.PI*2); g.fill(); dtx(g,String(i+1),x,ry,0.030*bk,'800',txt,font,'center','middle');
+      const lh=m.fs*1.25; m.ls[i].forEach((l,q)=>dtx(g,l,x,y0+0.080*bk+q*lh,m.fs,'700',pal.text,font,'center','top')); g.restore(); });
+  }else{
+    const rx=c.x+0.075*bk, Y=i=>y0+i*(m.nh+0.03*bk)+m.nh/2;
+    if(last>0){ g.strokeStyle=alphaOf(pal.accent,0.55); g.lineWidth=Math.max(2,0.006*bk); g.lineCap='round'; g.beginPath(); g.moveTo(rx,Y(0)); g.lineTo(rx,Y(last-1)+(Y(last)-Y(last-1))*Math.max(0.15,rv(vis[last],0.5))); g.stroke(); }
+    ps.forEach((p,i)=>{ const sp=vis[i]; if(sp<=0) return; const k=rv(sp,0.45), cy=Y(i); g.save(); g.globalAlpha*=k; g.translate((1-k)*0.04*bk,0);
+      g.fillStyle=pal.accent; g.beginPath(); g.arc(rx,cy,r,0,Math.PI*2); g.fill(); dtx(g,String(i+1),rx,cy,0.030*bk,'800',txt,font,'center','middle');
+      const lh=m.fs*1.25, ty=cy-m.ls[i].length*lh/2; m.ls[i].forEach((l,q)=>dtx(g,l,rx+0.06*bk,ty+q*lh,m.fs,'700',pal.text,font)); g.restore(); });
+  }
+  g.restore();
+}
+
+/* ── 스타일별 구성 — 규칙(무료) 추출과 AI 지침 ── */
+const STY_GUIDE={
+  news:'뉴스 카드: 핵심 수치는 stat·hero·move, 비교는 bar·row, 요점은 point·quote 로 균형 있게. 방송 뉴스 카드처럼 간결하게.',
+  chart:'데이터 차트: 수치를 가능한 한 차트 블록으로 — 등락률 비교=bar, 추세=line, 비중=donut, 업종=heat, 심리 지표=gauge, 가격대=level. 숫자만 나열하는 stat 은 쓰지 않고, 모든 차트 블록에 label(차트 제목)과 단위를 붙인다. mode 는 "full".',
+  timeline:'타임라인: 시간·순서가 있는 내용을 event(날짜·시각+내용)나 flow(단계)로 시간순으로 정리한다. 날짜·시각 표기는 짧게(11/7, 오전 9시, 2분기). 시간 정보가 없으면 인과 순서를 flow 로.',
+  compare:'비교 분석: 두 대상을 항목별로 나란히 — 항목이 여럿이면 cmp(비교표, a·b 는 두 대상 이름, parts 는 항목별 값), 하나면 vs. 보조로 bar·row. 양쪽에 같은 항목·같은 단위를 쓴다. mode 는 "full".',
+  dash:'통계 대시보드: 핵심 지표 4~6개를 stat·gauge·donut·move·bar 로 섞어 타일로 보여 준다(point·quote 는 1개 이하). mode 는 "full".',
+  map:'지도 기반: 나라·지역별 등락을 map 블록 하나로(2곳 이상, parts 의 l 은 지원하는 지역 이름만, v 는 등락률). 다른 수치는 stat 1~2개만 곁들인다. mode 는 "full".',
+  magazine:'매거진: 가장 중요한 수치 하나를 hero, 핵심 한마디를 quote, 나머지는 point 1~2개로. 제목은 잡지 기사 헤드라인처럼 짧고 인상적으로. mode 는 "full".',
+  slide:'프레젠테이션: 슬라이드 한 장처럼 제목 하나와 요점 3~4개(point, style "num")·흐름(flow)·일정(event) 위주로 정리한다. mode 는 "full".'
+};
+function styleLine(ctx){   /* AI 에게 보내는 사용자 메시지의 스타일·캐릭터 안내 */
+  const sty=ctx.style||(P.cfg.info&&P.cfg.info.style)||'news', sk=ISTY[sty]||ISTY.news;
+  return '[인포그래픽 스타일] '+sk.n+' — '+STY_GUIDE[sty].replace(/^[^:]+:\s*/,'')+'\n'+(P.cfg.info.nochar?'[캐릭터] 미적용 — left·right 도 캐릭터 없이 패널이 화면 전체로 그려짐\n':'');
+}
+
+/* 규칙 추출 보조 — 나라·지수(map·cmp), 날짜·시각(timeline) */
+const GEO_DIRN=s=>{ const up=R_UP.exec(s), dn=R_DN.exec(s); return (up&&dn)?(up.index<=dn.index?'up':'down'):(up?'up':dn?'down':''); };
+function ruleGeoBlock(ss,mkAt,minN){
+  const seen=new Map();
+  ss.forEach((s,si)=>{ geoScan(s.text).forEach(m=>{
+    if(seen.has(m.g.n)) return; const after=s.text.slice(m.e,m.e+30), nm=/(\d+(?:\.\d+)?)\s?%/.exec(after); if(!nm) return;
+    const between=after.slice(0,nm.index); if(/\d|금리|국채|채권|환율|유가|가격|물가|실적|고용|성장률|수익률|이자|원유|비트코인|달러|원화|엔화/.test(between)) return;
+    const dir=GEO_DIRN(after.slice(nm.index+nm[0].length,nm.index+nm[0].length+10)); if(!dir) return;
+    seen.set(m.g.n,{l:m.g.n,v:(dir==='down'?-1:1)*parseFloat(nm[1]),t:'',tone:dir,at:mkAt(si,m.i),dt:0});
+  }); });
+  const parts=[...seen.values()]; if(parts.length<(minN||2)) return null;
+  return {id:uid('i'),type:'map',label:'주요국 등락',parts:parts.slice(0,8),at:{sid:parts[0].at.sid,f:parts[0].at.f},dt:0};
+}
+function numAfterTxt(text,from,to){
+  const seg=text.slice(from,to), m=/([+\-−–]?)\s?(\d[\d,]*(?:\.\d+)?)\s?(%p|%|퍼센트|bp|원|달러|위안|엔|유로|포인트|조|억|배)?/.exec(seg); if(!m) return null;
+  const dir=GEO_DIRN(seg.slice(m.index+m[0].length,m.index+m[0].length+10)), unit=m[3]==='퍼센트'?'%':(m[3]||''), isPct=unit==='%'||unit==='%p', sg=m[1]?m[1].replace(/[−–]/,'-'):(isPct&&dir?(dir==='down'?'-':'+'):'');
+  return {t:sg+m[2]+unit,n:(sg==='-'?-1:1)*parseFloat(m[2].replace(/,/g,'')),pct:isPct};
+}
+function ruleCmpBlock(ss,mkAt){
+  const rows=[];
+  ss.forEach((s,si)=>{
+    const ms=[]; geoScan(s.text).forEach(m=>{ if(!ms.some(x=>x.g===m.g)) ms.push(m); }); if(ms.length<2) return;
+    const vals=ms.map((m,q)=>numAfterTxt(s.text,m.e,(ms[q+1]||{i:s.text.length}).i));
+    for(let q=0;q+1<ms.length;q++){ const a=vals[q], b=vals[q+1]; if(!a||!b) continue; rows.push({ga:ms[q].g,gb:ms[q+1].g,l:(a.pct&&b.pct)?'등락률':'수치',a:a.t,b:b.t,at:mkAt(si,ms[q].i)}); break; }
+  });
+  if(!rows.length) return null;
+  const key=r=>r.ga.n+'|'+r.gb.n, cnt={}; rows.forEach(r=>{ cnt[key(r)]=(cnt[key(r)]||0)+1; });
+  const best=Object.keys(cnt).sort((x,y)=>cnt[y]-cnt[x])[0], use=rows.filter(r=>key(r)===best), A=use[0].ga.n, Bn=use[0].gb.n;
+  if(use.length>=2) return {id:uid('i'),type:'cmp',label:A+' vs '+Bn,a:A,b:Bn,parts:use.slice(0,5).map(r=>({l:r.l,a:r.a,b:r.b,at:r.at,dt:0})),at:{sid:use[0].at.sid,f:use[0].at.f},dt:0};
+  const r=use[0]; return {id:uid('i'),type:'vs',label:'',note:'',parts:[{l:A,v:r.a,d:'',at:r.at,dt:0},{l:Bn,v:r.b,d:'',at:r.at,dt:0}],at:{sid:r.at.sid,f:r.at.f},dt:0};
+}
+const TL_RE=/(\d{1,2}월\s?\d{1,2}일|\d{1,2}\/\d{1,2}|(?:이번|다음)\s?주\s?(?:월|화|수|목|금)요일|(?:월|화|수|목|금)요일|이번\s?주|다음\s?주|오늘|내일|모레|어제|오전\s?\d{1,2}시(?:\s?\d{1,2}분)?|오후\s?\d{1,2}시(?:\s?\d{1,2}분)?|\d{1,2}시(?:\s?\d{1,2}분)?|[1-4]분기|[상하]반기|연말|연초|내년|올해|\d{4}년)/;
+const stripLead=s=>s.replace(/^(?:에는|에도|에서는|에서|에|엔|은|는|이|가|도|부터|까지|쯤|경|께)\s*/,'');   /* 날짜를 떼고 남은 앞머리 조사 */
+const tlLabel=s=>{ s=s.replace(/\s+/g,''); const d=/(\d{1,2})월(\d{1,2})일/.exec(s); return d?d[1]+'/'+d[2]:s.replace(/^이번주/,'이번 주').replace(/^다음주/,'다음 주'); };
+function ruleTimelineBlock(ss,mkAt){
+  const ps=[]; ss.forEach((s,si)=>{ const m=TL_RE.exec(s.text); if(!m) return; const rest=stripLead(s.text.replace(m[0],'').replace(/\s+/g,' ').trim()), cl=clipS(newsT(keyClause(rest).clause||rest),22); if(cl.length<2) return; const sc=(s.text.match(new RegExp(R_CUE.source,'g'))||[]).length; ps.push({d:tlLabel(m[0]),t:cl,lv:clamp(sc+1,1,3),at:mkAt(si,m.index),dt:0}); });
+  if(ps.length<2) return null; return {id:uid('i'),type:'event',label:'타임라인',parts:ps.slice(0,5),at:{sid:ps[0].at.sid,f:ps[0].at.f},dt:0};
+}
+function styleRules(sty,ss,ctx,items,H){   /* 기본 추출(숫자·업종·일정·요점) 뒤에 스타일에 맞게 고쳐 씀 */
+  const mkAt=H.mkAt;
+  const dupOf=(set,it)=>{ if(it.type!=='stat'&&it.type!=='bar'&&it.type!=='row') return false; const g0=geoFind(it.label); return !!(g0&&set.has(g0.n)); };   /* 지도·비교표가 이미 보여 주는 나라의 수치 카드는 뺌 */
+  if(sty==='map'){ const mb=ruleGeoBlock(ss,mkAt,2); if(mb){ const set=new Set(mb.parts.map(p=>p.l)); items=[mb].concat(items.filter(it=>!dupOf(set,it))); } }
+  else if(sty==='compare'){ const cb=ruleCmpBlock(ss,mkAt); if(cb){ const set=new Set(cb.type==='cmp'?[cb.a,cb.b]:cb.parts.map(p=>p.l)); items=[cb].concat(items.filter(it=>!dupOf(set,it))); } }
+  else if(sty==='timeline'){ const tb=ruleTimelineBlock(ss,mkAt); if(tb) items=[tb].concat(items.filter(it=>it.type!=='event')); }
+  else if(sty==='chart'){ const st=items.filter(it=>it.type==='stat'&&/%$/.test(String(it.value||'').trim())&&nz(it.value)!=null); if(st.length>=2) st.forEach(x=>{ x.type='bar'; x.v=nz(x.value); delete x.delta; delete x.note; }); }
+  else if(sty==='magazine'){
+    const st=items.filter(it=>it.type==='stat'||it.type==='hero'||it.type==='bar'||it.type==='row'), rest=items.filter(it=>st.indexOf(it)<0), out=[];
+    if(st.length){ const h0=st[0]; h0.type='hero'; h0.note=h0.note||''; out.push(h0); st.slice(1,3).forEach(x=>out.push(x)); }
+    const pts=rest.filter(it=>it.type==='point'), q0=pts[0]; if(q0){ q0.type='quote'; q0.by=''; out.push(q0); }
+    rest.filter(it=>it!==q0&&it.type!=='point').forEach(x=>out.push(x)); if(out.length) items=out;
+  }else if(sty==='slide'){ items.forEach(it=>{ if(it.type==='point') it.style='num'; }); }
+  return items;
+}
+
+/* ── 스타일 고르기 — 견본 그림(실제 그리기 코드로 한 번 그려 캐시)과 갤러리 ── */
+const STY_SAMPLE={
+  news:()=>({title:'미국 증시 마감',items:[{type:'stat',label:'S&P 500',value:'5,412',delta:'+1.2%',note:'사상 최고'},{type:'stat',label:'나스닥',value:'18,500',delta:'+1.8%',note:''},{type:'point',text:'금리 인하 기대 확대, 핵심 배경',hl:['핵심'],style:''}]}),
+  chart:()=>({title:'주요 지수 등락률',items:[{type:'bar',label:'나스닥',v:1.8,value:'+1.8%'},{type:'bar',label:'S&P 500',v:1.2,value:'+1.2%'},{type:'bar',label:'다우',v:-0.3,value:'-0.3%'},{type:'line',label:'S&P 500 주간 흐름',unit:'',parts:[{l:'월',y:5300},{l:'화',y:5340},{l:'수',y:5310},{l:'목',y:5380},{l:'금',y:5412}]}]}),
+  timeline:()=>({title:'이번 주 일정',items:[{type:'event',label:'핵심 일정',parts:[{d:'11/7',t:'FOMC 금리 결정',lv:3},{d:'11/12',t:'미국 CPI 발표',lv:3},{d:'11/14',t:'엔비디아 실적',lv:2}]}]}),
+  compare:()=>({title:'미국 vs 한국',items:[{type:'cmp',label:'증시 비교',a:'미국',b:'한국',parts:[{l:'지수 등락',a:'+1.2%',b:'-0.4%'},{l:'기준금리',a:'4.50%',b:'3.00%'},{l:'외국인 순매수',a:'+2.1조',b:'-0.8조'}]}]}),
+  dash:()=>({title:'시장 핵심 지표',items:[{type:'stat',label:'S&P 500',value:'5,412',delta:'+1.2%',note:''},{type:'stat',label:'VIX',value:'18.5',delta:'-3.1%',note:''},{type:'gauge',label:'공포탐욕지수',v:72,min:0,max:100,preset:'fg',note:''},{type:'stat',label:'원/달러',value:'1,350',delta:'+0.4%',note:''},{type:'move',label:'기준금리',from:'4.50%',to:'4.25%',delta:''}]}),
+  map:()=>({title:'주요국 증시',items:[{type:'map',label:'주요국 등락률',parts:[{l:'미국',v:1.2},{l:'한국',v:-0.4},{l:'일본',v:0.8},{l:'중국',v:-0.9},{l:'유럽',v:0.3}]}]}),
+  magazine:()=>({title:'사상 최고가의 의미',items:[{type:'hero',label:'S&P 500',value:'5,412',delta:'+1.2%',note:'사상 최고치 경신'},{type:'quote',text:'실적이 받쳐 주는 한 조정은 기회입니다',by:''}]}),
+  slide:()=>({title:'이번 주 핵심 3가지',items:[{type:'point',text:'FOMC 금리 결정 — 동결 유력',hl:['동결'],style:'num'},{type:'point',text:'엔비디아 실적 발표',hl:[],style:'num'},{type:'point',text:'국채 금리 4% 중반 공방',hl:[],style:'num'}]})
+};
+const _stc=new Map();
+function styleThumb(k){   /* 스타일 견본 그림(데이터 URL) — 색 구성·글꼴·캐릭터 사용이 바뀌면 다시 그림 */
+  const cf=P.cfg.info, key=[k,cf.base,cf.item,cf.accent,cf.theme,cf.ud,cf.nochar?1:0,P.cfg.sub.font,P.cfg.w,P.cfg.h].join('|'); if(_stc.has(key)) return _stc.get(key);
+  let url=''; try{
+    const W=P.cfg.w, H=P.cfg.h, tw=240, th=Math.max(60,Math.round(240*H/W)), cv=document.createElement('canvas'); cv.width=tw; cv.height=th; const g=cv.getContext('2d'); g.scale(tw/W,tw/W);
+    const gr=g.createLinearGradient(0,0,W,H); gr.addColorStop(0,'#3b4a63'); gr.addColorStop(1,'#1c2434'); g.fillStyle=gr; g.fillRect(0,0,W,H);
+    const ig=Object.assign({id:'sample',name:'',bg:'solid',kicker:'',a:null,b:null,s:0,e:5,src:'rule'},STY_SAMPLE[k](),{mode:'full',sty:k});
+    drawClip(g,W,H,ig,4,{all:true}); url=cv.toDataURL('image/jpeg',0.82);
+  }catch(e){}
+  _stc.set(key,url); if(_stc.size>48) _stc.delete(_stc.keys().next().value); return url;
+}
+function styleGallery(d){
+  const cur=d.istyle||(P.cfg.info&&P.cfg.info.style)||'news';
+  return '<div class="vs-sec" style="margin-top:8px">인포그래픽 스타일 <span class="hint">눌러서 고르면 모든 프로젝트에 이어져요</span></div><div class="vs-sty-grid">'
+    +STY_ORDER.map(k=>{ const s=ISTY[k], u=styleThumb(k); return '<button class="vs-sty mobile-keep'+(k===cur?' on':'')+'" data-a="istySel" data-id="'+k+'" title="'+esc(s.d)+'"><span class="th"'+(u?' style="background-image:url('+u+')"':'')+'></span><b>'+s.ic+' '+esc(s.n)+'</b></button>'; }).join('')
+    +'</div><div class="hint pad">'+ISTY[cur].ic+' <b>'+esc(ISTY[cur].n)+'</b> — '+esc(ISTY[cur].d)+'</div>';
+}
+
+/* ── 메뉴별 공통 설정(한 번에 만들기·음성·자막·화면) — 모든 프로젝트에 같게 + 초기화 ── */
+const PREF_GROUPS={
+  auto:{n:'한 번에 만들기',paths:['dlg.avoice','dlg.asub','dlg.vkind']},
+  voice:{n:'음성',paths:['voice','mix.narr','gap','lead','tail']},
+  sub:{n:'자막',paths:['sub','prompts.sub']},
+  vis:{n:'화면',paths:['look','img','vid','info','prompts.info','dlg.vkind']}
+};
+const getPath=(o,p)=>p.split('.').reduce((a,k)=>a==null?undefined:a[k],o);
+function setDeep(o,p,v){ const a=p.split('.'); let t=o; for(let i=0;i<a.length-1;i++){ if(t[a[i]]==null||typeof t[a[i]]!=='object') t[a[i]]={}; t=t[a[i]]; } t[a[a.length-1]]=v; }
+const prefTouch=k=>/^(vid\.|img\.|voice\.|sub\.|look\.|info\.|prompts\.|gap\.|dlg\.|mix\.narr$|lead$|tail$)/.test(k);
+function hasSavedPref(){ try{ return !!JSON.parse(localStorage.getItem(LS_PREF)||'null'); }catch(e){ return false; } }
+function applyMenuPrefs(p){   /* 프로젝트를 열 때 — 저장해 둔 메뉴별 설정을 이 프로젝트에 덮어씀(저장된 설정이 아직 없으면 그대로). 합성 방식은 음성 묶음 구조와 묶여 있어 프로젝트 것을 유지 */
+  if(!hasSavedPref()) return false;
+  const pref=loadPref(), before=serialize(p.cfg), keepMode=p.cfg.voice&&p.cfg.voice.mode;
+  Object.keys(PREF_GROUPS).forEach(g=>PREF_GROUPS[g].paths.forEach(path=>{ const v=getPath(pref,path); if(v!==undefined) setDeep(p.cfg,path,clone(v)); }));
+  if(keepMode) p.cfg.voice.mode=keepMode; p._cues=null;
+  return serialize(p.cfg)!==before;
+}
+/* 대화상자(화면 만들기·한 번에 만들기)에서 바꾼 값은 바로 설정에 저장 — 취소해도 남음 */
+const DLG_PREF={
+  vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
+  avoice:v=>{ P.cfg.dlg.avoice=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; },
+  ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; }, iopen:v=>{ P.cfg.info.open=v!==false; },
+  istyle:v=>{ if(ISTY[v]) P.cfg.info.style=v; }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }
+};
+function resetPref(gid){
+  if(!P) return; const ids=gid==='all'?Object.keys(PREF_GROUPS):[gid]; if(!ids.length||!PREF_GROUPS[ids[0]]) return;
+  const names=ids.map(k=>PREF_GROUPS[k].n).join(' · '), hasAud=P.chunks.some(k=>k.bid);
+  if(!confirm('['+names+'] 설정을 처음 상태로 되돌릴까요?\n모든 프로젝트에 공통으로 쓰는 설정이라, 다른 프로젝트를 열어도 처음 상태가 돼요.'+(ids.indexOf('voice')>=0&&hasAud?'\n(이미 만든 음성이 있어 합성 방식은 그대로 둬요)':''))) return;
+  const keepMode=P.cfg.voice.mode; ids.forEach(k=>PREF_GROUPS[k].paths.forEach(path=>setDeep(P.cfg,path,clone(getPath(DEF_CFG,path)))));
+  if(hasAud) P.cfg.voice.mode=keepMode; else if(P.cfg.voice.mode!==keepMode) P.chunks=makeChunks(P);
+  savePref(P.cfg); P._cues=null; layout(P); commit('설정 초기화'); igPostersAll(true);
+  const dg=$('vsDlg'), open=dg&&dg.classList.contains('on'); renderAll();
+  if(open&&UI.dd){ if('vmode' in UI.dd) dlgVisual(); else if('akind' in UI.dd) dlgAuto(); }
+  toast('['+names+'] 설정을 처음 상태로 되돌렸어요');
+}
+function prefResetRow(gid){
+  return '<div class="vs-rst"><span class="hint">'+PREF_GROUPS[gid].n+' 설정은 모든 프로젝트에 공통이에요</span><span class="vs-sp"></span>'+F.btn('prefReset','↺ '+PREF_GROUPS[gid].n+' 초기화',{d:gid,title:'이 메뉴의 설정을 처음 상태로'})+F.btn('prefReset','↺ 모든 메뉴 초기화',{d:'all',c:'dng',title:'한 번에 만들기·음성·자막·화면 설정 전부를 처음 상태로'})+'</div>';
+}
+function menuSummary(){   /* 한 번에 만들기가 쓸, 각 메뉴에 저장된 설정 */
+  const c=P.cfg, v=c.voice, st=c.sub, dl=c.dlg, ic=c.info, kn={card:'카드 화면',image:'AI 이미지',video:'AI 영상',info:'인포그래픽'}, fn=(FONTS.find(f=>f[0]===st.font)||['','맑은 고딕'])[1];
+  const rows=[['① 음성',esc(v.name)+' · '+(v.mode==='sent'?'문장별':'묶음')+' 합성'+(String(v.style||'').trim()?' · 말투 지시 있음':'')],
+    ['② 자막',st.on?esc(fn)+' '+st.size+' · '+({bottom:'아래',mid:'가운데',top:'위'})[st.pos]+' · 최대 '+st.lines+'줄'+(dl.asub?' · AI 다듬기':''):'자막 없음'],
+    ['③ 화면',(kn[dl.vkind]||'(고르는 대로)')+(dl.vkind==='info'?' · '+ISTY[ic.style||'news'].n+' 스타일 · '+(ic.mode==='ai'?'AI 설계':'규칙')+' · '+(ic.nochar?'캐릭터 미적용':'캐릭터 있음'):'')]];
+  return '<div class="vs-sumry"><b class="t">저장된 설정으로 만들어요 <span class="hint">(각 메뉴에서 바꾼 값 · 모든 프로젝트 공통)</span></b>'+rows.map(r=>'<div><b>'+r[0]+'</b><span>'+r[1]+'</span></div>').join('')+'</div>';
+}
+/* ══ /v99 ══ */
 /* ── INFO-END ── */
 
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
@@ -45370,7 +45819,7 @@ function syncReport(){
     if(g.e-g.s<1) add('warn',g.s,'인포그래픽 "'+nm+'" 가 1초도 안 돼요');
     if(!isOver(g.mode)&&g.mode!=='title'&&g.bg!=='scene'){ const ov=(p.igs||[]).find((h,hi)=>hi>gi&&!isOver(h.mode)&&h.mode!=='title'&&h.bg!=='scene'&&h.s<g.e-0.4&&h.e>g.s+0.4); if(ov) add('info',g.s,'전체 틀 인포그래픽 "'+nm+'" 와 "'+igName(ov)+'" 가 겹쳐 있어요 — 뒤의 것이 위에 그려져요'); }
   });
-  if(!p.char&&(p.igs||[]).some(g=>g.mode==='left'||g.mode==='right')) add('info',0,'인포그래픽의 캐릭터는 기본 캐릭터예요 — 화면 탭에서 AI 캐릭터를 그리거나 내 그림을 올릴 수 있어요');
+  if(!p.char&&!p.cfg.info.nochar&&(p.igs||[]).some(g=>g.mode==='left'||g.mode==='right')) add('info',0,'인포그래픽의 캐릭터는 기본 캐릭터예요 — 화면 탭에서 AI 캐릭터를 그리거나 내 그림을 올릴 수 있어요');
   const cues=cuesOf(p); let short=0,fast=0,over=0;
   cues.forEach((q,i)=>{ const d=q.e-q.s, ch=q.text.replace(/\s+/g,'').length; if(d<0.8){ short++; if(short===1) add('warn',q.s,'자막이 너무 짧게 나와요(0.8초 미만)'); } if(ch/d>15){ fast++; if(fast===1) add('warn',q.s,'자막 읽는 속도가 빨라요('+(ch/d).toFixed(0)+'자/초 이상) — 문장 뒤 쉬는 시간을 늘리거나 자막을 줄이세요'); } const nx=cues[i+1]; if(nx&&q.e>nx.s+0.02){ over++; if(over===1) add('warn',q.s,'자막이 서로 겹쳐요'); } });
   if(short>1||fast>1||over>1) add('info',0,'자막 점검 — 짧음 '+short+' · 빠름 '+fast+' · 겹침 '+over);
@@ -45539,6 +45988,7 @@ function inspSub(){
   h+=F.row('줄 수',F.sel('cfg.sub.lines',st.lines,[[1,'1줄'],[2,'2줄'],[3,'3줄']],{t:'n'}),'넘치면 쪽을 나눠 시간 배분');
   h+=F.row('나타남',F.sel('cfg.sub.anim',st.anim,[['none','바로'],['fade','부드럽게']]));
   h+=F.row('전체 보정',F.num('cfg.offs.sub',P.cfg.offs.sub||0,{step:0.05}),'초 — 모든 자막을 이만큼 앞(−)·뒤(＋)로');
+  h+=prefResetRow('sub');
   h+='<div class="vs-sec">추가 자막 <span class="hint">나레이션과 상관없이 넣는 글(예: 출처·알림)</span></div>';
   h+=(P.xsubs.length?P.xsubs.map(x=>'<div class="vs-sn"><div class="r sm"><label>시작 '+F.num('xs:'+x.id+':s',r2(x.s),{step:0.1,min:0})+'</label><label>끝 '+F.num('xs:'+x.id+':e',r2(x.e),{step:0.1,min:0})+'</label><span class="vs-sp"></span>'+F.btn('delX','삭제',{d:x.id,c:'dng'})+'</div>'+F.ta('xs:'+x.id+':text',x.text,{rows:2})+'</div>').join(''):'<div class="vs-empty sm">없음</div>')+'<div class="vs-btns">'+F.btn('addX','＋ 재생헤드 위치에 추가')+F.btn('subReset','모든 자막 글 되돌리기',{d:'*',title:'고친 자막 글을 나레이션 글로 되돌려요'})+F.btn('srt','SRT 저장')+F.btn('vtt','VTT 저장')+'</div>';
   return h;
@@ -45554,6 +46004,7 @@ function inspVoice(){
   h+='<div class="vs-sec">간격·여백 <span class="hint">TTS 가 넣은 자연스러운 쉼 위에 더해져요</span></div>';
   h+=F.row('문장 사이',F.num('cfg.gap.sent',P.cfg.gap.sent,{min:0,max:5,step:0.05}),'초')+F.row('문단 사이',F.num('cfg.gap.para',P.cfg.gap.para,{min:0,max:5,step:0.05}),'초')+F.row('챕터 사이',F.num('cfg.gap.chap',P.cfg.gap.chap,{min:0,max:8,step:0.05}),'초')+F.row('맨 앞·뒤',F.num('cfg.lead',P.cfg.lead,{min:0,max:10,step:0.1})+F.num('cfg.tail',P.cfg.tail,{min:0,max:15,step:0.1}),'초(앞 · 뒤)');
   h+=F.row('음량',F.rng('cfg.mix.narr',P.cfg.mix.narr,0,2,0.05),'나레이션');
+  h+=prefResetRow('voice');
   h+='<div class="vs-btns">'+F.btn('voiceAll','① 음성 만들기(안 만든 것)',{c:'pri',dis:!key})+F.btn('voiceSel','이 장면만 다시',{dis:!key})+F.btn('importAud','📎 음성 파일 가져오기',{title:'다른 TTS·녹음 파일 한 개를 올리면 문장 경계를 자동으로 맞춰요'})+F.btn('wav','WAV 저장')+'</div>';
   h+='<div class="vs-sec">음성 묶음</div><div class="vs-chunks">'+P.chunks.map(k=>'<div class="vs-ck2 '+k.state+(k.stale?' stale':'')+'"><b>'+k.id+'</b><span>'+k.sids.length+'문장 · '+k.n+'자'+(k.dur?' · '+k.dur.toFixed(1)+'초':'')+'</span><em>'+(k.state==='done'?(k.stale?'고침':'완료'):k.state==='run'?'만드는 중':k.state==='err'?'실패':'아직')+'</em>'+(k.imported?'<i title="'+esc(k.imported)+'">가져옴</i>':'')+'<span class="vs-sp"></span>'+F.btn('redoChunk','다시',{d:k.id,dis:!key||!!k.imported})+'</div>'+(k.err?'<div class="vs-note err sm">'+esc(k.err)+'</div>':'')).join('')+'</div>';
   return h;
@@ -45603,7 +46054,7 @@ const D_=(k,html)=>'<div class="vs-fr"><label>'+k+'</label><div class="c">'+html
 const dsel=(key,val,opts)=>'<select class="vs-in mobile-keep" data-d="'+key+'">'+opts.map(x=>'<option value="'+esc(x[0])+'"'+(String(x[0])===String(val)?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select>';
 const dnum=(key,val,o)=>'<input type="number" class="vs-in mobile-keep" data-d="'+key+'" data-t="n" value="'+val+'"'+(o&&o.min!=null?' min="'+o.min+'"':'')+(o&&o.step?' step="'+o.step+'"':'')+'>';
 const dchk=(key,val,label)=>'<label class="vs-ck"><input type="checkbox" class="mobile-keep" data-d="'+key+'" data-t="b"'+(val?' checked':'')+'><span>'+label+'</span></label>';
-function dlgVisual(){ const ic=P.cfg.info||{}; UI.dd={vmode:'empty',vkind:geminiKey()?'image':'card',ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',iopen:ic.open!==false}; showVisualDlg(); }
+function dlgVisual(){ const c=P.cfg, ic=c.info||{}, dl=c.dlg||{}; UI.dd={vmode:'empty',vkind:dl.vkind||(geminiKey()?'image':'card'),ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',iopen:ic.open!==false,istyle:ic.style||'news'}; showVisualDlg(); }   /* 저장된 설정으로 시작 */
 function showVisualDlg(){
   const d=UI.dd, key=!!geminiKey();
   const items=d.vkind==='card'?genTargetsCard(d.vmode):genTargets(d.vmode,d.vkind), est=genEstimate(items,d.vkind);
@@ -45612,8 +46063,8 @@ function showVisualDlg(){
     D_('대상',dsel('vmode',d.vmode,[['empty','화면이 비어 있는 장면(카드 포함)'],['sel','선택한 장면 '+(UI.sel+1)+' 만'],['fail','만들기에 실패한 장면'],['all','모든 장면(덮어쓰기)']]))
     +D_('방식',dsel('vkind',d.vkind,[['video','AI 영상 (Veo) — 가장 생생하지만 비싸고 느려요'],['image','AI 이미지 + 천천히 움직이는 효과 — 저렴'],['card','카드 화면 — 무료·즉시'],['info','인포그래픽 화면 — 수치·강조를 말하는 때에 맞춰 표시 + 캐릭터']]))
     +(d.vkind==='info'?infoOptRows(d):'')+'<div class="vs-note'+(((d.vkind==='video'||d.vkind==='image')&&!key)?' err':'')+'">'+(((d.vkind==='video'||d.vkind==='image')&&!key)?'Gemini API Key 가 없어요(관리 메뉴 › 🧩 AI 공급자). ':'')+info+'</div>'
-    +(d.vkind==='video'?'<div class="hint pad">AI 영상은 장면마다 요청해서 <b>수 분씩</b> 걸리고 <b>사용량만큼 요금</b>이 나가요. 먼저 [선택한 장면]으로 하나만 시험해 보는 걸 권해요. 이 창을 닫아도 만드는 동안은 계속돼요.</div>':''),
-    [{t:'시작',a:'visGo',c:'pri'},{t:'취소',a:'dlgClose'}]);
+    +(d.vkind==='video'?'<div class="hint pad">AI 영상은 장면마다 요청해서 <b>수 분씩</b> 걸리고 <b>사용량만큼 요금</b>이 나가요. 먼저 [선택한 장면]으로 하나만 시험해 보는 걸 권해요. 이 창을 닫아도 만드는 동안은 계속돼요.</div>':'')+prefResetRow('vis'),
+    [{t:'시작',a:'visGo',c:'pri'},{t:'취소',a:'dlgClose'}],d.vkind==='info'?'wide':'');
 }
 function genTargetsCard(mode){ return genTargets(mode,'card'); }
 function dlgSync(){
@@ -45642,18 +46093,18 @@ async function dlgProjects(){
   dlg('📂 영상 프로젝트',list.length?'<div class="vs-pl">'+list.map(x=>'<div class="pj"><div class="m"><b>'+esc(x.title||'(이름 없음)')+'</b><span>'+x.scenes+'장면 · '+fmtDur(x.dur||0)+' · '+new Date(x.updated).toLocaleString()+'</span></div><button class="vs-b pri mobile-keep" data-a="openProj" data-id="'+esc(x.id)+'">열기</button><button class="vs-b dng mobile-keep" data-a="delProj" data-id="'+esc(x.id)+'">삭제</button></div>').join('')+'</div>':'<div class="vs-empty">저장된 프로젝트가 없어요<br><span class="hint">스크립트 만들기 결과나 이력의 [🎞 영상 만들기]로 새 프로젝트를 시작하세요.</span></div>',[{t:'닫기',a:'dlgClose'}]);
 }
 function dlgAuto(){
-  const key=!!geminiKey(); const ic=P.cfg.info||{}, d=UI.dd={akind:key?'image':'card',avoice:key&&P.chunks.some(k=>k.state!=='done'||k.stale),async:true,iopen:ic.open!==false,ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',asub:false};
+  const key=!!geminiKey(), ic=P.cfg.info||{}, dl=P.cfg.dlg||{}, pend=P.chunks.some(k=>k.state!=='done'||k.stale); const d=UI.dd={akind:dl.vkind||(key?'image':'card'),avoice:dl.avoice!=null?!!dl.avoice:(key&&pend),async:true,iopen:ic.open!==false,ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',asub:!!dl.asub,istyle:ic.style||'news'};   /* 각 메뉴에 저장된 설정으로 시작 */
   showAutoDlg();
 }
 function showAutoDlg(){
   const d=UI.dd, key=!!geminiKey(), todoV=P.chunks.filter(k=>k.state!=='done'||k.stale).length, items=d.akind==='card'?[]:genTargets('empty',d.akind), est=genEstimate(items,d.akind);
   dlg('🚀 한 번에 만들기',
-    '<div class="vs-note">음성 → 자막 → 화면 → 싱크 점검을 차례로 해요. 끝나면 ⑤ 내보내기만 누르면 돼요.<br>쓰는 AI — 글: <b>'+esc(studioAi().name)+'</b> '+(studioAi().key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' · 음성·이미지·영상: <b>Gemini</b> '+(key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' <span class="hint">(위쪽 🤖 버튼에서 바꾸고 요청 글을 쓸 수 있어요)</span></div>'
+    '<div class="vs-note">음성 → 자막 → 화면 → 싱크 점검을 차례로 해요. 끝나면 ⑤ 내보내기만 누르면 돼요.<br>쓰는 AI — 글: <b>'+esc(studioAi().name)+'</b> '+(studioAi().key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' · 음성·이미지·영상: <b>Gemini</b> '+(key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' <span class="hint">(위쪽 🤖 버튼에서 바꾸고 요청 글을 쓸 수 있어요)</span></div>'+menuSummary()
     +D_('음성',dchk('avoice',d.avoice,'② AI 음성 만들기('+todoV+'묶음)')+(key?'':' <span class="bad">키 없음</span>'))
     +D_('자막',dchk('asub',d.asub,'AI 로 자막 다듬기 (글 AI: '+esc(studioAi().name)+' · 나레이션은 그대로, 되돌리기 가능)'))
     +D_('화면',dsel('akind',d.akind,[['card','카드 화면(무료)'],['image','AI 이미지(저렴)'],['video','AI 영상(비싸고 느려요)'],['info','인포그래픽 화면(수치·강조 + 캐릭터)'],['skip','건너뛰기']]))
-    +(d.akind==='info'?infoOptRows(d):'')+'<div class="vs-note">'+(d.akind==='info'?'인포그래픽 화면 '+items.length+'장면':d.akind==='image'?'AI 이미지 '+items.length+'장':d.akind==='video'?'AI 영상 '+items.length+'개 · 약 '+est.secs+'초 분량'+(est.cost?' · 예상 $'+est.cost.toFixed(2):''):'추가 비용 없음')+'</div>',
-    [{t:'시작',a:'autoGo',c:'pri'},{t:'취소',a:'dlgClose'}]);
+    +(d.akind==='info'?infoOptRows(d):'')+'<div class="vs-note">'+(d.akind==='info'?'인포그래픽 화면 '+items.length+'장면':d.akind==='image'?'AI 이미지 '+items.length+'장':d.akind==='video'?'AI 영상 '+items.length+'개 · 약 '+est.secs+'초 분량'+(est.cost?' · 예상 $'+est.cost.toFixed(2):''):'추가 비용 없음')+'</div>'+prefResetRow('auto'),
+    [{t:'시작',a:'autoGo',c:'pri'},{t:'취소',a:'dlgClose'}],d.akind==='info'?'wide':'');
 }
 
 /* ═════════ 값 고치기 — data-f 필드 → 프로젝트 ═════════ */
@@ -45713,8 +46164,8 @@ function setField(path,v,el,final){
     else if(k==='exp.prev'){ UI.cvScale=0; canvasSize(); }
     else if(k==='mix.narr'){ if(ENG.gN) ENG.gN.gain.value=v; }
     else if(k==='bgm.vol'||k==='mix.bgm'){ if(ENG.gB&&ENG.mode!=='export') ENG.gB.gain.value=P.cfg.bgm.vol*P.cfg.mix.bgm; }
-    if(k.indexOf('vid.')===0||k.indexOf('img.')===0||k.indexOf('voice.')===0||k.indexOf('sub.')===0||k.indexOf('look.')===0||k.indexOf('prompts.')===0) savePref(P.cfg);
-    if(k.indexOf('info.')===0){ savePref(P.cfg); if(final) igPostersAll(); }
+    if(prefTouch(k)) savePref(P.cfg);
+    if(k.indexOf('info.')===0&&final) igPostersAll();
   }
   else if(path==='p.charPrompt'){ P.charPrompt=String(v||''); redo=''; }
   else if(path==='ui.igType'){ UI.igType=v; redo=''; }
@@ -45735,6 +46186,7 @@ function onField(e,final){
 function onDlgField(e){
   const el=e.target; if(!el.dataset||el.dataset.d==null) return; const k=el.dataset.d; let v=el.type==='checkbox'?el.checked:el.value;
   if(el.dataset.t==='n') v=num(v,0); UI.dd[k]=v;
+  if(DLG_PREF[k]){ DLG_PREF[k](v); savePref(P.cfg); }
   if('vmode' in UI.dd) showVisualDlg(); else if('efrom' in UI.dd) showExportDlg(); else if('akind' in UI.dd) showAutoDlg(); else if('gmode' in UI.dd) showIgNewDlg();
 }
 
@@ -45754,7 +46206,7 @@ const safeName=s=>String(s||'영상').replace(/[\\/:*?"<>|]+/g,'_').replace(/\s+
 async function act(a,btn){
   const id=btn&&btn.dataset?btn.dataset.id:'';
   if(UI.busy==='export'&&a!=='cancel') return;
-  if(/^(info|char|ig|ai)/.test(a)){ await infoAct(a,id,btn); return; }
+  if(/^(info|char|ig|ai|pref|ist)/.test(a)){ await infoAct(a,id,btn); return; }
   switch(a){
     case 'close': closeStudio(); break;
     case 'undo': undo(); break; case 'redo': redo(); break;
@@ -45818,7 +46270,7 @@ async function act(a,btn){
     case 'visGo': {
       const d=UI.dd, items=d.vkind==='card'?genTargets(d.vmode,'card'):genTargets(d.vmode,d.vkind);
       if(!items.length){ toast('만들 장면이 없어요'); break; }
-      if(d.vkind==='info'){ dlgClose(); await runInfo(items,{lay:d.ilay,mode:d.imode,char:d.ichar,open:d.iopen!==false,remember:true}); break; }
+      if(d.vkind==='info'){ dlgClose(); await runInfo(items,{lay:d.ilay,mode:d.imode,char:d.ichar,open:d.iopen!==false,remember:true,style:d.istyle}); break; }
       if(d.vkind==='card'){ items.forEach(it=>setCard(P.scenes.find(c=>c.id===it.id))); dlgClose(); commit('카드'); renderAll(); break; }
       if(!geminiKey()){ toast('Gemini API Key 가 없어요'); break; }
       if(d.vkind==='video'&&items.length>3&&!confirm('AI 영상 '+items.length+'개를 만들어요. 사용량만큼 요금이 나가고 시간이 오래 걸려요.\n계속할까요?')) break;
@@ -45854,7 +46306,7 @@ async function autoGo(){
   if(d.avoice){ if(!geminiKey()) toast('Gemini 키가 없어 음성은 건너뛰어요'); else{ await runVoice({}); if(UI.aborted) return; } }
   if(d.asub){ await runSubs('all'); if(UI.aborted) return; }
   if(d.akind==='card'){ P.scenes.forEach(c=>{ if((c.vis.kind||'none')==='none') setCard(c); }); commit('카드'); }
-  else if(d.akind==='info'){ const its=genTargets('empty','info'); if(its.length){ await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,open:d.iopen!==false,remember:true}); if(UI.aborted) return; } }
+  else if(d.akind==='info'){ const its=genTargets('empty','info'); if(its.length){ await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,open:d.iopen!==false,remember:true,style:d.istyle}); if(UI.aborted) return; } }
   else if(d.akind==='image'||d.akind==='video'){ if(!geminiKey()) toast('키가 없어 화면은 카드로 둬요'); else{ await qRun(genTargets('empty',d.akind)); if(UI.aborted) return; } }
   renderAll(); const rep=syncReport(); progress(1,'한 번에 만들기 끝 · 점검 '+rep.length+'건'); dlgSync();
 }
@@ -45945,8 +46397,8 @@ document.addEventListener('keydown',e=>{
 },true);
 async function startProject(p,isNew){
   if(ENG.playing) pausePlay(); VM.forEach(e=>{ e.pause(); e.removeAttribute('src'); }); VM.clear(); dropCaches(); snapId='';
-  P=fixProject(p); layout(P); UI.sel=0; UI.cur=-1; UI.tab='scene'; UI.models=UI.models||null; ENG.pos=0; UI.pps=22; UI.cvScale=0; UI.busy='';
-  H.undo=[]; H.redo=[]; H.cur=serialize(P); UI.saved=!isNew; ensureModal(); canvasSize(); renderAll();
+  P=fixProject(p); const pc=isNew?false:applyMenuPrefs(P); layout(P); UI.sel=0; UI.cur=-1; UI.tab='scene'; UI.models=UI.models||null; ENG.pos=0; UI.pps=22; UI.cvScale=0; UI.busy='';
+  H.undo=[]; H.redo=[]; H.cur=serialize(P); UI.saved=!isNew&&!pc; if(pc) scheduleSave(); ensureModal(); canvasSize(); renderAll();
   progress(0,P.chunks.length&&P.chunks.every(k=>k.state==='done')?'준비됨 — ▶ 로 미리 보거나 ⑤ 내보내기를 눌러 보세요':'먼저 ① 음성을 만들거나 🚀 한 번에 만들기를 눌러 보세요');
   ensureImages().then(()=>{ wantDraw(); igPostersAll(); }).catch(()=>{});
   if(isNew){ try{ await saveProject(); }catch(e){} }
@@ -45978,7 +46430,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,addOpeners,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD}};
+    igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,addOpeners,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
