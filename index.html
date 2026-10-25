@@ -2872,6 +2872,13 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-dsc{border:1px solid #1f2d46;border-radius:8px;background:#111c30;padding:8px 11px;margin-bottom:8px;cursor:pointer}.vs-dsc:hover{background:#16243d}
 .vs-dsc .r{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;flex-wrap:wrap}.vs-dsc .r b{color:#fcd34d}.vs-dsc .r .t{font-size:10.5px;color:#7f90ab;font-family:ui-monospace,Consolas,monospace}.vs-dsc .r .ch{font-size:10.5px;color:#8fb6e8}
 .vs-dsc .tx{color:#d6e0f0}.vs-dsc .tx.alt{color:#9fb0c9;border-top:1px dashed #243149;margin-top:5px;padding-top:5px}
+.tsel{outline:2px solid #fbbf24;outline-offset:1px;z-index:6}
+#vsTlHint{flex:0 1 auto;min-width:0;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#vsTlHint b{color:#fcd34d}#vsTlHint i{font-style:normal;color:#8da0bf}
+.vs-tlbar .vs-mb.dng:disabled{opacity:.4}
+.vs-cm{position:fixed;z-index:40;min-width:190px;background:#101a2e;border:1px solid #2f4468;border-radius:9px;box-shadow:0 8px 30px rgba(0,0,0,.55);padding:4px}
+.vs-cm .t{padding:5px 9px 6px;font-size:10.5px;color:#9fb0c9;border-bottom:1px solid #243149;margin-bottom:3px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vs-cm button{display:block;width:100%;text-align:left;padding:6px 10px;border:0;background:transparent;color:#e2e8f0;font-size:12px;border-radius:6px;cursor:pointer}
+.vs-cm button:hover{background:#1f3253}.vs-cm button.dng{color:#fca5a5}.vs-cm button.dng:hover{background:#3b1a1f}
 .vs-dbx{margin:6px 0;padding:8px 11px;border-radius:8px;background:#0e1829;border:1px solid #1f2d46;color:#c3cfe2;line-height:1.7;font-size:12px}.vs-dbx b{display:block;color:#fcd34d;margin-bottom:3px}
 .tl-bg{position:absolute;top:2px;bottom:2px;border-radius:4px;background:#312e81;border:1px solid #6366f1;font-size:10px;color:#c7d2fe;padding:0 8px;line-height:12px;overflow:hidden;white-space:nowrap}
 .tl-ph{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#f43f5e;pointer-events:none;z-index:6}
@@ -43169,6 +43176,8 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
    · 장면 AI 수정·구성요소 타임라인·스크립트/스토리보드 조회 (2026-10-25, v101) — 왼쪽 목록에서 장면을 Ctrl/⌘ 클릭(여러 개)·Shift 클릭(범위)로 고르고 목록 아래 [✨ AI 수정]에 요청을 적으면 runSceneEdit 가
        고른 장면의 나레이션·자막·화면·인포그래픽(생성 때와 같은 JSON)을 AI 에게 보내 자막·나레이션·인포그래픽(블록·스타일)·카드 글·프롬프트·전환·이름을 장면마다 반영(한 번에 되돌리기 1번).
        타임라인 [구성] 줄은 인포그래픽 블록(항목이 여럿이면 항목마다)을 칩으로 보여 주고 끌어서 시점을 바꿈. 생성은 구성요소 세분화·단계별 clip(AI 최대 4개, 규칙은 블록 5개부터 3~4개씩). 머리의 [📜 스크립트]·[🎞 스토리보드]는 지금 프로젝트 내용을 보여 줌.
+   · 타임라인 요소 개별 선택·삭제 (2026-10-25, v102) — 장면·인포그래픽·구성요소(칩·항목)·자막·음성(문장)·배경음악·챕터 타이틀을 눌러 하나씩 고르면(UI.tsel, .tsel 테두리·도구줄 안내) [🗑 삭제]·Delete/Backspace·오른쪽 클릭 메뉴로 지움(tlDelete) — 모두 되돌리기 1번(+아래 알림의 [되돌리기]).
+       음성은 deleteSentence(나레이션·음성·자막을 빼고 뒤를 당김, 걸린 클립·블록 시점은 이웃 문장으로, 그 문장만 담은 장면은 함께). saveProject 는 되돌려 살아난 파일을 DB 에 다시 넣음.
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
@@ -43595,7 +43604,9 @@ async function saveProject(){
   const ids=[...DIRTY]; for(const id of ids){ const b=BL.get(id); if(b) await dbPutBlob(P.id+'|'+id,b); DIRTY.delete(id); }
   const json=serialize(P);
   await dbPutProject({id:P.id,title:P.title,recId:P.recId,updated:P.updated,dur:P.dur,scenes:P.scenes.length,json});
-  const used=usedBids(P), keys=await dbBlobKeys(P.id+'|'); for(const k of keys){ if(!used.has(String(k).slice(P.id.length+1))) await dbDelBlob(k); }
+  const used=usedBids(P), keys=await dbBlobKeys(P.id+'|'), have=new Set(keys.map(k=>String(k).slice(P.id.length+1)));
+  for(const u of used){ if(!have.has(u)){ const b=BL.get(u); if(b) await dbPutBlob(P.id+'|'+u,b); } }   /* 지웠다가 되돌린 장면의 파일이 DB 에서 먼저 지워졌어도 다시 넣음 */
+  for(const k of keys){ if(!used.has(String(k).slice(P.id.length+1))) await dbDelBlob(k); }
   UI.saved=true; paintSaved();
 }
 function fixProject(p){   /* 옛 형식 보정 */
@@ -44972,7 +44983,7 @@ async function infoAct(a,id,btn){
   const done=(label,sel)=>{ if(g&&sel!==false) igPoster(g); commit(label); renderAll(); };
   switch(a){
     case 'infoMk': if(c) await runInfo([{id:c.id,kind:'info'}],{lay:P.cfg.info.lay,mode:P.cfg.info.mode,char:'keep',open:P.cfg.info.open!==false,style:P.cfg.info.style}); break;
-    case 'igSel': if(g){ UI.ig=g.id; UI.tab='ig'; renderTabs(); renderInspector(true); renderTimeline(); seekTo(Math.max(0,g.s+0.05)); } break;
+    case 'igSel': if(g){ tselSet('clip',g.id); UI.ig=g.id; UI.tab='ig'; renderTabs(); renderInspector(true); renderTimeline(); seekTo(Math.max(0,g.s+0.05)); } break;
     case 'igPlay': if(g) startPlay(Math.max(0,g.s-0.2),'preview',Math.min(P.dur,g.e+0.2)); break;
     case 'igNew': dlgIgNew(); break;
     case 'igGo': await igGo(); break;
@@ -45995,6 +46006,135 @@ function dlgDoc(kind){
     tab==='script'?[{t:'📋 나레이션만 복사',a:'docCopy',id:'narr'},{t:'📋 소제목·화면 지시 포함 복사',a:'docCopy',id:'full'},{t:'닫기',a:'dlgClose',c:'pri'}]:[{t:'📋 스토리보드 복사',a:'docCopy',id:'board'},{t:'닫기',a:'dlgClose',c:'pri'}],'wide doc');
 }
 /* ══ /v101 ══ */
+/* ══ v102 (2026-10-25) — 타임라인 요소 하나씩 고르기 · 삭제 ═══════════════════════════════════════════════════════════════════
+   타임라인의 장면(화면)·인포그래픽·구성요소·자막·음성(문장)·배경음악·챕터 타이틀을 눌러 하나씩 고르면(UI.tsel={k,id,pi}, .tsel 테두리) [🗑 삭제]·Delete/Backspace 키·오른쪽 클릭 메뉴로 지움 — 모두 되돌리기 1번
+   · 장면 → deleteScene(앞 장면이 구간을 이어받음) · 인포그래픽 → 클립 삭제 · 구성요소 → 블록(항목 칩이면 그 항목)만, 마지막이면 인포그래픽도 · 자막 → 문장 자막 숨김(추가 자막이면 삭제)
+   · 음성 → deleteSentence(그 문장의 나레이션·음성·자막을 빼고 뒤를 당김 — 걸려 있던 클립·블록 시점은 이웃 문장으로) · 배경음악 → 지움 · 챕터 타이틀 → 그 챕터만 끔 ── */
+UI.tsel=null;
+const TSEL_KIND={scene:'장면',clip:'인포그래픽',comp:'구성요소',sub:'자막',aud:'음성(문장)',bgm:'배경음악',title:'챕터 타이틀'};
+function findItem(id){ for(const g of (P.igs||[])){ const it=(g.items||[]).find(x=>x.id===id); if(it) return {g,it}; } return null; }
+function tselEls(){   /* 지금 고른 요소의 화면 요소들(자막이 쪽으로 나뉘면 여럿) */
+  const t=UI.tsel; if(!t||!P) return []; const q=s=>[...document.querySelectorAll('#vsTlIn '+s)];
+  switch(t.k){
+    case 'scene': { const j=P.scenes.findIndex(c=>c.id===t.id); return j<0?[]:q('.tl-sc[data-j="'+j+'"]'); }
+    case 'clip': return q('.tl-ig[data-id="'+t.id+'"]');
+    case 'comp': return q('.tl-ic[data-i="'+t.id+'"][data-p="'+(t.pi==null?-1:t.pi)+'"]');
+    case 'sub': return q('.tl-cu[data-sid="'+t.id+'"]');
+    case 'aud': return q('.tl-au[data-sid="'+t.id+'"]');
+    case 'bgm': return q('.tl-bg');
+    case 'title': return q('.tl-tt[data-ci="'+t.id+'"]');
+  }
+  return [];
+}
+function tselLabel(){   /* 고른 요소를 한 줄로 */
+  const t=UI.tsel; if(!t||!P) return '';
+  switch(t.k){
+    case 'scene': { const j=P.scenes.findIndex(c=>c.id===t.id), c=P.scenes[j]; return c?(j+1)+'번 · '+clipS(c.name||(sentsOf(P,c)[0]||{}).text||'',22):''; }
+    case 'clip': { const g=igById(t.id); return g?clipS(igName(g),26)+' ('+g.items.length+'블록)':''; }
+    case 'comp': { const f=findItem(t.id); if(!f) return ''; return t.pi>=0&&f.it.parts&&f.it.parts[t.pi]?partText(f.it,f.it.parts[t.pi]):compText(f.it); }
+    case 'sub': { if(String(t.id).indexOf('x:')===0){ const x=(P.xsubs||[]).find(q=>q.id===String(t.id).slice(2)); return x?clipS(x.text,24):''; } const s=P.sents.find(q=>q.id===t.id); return s?clipS(s.sub.text!=null?s.sub.text:s.text,24):''; }
+    case 'aud': { const s=P.sents.find(q=>q.id===t.id); return s?clipS(s.text,28):''; }
+    case 'bgm': return P.cfg.bgm.name||'배경 음악';
+    case 'title': return titleSpec(P,+t.id).t;
+  }
+  return '';
+}
+function tselPaint(){   /* 타임라인의 테두리·도구줄(삭제 단추·안내)을 지금 선택에 맞춤 */
+  const host=$('vsTlIn'); if(host) host.querySelectorAll('.tsel').forEach(e=>e.classList.remove('tsel'));
+  let lab='';
+  if(UI.tsel&&P){ const els=tselEls(); if(!els.length) UI.tsel=null; else{ els.forEach(e=>e.classList.add('tsel')); lab=tselLabel(); } }
+  const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)':'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
+  const h=$('vsTlHint'); if(h) h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· Delete 로 삭제</i>':'요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정';
+}
+function tselSet(k,id,pi){ UI.tsel={k,id:String(id),pi:pi==null?-1:pi}; tselPaint(); }
+function tselClear(){ if(UI.tsel){ UI.tsel=null; tselPaint(); } }
+function tlSelFrom(t){   /* 누른 요소로 선택을 정함 — 고른 종류를 돌려줌('' = 빈 곳이라 선택을 풂) */
+  if(!t||!t.closest||!P) return ''; let m;
+  if((m=t.closest('.tl-ic'))){ tselSet('comp',m.dataset.i,+m.dataset.p); return 'comp'; }
+  if((m=t.closest('.tl-ig'))){ tselSet('clip',m.dataset.id); return 'clip'; }
+  if((m=t.closest('.tl-cu'))){ tselSet('sub',m.dataset.sid); return 'sub'; }
+  if((m=t.closest('.tl-tt'))){ tselSet('title',m.dataset.ci); return 'title'; }
+  if((m=t.closest('.tl-sc'))){ const c=P.scenes[+m.dataset.j]; if(c){ tselSet('scene',c.id); return 'scene'; } }
+  if((m=t.closest('.tl-au'))){ tselSet('aud',m.dataset.sid); return 'aud'; }
+  if(t.closest('.tl-bg')){ tselSet('bgm','bgm'); return 'bgm'; }
+  tselClear(); return '';
+}
+function tselStart(){   /* 고른 요소가 시작하는 시각(초) — 여기부터 재생에 씀 */
+  const t=UI.tsel; if(!t||!P) return null;
+  switch(t.k){
+    case 'scene': { const c=P.scenes.find(x=>x.id===t.id); return c?c.s:null; }
+    case 'clip': { const g=igById(t.id); return g?g.s:null; }
+    case 'comp': { const f=findItem(t.id); if(!f) return null; return t.pi>=0&&f.it.parts&&f.it.parts[t.pi]?partTime(P,f.it.parts[t.pi],f.it):blockT0(P,f.it); }
+    case 'sub': { const q=cuesOf().find(x=>x.sid===t.id); return q?q.s:null; }
+    case 'aud': { const s=P.sents.find(x=>x.id===t.id); return s?s.s:null; }
+    case 'bgm': return 0;
+    case 'title': { const q=(P._titles||[]).find(x=>x.ci===+t.id); return q?q.ta:null; }
+  }
+  return null;
+}
+/* 문장 하나를 영상에서 뺌 — 나레이션 글·음성 구간·자막이 함께 빠지고 뒤가 당겨짐. 걸려 있던 인포그래픽 시점은 이웃 문장으로, 이 문장만 담은 장면은 함께 지움 */
+function deleteSentence(i){
+  const p=P, S=p.sents, s=S[i]; if(!s) return '';
+  if(S.length<=1){ toast('마지막 남은 문장은 지울 수 없어요'); return ''; }
+  const prev=S[i-1]||null, next=S[i+1]||null, t0=s.s, t1=next?next.s:p.dur; let gone=0;
+  (p.igs||[]).forEach(g=>{
+    if(g.a&&g.a.sid===s.id) g.a=next?{sid:next.id,f:0,dt:0}:{sid:prev.id,f:1,dt:0};
+    if(g.b&&g.b.sid===s.id) g.b=prev?{sid:prev.id,f:1,dt:0}:{sid:next.id,f:0,dt:0};
+    (g.items||[]).forEach(it=>{ const mv=o=>{ if(o.at&&o.at.sid===s.id){ o.at=next?{sid:next.id,f:0}:{sid:prev.id,f:1}; o.dt=0; } }; mv(it); (it.parts||[]).forEach(mv); });
+  });
+  for(let j=p.scenes.length-1;j>=0;j--){   /* 이 문장만 담고 있던 장면 */
+    const c=p.scenes[j], nx=p.scenes[j+1];
+    if(p.scenes.length>1&&c.first===i&&((nx&&nx.first===i+1)||(!nx&&i===S.length-1))){ if(j===0){ nx.first=c.first; nx.off=null; } p.scenes.splice(j,1); gone++; }
+  }
+  S.splice(i,1);
+  p.scenes.forEach(c=>{ if(c.first>i) c.first--; c.first=Math.min(c.first,S.length-1); });
+  const ck=p.chunks.find(x=>x.id===s.cid); if(ck){ ck.sids=ck.sids.filter(x=>x!==s.id); ck.n=Math.max(0,(ck.n||0)-(s.n||0)); if(!ck.sids.length) p.chunks=p.chunks.filter(x=>x!==ck); }
+  const dd=Math.max(0,t1-t0); (p.xsubs||[]).forEach(x=>{ if(x.s>=t1-1e-6){ x.s=r2(Math.max(0,x.s-dd)); x.e=r2(Math.max(x.s+0.3,x.e-dd)); } else if(x.s>t0){ x.s=r2(t0); x.e=r2(Math.max(x.s+0.3,x.e-dd)); } });   /* 시각으로 적어 둔 추가 자막도 같이 당김 */
+  return '문장 "'+clipS(s.text,20)+'" 삭제 — 나레이션·음성·자막이 빠지고 뒤 내용이 앞으로 당겨져요'+(gone?' (그 문장만 있던 장면 '+gone+'개도 함께)':'');
+}
+function toastUndo(msg){   /* 지운 뒤 알림 — [되돌리기] 단추가 있는 아래쪽 알림(BTMSecDrag.toast)을 쓰고, 없으면 일반 알림 */
+  try{ if(window.BTMSecDrag&&typeof BTMSecDrag.toast==='function'){ BTMSecDrag.toast(msg,false,[['되돌리기',()=>{ undo(); }]]); return; } }catch(e){}
+  toast(msg+' (Ctrl+Z 로 되돌려요)');
+}
+function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
+  const t=UI.tsel; if(!t||!P) return false;
+  if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 지워 주세요'); return false; }
+  if(ENG.playing) pausePlay();
+  const lab=tselLabel(); let msg='';
+  switch(t.k){
+    case 'scene': {
+      const j=P.scenes.findIndex(c=>c.id===t.id); if(j<0) break;
+      if(P.scenes.length<=1){ toast('마지막 남은 장면은 지울 수 없어요'); return false; }
+      deleteScene(j); UI.sel=clamp(UI.sel,0,P.scenes.length-1); UI.ms=null;
+      msg='장면 '+(j+1)+' 삭제 — 그 구간은 '+(j===0?'다음':'앞')+' 장면이 이어받아요(나레이션·자막은 그대로)'; break; }
+    case 'clip': { const g=igById(t.id); if(!g) break; P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; UI.igIt=''; msg='인포그래픽 "'+lab+'" 삭제'; break; }
+    case 'comp': {
+      const f=findItem(t.id); if(!f) break; const g=f.g, it=f.it;
+      if(t.pi>=0&&it.parts&&it.parts.length>1&&it.parts[t.pi]){ it.parts.splice(t.pi,1); msg='항목 "'+lab+'" 삭제'; }
+      else{ g.items=g.items.filter(x=>x!==it); msg='구성요소 "'+lab+'" 삭제'; }
+      if(!g.items.length){ P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; msg+=' — 마지막 구성요소라 인포그래픽도 함께 지웠어요'; }
+      UI.igIt=''; UI.igPt=-1; break; }
+    case 'sub': {
+      if(String(t.id).indexOf('x:')===0){ const id=String(t.id).slice(2); if(!(P.xsubs||[]).some(x=>x.id===id)) break; P.xsubs=P.xsubs.filter(x=>x.id!==id); msg='추가 자막 "'+lab+'" 삭제'; }
+      else{ const s=P.sents.find(x=>x.id===t.id); if(!s) break; s.sub.hide=true; msg='자막 "'+lab+'" 숨김 — [자막] 탭의 [숨김]을 풀면 다시 나와요'; }
+      P._cues=null; break; }
+    case 'aud': { const i=P.sents.findIndex(s=>s.id===t.id); if(i<0) break; msg=deleteSentence(i); if(!msg) return false; break; }
+    case 'bgm': { if(!P.cfg.bgm.bid) break; P.cfg.bgm.bid=''; P.cfg.bgm.name=''; msg='배경음악 삭제'; break; }
+    case 'title': { const ci=+t.id; P.ttl=P.ttl||{}; (P.ttl[ci]=P.ttl[ci]||{}).off=true; msg='챕터 타이틀 "'+lab+'" 끔 — [타이틀] 탭에서 다시 켤 수 있어요'; break; }
+  }
+  if(!msg){ tselClear(); return false; }
+  UI.tsel=null; layout(P); sortClips(P); P._cues=null; UI.sel=clamp(UI.sel,0,P.scenes.length-1); UI.msA=null; commit('삭제 — '+TSEL_KIND[t.k]); renderAll(); igPostersAll();
+  if(ENG.pos>P.dur) seekTo(P.dur); else{ syncMedia(ENG.pos,false); paintFrame(ENG.pos); }
+  toastUndo(msg); return true;
+}
+/* 오른쪽 클릭 메뉴 — 누른 요소를 고르고 [재생]·[삭제] */
+function tlMenuClose(){ const m=$('vsCm'); if(m) m.remove(); }
+function tlMenu(e){
+  if(!P||UI.busy==='export') return; const k=tlSelFrom(e.target); if(!k) return; e.preventDefault(); tlMenuClose();
+  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc(TSEL_KIND[k]+' · '+tselLabel())+'</div><button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 삭제</button>';
+  _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
+}
+/* ══ /v102 ══ */
 /* ── INFO-END ── */
 
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
@@ -46414,7 +46554,7 @@ function modalHtml(){
    +'<div class="vs-right"><div class="vs-tabs" id="vsTabs"></div><div class="vs-insp" id="vsInsp"></div></div>'
    +'</div>'
    +'<div class="vs-tl"><div class="vs-tlbar"><b>타임라인</b><button class="vs-mb mobile-keep" data-a="zout" title="축소">−</button><input type="range" id="vsZoom" class="vs-zoom mobile-keep" min="6" max="160" step="2" value="22"><button class="vs-mb mobile-keep" data-a="zin" title="확대">＋</button><button class="vs-mb mobile-keep" data-a="zfit">전체 보기</button><span class="vs-sp"></span>'
-   +'<button class="vs-mb mobile-keep" data-a="splitPh" title="재생헤드 위치에서 장면 나누기 (S)">✂ 여기서 나누기</button><button class="vs-mb mobile-keep" data-a="addX" title="재생헤드 위치에 자막 추가">＋ 자막</button><span class="hint">컷 경계·자막 막대·구성 칩을 끌어서 조정</span></div>'
+   +'<button class="vs-mb mobile-keep" data-a="splitPh" title="재생헤드 위치에서 장면 나누기 (S)">✂ 여기서 나누기</button><button class="vs-mb mobile-keep" data-a="addX" title="재생헤드 위치에 자막 추가">＋ 자막</button><button class="vs-mb dng mobile-keep" id="vsTlDel" data-a="tlDel" disabled title="타임라인에서 요소를 눌러 고르면 지울 수 있어요">🗑 삭제</button><span class="hint" id="vsTlHint">요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정</span></div>'
    +'<div class="vs-tlw"><div class="vs-tll"><i style="height:22px"></i><i style="height:18px">타이틀</i><i style="height:40px">화면</i><i id="vsTllG" style="height:40px">인포</i><i id="vsTllC" style="height:22px">구성</i><i style="height:30px">자막</i><i style="height:42px">음성</i><i style="height:18px">BGM</i></div><div class="vs-tls" id="vsTls"><div class="vs-tli" id="vsTlIn"></div></div></div></div>'
    +'<div class="vs-dg" id="vsDlg"></div>'
    +'<input type="file" id="vsFVis" accept="image/*,video/*" style="display:none"><input type="file" id="vsFAud" accept="audio/*,video/*" style="display:none"><input type="file" id="vsFBgm" accept="audio/*" style="display:none"><input type="file" id="vsFChar" accept="image/*" style="display:none">'
@@ -46424,7 +46564,7 @@ function paintSaved(){ const e=$('vsSaved'); if(e) e.textContent=UI.saved?'✓ �
 function paintBusy(){
   const m=_ov; if(!m) return; m.classList.toggle('busy',!!UI.busy); m.classList.toggle('lock',UI.busy==='export');
   const c=$('vsCancel'); if(c) c.style.display=UI.busy?'':'none';
-  m.querySelectorAll('.vs-steps .vs-step,.vs-auto').forEach(b=>{ b.disabled=!!UI.busy; }); paintEd();
+  m.querySelectorAll('.vs-steps .vs-step,.vs-auto').forEach(b=>{ b.disabled=!!UI.busy; }); paintEd(); tselPaint();
 }
 function uiPlayState(){ const b=$('vsPlay'); if(b) b.textContent=ENG.playing&&ENG.mode==='preview'?'⏸':'▶'; }
 let _uiAt=0;
@@ -46472,7 +46612,7 @@ function renderTimeline(){
   const arow=P.sents.map(s=>{ const k=cm.get(s.cid), low=s.has&&s.al&&s.al.conf<0.35; return '<div class="tl-au'+(s.has?' has':' no')+(low?' low':'')+(k&&k.stale?' stale':'')+'" data-sid="'+s.id+'" style="left:'+px(s.s)+'px;width:'+Math.max(2,px(s.e)-px(s.s)-1)+'px" title="'+esc(s.text)+'">'+(s.has?'<canvas></canvas>':'')+'</div>'; }).join('');
   const bg=P.cfg.bgm, brow=bg.bid?'<div class="tl-bg" style="left:0;width:'+px(P.dur)+'px">♪ '+esc(bg.name||'배경 음악')+'</div>':'';
   host.innerHTML='<div class="tl-ruler" data-seek>'+rl+'</div><div class="tl-row t" data-seek>'+trow+'</div><div class="tl-row v" data-seek>'+vrow+'</div><div class="tl-row g" data-seek style="height:'+gh+'px">'+grow+'</div><div class="tl-row c" data-seek style="height:'+chh+'px">'+compRow(comps)+'</div><div class="tl-row s" data-seek>'+crow+'</div><div class="tl-row a" data-seek>'+arow+'</div><div class="tl-row b" data-seek>'+brow+'</div><div class="tl-ph" id="vsPh" style="left:'+px(ENG.pos)+'px"></div><div class="tl-guide" id="vsGuide"></div>';
-  drawWaves();
+  drawWaves(); tselPaint();
 }
 function drawWaves(){
   const host=$('vsTlIn'); if(!host||!P) return; const cm=new Map(P.chunks.map(k=>[k.id,k])), sm=sentMap(), pps=UI.pps;
@@ -46749,7 +46889,7 @@ function onDlgField(e){
 
 /* ═════════ 장면 선택·확대 ═════════ */
 function selectScene(j,seek){
-  if(!P) return; UI.sel=clamp(j,0,P.scenes.length-1); UI.ms=null; msPaint();   /* 한 장면을 누르면 여러 개 선택은 풀림 */
+  if(!P) return; UI.sel=clamp(j,0,P.scenes.length-1); UI.ms=null; UI.tsel=null; msPaint(); tselPaint();   /* 한 장면을 누르면 여러 개 선택(·타임라인 선택)은 풀림 */
   document.querySelectorAll('#vsScenes .vs-sc.sel,#vsTlIn .tl-sc.sel').forEach(e=>e.classList.remove('sel'));
   document.querySelectorAll('#vsScenes .vs-sc[data-j="'+UI.sel+'"],#vsTlIn .tl-sc[data-j="'+UI.sel+'"]').forEach(e=>e.classList.add('sel'));
   renderInspector(true); if(seek) seekTo(P.scenes[UI.sel].s+0.001);
@@ -46761,7 +46901,7 @@ const safeName=s=>String(s||'영상').replace(/[\\/:*?"<>|]+/g,'_').replace(/\s+
 
 /* ═════════ 단추 동작 ═════════ */
 async function act(a,btn){
-  const id=btn&&btn.dataset?btn.dataset.id:'';
+  const id=btn&&btn.dataset?btn.dataset.id:''; tlMenuClose();
   if(UI.busy==='export'&&a!=='cancel') return;
   if(/^(info|char|ig|ai|pref|ist)/.test(a)){ await infoAct(a,id,btn); return; }
   switch(a){
@@ -46781,6 +46921,8 @@ async function act(a,btn){
     case 'play': togglePlay(); break;
     case 'playScene': { const c=P.scenes[UI.sel]; if(c) startPlay(c.s,'preview',c.e); break; }
     case 'playSent': { const s=P.sents.find(x=>x.id===id); if(s) startPlay(Math.max(0,s.s-0.3)); break; }
+    case 'tlDel': tlDelete(); break;
+    case 'tlPlay': { const t0=tselStart(); if(t0!=null) startPlay(Math.max(0,t0-0.2)); break; }
     case 'edToggle': UI.edOpen=!UI.edOpen; edSaveOpen(); paintEd(); break;
     case 'edWhat': UI.edWhat[id]=!UI.edWhat[id]; try{ localStorage.setItem('BTMVideoEdWhat',JSON.stringify(UI.edWhat)); }catch(e){} paintEd(); break;
     case 'edAll': UI.ms=P.scenes.length>1?new Set(P.scenes.map(c=>c.id)):null; renderScenes(); msPaint(); break;
@@ -46898,6 +47040,7 @@ function tlDown(e){
     const tq=t.closest&&t.closest('.tl-tt'); if(tq){ UI.ttSel=+tq.dataset.ci; document.querySelectorAll('#vsTlIn .tl-tt').forEach(e=>e.classList.toggle('sel',+e.dataset.ci===UI.ttSel)); if(UI.tab!=='tt'){ UI.tab='tt'; renderTabs(); } renderInspector(true); const ro=document.querySelector('#vsInsp .vs-sn[data-ci="'+UI.ttSel+'"]'); if(ro&&ro.scrollIntoView) ro.scrollIntoView({block:'nearest'}); }
     d={k:'seek',was:ENG.playing&&ENG.mode==='preview'}; if(d.was) pausePlay(); seekTo(Math.max(0,tlX(e)));
   }
+  tlSelFrom(t);   /* 누른 요소를 고름(빈 곳이면 선택 풀기) — 장면을 누르면 selectScene 이 선택을 풀기 때문에 맨 끝에서 */
   if(!d) return; d.x0=e.clientX; DRAG=d; try{ host.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault();
 }
 function tlMove(e){
@@ -46955,7 +47098,7 @@ function bindEvents(el){
   const z=$('vsZoom'); z.addEventListener('input',()=>setZoom(+z.value));
   const et=$('vsEdTxt'); et.addEventListener('input',()=>{ UI.edTxt=et.value; }); et.addEventListener('keydown',e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); runSceneEdit(); } });
   const ex=$('vsEdEx'); ex.addEventListener('change',()=>{ if(ex.value){ UI.edTxt=(UI.edTxt?UI.edTxt.replace(/\s+$/,'')+'\n':'')+ex.value; et.value=UI.edTxt; ex.value=''; et.focus(); } });
-  const tl=$('vsTlIn'); tl.addEventListener('pointerdown',tlDown); tl.addEventListener('pointermove',tlMove); tl.addEventListener('pointerup',tlUp); tl.addEventListener('pointercancel',tlUp);
+  const tl=$('vsTlIn'); tl.addEventListener('pointerdown',tlDown); tl.addEventListener('pointermove',tlMove); tl.addEventListener('pointerup',tlUp); tl.addEventListener('pointercancel',tlUp); tl.addEventListener('contextmenu',tlMenu); document.addEventListener('pointerdown',ev=>{ const m=$('vsCm'); if(m&&!m.contains(ev.target)) tlMenuClose(); },true);
   $('vsTls').addEventListener('wheel',e=>{ if(e.ctrlKey||e.metaKey){ e.preventDefault(); setZoom(UI.pps*(e.deltaY<0?1.2:1/1.2)); } },{passive:false});
   $('vsFVis').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P) visualFromFile(P.scenes[UI.sel],f); });
   $('vsFAud').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P){ if(P.chunks.some(k=>k.bid)&&!confirm('지금 있는 음성을 이 파일로 바꿀까요?')) return; importNarration(f); } });
@@ -46970,7 +47113,7 @@ function ensureModal(){
 document.addEventListener('keydown',e=>{
   if(!_ov||!_ov.classList.contains('open')) return;
   const tg=e.target, tag=(tg.tagName||'').toLowerCase(), typing=tag==='input'||tag==='textarea'||tag==='select'||tg.isContentEditable;
-  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); const d=$('vsDlg'); if(d&&d.classList.contains('on')) dlgClose(); else closeStudio(); return; }
+  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')) dlgClose(); else closeStudio(); return; }
   if(!P) return;
   if((e.ctrlKey||e.metaKey)&&!typing){ const k=e.key.toLowerCase(); if(k==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); } else if(k==='y'){ e.preventDefault(); redo(); } else if(k==='s'){ e.preventDefault(); act('save'); } return; }
   if(typing||UI.busy==='export'||$('vsDlg').classList.contains('on')) return;
@@ -46980,11 +47123,11 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='s'||e.key==='S'){ act('splitPh'); }
   else if(e.key==='ArrowUp'){ e.preventDefault(); selectScene(UI.sel-1,true); }
   else if(e.key==='ArrowDown'){ e.preventDefault(); selectScene(UI.sel+1,true); }
-  else if(e.key==='Delete'&&UI.ig&&igById(UI.ig)){ e.preventDefault(); act('igDel',{dataset:{id:UI.ig}}); }
+  else if(e.key==='Delete'||e.key==='Backspace'){ if(UI.tsel){ e.preventDefault(); tlDelete(); } else if(e.key==='Delete'&&UI.ig&&igById(UI.ig)){ e.preventDefault(); act('igDel',{dataset:{id:UI.ig}}); } }
 },true);
 async function startProject(p,isNew){
   if(ENG.playing) pausePlay(); VM.forEach(e=>{ e.pause(); e.removeAttribute('src'); }); VM.clear(); dropCaches(); snapId='';
-  P=fixProject(p); const pc=isNew?false:applyMenuPrefs(P); layout(P); UI.sel=0; UI.cur=-1; UI.tab='scene'; UI.ms=null; UI.msA=null; UI.igIt=''; UI.edRes=null; UI.models=UI.models||null; ENG.pos=0; UI.pps=22; UI.cvScale=0; UI.busy='';
+  P=fixProject(p); const pc=isNew?false:applyMenuPrefs(P); layout(P); UI.sel=0; UI.cur=-1; UI.tab='scene'; UI.ms=null; UI.msA=null; UI.igIt=''; UI.edRes=null; UI.tsel=null; UI.models=UI.models||null; ENG.pos=0; UI.pps=22; UI.cvScale=0; UI.busy='';
   H.undo=[]; H.redo=[]; H.cur=serialize(P); UI.saved=!isNew&&!pc; if(pc) scheduleSave(); ensureModal(); canvasSize(); renderAll();
   progress(0,P.chunks.length&&P.chunks.every(k=>k.state==='done')?'준비됨 — ▶ 로 미리 보거나 ⑤ 내보내기를 눌러 보세요':'먼저 ① 음성을 만들거나 🚀 한 번에 만들기를 눌러 보세요');
   ensureImages().then(()=>{ wantDraw(); igPostersAll(); }).catch(()=>{});
@@ -47017,7 +47160,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,titleOn,titleDur,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD}};
+    igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,titleOn,titleDur,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
