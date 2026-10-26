@@ -2908,6 +2908,33 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-dsc .r{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;flex-wrap:wrap}.vs-dsc .r b{color:#fcd34d}.vs-dsc .r .t{font-size:10.5px;color:#7f90ab;font-family:ui-monospace,Consolas,monospace}.vs-dsc .r .ch{font-size:10.5px;color:#8fb6e8}
 .vs-dsc .tx{color:#d6e0f0}.vs-dsc .tx.alt{color:#9fb0c9;border-top:1px dashed #243149;margin-top:5px;padding-top:5px}
 .tsel{outline:2px solid #fbbf24;outline-offset:1px;z-index:6}
+/* v113 — 구성요소 크기/배치 수정 창 · 구성 템플릿 · 타임라인 구성요소 길이 */
+.vs-le{position:absolute;inset:0;z-index:5;pointer-events:none}
+.le-surf{position:absolute;pointer-events:none}
+.le-cr{position:absolute;border:1px dashed rgba(251,191,36,.6);border-radius:3px;pointer-events:none}
+.le-b{position:absolute;box-sizing:border-box;border:2px solid rgba(56,189,248,.95);background:rgba(56,189,248,.10);border-radius:6px;cursor:move;pointer-events:auto;touch-action:none;user-select:none}
+.le-b:hover{background:rgba(56,189,248,.2)}
+.le-b.sel{border-color:#fbbf24;background:rgba(251,191,36,.16);z-index:2}
+.le-b.tgt{border-color:#34d399;background:rgba(52,211,153,.32);box-shadow:0 0 0 3px rgba(52,211,153,.5);z-index:3}
+.le-b .lb{position:absolute;left:3px;top:2px;max-width:calc(100% - 8px);font-size:10px;line-height:1.3;color:#fff;background:rgba(2,6,23,.72);border-radius:4px;padding:0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.le-h{position:absolute;width:11px;height:11px;margin:-6px 0 0 -6px;background:#fbbf24;border:1px solid #111827;border-radius:3px;z-index:4;touch-action:none}
+.le-h.h-nw{left:0;top:0;cursor:nwse-resize}.le-h.h-n{left:50%;top:0;cursor:ns-resize}.le-h.h-ne{left:100%;top:0;cursor:nesw-resize}.le-h.h-e{left:100%;top:50%;cursor:ew-resize}.le-h.h-se{left:100%;top:100%;cursor:nwse-resize}.le-h.h-s{left:50%;top:100%;cursor:ns-resize}.le-h.h-sw{left:0;top:100%;cursor:nesw-resize}.le-h.h-w{left:0;top:50%;cursor:ew-resize}
+.vs-lebar{flex-shrink:0;display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:6px 10px;background:#0f1a30;border-top:1px solid #2f4468}
+.vs-lebar .le-t{font-size:12px;color:#fcd34d}.vs-lebar .le-s{font-size:11px;color:#9fb0c9}
+.vs-lebar .vs-mb.on{background:#d97706;border-color:#d97706;color:#fff}
+.vs-lebar .le-hint{flex-basis:100%;font-size:10.5px;color:#8da0bf;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vs-lebar .le-hint b{color:#86efac}
+.le-tpl{position:absolute;top:8px;bottom:8px;right:8px;width:min(340px,48%);overflow:auto;padding:8px 9px;background:rgba(9,16,30,.94);border:1px solid #34507c;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.6);pointer-events:auto;z-index:6}.le-tpl.l{right:auto;left:8px}
+.le-tpl .r{display:flex;align-items:center;gap:6px;margin-bottom:4px}.le-tpl .r b{color:#e2e8f0;font-size:12px}.le-tpl .hint{font-size:10.5px;color:#8da0bf;line-height:1.45;margin-bottom:6px}
+.le-tpl .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}.le-tpl .tabs .vs-mb{padding:0 7px}.le-tpl .tabs .vs-mb i{font-style:normal;font-size:9.5px;color:#a9bad3;margin-left:3px}.le-tpl .tabs .vs-mb.on{background:#d97706;border-color:#d97706;color:#fff}.le-tpl .tabs .vs-mb.cur{box-shadow:0 0 0 1px #34d399}
+.le-bad{font-size:11px;color:#fca5a5;margin:2px 0 6px}
+.le-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.le-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 4px;border:1px solid #243149;border-radius:8px;background:#0f1a2e;color:#cbd5e1;cursor:pointer;font-size:10px;line-height:1.3}
+.le-card:hover{border-color:#fbbf24;background:#16243d}.le-card.on{border-color:#34d399;background:#12301f}.le-card.off{opacity:.45}.le-card span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.le-th{width:100%;height:auto;display:block;background:#07101f;border-radius:5px}
+.le-th rect{fill:rgba(96,165,250,.28);stroke:#60a5fa;stroke-width:1.2}.le-th rect.a{fill:rgba(251,191,36,.32);stroke:#fbbf24}.le-th text{fill:#e2e8f0;font-size:13px;font-weight:700;text-anchor:middle;pointer-events:none}.le-th.on rect{stroke:#34d399}
+.vs-tr{flex-wrap:wrap}
+.tl-ic .e.r{position:absolute;top:0;bottom:0;right:0;width:6px;cursor:ew-resize}.tl-ic .e.r:hover{background:rgba(255,255,255,.4)}.tl-ic.du{border-right-width:3px;border-right-color:#fbbf24}
+.vs-cm button i{font-style:normal;display:inline-block;width:18px;text-align:center;color:#fbbf24}
 #vsTlHint{flex:0 1 auto;min-width:0;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#vsTlHint b{color:#fcd34d}#vsTlHint i{font-style:normal;color:#8da0bf}
 .vs-tlbar .vs-mb.dng:disabled{opacity:.4}
 .vs-cm{position:fixed;z-index:40;min-width:190px;background:#101a2e;border:1px solid #2f4468;border-radius:9px;box-shadow:0 8px 30px rgba(0,0,0,.55);padding:4px}
@@ -43778,6 +43805,9 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
    · 장면 AI 수정·구성요소 타임라인·스크립트/스토리보드 조회 (2026-10-25, v101) — 왼쪽 목록에서 장면을 Ctrl/⌘ 클릭(여러 개)·Shift 클릭(범위)로 고르고 목록 아래 [✨ AI 수정]에 요청을 적으면 runSceneEdit 가
        고른 장면의 나레이션·자막·화면·인포그래픽(생성 때와 같은 JSON)을 AI 에게 보내 자막·나레이션·인포그래픽(블록·스타일)·카드 글·프롬프트·전환·이름을 장면마다 반영(한 번에 되돌리기 1번).
        타임라인 [구성] 줄은 인포그래픽 블록(항목이 여럿이면 항목마다)을 칩으로 보여 주고 끌어서 시점을 바꿈. 생성은 구성요소 세분화·단계별 clip(AI 최대 4개, 규칙은 블록 5개부터 3~4개씩). 머리의 [📜 스크립트]·[🎞 스토리보드]는 지금 프로젝트 내용을 보여 줌.
+   · 구성요소 크기·배치 직접 고치기 (2026-10-26, v113) — 미리보기 아래 [📐 크기/배치 수정](또는 [인포] 탭)으로 그 장면 인포그래픽의 구성요소 전체를 미리보기 위에 상자로 띄워 끌어서 옮기고 크기를 바꿈(다른 상자 위에 놓으면 자리 맞바꿈),
+       구성 템플릿 165개(구성요소 1~7개별 — 고르면 모든 구성요소가 그 칸 크기·위치로), 타임라인 [구성]·[인포] 줄은 Ctrl/⌘+클릭 다중 선택 + 오른쪽 클릭 정렬 메뉴(길이 동일·왼/오/가운데 정렬·일렬배치·동일길이 일렬배치·간격 균등).
+       저장 = 배치 단위 첫 블록의 it.bx(내용 영역 기준 0~1 상자) · 구성요소 표시 길이 it.du · 템플릿 g.tpl — 아무것도 안 정한 인포그래픽은 수정 전과 똑같이 그려짐(자동 배치). 코드: 'v113' 표시 구역(엔진 igUnits~duLeft · 본체 UI.le·LTPL·tm*) 검색.
    · 타임라인 요소 개별 선택·삭제 (2026-10-25, v102) — 장면·인포그래픽·구성요소(칩·항목)·자막·음성(문장)·배경음악·챕터 타이틀을 눌러 하나씩 고르면(UI.tsel, .tsel 테두리·도구줄 안내) [🗑 삭제]·Delete/Backspace·오른쪽 클릭 메뉴로 지움(tlDelete) — 모두 되돌리기 1번(+아래 알림의 [되돌리기]).
        음성은 deleteSentence(나레이션·음성·자막을 빼고 뒤를 당김, 걸린 클립·블록 시점은 이웃 문장으로, 그 문장만 담은 장면은 함께). saveProject 는 되돌려 살아난 파일을 DB 에 다시 넣음.
    · 장면 전환 효과 (2026-10-26, v106) — 26종(TRANS 표: 컷·페이드 검정/흰색·크로스페이드·와이프 4·밀기 4·덮기 2·줌 인/아웃·회전·원형 열기/닫기·블라인드 2·갈라 열기 2·블러·픽셀화·랜덤).
@@ -44234,7 +44264,7 @@ function commit(label){   /* 바꾼 직후 호출 — 되돌리기 기록에 쌓
   if(H.cur) H.undo.push(H.cur); if(H.undo.length>60) H.undo.shift(); H.redo.length=0; H.cur=s;
   P.updated=Date.now(); UI.saved=false; paintSaved(); scheduleSave();
 }
-function restore(s){ P=JSON.parse(s); H.cur=s; savePref(P.cfg); layout(P); UI.sel=clamp(UI.sel,0,Math.max(0,P.scenes.length-1)); canvasSize(); renderAll(); scheduleSave(); UI.saved=false; paintSaved(); igPostersAll(); }
+function restore(s){ P=JSON.parse(s); H.cur=s; savePref(P.cfg); layout(P); UI.sel=clamp(UI.sel,0,Math.max(0,P.scenes.length-1)); canvasSize(); renderAll(); scheduleSave(); UI.saved=false; paintSaved(); igPostersAll(); if(UI.le) leRefresh(); }
 function undo(){ if(!H.undo.length) return; H.redo.push(H.cur); restore(H.undo.pop()); }
 function redo(){ if(!H.redo.length) return; H.undo.push(H.cur); restore(H.redo.pop()); }
 let _svT=0;
@@ -44909,7 +44939,44 @@ function igLay(g,w,h,ig){   /* 배치 계산(캐시) — 글자 길이·자막 �
   let L=_ilc.get(key); if(L) return L;
   L=buildIgLay(g,w,h,ig); _ilc.set(key,L); if(_ilc.size>120) _ilc.delete(_ilc.keys().next().value); return L;
 }
-function buildIgLay(g,w,h,ig){
+/* ══ v113 (2026-10-26) — 구성요소 크기·배치 직접 고치기 ─ 그리기 쪽(배치 단위·직접 배치·표시 길이) ═══════════════════════════════════════════════
+   · 배치 단위 igUnits — 블록 하나가 한 칸, 막대·지수판 줄(bar·row)은 연속한 같은 종류가 한 묶음(한 카드). 단위의 첫 블록에 it.bx={x,y,w,h}(그 클립의 '내용 영역' L.cr 기준 0~1)
+   · 모든 단위에 bx 가 있어야(igBoxOK) 자동 배치(igFlow) 대신 그 상자대로 그림(igCustomCells) — 하나라도 없으면 자동 배치 그대로. bx 를 지우면 예전 그림으로 돌아감
+   · 글자 크기 배율 k 는 상자 높이에 맞춰 MEAS 로 '들어가는 가장 큰 값'을 찾음(상자를 키우면 글도 커짐), 칸 배경(카드)은 상자 크기 그대로
+   · it.du = 화면에 보이는 시간(초) — 나타난 뒤 이만큼 지나면 사라짐(0.25초 흐려짐). 없으면 인포그래픽 끝까지(예전과 같음) ── */
+function igUnits(items){
+  const u=[]; let i=0;
+  while(i<items.length){
+    const it=items[i];
+    if(it.type==='bar'||it.type==='row'){ let n=0; while(i+n<items.length&&items[i+n].type===it.type) n++; u.push({i,n,t:it.type}); i+=n; }
+    else{ u.push({i,n:1,t:it.type}); i++; }
+  }
+  return u;
+}
+const bxOK=b=>!!b&&isFinite(b.x)&&isFinite(b.y)&&b.w>0.01&&b.h>0.01;
+function igBoxOK(ig){ const its=(ig&&ig.items)||[]; if(!its.length) return false; return igUnits(its).every(u=>bxOK(its[u.i].bx)); }
+function igCustomCells(E,items,cr){   /* 상자(bx)대로 칸 목록을 만듦 — igFlow 가 만드는 칸과 같은 모양 */
+  const cells=[], B=E.B; let numC=0;
+  igUnits(items).forEach(u=>{
+    const it=items[u.i], b=it.bx, r={x:cr.x+b.x*cr.w,y:cr.y+b.y*cr.h,w:Math.max(8,b.w*cr.w),h:Math.max(8,b.h*cr.h)};
+    if(u.t==='bar'||u.t==='row'){   /* 한 카드 안에 줄이 여럿 — 카드 높이에 맞는 배율로 줄 높이를 정함 */
+      const isBar=u.t==='bar', bg=bigf(E); let zr=1, mxp=0, mxn=0;
+      for(let q=0;q<u.n;q++){ const x=items[u.i+q]; zr=Math.max(zr,FZ(x,'label'),FZ(x,'value'),isBar?1:FZ(x,'delta')); if(isBar){ const v=+x.v||0; if(v>0) mxp=Math.max(mxp,v); else mxn=Math.max(mxn,-v); } }
+      const rowN=(isBar?0.066:0.072)*B*(isBar?bg:1)*(1+0.85*posz(zr)), rgN=(isBar?0.010:0.008)*B, gpN=0.018*B, totN=u.n*rowN+(u.n-1)*rgN+2*gpN, k=clamp(r.h/totN,0.2,3.2), gp=gpN*k, rg=rgN*k, rowH=Math.max(4,(r.h-2*gp-(u.n-1)*rg)/u.n);
+      for(let q=0;q<u.n;q++) cells.push({t:u.t,i:u.i+q,x:r.x,y:r.y+gp+q*(rowH+rg),w:r.w,h:rowH,k,gy:r.y,gh:r.h,first:q===0,last:q===u.n-1,n:u.n,mxp,mxn});
+    }else{
+      const t=MEAS[it.type]?it.type:'point', mf=MEAS[t]; let k=clamp(r.h/Math.max(1,mf(E,it,r.w,1).h),0.2,3.2), m=mf(E,it,r.w,k);
+      for(let n=0;n<28&&m.h>r.h+0.5&&k>0.2;n++){ k=Math.max(0.2,k*0.95); m=mf(E,it,r.w,k); }   /* 글이 줄바꿈되는 블록은 높이가 배율에 정확히 비례하지 않아 조금씩 줄여 가며 맞춤 */
+      const cell=Object.assign({t,i:u.i,x:r.x,y:r.y,w:r.w,k,m},m); cell.h=r.h; if(it.type==='point'&&it.style==='num') cell.num=++numC; cells.push(cell);
+    }
+  });
+  return cells;
+}
+function duLeft(it,t,all){   /* 표시 길이(it.du)가 정해진 블록이 사라질 때까지 남은 시간(초) — 안 정했거나 썸네일용이면 9(오래 남음) */
+  if(all||!(it&&it.du>0)) return 9; const b0=blockT0(P,it); return b0==null?9:b0+it.du-t;
+}
+/* ══ /v113 엔진 ══ */
+function buildIgLay(g,w,h,ig,X){
   const sty=styOf(ig), sk=ISTY[sty], font=sk.font==='serif'?SERIF:P.cfg.sub.font, sub=P.cfg.sub, B=Math.min(h,w*0.75), m=Math.round(0.042*B), mode0=MODE_OF[ig.mode]?ig.mode:'left', mode=(P.cfg.info.nochar&&(mode0==='left'||mode0==='right'))?'full':mode0, items=ig.items||[];   /* 캐릭터 미적용이면 left·right 도 패널을 화면 전체로 */
   let top=m, bot=h-m;
   if(sub.on){ const blk=sub.lines*sub.size*1.28*h/1080+0.012*h, off=h*sub.off/100; if(sub.pos==='bottom') bot=Math.min(bot,h-off-blk); else if(sub.pos==='top') top=Math.max(top,off+blk); }
@@ -44925,15 +44992,22 @@ function buildIgLay(g,w,h,ig){
     const pl=igFlow(E,items,iw,ah,1.3,0.4), oy=ay0+Math.max(0,ah-pl.total)*0.5;
     pl.cells.forEach(c=>{ c.x+=panel.x+pad; c.y+=oy; if(c.gy!=null) c.gy+=oy; });
     Object.assign(L,{panel,col:mode==='full'?null:{x:mode==='left'?w*0.70:0,w:w*0.30,top,bot},cells:pl.cells,k:pl.k,band,foot:foot?{x:panel.x+pad,y:panel.y+panel.h-pad*0.6-foot*0.9,w:iw,h:foot}:null,head:Object.assign(head,{x:panel.x+pad,y:panel.y+(band?pad*0.75:pad),w:iw})});
+    L.cr={x:panel.x+pad,y:ay0,w:iw,h:Math.max(20,ah)}; if(!(X&&X.noCells)&&igBoxOK(ig)) L.cells=igCustomCells(E,items,L.cr);   /* v113: 사용자가 정한 상자 배치 */
   }else if(mode==='hero'){
     const iw=w-m*2, head=headMeasure(g,ig,iw,B,font,true), ay0=top+head.h+(head.h?0.03*B:0), ah=bot-ay0, fw=Math.min(iw,1.5*B), pl=igFlow(E,items,fw,ah,2.0,0.5), ox=m+(iw-fw)/2, oy=ay0+Math.max(0,ah-pl.total)*0.5;
     pl.cells.forEach(c=>{ c.x+=ox; c.y+=oy; if(c.gy!=null) c.gy+=oy; });
     Object.assign(L,{cells:pl.cells,k:pl.k,head:Object.assign(head,{x:m,y:top,w:iw})});
+    L.cr={x:ox,y:ay0,w:fw,h:Math.max(20,ah)}; if(!(X&&X.noCells)&&igBoxOK(ig)) L.cells=igCustomCells(E,items,L.cr);
   }else if(mode==='cardR'||mode==='cardL'){
     const cw=Math.min(w*0.9,Math.max(0.34*w,0.52*B)), pad=Math.round(0.030*B), iw=cw-pad*2, head=headMeasure(g,ig,iw,B,font,true), hh=head.h+(head.h?0.02*B:0), availH=bot-top;
+    if((X&&X.cust)||igBoxOK(ig)){   /* v113: 상자로 배치하면 카드가 쓸 수 있는 높이를 다 씀(내용에 맞춰 줄이지 않음) */
+      const cx=mode==='cardR'?w-m-cw:m, cr={x:cx+pad,y:top+pad+hh,w:iw,h:Math.max(20,availH-pad*2-hh)};
+      Object.assign(L,{panel:{x:cx,y:top,w:cw,h:availH,r:0.028*B},cells:(!(X&&X.noCells)&&igBoxOK(ig))?igCustomCells(E,items,cr):[],k:1,head:Object.assign(head,{x:cx+pad,y:top+pad,w:iw}),cr});
+    }else{
     const pl=igFlow(E,items,iw,availH-pad*2-hh,1.1,0.4), ch=pad*2+hh+pl.total, cx=mode==='cardR'?w-m-cw:m, cy=top+Math.max(0,availH-ch)*0.45;
     pl.cells.forEach(c=>{ c.x+=cx+pad; c.y+=cy+pad+hh; if(c.gy!=null) c.gy+=cy+pad+hh; });
     Object.assign(L,{panel:{x:cx,y:cy,w:cw,h:ch,r:0.028*B},cells:pl.cells,k:pl.k,head:Object.assign(head,{x:cx+pad,y:cy+pad,w:iw})});
+    }
   }else if(mode==='title'){
     const ti=items.find(x=>x.type==='title')||{}, text=String(ti.text||ig.title||'').trim()||'타이틀', sub2=String(ti.sub||''), kick=String(ig.kicker||''), iw=w*0.70;
     let fs=0.120*B*FZ(ti,'text'), ls=[]; for(let n=0;n<10;n++){ g.font='800 '+fs.toFixed(1)+'px '+font; ls=wrapLines(g,text,iw); if(ls.length<=3||fs<0.05*B) break; fs*=0.9; } ls=ls.slice(0,3);
@@ -45057,11 +45131,11 @@ function drawClip(g,w,h,ig,t,o){
   if(L.mode==='title'){ drawTitleCard(E,L,ig); g.restore(); return; }
   drawHead(E,L,ig,lt,o);
   if(L.panel&&!isOver(L.mode)){ g.save(); g.beginPath(); roundRect(g,L.panel.x,L.panel.y,L.panel.w,L.panel.h,L.panel.r); g.clip(); }
-  L.cells.forEach(c=>{ const it=E.items[c.i]; if(!it) return; const f=DRAW[c.t]; if(f) f(E,c,it); });
+  L.cells.forEach(c=>{ const it=E.items[c.i]; if(!it) return; const f=DRAW[c.t]; if(!f) return; const lf=duLeft(it,t,E.all); if(lf<=0) return; if(lf<0.25){ g.save(); g.globalAlpha*=lf/0.25; f(E,c,it); g.restore(); } else f(E,c,it); });   /* v113: 표시 길이(it.du)가 지난 구성요소는 사라짐 */
   if(L.foot) drawFoot(E,L,ig,o);
   if(L.panel&&!isOver(L.mode)) g.restore();
   if(L.badge){ const b=L.badge, s=E.sinceAt(blockT0(P,E.items[0]||{})); const k=o.all?1:rv(lt,0.4); g.save(); g.globalAlpha*=k; roundRect(g,b.x,b.y,b.w,b.h,b.h*0.22); g.fillStyle=pal.accent; g.fill(); dtf(g,b.text,b.x+b.w/2,b.y+b.h/2,b.w-0.03*B,b.fs,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle',0.5); g.restore(); void s; }
-  L.chips.forEach(r=>{ const it=E.items[r.i]; if(it) drawChip(E,r,it,r.sz); });
+  L.chips.forEach(r=>{ const it=E.items[r.i]; if(!it) return; const lf=duLeft(it,t,E.all); if(lf<=0) return; if(lf<0.25){ g.save(); g.globalAlpha*=lf/0.25; drawChip(E,r,it,r.sz); g.restore(); } else drawChip(E,r,it,r.sz); });
   g.restore();
 }
 function drawTitleCard(E,L,ig){
@@ -45076,7 +45150,7 @@ function drawTitleCard(E,L,ig){
 function drawClips(g,w,h,t){   /* 지금 시각에 나와야 할 클립을 (전체 틀 → 카드 → 띠) 순서로 겹쳐 그림 */
   const a=P&&P.igs; if(!a||!a.length) return; const act=a.filter(x=>t>=x.s-0.001&&t<x.e);
   if(!act.length) return; if(act.length>1) act.sort((x,y)=>(FRAME_ORDER[x.mode]||1)-(FRAME_ORDER[y.mode]||1));
-  act.forEach(x=>{ try{ drawClip(g,w,h,x,t); }catch(e){ if(!window.__infoErr){ window.__infoErr=e; console.warn('인포그래픽 그리기 오류',e); } g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; } });
+  act.forEach(x=>{ try{ drawClip(g,w,h,x,t,(UI.le&&UI.le.gid===x.id&&UI.busy!=='export'&&!UI.exp)?LE_ALL:undefined); }catch(e){ if(!window.__infoErr){ window.__infoErr=e; console.warn('인포그래픽 그리기 오류',e); } g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; } });
 }
 function igPoster(ig){   /* 목록용 작은 그림 — 모든 블록이 나온 상태. 저장하지 않음(_poster) */
   try{
@@ -45533,7 +45607,7 @@ function convertItem(it,t){   /* 블록 종류 바꾸기 — 같은 이름의 �
   const t0=mentionT0(P,it)!=null?mentionT0(P,it):ENG.pos, d=defaultBlock(t,t0); if(it.ld!=null) d.ld=it.ld;
   ['label','value','delta','note','text','tone','hl','from','to','v'].forEach(k=>{ if(it[k]!=null&&it[k]!==''&&Object.prototype.hasOwnProperty.call(d,k)) d[k]=it[k]; });
   if(it.fz&&FZK[t]){ const ok=new Set(FZK[t].f.map(x=>x[0])); Object.keys(it.fz).forEach(q=>{ if(ok.has(q)){ d.fz=d.fz||{}; d.fz[q]=it.fz[q]; } }); }   /* 같은 이름의 글은 글자 크기도 이어받음 */
-  d.id=it.id; d.at=it.at||d.at; d.dt=it.dt||0; if(d.parts&&it.at){ d.parts.forEach((p,i)=>{ const a=anchorAtTime(P,(anchT(P,{sid:it.at.sid,f:it.at.f,dt:it.dt})||t0)+i*0.9); if(a){ p.at={sid:a.sid,f:a.f}; p.dt=a.dt; } }); }
+  d.id=it.id; d.at=it.at||d.at; d.dt=it.dt||0; if(it.bx) d.bx=it.bx; if(it.du>0) d.du=it.du; if(d.parts&&it.at){ d.parts.forEach((p,i)=>{ const a=anchorAtTime(P,(anchT(P,{sid:it.at.sid,f:it.at.f,dt:it.dt})||t0)+i*0.9); if(a){ p.at={sid:a.sid,f:a.f}; p.dt=a.dt; } }); }
   return d;
 }
 function newClip(mode,type,s,dur,src,ss,ctx){
@@ -45617,7 +45691,7 @@ function igBlockHtml(g,it){
   }else{
     h+='<div class="r sm">'+timeIn(pre+'t',m0,m0==null)+F.btn('igPhIt','재생헤드로',{d:cid,title:'지금 재생헤드 위치를 이 블록이 나오는 시점으로'})+F.btn('igNudge','◀',{d:cid+':-0.1',title:'0.1초 일찍'})+F.btn('igNudge','▶',{d:cid+':0.1',title:'0.1초 늦게'})+'<label class="sm">보정 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'dt" data-t="n" step="0.05" value="'+(it.dt||0)+'">초</label>'+(m0==null?'<em class="bad">문장을 찾지 못함</em>':'')+'</div>';
   }
-  h+='<div class="r sm"><label class="sm" title="블록이 말하는 시점보다 얼마나 먼저(또는 뒤에) 화면에 나타날지">나타나는 때 '+F.sel(pre+'when',whenOf(it),WHEN_OPTS)+'</label>'+(t0==null?'':'<span class="hint">화면에는 '+fmtT(t0,1)+(m0!=null&&Math.abs(m0-t0)>0.02?' · 말하기 '+r2(Math.abs(m0-t0))+'초 '+(m0>t0?'전':'후'):'')+'</span>')+'</div>';
+  h+='<div class="r sm"><label class="sm" title="블록이 말하는 시점보다 얼마나 먼저(또는 뒤에) 화면에 나타날지">나타나는 때 '+F.sel(pre+'when',whenOf(it),WHEN_OPTS)+'</label><label class="sm" title="화면에 보이는 시간 — 이 시간이 지나면 사라져요. 비우면 인포그래픽이 끝날 때까지 보여요(타임라인 [구성] 줄의 칩 오른쪽 끝을 끌어도 돼요)">보이는 길이 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'du" data-t="n" step="0.1" min="0.3" placeholder="끝까지" value="'+(it.du>0?r2(it.du):'')+'">초</label>'+(t0==null?'':'<span class="hint">화면에는 '+fmtT(t0,1)+(m0!=null&&Math.abs(m0-t0)>0.02?' · 말하기 '+r2(Math.abs(m0-t0))+'초 '+(m0>t0?'전':'후'):'')+'</span>')+'</div>';
   return h+fzHtml(g,it)+'</div>';
 }
 function igEditor(g){
@@ -45632,6 +45706,7 @@ function igEditor(g){
   h+=F.row('윗글',F.txt(pre+'kicker',g.kicker||'',{ph:'(선택) 제목 위 작은 글 — 예: 챕터 이름'}));
   h+=F.row('제목 크기',F.rng(pre+'fz.title',fzVal(g,'title'),40,250,5),'% — 기본 100')+F.row('윗글 크기',F.rng(pre+'fz.kicker',fzVal(g,'kicker'),40,250,5),'% — 기본 100');
   h+=F.row('요청 글',F.ta('cfg.prompts.info',P.cfg.prompts.info,{rows:2,ph:'(선택) [🔄 AI 로 다시] 때 AI 에게 요구할 내용 — 예) 숫자는 크게, 속보 헤드라인처럼 짧게'}),'모든 인포그래픽 공통 · 🤖 AI 창에서도 써요');
+  { const ok=igBoxOK(g); h+=F.row('크기·배치','<span class="'+(ok?'ok':'hint')+'">'+(ok?'직접 정함'+(g.tpl?' · 템플릿 '+esc(g.tpl):''):'자동 배치')+'</span>'+F.btn('leOpen','📐 크기/배치 수정',{d:g.id,c:'pri',title:'구성요소를 미리보기 위에 상자로 띄워 끌어서 옮기고 크기를 바꿔요 — 템플릿 '+LTPL.length+'개'}),LE_MODES[g.mode]?'':'이 형태는 칸 배치가 아니에요 — 누르면 전체 화면 패널로 바꿀지 물어요'); }
   h+='<div class="vs-btns">'+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igAI','🔄 AI 로 다시',{d:g.id,title:'이 구간의 나레이션을 AI 가 다시 요약해 블록을 새로 만들어요'})+F.btn('igRule','🧮 규칙으로 다시',{d:g.id,title:'숫자·업종·일정을 규칙으로 뽑아요(무료)'})+F.btn('igNews','📰 뉴스체로',{d:g.id,title:'이 인포그래픽의 글을 TV 뉴스 자막처럼 명사형 헤드라인체로 다듬어요'})+F.btn('igSplit','✂ 재생헤드에서 나누기',{d:g.id})+F.btn('igDup','⧉ 복제',{d:g.id,title:'바로 뒤에 같은 길이로 복제'})+F.btn('igDel','🗑 삭제',{d:g.id,c:'dng'})+'</div>';
   h+='<div class="vs-sec">블록 ('+g.items.length+') <span class="hint">말하는 시점이 되면 차례로 나타나요 · 타임라인 [구성] 줄의 칩을 끌어 시점을 바꿔요</span></div>';
   h+='<div class="vs-btns">'+F.sel('ui.igType',UI.igType||'stat',BT_ORDER.map(k=>[k,BT[k].n]))+F.btn('igAddIt','＋ 블록 추가',{d:g.id})+'</div>';
@@ -45691,6 +45766,7 @@ function setIgField(path,v){
       case 'type': g.items[i]=convertItem(it,v); return 'insp';
       case 't': if(v!=null){ const at=anchorAtTime(P,v); if(at){ it.at={sid:at.sid,f:at.f}; it.dt=at.dt; sortItems(g); } } return 'insp';
       case 'when': if(!v) delete it.ld; else if(WHEN_V[v]!=null) it.ld=WHEN_V[v]; return 'insp';   /* 나타나는 때: 자동(종류별 기본) / 먼저 / 조금 먼저 / 동시 / 뒤 */
+      case 'du': if(v==null||!(v>0)) delete it.du; else it.du=r2(clamp(v,0.3,600)); return 'draw';   /* v113: 화면에 보이는 길이 */
       case 'dt': it.dt=v==null?0:v; return 'draw';
       case 'hl': it.hl=String(v||'').split(/[,，]/).map(s=>s.trim()).filter(Boolean); return 'draw';
       case 'v': case 'min': case 'max': it[k]=v==null?null:v; return 'draw';
@@ -45720,7 +45796,7 @@ async function infoAct(a,id,btn){
     case 'igSplit': if(g){ const n=igSplit(g,t); if(n){ UI.ig=n.id; igPoster(g); igPoster(n); commit('인포그래픽 나누기'); renderAll(); } else toast('인포그래픽 가장자리에서 0.4초 이상 떨어진 곳에서 나눠 주세요'); } break;
     case 'igPhS': if(g){ igSetTimes(g,t,g.e); done('인포그래픽 시작'); } break;
     case 'igPhE': if(g){ igSetTimes(g,g.s,t); done('인포그래픽 끝'); } break;
-    case 'igAddIt': if(g){ const ty=UI.igType||'stat', tt=(t>g.s&&t<g.e-0.3)?t:g.s+(g.e-g.s)*0.3; g.items.push(defaultBlock(ty,tt)); sortItems(g); done('블록 추가'); } break;
+    case 'igAddIt': if(g){ const ty=UI.igType||'stat', tt=(t>g.s&&t<g.e-0.3)?t:g.s+(g.e-g.s)*0.3; const was=igBoxOK(g); g.items.push(defaultBlock(ty,tt)); sortItems(g); if(was){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; toast('블록이 늘어서 직접 정한 크기/배치를 자동 배치로 되돌렸어요 — [📐 크기/배치 수정]에서 다시 정해 주세요'); } done('블록 추가'); } break;
     case 'igDelIt': if(g){ g.items=g.items.filter(x=>x.id!==ids[1]); done('블록 삭제'); } break;
     case 'igPlayIt': if(g){ const it=g.items.find(x=>x.id===ids[1]), tm=it&&blockT0(P,it); if(tm!=null) startPlay(Math.max(0,tm-1),'preview',Math.min(P.dur,Math.max(tm+4,g.e))); } break;
     case 'igNudge': if(g){ const it=g.items.find(x=>x.id===ids[1]), dl=parseFloat(ids[2]); if(it&&isFinite(dl)){ shiftItem(it,dl); sortItems(g); UI.igIt=it.id; done('구성요소 시점'); } } break;
@@ -46568,13 +46644,14 @@ function compList(){   /* 모든 인포그래픽 구성요소 — 나타나는 �
 }
 function compLayout(comps,pps){   /* 칩의 가로 폭(같은 clip 의 다음 블록이 나올 때까지)과 겹치지 않는 줄 */
   const byG=new Map(); comps.forEach(c=>{ if(!byG.has(c.g)) byG.set(c.g,[]); byG.get(c.g).push(c); });
-  byG.forEach(arr=>arr.forEach((c,i)=>{ const nx=arr[i+1], end=nx?nx.t0:Math.max(c.t0+0.8,c.g.e); c.w=clamp(Math.round((end-c.t0)*pps)-2,24,150); }));
+  byG.forEach(arr=>arr.forEach((c,i)=>{ const nx=arr[i+1], hasDu=c.pi<0&&c.it.du>0, end=hasDu?c.t0+c.it.du:(nx?nx.t0:Math.max(c.t0+0.8,c.g.e)); c.end=end; c.w=hasDu?Math.max(10,Math.round((end-c.t0)*pps)-2):clamp(Math.round((end-c.t0)*pps)-2,24,150); }));   /* v113: 길이를 정한 구성요소는 그 길이 그대로(안 정했으면 예전처럼 다음 칩이 나올 때까지) */
   const lanes=[]; comps.forEach(c=>{ const l=Math.round(c.t0*pps); let k=lanes.findIndex(e=>e<=l-1); if(k<0){ k=lanes.length; lanes.push(0); } lanes[k]=l+c.w+1; c.lane=k; c.left=l; });
   return lanes.length;
 }
 function compRow(comps){
   return comps.map(c=>{ const it=c.it, bt=BT[it.type]||BT.point, hint=c.m0!=null&&Math.abs(c.m0-c.t0)>0.02?' · 말하기 '+fmtT(c.m0,1):'', on=it.id===UI.igIt&&(c.pi<0||UI.igPt===c.pi);
-    return '<div class="tl-ic g'+(COMP_G[it.type]||3)+(on?' sel':'')+'" data-g="'+c.g.id+'" data-i="'+it.id+'" data-p="'+c.pi+'" style="left:'+c.left+'px;width:'+c.w+'px;top:'+(3+c.lane*18)+'px" title="'+esc(bt.n+(c.pi>=0?' ('+(c.pi+1)+'/'+it.parts.length+')':'')+' · 나타남 '+fmtT(c.t0,1)+hint+' — 끌어서 시점 바꾸기(Alt = 달라붙지 않음), 눌러서 편집')+'">'+esc(c.pi>=0?partText(it,c.p):compText(it))+'</div>'; }).join('');
+    const du=c.pi<0&&it.du>0;
+    return '<div class="tl-ic g'+(COMP_G[it.type]||3)+(on?' sel':'')+(du?' du':'')+'" data-g="'+c.g.id+'" data-i="'+it.id+'" data-p="'+c.pi+'" style="left:'+c.left+'px;width:'+c.w+'px;top:'+(3+c.lane*18)+'px" title="'+esc(bt.n+(c.pi>=0?' ('+(c.pi+1)+'/'+it.parts.length+')':'')+' · 나타남 '+fmtT(c.t0,1)+hint+(du?' · 화면에 '+r2(it.du)+'초':'')+' — 끌어서 시점 바꾸기(Alt = 달라붙지 않음)'+(c.pi<0?', 오른쪽 끝을 끌어 보이는 길이 바꾸기':'')+', 눌러서 편집 · Ctrl(⌘)+클릭 = 여러 개 고르기 → 오른쪽 클릭으로 정렬')+'">'+esc(c.pi>=0?partText(it,c.p):compText(it))+(c.pi<0?'<i class="e r"></i>':'')+'</div>'; }).join('');
 }
 function shiftPart(p,dt){   /* 항목 하나의 시점만 dt 초 옮김 */
   if(!p||!p.at) return; const t=anchT(P,{sid:p.at.sid,f:p.at.f,dt:p.dt}); if(t==null) return; const n=anchorAtTime(P,t+dt); if(n){ p.at={sid:n.sid,f:n.f}; p.dt=n.dt; }
@@ -46613,6 +46690,7 @@ const ED_EX=['숫자(수치)를 더 크게, 한눈에 들어오게 정리해 줘
 function edPanelHtml(){
   return '<div class="h" data-a="edToggle" title="장면을 고르고(Ctrl/⌘ 클릭 = 여러 개, Shift 클릭 = 범위) 어떻게 고칠지 적으면 AI 가 그 장면들을 고쳐 줘요 — 눌러서 펴기·접기"><b>✨ AI 수정</b><em id="vsEdSel"></em><span class="vs-sp"></span><i id="vsEdCar">▸</i></div>'
     +'<div class="b" id="vsEdBody"><div class="chips" id="vsEdChips"><button class="vs-ch mobile-keep" data-a="edWhat" data-id="sub" title="자막 글을 고쳐요">자막</button><button class="vs-ch mobile-keep" data-a="edWhat" data-id="info" title="인포그래픽(구성요소·시점)을 고쳐요">인포</button><button class="vs-ch mobile-keep" data-a="edWhat" data-id="vis" title="카드 글·색·AI 프롬프트·전환·이름을 고쳐요">화면</button><button class="vs-ch mobile-keep" data-a="edWhat" data-id="narr" title="나레이션 글을 고쳐요 — 고치면 음성을 다시 만들어야 해요">나레이션</button><button class="vs-ch mobile-keep" id="vsEdSb" data-a="edSb" title="켜 두면 스토리보드의 지시(화면 글자·그래픽·카메라·전환·분위기·피할 것)를 지키면서 고쳐요 — 🚀 한 번에 만들기·③ 화면 만들기와 같은 설정이고 이 영상에 저장돼요">📐 스토리보드 적용</button></div>'
+    +'<div class="hint" style="padding:0 2px 4px;color:#8da0bf;font-size:10.5px">구성요소의 크기·위치 배치는 미리보기 아래 <b>[📐 크기/배치 수정]</b>에서 직접 끌어 고쳐요</div>'
     +'<textarea id="vsEdTxt" class="vs-ta mobile-keep" rows="2" placeholder="어떻게 고칠까요? 예) 숫자를 더 크게 보여 주고 요점은 2개만 남겨 줘 (Ctrl+Enter 로 보내요)"></textarea>'
     +'<select id="vsEdEx" class="vs-in mobile-keep" aria-label="예시 요청"><option value="">예시 요청 넣기…</option>'+ED_EX.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select>'
     +'<div class="r"><button class="vs-mb pri mobile-keep" id="vsEdGo" data-a="edGo">✨ 수정</button><button class="vs-mb mobile-keep" id="vsEdFit" data-a="edSbFit" title="요청 글 없이, 고른 장면을 스토리보드의 지시대로 되돌려요(전환·이미지 움직임·프롬프트·카드 글/색·빠진 화면 글자 + 글 AI 가 있으면 인포그래픽까지)">📐 스토리보드대로</button><button class="vs-mb mobile-keep" data-a="edAll" title="모든 장면 선택">전체</button><button class="vs-mb mobile-keep" data-a="edNone" title="여러 장면 선택 해제">해제</button></div>'
@@ -46685,10 +46763,11 @@ function applyInfoEdit(sc,raw,all){   /* 장면의 인포그래픽을 AI 가 돌
   const oldItems=[]; old.forEach(g=>g.items.forEach(it=>oldItems.push({it,t:mentionT0(P,it)}))); const used=new Set(); let kept=0, nb=0;
   specs.forEach(sp=>{ sp.items=sp.items.map(nw=>{ const key=itemSig(nw), m0=mentionT0(P,nw), f=oldItems.find(o=>!used.has(o.it)&&itemSig(o.it)===key&&(m0==null||o.t==null||Math.abs(o.t-m0)<0.8)); nb++; if(!f) return nw; used.add(f.it); kept++; if(nw.ld!=null) f.it.ld=nw.ld; return f.it; }); });
   const o={lay:(P.cfg.info&&P.cfg.info.lay)||'auto'}, made=[];
-  specs.forEach((sp,k)=>{ if(sp.mode==='auto'&&old[k]) sp.mode=old[k].mode; const mode=resolveMode(sp,sc,o,ctx), ig=specToClip(sp,mode,sc,ctx); ig.src='ai'; if(old[k]){ ig.sty=old[k].sty||ig.sty; ig.name=old[k].name||''; } if(sty) ig.sty=sty; made.push(ig); });
+  specs.forEach((sp,k)=>{ if(sp.mode==='auto'&&old[k]) sp.mode=old[k].mode; const mode=resolveMode(sp,sc,o,ctx), ig=specToClip(sp,mode,sc,ctx); ig.src='ai'; if(old[k]){ ig.sty=old[k].sty||ig.sty; ig.name=old[k].name||''; if(old[k].tpl) ig.tpl=old[k].tpl; } if(sty) ig.sty=sty; made.push(ig); });
   const ob=oldItems.length; P.igs=P.igs.filter(g=>old.indexOf(g)<0); made.forEach(g=>P.igs.push(g)); layout(P); fixStages(made); made.forEach(g=>sortItems(g));
+  let lostBx=0; made.forEach(g=>{ if(g.items.some(it=>it.bx)&&!igBoxOK(g)){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; lostBx++; } });   /* v113: 블록이 새로 생겨 상자가 모자라면 자동 배치로 */
   if(UI.ig&&!igById(UI.ig)) UI.ig='';
-  return '인포그래픽 '+ob+'→'+nb+'블록'+(old.length!==made.length?'('+old.length+'→'+made.length+'단계)':'')+(kept?' · 그대로 '+kept:'');
+  return '인포그래픽 '+ob+'→'+nb+'블록'+(old.length!==made.length?'('+old.length+'→'+made.length+'단계)':'')+(kept?' · 그대로 '+kept:'')+(lostBx?' · 직접 정한 크기/배치는 자동 배치로 돌아갔어요':'');
 }
 function applyEditToScene(sc,e,w,stat){   /* 한 장면에 AI 의 수정을 반영 — 바꾼 내용을 글 목록으로 돌려줌 */
   const all=sentsOf(P,sc), chg=[], num=x=>parseInt(x,10)||0, cl=t=>String(t==null?'':t).replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean).join('\n');
@@ -46708,7 +46787,7 @@ function applyEditToScene(sc,e,w,stat){   /* 한 장면에 AI 의 수정을 반�
       if(['none','card'].indexOf(sc.vis.kind)>=0){ const cd=(sc.vis.card=sc.vis.card||{}); if(v.card.title!=null&&clipS(v.card.title,40)!==cd.title){ cd.title=clipS(v.card.title,40); part.push('카드 글'); } ['c1','c2'].forEach(k=>{ if(/^#[0-9a-f]{6}$/i.test(String(v.card[k]||''))&&cd[k]!==v.card[k]){ cd[k]=v.card[k]; part.push('카드 색'); } }); }
       else part.push('카드 글은 건너뜀(지금은 '+(sc.vis.kind==='video'?'AI 영상':'이미지')+' 화면)');
     }
-    if(typeof v.prompt==='string'&&v.prompt.trim()&&v.prompt.trim()!==sc.prompt){ sc.prompt=v.prompt.trim().slice(0,1200); const gen=['image','video'].indexOf(sc.vis.kind)>=0; part.push('프롬프트'+(gen?'(화면은 [다시 만들기]로 반영)':'')); if(gen) stat.regen.push({id:sc.id,kind:sc.vis.kind}); }
+    if(typeof v.prompt==='string'&&v.prompt.trim()&&v.prompt.trim()!==sc.prompt){ sc.prompt=v.prompt.trim().slice(0,1200); const gen=['image','video'].indexOf(sc.vis.kind)>=0; part.push('프롬프트'+(gen?'(화면은 [다시 만들기]로 반영)':'(이 장면은 카드·인포그래픽 화면이라 눈에 보이는 변화는 없어요 — 구성요소 크기·배치는 [📐 크기/배치 수정]에서)')); if(gen) stat.regen.push({id:sc.id,kind:sc.vis.kind}); }
     if(v.trans==='inherit'||TRK[v.trans]){ sc.trans=sc.trans||{t:'inherit',d:0}; if(sc.trans.t!==v.trans){ sc.trans.t=v.trans; part.push('전환'); } }
     if(part.length) chg.push('화면 — '+Array.from(new Set(part)).join('·'));
   }
@@ -47533,8 +47612,8 @@ function ovApply(res,o){   /* 설계한 개요를 clip 으로 올림 — 안내 
 UI.tsel=null;
 const TSEL_KIND={scene:'장면',clip:'인포그래픽',comp:'구성요소',sub:'자막',aud:'음성(문장)',bgm:'배경음악',title:'챕터 타이틀'};
 function findItem(id){ for(const g of (P.igs||[])){ const it=(g.items||[]).find(x=>x.id===id); if(it) return {g,it}; } return null; }
-function tselEls(){   /* 지금 고른 요소의 화면 요소들(자막이 쪽으로 나뉘면 여럿) */
-  const t=UI.tsel; if(!t||!P) return []; const q=s=>[...document.querySelectorAll('#vsTlIn '+s)];
+function tselEls(t0){   /* 지금 고른 요소(또는 t0)의 화면 요소들(자막이 쪽으로 나뉘면 여럿) */
+  const t=t0||UI.tsel; if(!t||!P) return []; const q=s=>[...document.querySelectorAll('#vsTlIn '+s)];
   switch(t.k){
     case 'scene': { const j=P.scenes.findIndex(c=>c.id===t.id); return j<0?[]:q('.tl-sc[data-j="'+j+'"]'); }
     case 'clip': return q('.tl-ig[data-id="'+t.id+'"]');
@@ -47563,11 +47642,12 @@ function tselPaint(){   /* 타임라인의 테두리·도구줄(삭제 단추·�
   const host=$('vsTlIn'); if(host) host.querySelectorAll('.tsel').forEach(e=>e.classList.remove('tsel'));
   let lab='';
   if(UI.tsel&&P){ const els=tselEls(); if(!els.length) UI.tsel=null; else{ els.forEach(e=>e.classList.add('tsel')); lab=tselLabel(); } }
+  const multi=!!(P&&UI.tmul&&UI.tmul.length>1); if(multi){ const me=tmulEls(); me.forEach(e=>e.classList.add('tsel')); if(!me.length) UI.tmul=[]; }   /* v113: Ctrl/⌘+클릭으로 고른 여러 개 */
   const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)':'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
-  const h=$('vsTlHint'); if(h) h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · Delete 로 끄기':'Delete 로 삭제')+'</i>':'요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정';
+  const h=$('vsTlHint'); if(h&&multi&&UI.tmul.length>1) h.innerHTML='선택: <b>'+esc(TSEL_KIND[UI.tmul[0].k])+' '+UI.tmul.length+'개</b> <i>· 오른쪽 클릭 → 길이 동일·정렬·일렬배치 · Delete 로 삭제 · Ctrl(⌘)+클릭으로 더하거나 빼요</i>'; else if(h) h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · Delete 로 끄기':'Delete 로 삭제')+'</i>':'요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정';
 }
-function tselSet(k,id,pi){ UI.tsel={k,id:String(id),pi:pi==null?-1:pi}; tselPaint(); }
-function tselClear(){ if(UI.tsel){ UI.tsel=null; tselPaint(); } }
+function tselSet(k,id,pi){ UI.tmul=[]; UI.tsel={k,id:String(id),pi:pi==null?-1:pi}; tselPaint(); }
+function tselClear(){ if(UI.tsel||(UI.tmul&&UI.tmul.length)){ UI.tsel=null; UI.tmul=[]; tselPaint(); } }
 function tlSelFrom(t){   /* 누른 요소로 선택을 정함 — 고른 종류를 돌려줌('' = 빈 곳이라 선택을 풂) */
   if(!t||!t.closest||!P) return ''; let m;
   if((m=t.closest('.tl-ic'))){ tselSet('comp',m.dataset.i,+m.dataset.p); return 'comp'; }
@@ -47617,6 +47697,7 @@ function toastUndo(msg){   /* 지운 뒤 알림 — [되돌리기] 단추가 있
   toast(msg+' (Ctrl+Z 로 되돌려요)');
 }
 function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
+  if(P&&UI.tmul&&UI.tmul.length>1) return tmulDelete();
   const t=UI.tsel; if(!t||!P) return false;
   if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 지워 주세요'); return false; }
   if(ENG.playing) pausePlay();
@@ -47650,11 +47731,398 @@ function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
 /* 오른쪽 클릭 메뉴 — 누른 요소를 고르고 [재생]·[삭제] */
 function tlMenuClose(){ const m=$('vsCm'); if(m) m.remove(); }
 function tlMenu(e){
-  if(!P||UI.busy==='export') return; const k=tlSelFrom(e.target); if(!k) return; e.preventDefault(); tlMenuClose();
+  if(!P||UI.busy==='export') return; const hit=tmulHit(e.target); if(hit){ e.preventDefault(); tlMenuClose(); tmulMenu(e,hit); return; }   /* v113: 여러 개 고른 것 위에서는 정렬 메뉴 */
+  const k=tlSelFrom(e.target); if(!k) return; e.preventDefault(); tlMenuClose();
   const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc(TSEL_KIND[k]+' · '+tselLabel())+'</div><button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 삭제</button>';
   _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
 }
 /* ══ /v102 ══ */
+/* ══ v113 (2026-10-26) — 구성요소 크기·배치 직접 고치기 · 구성 템플릿 · 타임라인 다중 선택 정렬 ═══════════════════════════════════════════════════
+   ① [📐 크기/배치 수정] — 미리보기 아래 단추(또는 [인포] 탭)로 그 장면 인포그래픽의 구성요소 전체를 미리보기 위에 상자로 띄워(UI.le) 상자를 끌어 옮기고 모서리·가장자리를 끌어 크기를 바꿈.
+      다른 상자 위에 놓으면 두 상자의 자리(위치·크기)가 맞바뀜. 저장·그리기 규칙은 위 '엔진'(igUnits·igCustomCells) 참고 — 모든 단위에 it.bx 가 있으면 그대로, 없으면 자동 배치
+      열 때 지금 자동 배치를 상자로 옮겨 시작(눈에 보이는 변화 없음) · 아무것도 안 바꾸고 닫으면 상자를 다시 지워 예전 모습 그대로 · 되돌리기는 평소처럼 Ctrl+Z
+   ② 구성 템플릿 LTPL — 구성요소 개수(1~7)마다 칸 크기·배치가 다른 165개(tlCatalog). 고르면 모든 구성요소가 그 칸 크기·위치로 바뀜(큰 칸에는 먼저 나오는 구성요소) — 그 뒤에도 상자 끌기·크기 조절 가능
+   ③ 타임라인 [구성]·[인포] 줄 — Ctrl/⌘+클릭으로 여러 개 고르고(UI.tmul) 오른쪽 클릭 메뉴: 길이 동일하게 · 왼쪽/오른쪽/가운데 정렬 · 일렬배치 · 동일길이로 일렬배치 · 간격 균등 · 삭제.
+      구성요소의 길이 = 화면에 보이는 시간 it.du(칩 오른쪽 끝을 끌어도 바꿈) — 정하지 않은 구성요소는 예전처럼 인포그래픽이 끝날 때까지 보임 ── */
+UI.le=null; UI.tmul=[];
+const r4=x=>Math.round(x*10000)/10000;
+const boxOf=s=>({x:r4(s.x),y:r4(s.y),w:r4(s.w),h:r4(s.h)});
+
+/* ── ② 구성 템플릿 — 트리: 'L' 칸 · 'E' 빈 자리 · ['R',비율들,[자식…]] 가로로 나눔 · ['C',비율들,[자식…]] 세로로 나눔 · ['M',가로여백,세로여백,자식] 안쪽으로 줄임 · ['S',[줄마다 칸 수…]] 정사각형 칸(가운데 정렬) ── */
+const TL_GAP=0.022;   /* 칸 사이 간격 = 내용 영역 짧은 변의 2.2% */
+function tlSlots(tree,W,H){   /* 내용 영역 W×H(px) 에서의 칸 목록(0~1) — 큰 칸이 먼저, 넓이가 비슷하면 읽는 순서(왼쪽→오른쪽·위→아래) */
+  const out=[], gp=TL_GAP*Math.min(W,H), gx=gp/W, gy=gp/H;
+  const walk=(nd,x,y,w,h)=>{
+    if(nd==='L'){ out.push({x,y,w,h}); return; }
+    if(nd==='E') return;
+    const k=nd[0];
+    if(k==='M'){ walk(nd[3],x+nd[1]*w,y+nd[2]*h,w*(1-2*nd[1]),h*(1-2*nd[2])); return; }
+    if(k==='S'){   /* 정사각형 — 한 변 = 줄 안 칸 수·줄 수에 맞춰 들어가는 가장 큰 값 */
+      const rows=nd[1], mc=Math.max.apply(null,rows), nr=rows.length, sz=Math.min((w*W-(mc-1)*gp)/mc,(h*H-(nr-1)*gp)/nr), totH=nr*sz+(nr-1)*gp, oy=y*H+(h*H-totH)/2;
+      rows.forEach((c,r)=>{ const totW=c*sz+(c-1)*gp, ox=x*W+(w*W-totW)/2; for(let q=0;q<c;q++) out.push({x:(ox+q*(sz+gp))/W,y:(oy+r*(sz+gp))/H,w:sz/W,h:sz/H}); });
+      return;
+    }
+    const horiz=k==='R', ws=nd[1], kids=nd[2], n=kids.length, tot=ws.reduce((a,v)=>a+v,0), g1=horiz?gx:gy, room=(horiz?w:h)-g1*(n-1); let pos=horiz?x:y;
+    kids.forEach((kid,i)=>{ const sz=room*ws[i]/tot; if(horiz) walk(kid,pos,y,sz,h); else walk(kid,x,pos,w,sz); pos+=sz+g1; });
+  };
+  walk(tree,0,0,1,1);
+  return out.map((s,i)=>({s,i,a:Math.round(s.w*s.h*40)})).sort((p,q)=>(q.a-p.a)||(p.i-q.i)).map(o=>o.s);   /* 넓이를 2.5% 단위로 묶어 비교 */
+}
+const tlEq=n=>Array(n).fill(1), tlLs=n=>Array(n).fill('L');
+const tlRow=(n,ws)=>['R',ws||tlEq(n),tlLs(n)], tlCol=(n,ws)=>['C',ws||tlEq(n),tlLs(n)];
+const tlRows=cnt=>['C',tlEq(cnt.length),cnt.map(c=>c===1?'L':tlRow(c))];   /* 줄마다 칸 수가 다른 가로줄 쌓기 */
+const tlCols=cnt=>['R',tlEq(cnt.length),cnt.map(c=>c===1?'L':tlCol(c))];   /* 칸 수가 다른 세로줄 나란히 */
+const tlGrid=(r,c)=>['C',tlEq(r),Array.from({length:r},()=>tlRow(c))];
+function tlCatalog(){
+  const T=[], cnt={}, DIR={L:'왼쪽',R:'오른쪽',T:'위',B:'아래'};
+  const add=(n,nm,tree)=>{ cnt[n]=(cnt[n]||0)+1; T.push({id:'t'+n+'-'+String(cnt[n]).padStart(2,'0'),n,nm,tree}); };
+  const hero=(n,dir,w,sub)=>{ const tree=dir==='L'?['R',[w,1],['L',sub]]:dir==='R'?['R',[1,w],[sub,'L']]:dir==='T'?['C',[w,1],['L',sub]]:['C',[1,w],[sub,'L']]; add(n,DIR[dir]+' 큰 칸'+(w>1?' '+w+':1':'')+' + '+(n-1)+'칸',tree); };
+  const heroes=(n,ws,subLR,subTB)=>['L','R','T','B'].forEach(d=>ws.forEach(w=>hero(n,d,w,(d==='L'||d==='R')?subLR:subTB)));
+  /* 1개 */
+  add(1,'전체 한 칸','L'); add(1,'가운데 작게',['M',0.1,0.1,'L']); add(1,'가운데 가로 띠',['M',0,0.2,'L']); add(1,'가운데 세로 띠',['M',0.2,0,'L']);
+  add(1,'위쪽 크게',['C',[3,2],['L','E']]); add(1,'아래쪽 크게',['C',[2,3],['E','L']]); add(1,'왼쪽 크게',['R',[3,2],['L','E']]); add(1,'오른쪽 크게',['R',[2,3],['E','L']]); add(1,'정사각형 1개',['S',[1]]);
+  /* 2개 */
+  add(2,'가로 2등분',tlRow(2)); add(2,'세로 2등분',tlCol(2));
+  [[2,1],[1,2],[3,1],[1,3]].forEach(w=>{ add(2,'가로 '+w.join(':'),tlRow(2,w)); add(2,'세로 '+w.join(':'),tlCol(2,w)); });
+  add(2,'정사각형 2개 가로',['S',[2]]); add(2,'정사각형 2개 세로',['S',[1,1]]); add(2,'가운데 가로 2칸',['M',0.05,0.12,tlRow(2)]); add(2,'가운데 세로 2칸',['M',0.1,0.04,tlCol(2)]);
+  /* 3개 */
+  add(3,'가로 3등분',tlRow(3)); add(3,'세로 3등분',tlCol(3));
+  [[2,1,1],[1,2,1],[1,1,2]].forEach(w=>{ add(3,'가로 '+w.join(':'),tlRow(3,w)); add(3,'세로 '+w.join(':'),tlCol(3,w)); });
+  heroes(3,[1,1.5,2],tlCol(2),tlRow(2));
+  add(3,'정사각형 3개 가로',['S',[3]]); add(3,'정사각형 위 2 · 아래 1',['S',[2,1]]); add(3,'정사각형 위 1 · 아래 2',['S',[1,2]]); add(3,'낮은 3칸(가운데)',['M',0.04,0.14,tlRow(3)]);
+  /* 4개 */
+  add(4,'가로 4등분',tlRow(4)); add(4,'세로 4등분',tlCol(4)); add(4,'2×2 격자',tlGrid(2,2));
+  add(4,'가로 2:1:1:1',tlRow(4,[2,1,1,1])); add(4,'가로 1:1:1:2',tlRow(4,[1,1,1,2])); add(4,'세로 2:1:1:1',tlCol(4,[2,1,1,1])); add(4,'세로 1:1:1:2',tlCol(4,[1,1,1,2]));
+  heroes(4,[1.5,2,3],tlCol(3),tlRow(3));
+  add(4,'2×2 왼쪽 넓게',['R',[2,1],[tlCol(2),tlCol(2)]]); add(4,'2×2 오른쪽 넓게',['R',[1,2],[tlCol(2),tlCol(2)]]); add(4,'2×2 위 넓게',['C',[2,1],[tlRow(2),tlRow(2)]]); add(4,'2×2 아래 넓게',['C',[1,2],[tlRow(2),tlRow(2)]]);
+  add(4,'엇갈린 2×2 (왼쪽 먼저)',['C',[1,1],[['R',[2,1],['L','L']],['R',[1,2],['L','L']]]]); add(4,'엇갈린 2×2 (오른쪽 먼저)',['C',[1,1],[['R',[1,2],['L','L']],['R',[2,1],['L','L']]]]);
+  add(4,'정사각형 4개 가로',['S',[4]]); add(4,'정사각형 2×2',['S',[2,2]]); add(4,'정사각형 위 3 · 아래 1',['S',[3,1]]); add(4,'정사각형 위 1 · 아래 3',['S',[1,3]]);
+  /* 5개 */
+  add(5,'가로 5등분',tlRow(5)); add(5,'세로 5등분',tlCol(5));
+  [[2,3],[3,2],[1,4],[4,1],[1,2,2],[2,2,1],[2,1,2]].forEach(c=>add(5,'가로줄 '+c.join('+')+'칸',tlRows(c)));
+  [[2,3],[3,2],[1,4],[4,1]].forEach(c=>add(5,'세로줄 '+c.join('+')+'칸',tlCols(c)));
+  heroes(5,[1,1.5,2],tlGrid(2,2),tlRow(4));
+  add(5,'위 큰 2칸 + 아래 3칸',['C',[2,1],[tlRow(2),tlRow(3)]]); add(5,'위 3칸 + 아래 큰 2칸',['C',[1,2],[tlRow(3),tlRow(2)]]);
+  add(5,'정사각형 5개 가로',['S',[5]]); add(5,'정사각형 위 3 · 아래 2',['S',[3,2]]); add(5,'정사각형 위 2 · 아래 3',['S',[2,3]]);
+  /* 6개 */
+  add(6,'가로 6등분',tlRow(6)); add(6,'세로 6등분',tlCol(6)); add(6,'2×3 격자(가로 3칸)',tlGrid(2,3)); add(6,'3×2 격자(가로 2칸)',tlGrid(3,2));
+  [[2,4],[4,2],[1,5],[5,1],[1,2,3],[3,2,1],[1,4,1]].forEach(c=>add(6,'가로줄 '+c.join('+')+'칸',tlRows(c)));
+  add(6,'위 큰 2칸 + 아래 4칸',['C',[2,1],[tlRow(2),tlRow(4)]]); add(6,'위 4칸 + 아래 큰 2칸',['C',[1,2],[tlRow(4),tlRow(2)]]); add(6,'왼쪽 큰 2칸 + 오른쪽 4칸',['R',[2,1],[tlCol(2),tlCol(4)]]); add(6,'왼쪽 4칸 + 오른쪽 큰 2칸',['R',[1,2],[tlCol(4),tlCol(2)]]);
+  add(6,'위 3칸 크게 + 아래 3칸',['C',[2,1],[tlRow(3),tlRow(3)]]); add(6,'위 3칸 + 아래 3칸 크게',['C',[1,2],[tlRow(3),tlRow(3)]]); add(6,'왼쪽 3칸 크게 + 오른쪽 3칸',['R',[2,1],[tlCol(3),tlCol(3)]]); add(6,'왼쪽 3칸 + 오른쪽 3칸 크게',['R',[1,2],[tlCol(3),tlCol(3)]]);
+  heroes(6,[1,1.5],tlRows([2,3]),tlRow(5));
+  add(6,'정사각형 3×2(가로 3칸)',['S',[3,3]]); add(6,'정사각형 2×3(가로 2칸)',['S',[2,2,2]]); add(6,'정사각형 위 4 · 아래 2',['S',[4,2]]); add(6,'정사각형 위 2 · 아래 4',['S',[2,4]]);
+  /* 7개 */
+  add(7,'가로 7등분',tlRow(7)); add(7,'세로 7등분',tlCol(7));
+  [[3,4],[4,3],[2,5],[5,2],[1,6],[6,1],[2,3,2],[3,2,2],[2,2,3],[1,3,3],[3,3,1]].forEach(c=>add(7,'가로줄 '+c.join('+')+'칸',tlRows(c)));
+  heroes(7,[1,1.5],tlGrid(3,2),tlGrid(2,3));
+  add(7,'위 큰 2칸 + 아래 5칸',['C',[2,1],[tlRow(2),tlRow(5)]]); add(7,'위 5칸 + 아래 큰 2칸',['C',[1,2],[tlRow(5),tlRow(2)]]); add(7,'위 큰 3칸 + 아래 4칸',['C',[2,1],[tlRow(3),tlRow(4)]]); add(7,'위 4칸 + 아래 큰 3칸',['C',[1,2],[tlRow(4),tlRow(3)]]);
+  add(7,'정사각형 위 4 · 아래 3',['S',[4,3]]); add(7,'정사각형 위 3 · 아래 4',['S',[3,4]]); add(7,'정사각형 3·2·2줄',['S',[3,2,2]]);
+  return T;
+}
+const LTPL=tlCatalog();
+function tlThumb(t,on){   /* 목록용 작은 그림 — 칸마다 번호(1 = 가장 큰 칸 = 먼저 나오는 구성요소) */
+  const W=140, H=100, sl=tlSlots(t.tree,W,H);
+  return '<svg viewBox="0 0 '+W+' '+H+'" class="le-th'+(on?' on':'')+'" aria-hidden="true">'+sl.map((s,i)=>'<rect class="'+(i===0?'a':'')+'" x="'+(s.x*W).toFixed(1)+'" y="'+(s.y*H).toFixed(1)+'" width="'+(s.w*W).toFixed(1)+'" height="'+(s.h*H).toFixed(1)+'" rx="3"/><text x="'+((s.x+s.w/2)*W).toFixed(1)+'" y="'+((s.y+s.h/2)*H+4).toFixed(1)+'">'+(i+1)+'</text>').join('')+'</svg>';
+}
+
+/* ── ① 크기/배치 수정 창 ── */
+const LE_ALL={all:true};
+const LE_MODES={left:'solid',right:'solid',full:'solid',hero:'solid',cardR:'card',cardL:'card'};   /* 상자로 배치할 수 있는 형태 — 띠·배지(lower·ticker·corner)·타이틀은 칸이 아니라 칩이라 해당 없음 */
+const LE_HND=['nw','n','ne','e','se','s','sw','w'];
+const leG=()=>UI.le?igById(UI.le.gid):null;
+const leLabel=it=>compText(it).replace(/^\S+\s/,'');
+function leGeom(g){   /* 지금 미리보기 크기에서 이 클립의 '내용 영역' — 카드 형태는 상자 배치일 때의 카드 크기 기준 */
+  const cv=$('vsCv'); if(!cv||!CG) return null; const W=cv.width, H=cv.height, L=buildIgLay(CG,W,H,g,{cust:true,noCells:true});
+  return L&&L.cr?{W,H,cr:L.cr}:null;
+}
+function leInitBoxes(g){   /* 상자가 아직 없으면 지금 자동 배치(카드 형태는 세로로 나란히)를 상자로 옮겨 둠 — 보이는 모습은 그대로 */
+  if(igBoxOK(g)) return true;
+  const geo=leGeom(g); if(!geo) return false; const its=g.items, us=igUnits(its), cr=geo.cr;
+  if(LE_MODES[g.mode]==='solid'){
+    const L=igLay(CG,geo.W,geo.H,g);
+    us.forEach(u=>{
+      const cs=L.cells.filter(c=>c.i>=u.i&&c.i<u.i+u.n); if(!cs.length) return; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+      cs.forEach(c=>{ const gy=c.gy!=null?c.gy:c.y, gh=c.gh!=null?c.gh:c.h; x0=Math.min(x0,c.x); y0=Math.min(y0,gy); x1=Math.max(x1,c.x+c.w); y1=Math.max(y1,gy+gh); });
+      its[u.i].bx={x:r4(clamp((x0-cr.x)/cr.w,0,0.95)),y:r4(clamp((y0-cr.y)/cr.h,0,0.95)),w:r4(clamp((x1-x0)/cr.w,0.03,1)),h:r4(clamp((y1-y0)/cr.h,0.03,1))};
+    });
+  }
+  if(!igBoxOK(g)){ const sl=tlSlots(tlCol(us.length),cr.w,cr.h); us.forEach((u,k)=>{ its[u.i].bx=boxOf(sl[k]||{x:0,y:0,w:1,h:1}); }); }
+  return igBoxOK(g);
+}
+function leTarget(){   /* 지금 장면(재생헤드)의 인포그래픽 — 지금 보이는 것 → 없으면 그 장면의 첫 번째 */
+  const t=ENG.playing?nowT():ENG.pos, sc=P.scenes[sceneIdx(t)]; if(!sc) return null;
+  const gs=igsOfScene(sc).slice().sort((a,b)=>a.s-b.s); if(!gs.length) return null; return gs.find(g=>t>=g.s&&t<g.e)||gs[0];
+}
+function leOpen(gid){
+  if(!P) return; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
+  if(ENG.playing) pausePlay(); if(UI.le) leClose(true);
+  const g=gid?igById(gid):leTarget();
+  if(!g){ toast('이 장면에는 인포그래픽이 없어요 — [인포] 탭의 ＋ 인포그래픽 추가나 [📊 이 장면 자동 구성]으로 먼저 만들어 주세요'); return; }
+  if(!LE_MODES[g.mode]){ dlgLeMode(g); return; }
+  if(!g.items.length){ toast('구성요소가 없어요 — [인포] 탭에서 블록을 추가해 주세요'); return; }
+  const t=clamp(ENG.pos,g.s+0.05,Math.max(g.s+0.06,g.e-0.05)); ENG.pos=t; syncMedia(t,false);
+  const fresh=!igBoxOK(g), before=serialize(g); if(!leInitBoxes(g)){ toast('이 인포그래픽은 크기/배치를 바꿀 수 없어요'); return; }
+  UI.le={gid:g.id,u:-1,tpl:false,n:Math.min(7,Math.max(1,igUnits(g.items).length)),fresh,dirty:false,drag:null,geo:leGeom(g),before,raf:0,kt:0};
+  UI.tab='ig'; UI.ig=g.id; renderTabs(); renderInspector(true);
+  leBuild(); lePaintBar(); lePaintBoxes(); paintFrame(ENG.pos); uiTick(ENG.pos,true);
+  setTimeout(()=>{ const s=$('vsLeSurf'); if(UI.le&&s&&s.getBoundingClientRect().height<120) toast('미리보기 화면이 너무 작아요 — 창을 더 크게 하면 상자를 끌어 고치기 쉬워요'); },350);
+}
+function leBuild(){
+  leDrop(); const st=document.querySelector('#vsModal .vs-stage'), ct=document.querySelector('#vsModal .vs-center'), tr=document.querySelector('#vsModal .vs-tr'); if(!st||!ct||!tr) return;
+  const d=document.createElement('div'); d.id='vsLe'; d.className='vs-le'; d.innerHTML='<div class="le-surf" id="vsLeSurf"><div class="le-cr" id="vsLeCr"></div><div id="vsLeBoxes"></div></div><div class="le-tpl" id="vsLeTpl" style="display:none"></div>'; st.appendChild(d);   /* 템플릿 창은 미리보기 위에 떠 있음(아래 칸을 차지하지 않아 미리보기가 작아지지 않게) */
+  const bar=document.createElement('div'); bar.id='vsLeBar'; bar.className='vs-lebar'; ct.insertBefore(bar,tr);
+  d.addEventListener('pointerdown',leDown); d.addEventListener('pointermove',leMove); d.addEventListener('pointerup',leUp); d.addEventListener('pointercancel',leUp);
+  if(window.ResizeObserver){ UI.le.ro=new ResizeObserver(()=>lePlace()); UI.le.ro.observe(st); }
+  document.body.classList.add('vs-leon'); lePlace();
+}
+function leDrop(){ ['vsLe','vsLeBar','vsLeTpl'].forEach(id=>{ const e=$(id); if(e) e.remove(); }); document.body.classList.remove('vs-leon'); if(UI.le&&UI.le.ro){ try{ UI.le.ro.disconnect(); }catch(e){} UI.le.ro=null; } }
+function leClose(silent){
+  if(!UI.le) return; const g=leG(), L=UI.le; clearTimeout(L.kt); if(L.raf){ cancelAnimationFrame(L.raf); L.raf=0; }
+  if(g&&L.fresh&&!L.dirty){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; }   /* 아무것도 안 바꿨으면 상자를 다시 지워 예전 자동 배치 그대로 */
+  leDrop(); UI.le=null;
+  if(P){ if(g) igPoster(g); commit('크기/배치'); if(!silent){ renderAll(); } else if(!ENG.playing) paintFrame(ENG.pos); }
+}
+function lePlace(){   /* 상자 판을 캔버스에 그려진 영역에 맞춤(캔버스는 contain 이라 가장자리에 빈 띠가 생김) */
+  const d=$('vsLe'), s=$('vsLeSurf'), cv=$('vsCv'); if(!d||!s||!cv||!UI.le) return;
+  const st=d.getBoundingClientRect(), c=cv.getBoundingClientRect(), k=Math.min(c.width/cv.width,c.height/cv.height), w=cv.width*k, h=cv.height*k;
+  s.style.left=(c.left-st.left+(c.width-w)/2)+'px'; s.style.top=(c.top-st.top+(c.height-h)/2)+'px'; s.style.width=w+'px'; s.style.height=h+'px';
+  const g=leG(); if(g&&UI.le.geo&&(UI.le.geo.W!==cv.width||UI.le.geo.H!==cv.height)){ UI.le.geo=leGeom(g); lePaintBoxes(); }
+}
+function leRefresh(){   /* 되돌리기·다시 실행으로 프로젝트가 바뀐 뒤 — 같은 클립을 다시 읽음 */
+  if(!UI.le) return; const g=leG(); if(!g||!LE_MODES[g.mode]||!g.items.length){ leClose(true); return; }
+  UI.le.fresh=!igBoxOK(g); if(!leInitBoxes(g)){ leClose(true); return; } UI.le.geo=leGeom(g); UI.le.u=-1; lePaintBar(); lePaintBoxes(); lePlace();
+}
+function lePaintBoxes(drag){
+  const g=leG(), box=$('vsLeBoxes'), L=UI.le; if(!g||!box||!L||!L.geo) return; const geo=L.geo, cr=geo.cr, us=igUnits(g.items);
+  const pos=(b)=>'left:'+((cr.x+b.x*cr.w)/geo.W*100)+'%;top:'+((cr.y+b.y*cr.h)/geo.H*100)+'%;width:'+(b.w*cr.w/geo.W*100)+'%;height:'+(b.h*cr.h/geo.H*100)+'%';
+  const c=$('vsLeCr'); if(c) c.style.cssText=pos({x:0,y:0,w:1,h:1});
+  if(drag&&box.children.length===us.length){   /* 끄는 동안은 위치만 바꿈(글·손잡이는 그대로 두어 끌기가 끊기지 않게) */
+    us.forEach((u,k)=>{ const e=box.children[k]; if(e){ e.style.cssText=pos(g.items[u.i].bx); e.classList.toggle('sel',L.u===k); e.classList.toggle('tgt',!!L.drag&&L.drag.tgt===k); } }); return;
+  }
+  box.innerHTML=us.map((u,k)=>{ const it=g.items[u.i], bt=BT[it.type]||BT.point, sel=L.u===k;
+    return '<div class="le-b'+(sel?' sel':'')+'" data-u="'+k+'" style="'+pos(it.bx)+'" title="끌어서 옮기고, 모서리·가장자리를 끌어 크기를 바꿔요 — 다른 상자 위에 놓으면 자리가 바뀌어요"><span class="lb">'+(k+1)+' · '+esc(bt.n)+(u.n>1?' ×'+u.n:'')+' — '+esc(clipS(leLabel(it),14))+'</span>'+(sel?LE_HND.map(h=>'<i class="le-h h-'+h+'" data-h="'+h+'"></i>').join(''):'')+'</div>'; }).join('');
+}
+function lePaintBar(){
+  const g=leG(), bar=$('vsLeBar'), tp=$('vsLeTpl'), L=UI.le; if(!g||!bar||!L) return;
+  const sc=P.scenes[sceneIdx(g.s+0.05)], gs=sc?igsOfScene(sc).slice().sort((a,b)=>a.s-b.s):[g], us=igUnits(g.items), M=us.length;
+  bar.innerHTML='<b class="le-t">📐 크기/배치 수정</b><span class="le-s">장면 '+((sc?P.scenes.indexOf(sc):0)+1)+' · '+esc(clipS(igName(g),18))+' · 구성요소 '+M+'개</span>'
+    +(gs.length>1?gs.map((x,i)=>F.btn('leClip',(i+1)+'번 인포',{d:x.id,c:x.id===g.id?'on':''})).join(''):'')
+    +'<span class="vs-sp"></span>'
+    +F.btn('leTpl','🧩 템플릿 '+(L.tpl?'닫기':'고르기'),{c:L.tpl?'on':'pri',title:'구성요소 개수별 배치 템플릿 '+LTPL.length+'개 — 고르면 모든 구성요소의 크기·위치가 한 번에 바뀌어요'})
+    +F.btn('leSq','⬜ 정사각형',{dis:L.u<0,title:'고른 상자를 정사각형으로(가운데 기준)'})+F.btn('leSqAll','⬜ 모두 정사각형',{title:'모든 상자를 정사각형으로(각자 가운데 기준)'})+F.btn('leSame','🟰 같은 크기',{dis:L.u<0,title:'모든 상자를 고른 상자와 같은 크기로(각자 가운데 기준)'})
+    +F.btn('leAuto','↺ 자동 배치',{title:'크기/배치를 지우고 자동 배치로 되돌려요'})+F.btn('leReset','↶ 처음 상태',{title:'이 창을 열었을 때의 크기/배치로'})+F.btn('leDone','✔ 완료',{c:'pri',title:'닫기 (Esc)'})
+    +'<div class="le-hint" title="상자를 끌어 옮기고, 모서리·가장자리를 끌어 크기를 바꿔요 · 다른 상자 위에 놓으면 서로 자리(위치·크기)가 바뀌어요 · 방향키 = 미세 이동(Shift = 크게) · +/− = 크기 · Alt = 자석 끄기 · 되돌리기 Ctrl+Z">끌어서 옮기고 · 모서리로 크기 · <b>다른 상자 위에 놓으면 자리 맞바꿈</b> · 방향키 미세 이동 · Esc 닫기</div>';
+  if(!L.tpl){ tp.style.display='none'; tp.innerHTML=''; lePlace(); return; }
+  const n=L.n, cat=LTPL.filter(t=>t.n===n), cnt=k=>LTPL.filter(t=>t.n===k).length, bad=M>7?'구성요소가 '+M+'개라 템플릿을 쓸 수 없어요(최대 7개)':n<M?'구성요소가 '+M+'개라서 '+M+'칸 이상인 템플릿을 골라 주세요':'', side=L.side||(g.mode==='right'?'l':'r');
+  tp.className='le-tpl'+(side==='l'?' l':''); tp.style.display=''; tp.innerHTML='<div class="r"><b>🧩 구성 템플릿</b><span class="vs-sp"></span>'+F.btn('leTplSide','⇆',{title:'이 창을 반대쪽으로 옮겨요'})+F.btn('leTpl','✕',{title:'닫기'})+'</div><div class="hint">구성요소 '+M+'개 — 하나를 누르면 모든 구성요소가 그 칸의 크기·위치로 바뀌어요. 큰 칸에는 먼저 나오는 구성요소가 들어가고, 적용한 뒤에도 상자를 끌어 고칠 수 있어요.</div>'
+    +'<div class="tabs">'+[1,2,3,4,5,6,7].map(k=>F.btn('leTplN',k+'개 <i>'+cnt(k)+'</i>',{d:String(k),c:(k===n?'on':'')+(k===M?' cur':'')})).join('')+'</div>'+(bad?'<div class="le-bad">'+esc(bad)+'</div>':'')
+    +'<div class="le-grid">'+cat.map(t=>'<button class="le-card mobile-keep'+(g.tpl===t.id?' on':'')+(bad?' off':'')+'" data-a="leTplPick" data-id="'+t.id+'" title="'+esc(t.nm)+'">'+tlThumb(t,g.tpl===t.id)+'<span>'+esc(t.nm)+'</span></button>').join('')+'</div>';
+  lePlace();
+}
+const leUnit=k=>{ const g=leG(); if(!g) return null; const u=igUnits(g.items)[k]; return u?{g,u,it:g.items[u.i]}:null; };
+function leSnapD(vals,targets,th){ let best=null; vals.forEach(v=>targets.forEach(t=>{ const d=t-v; if(Math.abs(d)<=th&&(best==null||Math.abs(d)<Math.abs(best))) best=d; })); return best==null?0:best; }
+function leDown(e){
+  if(!UI.le||e.button>0) return; if(e.target.closest&&e.target.closest('.le-tpl')) return; const bx=e.target.closest&&e.target.closest('.le-b'); if(!bx){ if(UI.le.u>=0){ UI.le.u=-1; lePaintBoxes(); lePaintBar(); } return; }
+  const k=+bx.dataset.u, q=leUnit(k); if(!q) return; const hd=e.target.closest&&e.target.closest('.le-h'), sr=$('vsLeSurf').getBoundingClientRect();
+  const was=UI.le.u; UI.le.u=k;
+  UI.le.drag={k,mode:hd?hd.dataset.h:'move',x0:e.clientX,y0:e.clientY,b0:Object.assign({},q.it.bx),sr,moved:false,tgt:-1,all:igUnits(q.g.items).map(u=>Object.assign({},q.g.items[u.i].bx))};
+  try{ $('vsLe').setPointerCapture(e.pointerId); }catch(x){}
+  if(was!==k){ lePaintBoxes(); lePaintBar(); } e.preventDefault();
+}
+function leMove(e){
+  const L=UI.le, d=L&&L.drag; if(!d) return; const q=leUnit(d.k); if(!q) return; const geo=L.geo, cr=geo.cr, W=geo.W, H=geo.H;
+  if(!d.moved){ if(Math.abs(e.clientX-d.x0)+Math.abs(e.clientY-d.y0)<4) return; d.moved=true; }
+  const dxn=((e.clientX-d.x0)/d.sr.width*W)/cr.w, dyn=((e.clientY-d.y0)/d.sr.height*H)/cr.h, b=d.b0, MIN=0.06, th=e.altKey?0:0.012, others=d.all.filter((_,i)=>i!==d.k);
+  const xs=[0,0.5,1], ys=[0,0.5,1]; others.forEach(o=>{ xs.push(o.x,o.x+o.w,o.x+o.w/2); ys.push(o.y,o.y+o.h,o.y+o.h/2); });
+  let nb;
+  if(d.mode==='move'){
+    nb={x:b.x+dxn,y:b.y+dyn,w:b.w,h:b.h};
+    nb.x+=leSnapD([nb.x,nb.x+nb.w,nb.x+nb.w/2],xs,th); nb.y+=leSnapD([nb.y,nb.y+nb.h,nb.y+nb.h/2],ys,th);
+    nb.x=clamp(nb.x,0,1-nb.w); nb.y=clamp(nb.y,0,1-nb.h);
+    const px=((e.clientX-d.sr.left)/d.sr.width*W-cr.x)/cr.w, py=((e.clientY-d.sr.top)/d.sr.height*H-cr.y)/cr.h; let tg=-1, ta=1e9;   /* 포인터가 들어 있는 다른 상자(겹치면 작은 것) = 맞바꿀 자리 */
+    d.all.forEach((o,i)=>{ if(i===d.k) return; if(px>=o.x&&px<=o.x+o.w&&py>=o.y&&py<=o.y+o.h&&o.w*o.h<ta){ tg=i; ta=o.w*o.h; } }); d.tgt=tg;
+  }else{
+    const m=d.mode; let x0=b.x, y0=b.y, x1=b.x+b.w, y1=b.y+b.h; d.tgt=-1;
+    if(m.indexOf('e')>=0) x1=clamp(x1+dxn,x0+MIN,1); if(m.indexOf('w')>=0) x0=clamp(x0+dxn,0,x1-MIN);
+    if(m.indexOf('s')>=0) y1=clamp(y1+dyn,y0+MIN,1); if(m.indexOf('n')>=0) y0=clamp(y0+dyn,0,y1-MIN);
+    if(th){ if(m.indexOf('e')>=0) x1=clamp(x1+leSnapD([x1],xs,th),x0+MIN,1); if(m.indexOf('w')>=0) x0=clamp(x0+leSnapD([x0],xs,th),0,x1-MIN); if(m.indexOf('s')>=0) y1=clamp(y1+leSnapD([y1],ys,th),y0+MIN,1); if(m.indexOf('n')>=0) y0=clamp(y0+leSnapD([y0],ys,th),0,y1-MIN); }
+    if(e.shiftKey&&m.length===2){   /* Shift + 모서리 = 가로세로 비율 유지 */
+      const ar=(b.w*cr.w)/(b.h*cr.h), nw=x1-x0, nh=nw*cr.w/cr.h/ar; if(m.indexOf('n')>=0) y0=clamp(y1-nh,0,y1-MIN); else y1=clamp(y0+nh,y0+MIN,1);
+    }
+    nb={x:x0,y:y0,w:x1-x0,h:y1-y0};
+  }
+  q.it.bx={x:r4(nb.x),y:r4(nb.y),w:r4(nb.w),h:r4(nb.h)}; lePaintBoxes(true); lePaintSoon();
+}
+function lePaintSoon(){ const L=UI.le; if(!L||L.raf) return; L.raf=requestAnimationFrame(()=>{ L.raf=0; if(UI.le===L&&P&&!ENG.playing) paintFrame(ENG.pos); }); }
+function leUp(e){
+  const L=UI.le, d=L&&L.drag; if(!d) return; L.drag=null; try{ $('vsLe').releasePointerCapture(e.pointerId); }catch(x){}
+  const q=leUnit(d.k); if(!q) return;
+  if(d.moved){
+    if(d.mode==='move'&&d.tgt>=0){   /* 다른 상자 위에 놓음 — 두 상자의 자리(위치·크기)를 맞바꿈 */
+      const t=leUnit(d.tgt); if(t){ q.it.bx=Object.assign({},d.all[d.tgt]); t.it.bx=Object.assign({},d.b0); leChanged('크기/배치 — 자리 맞바꿈',true); toast('구성요소 '+(d.k+1)+'번과 '+(d.tgt+1)+'번의 자리를 맞바꿨어요'); L.u=d.tgt; lePaintBoxes(); lePaintBar(); return; }
+    }
+    leChanged('크기/배치 — '+(d.mode==='move'?'위치':'크기'));
+  }
+  lePaintBoxes(); lePaintBar();
+}
+function leChanged(label,keepTpl){
+  const g=leG(); if(!g||!UI.le) return; UI.le.dirty=true; if(!keepTpl) g.tpl=''; igPoster(g); commit(label); renderScenes(); renderInspector(); lePaintBoxes(); lePaintBar(); if(!ENG.playing) paintFrame(ENG.pos);
+}
+function leApplyTpl(id){
+  const g=leG(), t=LTPL.find(x=>x.id===id); if(!g||!t) return; const us=igUnits(g.items), M=us.length;
+  if(M>7){ toast('구성요소가 '+M+'개라 템플릿을 쓸 수 없어요(최대 7개)'); return; }
+  if(t.n<M){ toast('구성요소가 '+M+'개라서 '+M+'칸 이상인 템플릿을 골라 주세요'); return; }
+  const cr=UI.le.geo.cr, sl=tlSlots(t.tree,cr.w,cr.h); us.forEach((u,k)=>{ g.items[u.i].bx=boxOf(sl[k]); }); g.tpl=t.id; UI.le.u=-1;
+  leChanged('구성 템플릿 — '+t.nm,true); toast('템플릿 "'+t.nm+'"을 적용했어요 — 상자를 끌어 자리를 바꾸거나 크기를 고칠 수 있어요');
+}
+function leSquare(all){
+  const g=leG(); if(!g||!UI.le) return; const cr=UI.le.geo.cr, us=igUnits(g.items); let n=0;
+  us.forEach((u,k)=>{ if(!all&&k!==UI.le.u) return; const b=g.items[u.i].bx, s=Math.min(b.w*cr.w,b.h*cr.h), w=s/cr.w, h=s/cr.h, cx=b.x+b.w/2, cy=b.y+b.h/2; g.items[u.i].bx={x:r4(clamp(cx-w/2,0,1-w)),y:r4(clamp(cy-h/2,0,1-h)),w:r4(w),h:r4(h)}; n++; });
+  if(n) leChanged('크기/배치 — 정사각형'); else toast('먼저 상자를 하나 골라 주세요');
+}
+function leSame(){
+  const g=leG(); if(!g||!UI.le||UI.le.u<0){ toast('기준이 될 상자를 먼저 골라 주세요'); return; } const us=igUnits(g.items), ref=g.items[us[UI.le.u].i].bx;
+  us.forEach(u=>{ const b=g.items[u.i].bx, cx=b.x+b.w/2, cy=b.y+b.h/2, w=ref.w, h=ref.h; g.items[u.i].bx={x:r4(clamp(cx-w/2,0,1-w)),y:r4(clamp(cy-h/2,0,1-h)),w:r4(w),h:r4(h)}; });
+  leChanged('크기/배치 — 같은 크기');
+}
+function leAutoBack(){
+  const g=leG(); if(!g||!UI.le) return; g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; UI.le.fresh=true; UI.le.dirty=false; leInitBoxes(g); UI.le.u=-1; igPoster(g); commit('크기/배치 — 자동 배치'); renderScenes(); lePaintBoxes(); lePaintBar(); if(!ENG.playing) paintFrame(ENG.pos); toast('자동 배치로 되돌렸어요 — 닫으면 상자가 모두 지워져요');
+}
+function leResetAll(){
+  const g=leG(); if(!g||!UI.le) return; let o; try{ o=JSON.parse(UI.le.before); }catch(e){ return; }
+  const i=P.igs.findIndex(x=>x.id===g.id); if(i<0) return; P.igs[i]=o; UI.le.fresh=!igBoxOK(o); UI.le.dirty=false; leInitBoxes(o); UI.le.u=-1; layout(P); igPoster(o); commit('크기/배치 — 처음 상태'); renderAll(); lePaintBoxes(); lePaintBar();
+}
+function leSwitch(gid){ if(!igById(gid)||!UI.le) return; const t=igById(gid).s+0.05; leClose(true); ENG.pos=t; leOpen(gid); }
+function dlgLeMode(g){
+  const m=MODE_OF[g.mode]||MODES[0];
+  dlg('📐 크기/배치 수정','<div class="vs-note">이 인포그래픽은 <b>'+esc(m[1])+'</b> 형태라서 구성요소를 칸(상자)으로 놓을 수 없어요.<br>띠·배지·타이틀 형태는 작은 칩을 가로로 나열하는 모양이에요.</div><div class="hint pad">[전체 화면 패널]로 바꾸면 구성요소를 상자로 자유롭게 놓을 수 있어요(되돌리기 가능).</div>',[{t:'전체 화면 패널로 바꾸고 계속',a:'leMode',id:g.id,c:'pri'},{t:'취소',a:'dlgClose'}]);
+}
+function leKey(e){   /* 크기/배치 창이 열려 있을 때의 키 — 처리했으면 true */
+  if(!UI.le) return false; const tg=e.target, typing=/^(input|textarea|select)$/i.test(tg.tagName||'')||tg.isContentEditable; if(typing) return false;
+  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if(UI.le.tpl){ UI.le.tpl=false; lePaintBar(); } else leClose(); return true; }
+  if(e.key==='Delete'||e.key==='Backspace'||e.key==='s'||e.key==='S'){ if(!(e.ctrlKey||e.metaKey)){ e.preventDefault(); return true; } }   /* 이 창에서는 인포그래픽 삭제(Delete)·장면 나누기(S) 단축키가 실수로 눌리지 않게 막음 */
+  const q=UI.le.u>=0?leUnit(UI.le.u):null; if(!q) return false; const cr=UI.le.geo.cr, b=Object.assign({},q.it.bx), st=e.shiftKey?0.02:0.005; let ch=true;
+  if(e.key==='ArrowLeft') b.x-=st; else if(e.key==='ArrowRight') b.x+=st; else if(e.key==='ArrowUp') b.y-=st; else if(e.key==='ArrowDown') b.y+=st;
+  else if(e.key==='+'||e.key==='='){ b.x-=0.01; b.y-=0.01*cr.w/cr.h; b.w+=0.02; b.h+=0.02*cr.w/cr.h; }
+  else if(e.key==='-'||e.key==='_'){ b.x+=0.01; b.y+=0.01*cr.w/cr.h; b.w-=0.02; b.h-=0.02*cr.w/cr.h; } else ch=false;
+  if(!ch) return false; e.preventDefault(); e.stopPropagation();
+  b.w=clamp(b.w,0.06,1); b.h=clamp(b.h,0.06,1); b.x=clamp(b.x,0,1-b.w); b.y=clamp(b.y,0,1-b.h); q.it.bx={x:r4(b.x),y:r4(b.y),w:r4(b.w),h:r4(b.h)}; UI.le.dirty=true; q.g.tpl='';
+  lePaintBoxes(true); lePaintSoon(); clearTimeout(UI.le.kt); UI.le.kt=setTimeout(()=>{ if(UI.le){ igPoster(q.g); commit('크기/배치 — 키보드'); renderScenes(); lePaintBar(); } },500); return true;
+}
+function leAct(a,id){
+  switch(a){
+    case 'leOpen': leOpen(id||''); break;
+    case 'leDone': leClose(); break;
+    case 'leTpl': if(UI.le){ UI.le.tpl=!UI.le.tpl; lePaintBar(); } break;
+    case 'leTplN': if(UI.le){ UI.le.n=clamp(+id||1,1,7); lePaintBar(); } break;
+    case 'leTplSide': if(UI.le){ const g=leG(); UI.le.side=(UI.le.side||(g&&g.mode==='right'?'l':'r'))==='l'?'r':'l'; lePaintBar(); } break;
+    case 'leTplPick': leApplyTpl(id); break;
+    case 'leClip': leSwitch(id); break;
+    case 'leSq': leSquare(false); break;
+    case 'leSqAll': leSquare(true); break;
+    case 'leSame': leSame(); break;
+    case 'leAuto': leAutoBack(); break;
+    case 'leReset': leResetAll(); break;
+    case 'leMode': { const g=igById(id); if(g){ g.mode='full'; g.bg='solid'; igPoster(g); commit('인포그래픽 형태'); dlgClose(); renderAll(); leOpen(g.id); } break; }
+  }
+}
+
+/* ── ③ 타임라인 구성요소·인포그래픽 다중 선택 + 정렬 메뉴 ── */
+const tmKey=d=>d.k+'|'+d.id+'|'+(d.pi==null?-1:d.pi);
+function tmulEls(){ const out=[]; (UI.tmul||[]).forEach(d=>tselEls(d).forEach(e=>out.push(e))); return out; }
+function tmulToggle(k,id,pi){   /* Ctrl/⌘+클릭 — 같은 종류(구성요소끼리·인포그래픽끼리)만 함께 고름 */
+  const d={k,id:String(id),pi:pi==null?-1:pi};
+  if(!UI.tmul) UI.tmul=[];
+  if(!UI.tmul.length&&UI.tsel&&UI.tsel.k===k) UI.tmul=[{k:UI.tsel.k,id:UI.tsel.id,pi:UI.tsel.pi}];
+  if(UI.tmul.length&&UI.tmul[0].k!==k) UI.tmul=[];
+  const key=tmKey(d), i=UI.tmul.findIndex(x=>tmKey(x)===key); if(i>=0) UI.tmul.splice(i,1); else UI.tmul.push(d);
+  UI.tsel=UI.tmul.length?UI.tmul[UI.tmul.length-1]:null; tselPaint();
+}
+function tmulHit(target){   /* 오른쪽 클릭한 요소가 지금 여러 개 고른 것 중 하나면 그 요소 */
+  if(!target||!target.closest||!UI.tmul||UI.tmul.length<2) return null; const ic=target.closest('.tl-ic'), gi=target.closest('.tl-ig'); let d=null;
+  if(ic) d={k:'comp',id:ic.dataset.i,pi:ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1}; else if(gi) d={k:'clip',id:gi.dataset.id,pi:-1}; if(!d) return null;
+  return UI.tmul.some(x=>tmKey(x)===tmKey(d))?d:null;
+}
+function tmulMenu(e,ref){
+  const sel=UI.tmul, n=sel.length, nm=sel[0].k==='comp'?'구성요소':'인포그래픽', comp=sel[0].k==='comp';
+  const b=(op,ic,t,tip)=>'<button class="mobile-keep" data-a="tmAlign" data-id="'+op+'" title="'+esc(tip)+'"><i>'+ic+'</i> '+t+'</button>';
+  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; UI.tmRef=ref;
+  m.innerHTML='<div class="t">'+esc(nm+' '+n+'개 선택')+'</div>'
+    +b('len','↔','길이 동일하게','누른 요소의 길이로 모두 맞춰요'+(comp?' — 구성요소의 길이는 화면에 보이는 시간(그 뒤엔 사라져요)이에요':''))
+    +b('left','⇤','왼쪽 정렬','시작을 가장 빠른 것에 맞춰요')+b('right','⇥','오른쪽 정렬','끝을 가장 늦은 것에 맞춰요')+b('center','⇔','가운데 정렬','선택한 것 전체의 가운데에 맞춰요')
+    +b('row','☰','일렬배치','시작이 빠른 순서대로 앞 요소가 끝나는 곳에서 다음 요소가 시작하게 이어 붙여요(길이는 그대로)')
+    +b('rowEq','▤','동일길이로 일렬배치','같은 길이로 나눠 차례로 이어 붙여요')
+    +b('dist','⇹','간격 균등','처음과 끝은 그대로 두고 사이 요소의 시작 간격을 같게 해요')
+    +'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 선택 '+n+'개 삭제</button>';
+  _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
+}
+function compAlign(sel,op,ref){   /* 구성요소 칩들 정렬 — 돌려주는 글 = 한 일('' = 안 바뀜). 시작 = 화면에 나타나는 시각(클립이 시작하기 전에 나온 것은 클립 시작부터 보임), 끝 = 시작 + 보이는 길이 */
+  const all=compList(); compLayout(all,UI.pps);   /* c.end = 칩이 끝나는 시각(길이를 정했으면 t0+길이, 아니면 다음 칩이 나오는 때·인포그래픽 끝) */
+  const pick=d=>all.find(c=>c.it.id===d.id&&c.pi===(d.pi==null?-1:d.pi)), cs=sel.map(pick).filter(Boolean); if(cs.length<2) return '';
+  const canLen=c=>c.pi<0, lo=c=>Math.max(0,c.g.s), hi=c=>Math.max(c.g.s+0.3,c.g.e-0.3), touched=new Set(); let skipped=0, moved=0;
+  cs.forEach(c=>{ c.r0=c.t0; c.t0=Math.max(c.t0,lo(c)); c.end=Math.max(c.end,c.t0+0.3); c.len=Math.max(0.3,c.end-c.t0); });   /* r0 = 실제 시점(클립 시작 전일 수 있음), t0 = 보이는 시작 */
+  const moveTo=(c,t)=>{ t=clamp(t,lo(c),hi(c)); if(Math.abs(t-c.t0)<0.005) return; const d=t-c.r0; if(c.pi>=0&&c.it.parts&&c.it.parts[c.pi]) shiftPart(c.it.parts[c.pi],d); else shiftItem(c.it,d); c.r0=t; c.end+=t-c.t0; c.t0=t; touched.add(c.g); moved++; };
+  const setLen=(c,L)=>{ if(!canLen(c)){ skipped++; return; } L=r2(Math.max(0.3,Math.min(L,c.g.e-c.t0))); const du=r2(Math.max(0,c.t0-c.r0)+L); if(c.it.du==null||Math.abs(c.it.du-du)>0.004){ c.it.du=du; touched.add(c.g); moved++; } c.end=c.t0+L; c.len=L; };   /* du 는 실제 나타난 시점부터의 길이 — 클립 시작보다 먼저 나온 칩은 그만큼 더함 */
+  const refC=ref&&pick(ref), minS=Math.min.apply(null,cs.map(c=>c.t0)), maxE=Math.max.apply(null,cs.map(c=>c.end)); let msg='';
+  if(op==='left'){ cs.forEach(c=>moveTo(c,minS)); msg='왼쪽 정렬'; }
+  else if(op==='right'){ cs.forEach(c=>{ const L=c.len; moveTo(c,maxE-L); setLen(c,L); }); msg='오른쪽 정렬'; }
+  else if(op==='center'){ const C=(minS+maxE)/2; cs.forEach(c=>{ const L=c.len; moveTo(c,C-L/2); setLen(c,L); }); msg='가운데 정렬'; }
+  else if(op==='len'){ const L=refC?refC.len:cs.reduce((a,c)=>a+c.len,0)/cs.length; cs.forEach(c=>setLen(c,L)); msg='길이 동일하게('+r2(L)+'초)'; }
+  else{
+    const grp=new Map(); cs.forEach(c=>{ if(!grp.has(c.g)) grp.set(c.g,[]); grp.get(c.g).push(c); });   /* 인포그래픽마다 따로 — 그 클립 시간 안에서만 */
+    grp.forEach((arr,g)=>{
+      arr.sort((a,b)=>a.t0-b.t0); const n=arr.length, T0=Math.max(g.s,Math.min.apply(null,arr.map(c=>c.t0))), room=Math.max(0.6,g.e-0.05-T0);
+      if(op==='row'){ const lens=arr.map(c=>c.len), tot=lens.reduce((a,v)=>a+v,0), f=Math.min(1,room/tot); let T=T0; arr.forEach((c,k)=>{ const L=lens[k]*f; moveTo(c,T); setLen(c,L); T+=L; }); msg='일렬배치'; }
+      else if(op==='rowEq'){ const Tend=Math.min(g.e-0.05,Math.max(Math.max.apply(null,arr.map(c=>c.end)),T0+n*0.6)), L=Math.max(0.3,(Tend-T0)/n); arr.forEach((c,k)=>{ moveTo(c,T0+k*L); setLen(c,L); }); msg='동일길이로 일렬배치'; }
+      else if(op==='dist'){ if(n<3) return; const first=arr[0].t0, step=(arr[n-1].t0-first)/(n-1); arr.forEach((c,k)=>moveTo(c,first+k*step)); msg='간격 균등'; }
+    });
+  }
+  if(!msg||!moved) return '';
+  touched.forEach(g=>{ sortItems(g); igPoster(g); });
+  return '구성요소 '+cs.length+'개 — '+msg+(skipped?' (항목 칩 '+skipped+'개는 길이를 못 바꿔 위치만 맞췄어요)':'');
+}
+function clipAlign(sel,op,ref){   /* 인포그래픽 클립들 정렬 */
+  const gs=sel.map(d=>igById(d.id)).filter(Boolean); if(gs.length<2) return '';
+  const len=g=>g.e-g.s, refG=ref&&igById(ref.id), minS=Math.min.apply(null,gs.map(g=>g.s)), maxE=Math.max.apply(null,gs.map(g=>g.e)); let msg='', moved=0;
+  const shift=(g,s)=>{ s=clamp(s,0,Math.max(0,P.dur-len(g))); const d=s-g.s; if(Math.abs(d)>0.005){ shiftTimes(g,d); moved++; } };
+  const setLen=(g,L)=>{ L=Math.max(0.5,Math.min(L,P.dur-g.s)); if(Math.abs(len(g)-L)>0.005){ igSetTimes(g,g.s,g.s+L); moved++; } };
+  if(op==='left'){ gs.forEach(g=>shift(g,minS)); msg='왼쪽 정렬'; }
+  else if(op==='right'){ gs.forEach(g=>shift(g,maxE-len(g))); msg='오른쪽 정렬'; }
+  else if(op==='center'){ const C=(minS+maxE)/2; gs.forEach(g=>shift(g,C-len(g)/2)); msg='가운데 정렬'; }
+  else if(op==='len'){ const L=refG?len(refG):gs.reduce((a,g)=>a+len(g),0)/gs.length; gs.forEach(g=>setLen(g,L)); msg='길이 동일하게('+r2(L)+'초)'; }
+  else{
+    const arr=gs.slice().sort((a,b)=>a.s-b.s), n=arr.length;
+    if(op==='row'){ const tot=arr.reduce((a,g)=>a+len(g),0), f=Math.min(1,Math.max(0.5,P.dur-0.05-minS)/tot); let T=minS; arr.forEach(g=>{ const L=len(g)*f; shift(g,T); if(f<1) setLen(g,L); T+=L; }); msg='일렬배치'; }
+    else if(op==='rowEq'){ const L=Math.max(0.6,(maxE-minS)/n); arr.forEach((g,k)=>{ shift(g,minS+k*L); setLen(g,L); }); msg='동일길이로 일렬배치'; }
+    else if(op==='dist'){ if(n<3) return ''; const first=arr[0].s, step=(arr[n-1].s-first)/(n-1); arr.forEach((g,k)=>shift(g,first+k*step)); msg='간격 균등'; }
+  }
+  if(!msg||!moved) return '';
+  return '인포그래픽 '+gs.length+'개 — '+msg;
+}
+function tmulApply(op){
+  const sel=(UI.tmul||[]).slice(); if(sel.length<2){ toast('Ctrl(⌘)+클릭으로 요소를 두 개 이상 골라 주세요'); return; }
+  if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; } if(ENG.playing) pausePlay();
+  const ref=UI.tmRef||null, msg=sel[0].k==='comp'?compAlign(sel,op,ref):clipAlign(sel,op,ref); UI.tmRef=null;
+  if(!msg){ toast('바뀐 것이 없어요 — 이미 그렇게 놓여 있거나, 이 정렬을 할 수 없는 선택이에요'); return; }
+  layout(P); sortClips(P); igPostersAll(true); commit('타임라인 정렬 — '+msg); renderAll(); toastUndo(msg);
+}
+function tmulDelete(){   /* 여러 개 고른 구성요소·인포그래픽을 한 번에 지움 — 지웠으면 true */
+  const sel=(UI.tmul||[]).slice(); if(sel.length<2) return false; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 지워 주세요'); return false; } if(ENG.playing) pausePlay();
+  let n=0, gone=0;
+  if(sel[0].k==='clip'){ sel.forEach(d=>{ const g=igById(d.id); if(g){ P.igs=P.igs.filter(x=>x!==g); n++; if(UI.ig===g.id) UI.ig=''; } }); }
+  else{
+    const by=new Map(); sel.forEach(d=>{ const f=findItem(d.id); if(f){ if(!by.has(f.g)) by.set(f.g,[]); by.get(f.g).push({it:f.it,pi:d.pi}); } });
+    by.forEach((arr,g)=>{
+      arr.filter(x=>x.pi>=0&&x.it.parts&&x.it.parts.length>1).sort((a,b)=>b.pi-a.pi).forEach(x=>{ if(x.it.parts[x.pi]){ x.it.parts.splice(x.pi,1); n++; } });   /* 항목 칩은 번호가 밀리지 않게 뒤에서부터 */
+      arr.filter(x=>x.pi<0||!(x.it.parts&&x.it.parts.length>1)).forEach(x=>{ if(g.items.indexOf(x.it)>=0){ g.items=g.items.filter(q=>q!==x.it); n++; } });
+      if(!g.items.length){ P.igs=P.igs.filter(q=>q!==g); gone++; if(UI.ig===g.id) UI.ig=''; }
+    });
+    UI.igIt=''; UI.igPt=-1;
+  }
+  UI.tmul=[]; UI.tsel=null; layout(P); sortClips(P); commit('삭제 — 여러 개'); renderAll(); igPostersAll();
+  toastUndo((sel[0].k==='clip'?'인포그래픽 ':'구성요소 ')+n+'개 삭제'+(gone?' — 비어 버린 인포그래픽 '+gone+'개도 함께':'')); return true;
+}
+/* ══ /v113 ══ */
 /* ══ v103 (2026-10-26) — 타임라인의 챕터 타이틀을 끌어서 길이·위치 바꾸기 ═════════════════════════════════════════════════════
    · [타이틀] 줄 블록 — 몸통을 끌면 위치, 오른쪽 끝을 끌면 길이(뒤 내용이 밀리거나 당겨짐), 왼쪽 끝을 끌면 시작(끝은 그대로). Alt = 달라붙지 않음. 오프닝 타이틀도 같은 규칙(앞 문장 끝 E=0, 기본 앞 쉼 0 — v104)
    · 저장 p.ttl[챕터]={dur,pre,post} — dur=타이틀 길이(초, 없으면 공통 길이), pre=앞 챕터 나레이션이 끝난 뒤 타이틀이 나오기까지(앞 쉼, 없으면 max(쉬는 시간,길이+0.2)−길이),
@@ -47916,7 +48384,7 @@ function scheduleBgm(from){
   const endT=T0+(P.dur-from); if(b.fadeOut>0&&endT>T0+0.2){ const a=Math.max(T0,endT-b.fadeOut); g.setTargetAtTime(0.0001,a,Math.max(0.3,b.fadeOut/4)); }
 }
 async function startPlay(from,mode,endAt){
-  if(!P) return; const ac=getAc(); await ac.resume(); stopSrcs();
+  if(!P) return; if(UI.le) leClose(true); const ac=getAc(); await ac.resume(); stopSrcs();
   ENG.mode=mode||'preview'; ENG.end=endAt==null?P.dur:endAt; from=clamp(from,0,Math.max(0,ENG.end-0.05));
   const out=ENG.mode==='export'?ENG.dest:ac.destination;
   ENG.gN=ac.createGain(); ENG.gN.gain.value=P.cfg.mix.narr; ENG.gN.connect(out);
@@ -47946,7 +48414,7 @@ function onTick(){
   if(t>=ENG.end-1e-3){ if(ENG.mode==='export'){ if(ENG.onEnd){ const f=ENG.onEnd; ENG.onEnd=null; f(); } } else pausePlay(); }
 }
 function pausePlay(){ const t=nowT(); ENG.playing=false; ENG.pos=t; stopSrcs(); tickStop(); stopVideos(); if(P){ syncMedia(t,false); paintFrame(t); uiTick(t,true); } uiPlayState(); }
-function seekTo(t){ if(!P) return; t=clamp(t,0,P.dur); if(ENG.playing&&ENG.mode==='preview'){ startPlay(t); } else if(!ENG.playing){ ENG.pos=t; syncMedia(t,false); paintFrame(t); uiTick(t,true); } }
+function seekTo(t){ if(!P) return; t=clamp(t,0,P.dur); if(UI.le){ const lg=leG(); if(!lg||t<lg.s||t>=lg.e) leClose(true); } if(ENG.playing&&ENG.mode==='preview'){ startPlay(t); } else if(!ENG.playing){ ENG.pos=t; syncMedia(t,false); paintFrame(t); uiTick(t,true); } }
 function togglePlay(){ if(!P||UI.busy==='export') return; if(ENG.playing) pausePlay(); else startPlay(ENG.pos>=P.dur-0.1?0:ENG.pos); }
 
 /* ═════════ 내보내기 — 화면+소리를 실시간으로 녹화(MP4 우선, 안 되면 WebM) ═════════ */
@@ -48203,8 +48671,8 @@ function modalHtml(){
    +'<div class="vs-main">'
    +'<div class="vs-left"><div class="vs-lh">장면 <span id="vsSceneN"></span></div><div class="vs-list" id="vsScenes"></div><div class="vs-aied" id="vsAiEd">'+edPanelHtml()+'</div></div>'
    +'<div class="vs-center"><div class="vs-stage"><canvas id="vsCv" width="1280" height="720"></canvas><div class="vs-stg" id="vsStg"></div></div>'
-   +'<div class="vs-tr"><button class="vs-ib mobile-keep" data-a="toStart" title="처음으로">⏮</button><button class="vs-ib mobile-keep" data-a="back5" title="5초 뒤로 (←)">⏪</button><button class="vs-play mobile-keep" data-a="play" id="vsPlay" title="재생/일시정지 (Space)">▶</button><button class="vs-ib mobile-keep" data-a="fwd5" title="5초 앞으로 (→)">⏩</button><button class="vs-ib mobile-keep" data-a="toEnd" title="끝으로">⏭</button>'
-   +'<span class="vs-time" id="vsTime">00:00.0 / 00:00</span><input type="range" id="vsSeek" class="vs-seek mobile-keep" min="0" max="1000" value="0"><button class="vs-mb mobile-keep" data-a="playScene" title="이 장면만 처음부터 재생">장면 ▶</button></div></div>'
+   +'<div class="vs-tr"><button class="vs-ib mobile-keep" data-a="toStart" title="처음으로">⏮</button><button class="vs-ib mobile-keep" data-a="back5" title="5초 뒤로 — 키보드: ← 0.1초 · Shift+← 1초">⏪</button><button class="vs-play mobile-keep" data-a="play" id="vsPlay" title="재생/일시정지 (Space)">▶</button><button class="vs-ib mobile-keep" data-a="fwd5" title="5초 앞으로 — 키보드: → 0.1초 · Shift+→ 1초">⏩</button><button class="vs-ib mobile-keep" data-a="toEnd" title="끝으로">⏭</button>'
+   +'<span class="vs-time" id="vsTime">00:00.0 / 00:00</span><input type="range" id="vsSeek" class="vs-seek mobile-keep" min="0" max="1000" value="0"><button class="vs-mb mobile-keep" data-a="playScene" title="이 장면만 처음부터 재생">장면 ▶</button><button class="vs-mb pri mobile-keep" data-a="leOpen" title="지금 장면 인포그래픽의 구성요소를 미리보기 위에 상자로 띄워, 끌어서 위치를 옮기고 크기를 바꾸고 템플릿으로 한 번에 배치해요">📐 크기/배치 수정</button></div></div>'
    +'<div class="vs-right"><div class="vs-tabs" id="vsTabs"></div><div class="vs-insp" id="vsInsp"></div></div>'
    +'</div>'
    +'<div class="vs-tl"><div class="vs-tlbar"><b>타임라인</b><button class="vs-mb mobile-keep" data-a="zout" title="축소">−</button><input type="range" id="vsZoom" class="vs-zoom mobile-keep" min="6" max="160" step="2" value="22"><button class="vs-mb mobile-keep" data-a="zin" title="확대">＋</button><button class="vs-mb mobile-keep" data-a="zfit">전체 보기</button><span class="vs-sp"></span>'
@@ -48556,7 +49024,7 @@ function onDlgField(e){
 
 /* ═════════ 장면 선택·확대 ═════════ */
 function selectScene(j,seek){
-  if(!P) return; UI.sel=clamp(j,0,P.scenes.length-1); UI.ms=null; UI.tsel=null; msPaint(); tselPaint();   /* 한 장면을 누르면 여러 개 선택(·타임라인 선택)은 풀림 */
+  if(!P) return; if(UI.le) leClose(true); UI.sel=clamp(j,0,P.scenes.length-1); UI.ms=null; UI.tsel=null; UI.tmul=[]; msPaint(); tselPaint();   /* 한 장면을 누르면 여러 개 선택(·타임라인 선택)은 풀림 */
   document.querySelectorAll('#vsScenes .vs-sc.sel,#vsTlIn .tl-sc.sel').forEach(e=>e.classList.remove('sel'));
   document.querySelectorAll('#vsScenes .vs-sc[data-j="'+UI.sel+'"],#vsTlIn .tl-sc[data-j="'+UI.sel+'"]').forEach(e=>e.classList.add('sel'));
   renderInspector(true); if(seek) seekTo(P.scenes[UI.sel].s+0.001);
@@ -48571,6 +49039,8 @@ async function act(a,btn){
   const id=btn&&btn.dataset?btn.dataset.id:''; tlMenuClose();
   if(UI.busy==='export'&&a!=='cancel') return;
   if(/^(info|char|ig|ai|pref|ist)/.test(a)){ await infoAct(a,id,btn); return; }
+  if(/^le[A-Z]/.test(a)){ leAct(a,id); return; }   /* v113 */
+  if(a==='tmAlign'){ tmulApply(id); return; }
   switch(a){
     case 'close': closeStudio(); break;
     case 'undo': undo(); break; case 'redo': redo(); break;
@@ -48717,10 +49187,13 @@ const tlX=e=>{ const r=$('vsTlIn').getBoundingClientRect(); return (e.clientX-r.
 function tlDown(e){
   if(!P||UI.busy==='export'||e.button>0) return; const t=e.target, host=$('vsTlIn'); let d=null;
   const cu=t.closest&&t.closest('.tl-cu'), gi=t.closest&&t.closest('.tl-ig'), ic=t.closest&&t.closest('.tl-ic'), tq=t.closest&&t.closest('.tl-tt');
+  if((e.ctrlKey||e.metaKey)&&(ic||gi)&&!(t.classList&&t.classList.contains('e'))){ tmulToggle(ic?'comp':'clip',ic?ic.dataset.i:gi.dataset.id,ic?(ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1):-1); e.preventDefault(); return; }   /* v113: Ctrl/⌘+클릭 = 여러 개 고르기(끌지 않음) */
   if(t.classList.contains('tl-h')){ const j=+t.dataset.j; d={k:'cut',j,t:P.scenes[j].s}; }
   else if(cu){ const sid=cu.dataset.sid, edge=t.classList.contains('e')?(t.classList.contains('l')?'cl':'cr'):'cm'; d={k:edge,sid}; if(sid.indexOf('x:')===0){ const x=P.xsubs.find(q=>q.id===sid.slice(2)); if(!x) return; d.x=x; d.s0=x.s; d.e0=x.e; } else{ const s=P.sents.find(q=>q.id===sid); if(!s) return; d.ds=s.sub.ds||0; d.de=s.sub.de||0; } }
   else if(gi){ const gg=igById(gi.dataset.id); if(!gg) return; const edge=t.classList.contains('e')?(t.classList.contains('l')?'igl':'igr'):'igm'; d={k:edge,id:gg.id,s0:gg.s,e0:gg.e,pts:igSnapPts(gg.id),snap:!e.altKey}; UI.ig=gg.id; }
-  else if(ic){ const gg=igById(ic.dataset.g), it=gg&&gg.items.find(x=>x.id===ic.dataset.i); if(!gg||!it) return; const pi=ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1, pp=pi>=0?it.parts[pi]:null; if(pi>=0&&!pp) return; const t0=pp?partTime(P,pp,it):blockT0(P,it), m0=pp?partMention(P,pp):mentionT0(P,it); d={k:'ic',g:gg.id,i:it.id,pi,t0,off:m0==null?leadOf(it):m0-t0,pts:icSnapPts(gg,it),snap:!e.altKey,lo:Math.max(0,gg.s),hi:Math.max(gg.s+0.3,gg.e-0.3)}; UI.ig=gg.id; UI.igIt=it.id; UI.igPt=pi; }
+  else if(ic){ const gg=igById(ic.dataset.g), it=gg&&gg.items.find(x=>x.id===ic.dataset.i); if(!gg||!it) return; const pi=ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1, pp=pi>=0?it.parts[pi]:null; if(pi>=0&&!pp) return; const t0=pp?partTime(P,pp,it):blockT0(P,it), m0=pp?partMention(P,pp):mentionT0(P,it); d={k:'ic',g:gg.id,i:it.id,pi,t0,off:m0==null?leadOf(it):m0-t0,pts:icSnapPts(gg,it),snap:!e.altKey,lo:Math.max(0,gg.s),hi:Math.max(gg.s+0.3,gg.e-0.3)};
+    if(pi<0&&t.classList&&t.classList.contains('e')){ const cc=compList(); compLayout(cc,UI.pps); const me=cc.find(c=>c.it===it&&c.pi<0); d={k:'icr',g:gg.id,i:it.id,t0,du0:it.du>0?it.du:Math.max(0.3,me?me.end-me.t0:1),pts:icSnapPts(gg,it),snap:!e.altKey,hi:gg.e}; }   /* v113: 오른쪽 끝 = 화면에 보이는 길이 */
+    UI.ig=gg.id; UI.igIt=it.id; UI.igPt=pi; }
   else if(tq){   /* 챕터 타이틀 — 몸통=위치, 양 끝=길이 (오프닝은 0초에 고정이라 길이만) */
     const q=(P._titles||[]).find(x=>x.ci===+tq.dataset.ci); if(!q) return; ttSelect(q.ci);
     const edge=t.classList.contains('e')?(t.classList.contains('l')?'ttl':'ttr'):'ttm', tp=q.ov?igSnapPts('').concat([q.ta,q.tb]):[q.ta,q.E], lp=[q.L,titleDur(P)];
@@ -48745,6 +49218,10 @@ function tlMove(e){
     const tx=el.nextElementSibling; if(tx&&tx.classList.contains('tl-tt-x')) tx.style.display='none';
     el.style.left=Math.round(r.ta*UI.pps)+'px'; el.style.width=Math.max(6,Math.round(r.tb*UI.pps)-Math.round(r.ta*UI.pps)-1)+'px';
     const gx=d.k==='ttr'?r.tb:r.ta; g.style.display='block'; g.style.left=(gx*UI.pps)+'px'; g.setAttribute('data-t',fmtT(gx,1)+' · '+r.L.toFixed(1)+'초'+(Math.abs(r.R)>=0.05?' · 뒤 내용 '+(r.R>0?'+':'')+r.R.toFixed(1)+'초':'')); return;
+  }
+  if(d.k==='icr'){   /* v113: 구성요소 칩 오른쪽 끝 끌기 — 화면에 보이는 길이 */
+    const el=document.querySelector('#vsTlIn .tl-ic[data-i="'+d.i+'"][data-p="-1"]'); if(!el) return; let nd=d.du0+dt; if(d.snap){ nd=snapTo(d.pts,d.t0+nd,8/UI.pps)-d.t0; }
+    nd=clamp(nd,0.3,Math.max(0.3,d.hi-d.t0)); d.nd=nd; el.style.width=Math.max(10,Math.round(nd*UI.pps)-2)+'px'; g.style.display='block'; g.style.left=((d.t0+nd)*UI.pps)+'px'; g.setAttribute('data-t',fmtT(d.t0+nd,1)+' · '+nd.toFixed(1)+'초'); return;
   }
   if(d.k==='ic'){   /* 구성요소 칩 끌기 — 시점(나타나는 시각)을 옮김, 말하는 시각(문장 경계)에 달라붙음 */
     const el=document.querySelector('#vsTlIn .tl-ic[data-i="'+d.i+'"][data-p="'+d.pi+'"]'); if(!el) return; let nt=d.t0+dt;
@@ -48771,6 +49248,11 @@ function tlUp(e){
     const r=d.res, q=d.q0, ch=r&&(Math.abs(r.L-q.L)>0.004||Math.abs(r.a-q.a)>0.004||Math.abs(r.b-q.b)>0.004);
     if(ch){ ttApply(q,r); layout(P); commit(d.k==='ttm'?'챕터 타이틀 위치':'챕터 타이틀 길이'); renderAll(); if(UI.tab==='tt') renderInspector(true); const nq=(P._titles||[]).find(x=>x.ci===q.ci); seekTo(Math.max(0,nq?nq.ta:ENG.pos)); }
     else{ renderTimeline(); if(d.was) startPlay(ENG.pos); }   /* 눌렀다 뗌 = 선택(이미 눌렀을 때 골랐고 재생헤드도 옮겼음) */
+    return;
+  }
+  if(d.k==='icr'){
+    const gg=igById(d.g), it=gg&&gg.items.find(x=>x.id===d.i);
+    if(gg&&it&&d.nd!=null&&Math.abs(d.nd-d.du0)>0.02){ it.du=r2(d.nd); igPoster(gg); UI.ig=gg.id; UI.igIt=it.id; commit('구성요소 보이는 길이'); renderAll(); } else renderTimeline();
     return;
   }
   if(d.k==='ic'){
@@ -48818,19 +49300,21 @@ function ensureModal(){
 document.addEventListener('keydown',e=>{
   if(!_ov||!_ov.classList.contains('open')) return;
   const tg=e.target, tag=(tg.tagName||'').toLowerCase(), typing=tag==='input'||tag==='textarea'||tag==='select'||tg.isContentEditable;
-  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')) dlgClose(); else closeStudio(); return; }
+  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')){ dlgClose(); return; } if(UI.le){ leKey(e); return; } closeStudio(); return; }
   if(!P) return;
+  if(UI.le&&leKey(e)) return;
   if((e.ctrlKey||e.metaKey)&&!typing){ const k=e.key.toLowerCase(); if(k==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); } else if(k==='y'){ e.preventDefault(); redo(); } else if(k==='s'){ e.preventDefault(); act('save'); } return; }
   if(typing||UI.busy==='export'||$('vsDlg').classList.contains('on')) return;
   if(e.key===' '){ e.preventDefault(); togglePlay(); }
-  else if(e.key==='ArrowLeft'){ e.preventDefault(); seekTo(nowT()-(e.shiftKey?5:1)); }
-  else if(e.key==='ArrowRight'){ e.preventDefault(); seekTo(nowT()+(e.shiftKey?5:1)); }
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); seekTo(r2(nowT()-(e.shiftKey?1:0.1))); }   /* ← 0.1초 · Shift+← 1초 (5초는 ⏪ 단추) — 부동소수점 오차가 쌓이지 않게 0.01초 단위로 맞춤 */
+  else if(e.key==='ArrowRight'){ e.preventDefault(); seekTo(r2(nowT()+(e.shiftKey?1:0.1))); }
   else if(e.key==='s'||e.key==='S'){ act('splitPh'); }
   else if(e.key==='ArrowUp'){ e.preventDefault(); selectScene(UI.sel-1,true); }
   else if(e.key==='ArrowDown'){ e.preventDefault(); selectScene(UI.sel+1,true); }
   else if(e.key==='Delete'||e.key==='Backspace'){ if(UI.tsel){ e.preventDefault(); tlDelete(); } else if(e.key==='Delete'&&UI.ig&&igById(UI.ig)){ e.preventDefault(); act('igDel',{dataset:{id:UI.ig}}); } }
 },true);
 async function startProject(p,isNew){
+  if(UI.le){ leDrop(); UI.le=null; } UI.tmul=[];
   if(ENG.playing) pausePlay(); VM.forEach(e=>{ e.pause(); e.removeAttribute('src'); }); VM.clear(); dropCaches(); snapId='';
   P=fixProject(p); const pc=isNew?false:applyMenuPrefs(P); layout(P); UI.sel=0; UI.cur=-1; UI.tab='scene'; UI.ms=null; UI.msA=null; UI.igIt=''; UI.edRes=null; UI.tsel=null; UI.models=UI.models||null; ENG.pos=0; UI.pps=22; UI.cvScale=0; UI.busy='';
   H.undo=[]; H.redo=[]; H.cur=serialize(P); UI.saved=!isNew&&!pc; if(pc) scheduleSave(); ensureModal(); canvasSize(); renderAll();
@@ -48851,6 +49335,7 @@ async function openStudio(opt){
 async function closeStudio(force){
   if(!_ov||!_ov.classList.contains('open')) return true;
   if(UI.busy&&!force){ if(!confirm(UI.busy==='export'?'내보내는 중이에요. 중단하고 닫을까요?':'작업이 진행 중이에요. 중단하고 닫을까요?\n(지금까지 만든 것은 저장돼요)')) return false; UI.aborted=true; if(UI.exp) UI.exp.cancel(); if(UI.ctl) UI.ctl.abort(); if(Q.on&&Q.ctl) Q.ctl.abort(); }
+  if(UI.le) leClose(true);
   if(ENG.playing) pausePlay();
   dlgClose();
   if(P){ try{ await saveProject(); const used=usedBids(P), keys=await dbBlobKeys(P.id+'|'); for(const k of keys){ if(!used.has(String(k).slice(P.id.length+1))) await dbDelBlob(k); } }catch(e){} H.undo=[]; H.redo=[]; H.cur=serialize(P); }
@@ -48865,6 +49350,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
+    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
