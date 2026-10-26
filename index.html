@@ -2922,6 +2922,7 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-lebar{flex-shrink:0;display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:6px 10px;background:#0f1a30;border-top:1px solid #2f4468}
 .vs-lebar .le-t{font-size:12px;color:#fcd34d}.vs-lebar .le-s{font-size:11px;color:#9fb0c9}
 .vs-lebar .vs-mb.on{background:#d97706;border-color:#d97706;color:#fff}
+.vs-al{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:6px;font-size:11px;color:#9fb0c9}.vs-al>i{font-style:normal;margin-right:2px}.vs-al .g{display:inline-flex}.vs-al .vs-mb{height:22px;padding:0 7px;font-size:11px}.vs-al .g .vs-mb{border-radius:0}.vs-al .g .vs-mb:first-child{border-radius:6px 0 0 6px}.vs-al .g .vs-mb:last-child{border-radius:0 6px 6px 0}.vs-al .g .vs-mb+.vs-mb{margin-left:-1px}.vs-al .vs-mb.on{background:#d97706;border-color:#d97706;color:#fff}.vs-al.all{padding:6px 8px;border:1px dashed #2a3a56;border-radius:8px;margin:6px 0 2px}.vs-lebar .vs-al.le{margin-top:0}
 .vs-lebar .le-hint{flex-basis:100%;font-size:10.5px;color:#8da0bf;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vs-lebar .le-hint b{color:#86efac}
 .le-tpl{position:absolute;top:8px;bottom:8px;right:8px;width:min(340px,48%);overflow:auto;padding:8px 9px;background:rgba(9,16,30,.94);border:1px solid #34507c;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.6);pointer-events:auto;z-index:6}.le-tpl.l{right:auto;left:8px}
 .le-tpl .r{display:flex;align-items:center;gap:6px;margin-bottom:4px}.le-tpl .r b{color:#e2e8f0;font-size:12px}.le-tpl .hint{font-size:10.5px;color:#8da0bf;line-height:1.45;margin-bottom:6px}
@@ -44295,7 +44296,7 @@ const SNAP=document.createElement('canvas'); let snapId='';   /* 크로스페이
 let CG=null;                                                  /* 미리보기 캔버스 그리기 도구 */
 const hueOf=ci=>(212+ci*47)%360;
 const hexA=(hex,a)=>{ const m=/^#?([0-9a-f]{6})$/i.exec(String(hex||'')); if(!m) return 'rgba(0,0,0,'+a+')'; const n=parseInt(m[1],16); return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'; };
-function roundRect(g,x,y,w,h,r){ r=Math.min(r,w/2,h/2); g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+function roundRect(g,x,y,w,h,r){ r=Math.max(0,Math.min(r,w/2,h/2)); g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
 function drawCover(g,src,sw,sh,w,h,zoom,px,py){   /* w×h 를 덮도록(cover) 그림 — zoom≥1, px·py −1..1 만큼 이동 */
   const k=Math.max(w/sw,h/sh)*(zoom||1), dw=sw*k, dh=sh*k;
   g.drawImage(src,(w-dw)/2+(px||0)*(dw-w)/2,(h-dh)/2+(py||0)*(dh-h)/2,dw,dh);
@@ -44533,7 +44534,23 @@ function hzf(it,wb,wp){   /* 칸 높이 배율 — wb: 블록 글(키:비중, 'a
   let a=1; if(wb) for(const k in wb) a+=wb[k]*posz(Math.max.apply(null,k.split('|').map(q=>FZ(it,q)))); if(wp) for(const k in wp) a+=wp[k]*posz(Math.max.apply(null,k.split('|').map(q=>FZP(it,q)))); return a;
 }
 const hzL=it=>1+0.85*posz(FZ(it,'label'));   /* 제목줄 높이 배율 */
-const hdrDraw=(E,c,it,bk)=>{ if(it.label) dtf(E.g,String(it.label),c.x+0.04*bk,c.y+0.022*bk,c.w-0.08*bk,0.030*bk*FZ(it,'label'),'700',E.pal.mute,E.font,'left','top',0.6); };
+/* ── 글 위치(v114) — 구성요소마다 글을 칸(상자) 안 어디에 놓을지: it.ta = l·c·r (왼쪽·가운데·오른쪽), it.va = t·m·b (위·중간·아래). 안 정하면(없음) 예전 모습 그대로 그려짐
+   · taX(it,x0,x1) = x0~x1 안에서 글을 놓을 기준점·textAlign (안 정했으면 null → 부른 쪽이 예전 자리·정렬을 씀) · vaFree(it,free) = 남는 높이(free)를 위·중간·아래로 나눈 만큼 내려 놓을 거리(안 정했으면 0)
+   · 글 덩어리형(수치·큰 수치·이전→지금·요점·인용·큰 제목)은 글 전체를, 목록형(일정·흐름·개요)은 목록 전체를, 칸형(히트맵·VS·시나리오·흐름 칸)은 칸 안의 글을 옮김.
+     차트류(막대·줄·도넛·게이지·선·가격대·지도·비교표)는 제목·이름 글만 좌우로(상하는 해당 없음). 상하 위치는 상자가 글보다 클 때(📐 크기/배치 수정으로 키운 상자 등) 눈에 보임 ── */
+const ALK={l:0,c:0.5,r:1,t:0,m:0.5,b:1};
+const taOf=o=>{ const a=o&&o.ta; return a==='l'||a==='c'||a==='r'?a:''; };
+const vaOf=o=>{ const a=o&&o.va; return a==='t'||a==='m'||a==='b'?a:''; };
+function taX(it,x0,x1){ const a=taOf(it); return a?{x:x0+(x1-x0)*ALK[a],al:a==='l'?'left':a==='r'?'right':'center',k:ALK[a],a}:null; }
+const vaFree=(it,free)=>{ const a=vaOf(it); return a&&free>0?free*ALK[a]:0; };
+function richW(g,line,hl,fA,fB){   /* drawRich 가 그리는 줄의 너비 */
+  const words=(hl||[]).filter(Boolean).sort((a,b)=>b.length-a.length);
+  if(!words.length){ g.font=fA; return g.measureText(line).width; }
+  const re=new RegExp('('+words.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g'); let w=0;
+  line.split(re).forEach(seg=>{ if(!seg) return; g.font=words.indexOf(seg)>=0?fB:fA; w+=g.measureText(seg).width; });
+  return w;
+}
+const hdrDraw=(E,c,it,bk)=>{ if(it.label){ const AL=taX(it,c.x+0.04*bk,c.x+c.w-0.04*bk); dtf(E.g,String(it.label),AL?AL.x:c.x+0.04*bk,c.y+0.022*bk,c.w-0.08*bk,0.030*bk*FZ(it,'label'),'700',E.pal.mute,E.font,AL?AL.al:'left','top',0.6); } };
 const wrapN=(E,s,w,fs,wt,n)=>{ E.g.font=wt+' '+fs.toFixed(1)+'px '+E.font; return wrapLines(E.g,String(s||''),Math.max(10,w)).slice(0,n); };
 const hzStat=it=>hzf(it,{label:0.18,value:0.45,delta:0.19,note:0.12});
 const scHd=it=>0.06*posz(FZP(it,'p'))+0.03*posz(FZP(it,'l'));   /* 시나리오 칸 윗부분(이름 알약·확률)이 커진 만큼 */
@@ -44567,13 +44584,24 @@ DRAW.stat=(E,c,it)=>{
   popBegin(E,c,s,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk);
   if(glow>0.02){ g.save(); g.shadowColor=stp; g.shadowBlur=0.06*bk*glow; g.globalAlpha*=glow; g.lineWidth=Math.max(2,0.005*bk); g.strokeStyle=stp; roundRect(g,c.x,c.y,c.w,c.h,0.024*bk); g.stroke(); g.restore(); }
   strip(E,c.x+0.014*bk,c.y+0.026*bk,c.h-0.052*bk,stp,bk);
-  const px=c.x+0.042*bk, iw=c.w-0.064*bk; let y=c.y+0.02*bk;
-  if(it.label) dtf(g,String(it.label),px,y,iw,0.028*bk*zl,'700',pal.mute,font,'left','top',0.6); y+=0.028*bk*zl*1.45;
-  const val=E.cf.count?countText(it.value,rv(s-0.05,0.75)):String(it.value||''), fv=fitFont(g,String(it.value||''),iw,0.092*bk*zv,'800',font,0.45);
-  dtx(g,val,px,y,fv,'800',tc,font);
-  const yb=c.y+c.h-0.02*bk-0.036*bk*zr*1.2; let x=px; const dl=deltaText(it,tone);
-  if(dl){ const fd=fitFont(g,dl,iw*0.62,0.036*bk*zd,'700',font,0.6); dtx(g,dl,x,yb,fd,'700',tc,font); x+=g.measureText(dl).width+0.02*bk; }
-  const nt=String(it.note||'').trim(); if(nt){ const rem=px+iw-x; if(rem>0.06*bk) dtf(g,nt,x,yb+0.005*bk,rem,0.026*bk*zn,'400',pal.mute,font,'left','top',0.6); }
+  const px=c.x+0.042*bk, iw=c.w-0.064*bk, AL=taX(it,px,px+iw), va=vaOf(it), la=0.028*bk*zl*1.45;   /* v114: AL = 좌우 글 위치, va = 상하(정하면 이름·수치·변화를 한 덩어리로 모아 놓음) */
+  const val=E.cf.count?countText(it.value,rv(s-0.05,0.75)):String(it.value||''), fv=fitFont(g,String(it.value||''),iw,0.092*bk*zv,'800',font,0.45), dl=deltaText(it,tone), nt=String(it.note||'').trim();
+  let yl=c.y+0.02*bk, yv=yl+la, yb=c.y+c.h-0.02*bk-0.036*bk*zr*1.2;
+  if(va){ const Hs=(it.label?la:0)+fv+((dl||nt)?0.009*bk+0.036*bk*zr*1.2:0); yl=c.y+0.02*bk+vaFree(it,c.h-0.04*bk-Hs); yv=yl+(it.label?la:0); yb=yv+fv+0.009*bk; }
+  if(it.label) dtf(g,String(it.label),AL?AL.x:px,yl,iw,0.028*bk*zl,'700',pal.mute,font,AL?AL.al:'left','top',0.6);
+  dtx(g,val,AL?AL.x:px,yv,fv,'800',tc,font,AL?AL.al:'left','top');
+  if(!AL){
+    let x=px;
+    if(dl){ const fd=fitFont(g,dl,iw*0.62,0.036*bk*zd,'700',font,0.6); dtx(g,dl,x,yb,fd,'700',tc,font); x+=g.measureText(dl).width+0.02*bk; }
+    if(nt){ const rem=px+iw-x; if(rem>0.06*bk) dtf(g,nt,x,yb+0.005*bk,rem,0.026*bk*zn,'400',pal.mute,font,'left','top',0.6); }
+  }else{   /* 좌우 위치를 정했으면 변화+덧글을 한 줄 묶음으로 보고 그 위치에 놓음 */
+    let fd=0, dw=0, fn=0, nw=0; const gp=dl?0.02*bk:0;
+    if(dl){ fd=fitFont(g,dl,iw*0.62,0.036*bk*zd,'700',font,0.6); g.font='700 '+fd.toFixed(1)+'px '+font; dw=g.measureText(dl).width; }
+    if(nt){ const rem=iw-dw-gp; if(rem>0.06*bk){ fn=fitFont(g,nt,rem,0.026*bk*zn,'400',font,0.6); g.font='400 '+fn.toFixed(1)+'px '+font; nw=g.measureText(nt).width; } }
+    const sx=px+(iw-(dw+(nw?gp+nw:0)))*AL.k;
+    if(dl) dtx(g,dl,sx,yb,fd,'700',tc,font);
+    if(nw) dtx(g,nt,sx+dw+gp,yb+0.005*bk,fn,'400',pal.mute,font);
+  }
   g.restore();
 };
 DRAW.hero=(E,c,it)=>{
@@ -44581,24 +44609,36 @@ DRAW.hero=(E,c,it)=>{
   const bk=E.B*c.k, tone=itemTone(it), tc=toneCol(pal,tone)||pal.text, gc=toneCol(pal,tone)||pal.accent, cx=c.x+c.w/2, zl=FZ(it,'label'), zv=FZ(it,'value'), zd=FZ(it,'delta'), zn=FZ(it,'note');
   popBegin(E,c,s,bk,0.55);
   const gl=g.createRadialGradient(cx,c.y+c.h*0.5,0,cx,c.y+c.h*0.5,c.w*0.5); gl.addColorStop(0,alphaOf(gc,0.20)); gl.addColorStop(1,alphaOf(gc,0)); g.fillStyle=gl; g.fillRect(c.x,c.y-c.h*0.2,c.w,c.h*1.4);
-  let y=c.y+0.02*bk; if(it.label) dtf(g,String(it.label),cx,y,c.w*0.9,0.040*bk*zl,'700',pal.mute,font,'center','top',0.6); y+=0.040*bk*zl*1.5;
-  const val=E.cf.count?countText(it.value,rv(s-0.05,0.9)):String(it.value||''), fv=fitFont(g,String(it.value||''),c.w*0.94,0.20*bk*zv,'800',font,0.4);
-  dtx(g,val,cx,y,fv,'800',tc,font,'center','top'); y+=fv*1.12;
-  const dl=deltaText(it,tone); if(dl){ pill(E,cx,y,dl,0.046*bk*zd,tc,tone==='up'||tone==='down'?alphaOf(toneCol(pal,tone),0.18):pal.track,'c'); y+=0.046*bk*zd*1.9; }
-  if(it.note) dtf(g,String(it.note),cx,y,c.w*0.9,0.034*bk*zn,'500',pal.mute,font,'center','top',0.6);
+  const val=E.cf.count?countText(it.value,rv(s-0.05,0.9)):String(it.value||''), fv=fitFont(g,String(it.value||''),c.w*0.94,0.20*bk*zv,'800',font,0.4), dl=deltaText(it,tone), AL=taX(it,c.x+0.05*c.w,c.x+0.95*c.w), ax=AL?AL.x:cx, aal=AL?AL.al:'center';   /* v114: 글 위치 */
+  let y=c.y+0.02*bk+vaFree(it,c.h-0.04*bk-(0.040*bk*zl*1.5+fv*1.12+(dl?0.046*bk*zd*1.9:0)+(it.note?0.034*bk*zn*1.3:0)));
+  if(it.label) dtf(g,String(it.label),ax,y,c.w*0.9,0.040*bk*zl,'700',pal.mute,font,aal,'top',0.6); y+=0.040*bk*zl*1.5;
+  dtx(g,val,ax,y,fv,'800',tc,font,aal,'top'); y+=fv*1.12;
+  if(dl){ pill(E,ax,y,dl,0.046*bk*zd,tc,tone==='up'||tone==='down'?alphaOf(toneCol(pal,tone),0.18):pal.track,AL?AL.a:'c'); y+=0.046*bk*zd*1.9; }
+  if(it.note) dtf(g,String(it.note),ax,y,c.w*0.9,0.034*bk*zn,'500',pal.mute,font,aal,'top',0.6);
   g.restore();
 };
 DRAW.move=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k, dl=moveDelta(it), zl=FZ(it,'label'), zf=FZ(it,'from'), zt=FZ(it,'to'), zd=FZ(it,'delta'), zc=FZ(it,'cap'), zcp=Math.max(1,zc);
   const tone=it.tone||(dl?(/^[+▲]/.test(dl)?'up':/^[-−▼]/.test(dl)?'down':''):''), tc=toneCol(pal,tone)||pal.text, ac=toneCol(pal,tone)||pal.accent;
   popBegin(E,c,s,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk); strip(E,c.x+0.014*bk,c.y+0.026*bk,c.h-0.052*bk,ac,bk);
-  const px=c.x+0.045*bk, iw=c.w-0.07*bk; if(it.label) dtf(g,String(it.label),px,c.y+0.02*bk,iw,0.028*bk*zl,'700',pal.mute,font,'left','top',0.6);
-  const yv=c.y+(0.07+0.028*posz(zl)*1.2)*bk, colW=iw*0.36, f0=fitFont(g,String(it.from||''),colW,0.07*bk*zf,'700',font,0.5), f1=fitFont(g,String(it.to||''),colW*1.15,0.095*bk*zt,'800',font,0.5), x1=px+iw-colW*1.15;
-  dtx(g,TX('prev','이전'),px,yv,0.024*bk*zc,'600',pal.mute,font); dtx(g,String(it.from||''),px,yv+0.034*bk*zcp,f0,'700',pal.mute,font);
+  const px=c.x+0.045*bk, iw=c.w-0.07*bk, AL=taX(it,px,px+iw);   /* v114: 글 위치 */
+  const yv=c.y+(0.07+0.028*posz(zl)*1.2)*bk, colW=iw*0.36, f0=fitFont(g,String(it.from||''),colW,0.07*bk*zf,'700',font,0.5), f1=fitFont(g,String(it.to||''),colW*1.15,0.095*bk*zt,'800',font,0.5), ay=yv+0.034*bk*zcp+f1*0.5;
+  const vsh=vaFree(it,c.h-0.04*bk-((dl?ay+0.032*bk*Math.max(1,zd)+0.034*bk*zd*1.55:yv+0.034*bk*zcp+f1)-(c.y+0.02*bk)));   /* 상하 글 위치 — 내용 전체를 내림 */
+  g.save(); g.translate(0,vsh);
+  if(it.label) dtf(g,String(it.label),AL?AL.x:px,c.y+0.02*bk,iw,0.028*bk*zl,'700',pal.mute,font,AL?AL.al:'left','top',0.6);
+  let gx=px, x1=px+iw-colW*1.15, ax0=px+colW*0.9+0.02*bk;
+  if(AL){   /* 좌우 위치: 두 열의 실제 글 너비로 '이전 → 지금' 한 묶음을 만들어 그 위치에 놓음 */
+    g.font='600 '+(0.024*bk*zc).toFixed(1)+'px '+font; const cp=g.measureText(TX('prev','이전')).width, cn=g.measureText(TX('now','지금')).width;
+    g.font='700 '+f0.toFixed(1)+'px '+font; const wf=g.measureText(String(it.from||'')).width; g.font='800 '+f1.toFixed(1)+'px '+font; const wt=g.measureText(String(it.to||'')).width;
+    const wA=Math.max(cp,wf), wB=Math.max(cn,wt), gp=Math.max(0.06*bk,Math.min(0.30*bk,iw-wA-wB));
+    gx=px+Math.max(0,iw-(wA+gp+wB))*AL.k; x1=gx+wA+gp; ax0=gx+wA+0.02*bk;   /* 묶음이 칸보다 넓으면 왼쪽에 붙임(예전처럼 오른쪽으로 넘침) */
+  }
+  dtx(g,TX('prev','이전'),gx,yv,0.024*bk*zc,'600',pal.mute,font); dtx(g,String(it.from||''),gx,yv+0.034*bk*zcp,f0,'700',pal.mute,font);
   dtx(g,TX('now','지금'),x1,yv,0.024*bk*zc,'600',pal.mute,font); dtx(g,String(it.to||''),x1,yv+0.034*bk*zcp,f1,'800',tc,font);
-  const ax0=px+colW*0.9+0.02*bk, ax1=x1-0.03*bk, ay=yv+0.034*bk*zcp+f1*0.5, pr=rv(s-0.25,0.6);
+  const ax1=x1-0.03*bk, pr=rv(s-0.25,0.6);
   if(ax1>ax0+10){ g.strokeStyle=ac; g.lineWidth=Math.max(2,0.007*bk); g.lineCap='round'; g.lineJoin='round'; g.beginPath(); g.moveTo(ax0,ay); g.lineTo(ax0+(ax1-ax0)*pr,ay); g.stroke(); if(pr>0.95){ g.beginPath(); g.moveTo(ax1-0.024*bk,ay-0.02*bk); g.lineTo(ax1,ay); g.lineTo(ax1-0.024*bk,ay+0.02*bk); g.stroke(); } }
   if(dl) pill(E,(ax0+ax1)/2,ay+0.032*bk*Math.max(1,zd),(tone==='up'?'▲ ':tone==='down'?'▼ ':'')+dl.replace(/^[+\-−–▲▼]\s?/,''),0.034*bk*zd,tc,tone==='up'||tone==='down'?alphaOf(toneCol(pal,tone),0.18):pal.track,'c');
+  g.restore();   /* v114: 상하 글 위치로 옮긴 부분 끝 */
   g.restore();
 };
 DRAW.point=(E,c,it)=>{
@@ -44606,27 +44646,31 @@ DRAW.point=(E,c,it)=>{
   g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.05*bk,0);
   if(E.sk&&E.sk.card&&E.sk.card!=='glass') cardBox(E,c.x,c.y,c.w,c.h,bk); else{ roundRect(g,c.x,c.y,c.w,c.h,0.022*bk); g.fillStyle=pal.card; g.fill(); g.lineWidth=Math.max(1,0.0018*bk); g.strokeStyle=pal.cardLine; g.stroke(); }
   const ah=(c.h-0.04*bk)*rv(s,0.5); g.fillStyle=pal.accent; roundRect(g,c.x+0.014*bk,c.y+(c.h-ah)/2,0.008*bk,ah,0.004*bk); g.fill();
-  const lh=c.fs*1.3, x0=c.x+(it.style==='num'?0.096:0.080)*bk, ty=c.y+0.015*bk;
-  if(it.style==='num'){ const r=0.0185*bk, cy=ty+lh*0.5; g.fillStyle=pal.accent; g.beginPath(); g.arc(c.x+0.055*bk,cy,r,0,Math.PI*2); g.fill(); dtx(g,String(c.num||1),c.x+0.055*bk,cy,0.026*bk,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle'); }
-  else{ g.fillStyle=pal.accent; g.beginPath(); g.arc(c.x+0.052*bk,ty+lh*0.5,Math.max(2,0.0095*bk),0,Math.PI*2); g.fill(); }
-  const fA='700 '+c.fs.toFixed(1)+'px '+font, fB='800 '+c.fs.toFixed(1)+'px '+font;
-  c.ls.forEach((l,i)=>drawRich(g,l,x0,ty+i*lh,it.hl,pal.text,pal.accent,fA,fB));
+  const lh=c.fs*1.3, x0=c.x+(it.style==='num'?0.096:0.080)*bk, fA='700 '+c.fs.toFixed(1)+'px '+font, fB='800 '+c.fs.toFixed(1)+'px '+font, AL=taX(it,x0,x0+c.w-0.110*bk), ty=c.y+0.015*bk+vaFree(it,c.h-0.03*bk-c.ls.length*lh);   /* v114: 글 위치 — 점·번호는 첫 줄을 따라감 */
+  const lw=AL?c.ls.map(l=>richW(g,l,it.hl,fA,fB)):null, off=i=>AL?Math.max(0,(c.w-0.110*bk-(lw[i]||0))*AL.k):0, ob=off(0);
+  if(it.style==='num'){ const r=0.0185*bk, cy=ty+lh*0.5; g.fillStyle=pal.accent; g.beginPath(); g.arc(c.x+0.055*bk+ob,cy,r,0,Math.PI*2); g.fill(); dtx(g,String(c.num||1),c.x+0.055*bk+ob,cy,0.026*bk,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle'); }
+  else{ g.fillStyle=pal.accent; g.beginPath(); g.arc(c.x+0.052*bk+ob,ty+lh*0.5,Math.max(2,0.0095*bk),0,Math.PI*2); g.fill(); }
+  c.ls.forEach((l,i)=>drawRich(g,l,x0+off(i),ty+i*lh,it.hl,pal.text,pal.accent,fA,fB));
   g.restore();
 };
 DRAW.quote=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k, k=rv(s,0.5), zby=FZ(it,'by');
   g.save(); g.globalAlpha*=k; g.translate(0,(1-k)*0.03*bk);
   dtx(g,'“',c.x+0.01*bk,c.y-0.02*bk,0.20*bk,'800',alphaOf(pal.accent,0.85),font,'left','top');
-  const lh=c.fs*1.25, x0=c.x+0.115*bk, ty=c.y+0.03*bk; c.ls.forEach((l,i)=>dtx(g,l,x0,ty+i*lh,c.fs,'800',pal.text,font));
-  if(it.by) dtx(g,'— '+it.by,c.x+c.w-0.02*bk,c.y+c.h-(0.055+0.030*posz(zby))*bk,0.030*bk*zby,'500',pal.mute,font,'right','top');
+  const lh=c.fs*1.25, x0=c.x+0.115*bk, n=c.ls.length, AL=taX(it,x0,x0+c.w-0.16*bk), va=vaOf(it);   /* v114: 글 위치 — 상하를 정하면 글+덧글을 한 덩어리로 모아 놓음 */
+  let ty=c.y+0.03*bk, yby=c.y+c.h-(0.055+0.030*posz(zby))*bk;
+  if(va){ ty=c.y+0.03*bk+vaFree(it,c.h-0.06*bk-(n*lh+(it.by?0.02*bk+0.036*bk*zby:0))); yby=ty+n*lh+0.02*bk; }
+  c.ls.forEach((l,i)=>dtx(g,l,AL?AL.x:x0,ty+i*lh,c.fs,'800',pal.text,font,AL?AL.al:'left','top'));
+  if(it.by){ const AB=AL?taX(it,x0,c.x+c.w-0.02*bk):null; dtx(g,'— '+it.by,AB?AB.x:c.x+c.w-0.02*bk,yby,0.030*bk*zby,'500',pal.mute,font,AB?AB.al:'right','top'); }
   g.restore();
 };
 DRAW.title=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k, k=rv(s,0.5);
   g.save(); g.globalAlpha*=k; g.translate(0,(1-k)*0.03*bk);
-  const lh=c.fs*1.2; c.ls.forEach((l,i)=>dtx(g,l,c.x,c.y+i*lh,c.fs,'800',pal.text,font));
-  g.fillStyle=pal.accent; roundRect(g,c.x,c.y+c.ls.length*lh+0.006*bk,Math.min(c.w*0.2,0.2*bk)*rv(s-0.1,0.6),0.008*bk,0.004*bk); g.fill();
-  if(it.sub) dtx(g,String(it.sub),c.x,c.y+c.ls.length*lh+0.03*bk,0.034*bk*FZ(it,'sub'),'600',pal.mute,font);
+  const lh=c.fs*1.2, n=c.ls.length, AL=taX(it,c.x,c.x+c.w), fs2=0.034*bk*FZ(it,'sub'), bw=Math.min(c.w*0.2,0.2*bk), oy=vaFree(it,c.h-(n*lh+(it.sub?0.03*bk+fs2*1.2:0.014*bk)));   /* v114: 글 위치 */
+  c.ls.forEach((l,i)=>dtx(g,l,AL?AL.x:c.x,c.y+oy+i*lh,c.fs,'800',pal.text,font,AL?AL.al:'left','top'));
+  g.fillStyle=pal.accent; roundRect(g,AL?AL.x-bw*AL.k:c.x,c.y+oy+n*lh+0.006*bk,bw*rv(s-0.1,0.6),0.008*bk,0.004*bk); g.fill();
+  if(it.sub) dtx(g,String(it.sub),AL?AL.x:c.x,c.y+oy+n*lh+0.03*bk,fs2,'600',pal.mute,font,AL?AL.al:'left','top');
   g.restore();
 };
 const groupBg=(E,c,gs)=>{ const k=rv(gs,0.4); if(k<=0) return; const g=E.g; g.save(); g.globalAlpha*=k; cardBox(E,c.x,c.gy,c.w,c.gh,E.B*c.k); g.restore(); };
@@ -44637,7 +44681,7 @@ DRAW.bar=(E,c,it)=>{   /* 등락 막대 — 한 묶음. 양수·음수가 섞이
   g.save(); g.globalAlpha*=rv(s,0.4);
   const px=c.x+0.024*bk, iw=c.w-0.048*bk, lw=iw*0.27, vw=iw*0.20, tx0=px+lw+0.012*bk, tw=Math.max(10,iw-lw-vw-0.024*bk), th=c.h*0.40, ty=c.y+(c.h-th)/2;
   if(c.first&&E.sk&&E.sk.grid){ g.save(); g.strokeStyle=alphaOf(pal.mute,0.18); g.lineWidth=1; g.setLineDash([3,4]); g.beginPath(); for(let q=0;q<=4;q++){ const gx=Math.round(tx0+tw*q/4)+0.5; g.moveTo(gx,c.gy+0.012*bk); g.lineTo(gx,c.gy+c.gh-0.012*bk); } g.stroke(); g.setLineDash([]); g.restore(); }
-  dtf(g,String(it.label||''),px,c.y+c.h/2,lw,0.031*bk*zl,'700',pal.text,font,'left','middle',0.6);
+  const AL=taX(it,px,px+lw); dtf(g,String(it.label||''),AL?AL.x:px,c.y+c.h/2,lw,0.031*bk*zl,'700',pal.text,font,AL?AL.al:'left','middle',0.6);   /* v114: 이름 글 좌우 위치 */
   g.fillStyle=pal.track; roundRect(g,tx0,ty,tw,th,th/2); g.fill();
   const v=+it.v||0, both=c.mxp>0&&c.mxn>0, tot=(c.mxp+c.mxn)||1, x0=both?tx0+tw*c.mxn/tot:tx0, scale=both?tw/tot:tw/(Math.max(c.mxp,c.mxn)||1);
   const bw=Math.max(th*0.9,Math.abs(v)*scale*rv(s-0.05,0.8)); g.fillStyle=tc; if(both&&v<0) roundRect(g,x0-bw,ty,bw,th,th/2); else roundRect(g,x0,ty,bw,th,th/2); g.fill();
@@ -44651,7 +44695,7 @@ DRAW.row=(E,c,it)=>{   /* 지수판 줄 — 이름 · 수준 · 등락 알약 */
   g.save(); g.globalAlpha*=rv(s,0.4); g.translate((1-rv(s,0.4))*0.03*bk,0);
   const px=c.x+0.03*bk, iw=c.w-0.06*bk;
   if(glow>0.02){ g.fillStyle=alphaOf(toneCol(pal,tone)||pal.accent,0.12*glow); roundRect(g,c.x+0.01*bk,c.y,c.w-0.02*bk,c.h,0.014*bk); g.fill(); }
-  dtf(g,String(it.label||''),px,c.y+c.h/2,iw*0.36,0.036*bk*zl,'700',pal.text,font,'left','middle',0.6);
+  const AL=taX(it,px,px+iw*0.36); dtf(g,String(it.label||''),AL?AL.x:px,c.y+c.h/2,iw*0.36,0.036*bk*zl,'700',pal.text,font,AL?AL.al:'left','middle',0.6);   /* v114: 이름 글 좌우 위치 */
   dtf(g,String(it.value||''),px+iw*0.70,c.y+c.h/2,iw*0.30,0.040*bk*zv,'800',pal.text,font,'right','middle',0.6);
   const dl=deltaText(it,tone); if(dl){ g.font='700 '+(0.032*bk*zd).toFixed(1)+'px '+font; pill(E,px+iw,c.y+c.h/2-0.032*bk*zd*0.78,dl,0.032*bk*zd,tone==='up'||tone==='down'?'#ffffff':pal.text,tone==='up'||tone==='down'?toneCol(pal,tone):pal.track,'r'); }
   if(!c.last){ g.fillStyle=alphaOf(pal.mute,0.18); g.fillRect(px,c.y+c.h+0.003*bk,iw,1); }
@@ -44666,8 +44710,10 @@ DRAW.heat=(E,c,it)=>{
     const inten=v==null?0.3:clamp(Math.abs(v)/mx,0.12,1), base=v==null?mixHex(pal.cardSolid,pal.flat,0.28):mixHex(pal.cardSolid,toneCol(pal,tone)||pal.flat,0.30+0.62*inten), light=pal.dark||inten>0.45;
     g.save(); g.globalAlpha*=rv(sp,0.4); const cx=x+tw/2, cy=y+m.th/2, sc=0.9+0.1*easeBack(clamp(sp/0.5,0,1)); g.translate(cx,cy); g.scale(sc,sc); g.translate(-cx,-cy);
     roundRect(g,x,y,tw,m.th,0.018*bk); g.fillStyle=base; g.fill();
-    const fc=light?'#ffffff':pal.text; dtf(g,String(p.l||''),x+tw/2,y+m.th*0.33,tw-0.03*bk,0.034*bk*FZ(p,'l'),'700',fc,font,'center','middle',0.6);
-    const vt=v==null?String(p.t||''):(v>=0?'+':'')+fmtN(v,Math.abs(v)>=10?1:2)+'%'; dtf(g,vt,x+tw/2,y+m.th*0.70,tw-0.03*bk,0.040*bk*FZ(p,'v'),'800',fc,font,'center','middle',0.6);
+    const fc=light?'#ffffff':pal.text, AL=taX(it,x+0.016*bk,x+tw-0.016*bk), tx=AL?AL.x:x+tw/2, tal=AL?AL.al:'center'; let yl=m.th*0.33, yv=m.th*0.70;   /* v114: 칸 안 글 위치 */
+    if(vaOf(it)){ const hl=0.034*bk*FZ(p,'l')*1.1, hv=0.040*bk*FZ(p,'v')*1.1, gp=0.01*bk, t0=0.012*bk+vaFree(it,m.th-0.024*bk-(hl+gp+hv)); yl=t0+hl/2; yv=t0+hl+gp+hv/2; }
+    dtf(g,String(p.l||''),tx,y+yl,tw-0.03*bk,0.034*bk*FZ(p,'l'),'700',fc,font,tal,'middle',0.6);
+    const vt=v==null?String(p.t||''):(v>=0?'+':'')+fmtN(v,Math.abs(v)>=10?1:2)+'%'; dtf(g,vt,tx,y+yv,tw-0.03*bk,0.040*bk*FZ(p,'v'),'800',fc,font,tal,'middle',0.6);
     g.restore();
   });
   g.restore();
@@ -44726,15 +44772,16 @@ DRAW.line=(E,c,it)=>{
 DRAW.vs=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,2); if(ps.length<2){ return; }
   const zl=FZ(it,'label'), zno=FZ(it,'note'), zc=FZ(it,'cap'), zn0=Math.max(FZ(ps[0],'l'),FZ(ps[1],'l')), dyL=0.030*bk*posz(zl)*1.3, dyN=0.040*bk*posz(zn0)*1.15;   /* 제목·이름 줄이 커진 만큼 아래 글을 내림 */
-  popBegin(E,c,s0,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk); if(it.label) dtf(g,String(it.label),c.x+c.w/2,c.y+0.02*bk,c.w*0.8,0.030*bk*zl,'700',pal.mute,font,'center','top',0.6);
+  popBegin(E,c,s0,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk); if(it.label){ const AL0=taX(it,c.x+0.04*bk,c.x+c.w-0.04*bk); dtf(g,String(it.label),AL0?AL0.x:c.x+c.w/2,c.y+0.02*bk,c.w*0.8,0.030*bk*zl,'700',pal.mute,font,AL0?AL0.al:'center','top',0.6); }   /* v114 */
   const mid=c.x+c.w/2, colW=c.w/2-0.08*bk, a=nz(ps[0].v), b=nz(ps[1].v);
+  const fvs=ps.map(p=>fitFont(g,String(p.v||''),colW,0.105*bk*FZ(p,'v'),'800',font,0.4)), pHs=ps.map((p,i)=>deltaText({delta:p.d},itemTone({delta:p.d,value:p.v}))?fvs[i]*0.15+0.034*bk*FZ(p,'d')*1.55:0), vsh=vaFree(it,(it.note?c.h-(0.052+0.030*posz(zno)*1.2)*bk-0.01*bk:c.h-0.08*bk)-(0.075*bk+dyL)-(0.060*bk+dyN+Math.max(fvs[0]+pHs[0],fvs[1]+pHs[1])));   /* v114: 두 열의 글 덩어리를 위·중간·아래로 */
   ps.forEach((p,i)=>{
     const sp=partSince(E,it,p,i); if(sp<=0) return; const cx=i===0?c.x+c.w/4:c.x+c.w*0.75, tone=itemTone({delta:p.d,value:p.v}), tc=toneCol(pal,tone)||pal.text, win=(a!=null&&b!=null)&&((i===0&&a>b)||(i===1&&b>a));
     g.save(); g.globalAlpha*=rv(sp,0.45); g.translate((i===0?-1:1)*(1-rv(sp,0.45))*0.05*bk,0);
-    dtf(g,String(p.l||''),cx,c.y+0.075*bk+dyL,colW,0.040*bk*FZ(p,'l'),'800',pal.text,font,'center','top',0.5);
-    const vs=E.cf.count?countText(p.v,rv(sp-0.05,0.8)):String(p.v||''), fv=fitFont(g,String(p.v||''),colW,0.105*bk*FZ(p,'v'),'800',font,0.4); dtx(g,vs,cx,c.y+0.135*bk+dyL+dyN,fv,'800',tc,font,'center','top');
-    const dl=deltaText({delta:p.d},tone); if(dl) pill(E,cx,c.y+0.135*bk+dyL+dyN+fv*1.15,dl,0.034*bk*FZ(p,'d'),tc,tone==='up'||tone==='down'?alphaOf(toneCol(pal,tone),0.18):pal.track,'c');
-    if(win){ const big=zl>1||zn0>1||FZ(p,'v')>1; g.fillStyle=pal.accent; roundRect(g,cx-colW*0.3,big?c.y+0.135*bk+dyL+dyN+fv-0.005*bk:c.y+c.h-0.075*bk,colW*0.6,0.008*bk,0.004*bk); g.fill(); }
+    const AL=taX(it,cx-colW/2,cx+colW/2), ax=AL?AL.x:cx, aal=AL?AL.al:'center'; dtf(g,String(p.l||''),ax,c.y+0.075*bk+dyL+vsh,colW,0.040*bk*FZ(p,'l'),'800',pal.text,font,aal,'top',0.5);
+    const vs=E.cf.count?countText(p.v,rv(sp-0.05,0.8)):String(p.v||''), fv=fitFont(g,String(p.v||''),colW,0.105*bk*FZ(p,'v'),'800',font,0.4); dtx(g,vs,ax,c.y+0.135*bk+dyL+dyN+vsh,fv,'800',tc,font,aal,'top');
+    const dl=deltaText({delta:p.d},tone); if(dl) pill(E,ax,c.y+0.135*bk+dyL+dyN+fv*1.15+vsh,dl,0.034*bk*FZ(p,'d'),tc,tone==='up'||tone==='down'?alphaOf(toneCol(pal,tone),0.18):pal.track,AL?AL.a:'c');
+    if(win){ const big=zl>1||zn0>1||FZ(p,'v')>1; g.fillStyle=pal.accent; roundRect(g,cx-colW*0.3,big?c.y+0.135*bk+dyL+dyN+fv-0.005*bk+vsh:c.y+c.h-0.075*bk,colW*0.6,0.008*bk,0.004*bk); g.fill(); }
     g.restore();
   });
   const vr=0.045*bk*Math.max(1,zc); g.fillStyle=pal.accent; g.beginPath(); g.arc(mid,c.y+c.h*0.5,vr,0,Math.PI*2); g.fill(); dtx(g,'VS',mid,c.y+c.h*0.5,0.030*bk*zc,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle');
@@ -44746,14 +44793,14 @@ DRAW.event=(E,c,it)=>{
   if(E.sk&&E.sk.tl) return drawEventTL(E,c,it);
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=it.parts||[], rz=hzf(it,null,{'d|t':0.8});
   popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
-  const x0=c.x+0.03*bk, iw=c.w-0.06*bk, rh=0.082*bk*rz, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk;
+  const x0=c.x+0.03*bk, iw=c.w-0.06*bk, rh=0.082*bk*rz, y00=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk, y0=y00+vaFree(it,c.y+c.h-0.02*bk-(y00+Math.max(1,ps.length)*(rh+0.008*bk)-0.008*bk));   /* v114: 목록 전체를 위·중간·아래로 */
   ps.forEach((p,i)=>{
     const sp=partSince(E,it,p,i); if(sp<=0) return; const y=y0+i*(rh+0.008*bk), k=rv(sp,0.45);
     g.save(); g.globalAlpha*=k; g.translate((1-k)*0.06*bk,0);
     g.fillStyle=pal.dark?alphaOf('#ffffff',0.05):alphaOf('#0f172a',0.04); roundRect(g,x0,y,iw,rh,0.016*bk); g.fill();
     const dw=Math.min(0.17*bk,iw*0.22); g.fillStyle=pal.accent; roundRect(g,x0+0.012*bk,y+0.012*bk,dw,rh-0.024*bk,0.014*bk); g.fill(); dtf(g,String(p.d||''),x0+0.012*bk+dw/2,y+rh/2,dw-0.02*bk,0.034*bk*FZ(p,'d'),'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle',0.6);
     const lv=clamp(Math.round(nz(p.lv)||0),0,3), dx=x0+iw-0.03*bk; for(let q=0;q<3;q++){ g.fillStyle=q<lv?pal.accent:alphaOf(pal.mute,0.3); g.beginPath(); g.arc(dx-q*0.026*bk,y+rh/2,0.009*bk,0,Math.PI*2); g.fill(); }
-    dtf(g,String(p.t||''),x0+dw+0.034*bk,y+rh/2,iw-dw-0.034*bk-0.105*bk,0.036*bk*FZ(p,'t'),'700',pal.text,font,'left','middle',0.55);
+    const AL=taX(it,x0+dw+0.034*bk,x0+iw-0.105*bk); dtf(g,String(p.t||''),AL?AL.x:x0+dw+0.034*bk,y+rh/2,iw-dw-0.034*bk-0.105*bk,0.036*bk*FZ(p,'t'),'700',pal.text,font,AL?AL.al:'left','middle',0.55);
     g.restore();
   });
   g.restore();
@@ -44767,14 +44814,15 @@ DRAW.flow=(E,c,it)=>{
     ps.forEach((p,i)=>{
       const sp=partSince(E,it,p,i), x=x0+i*(m.nw+0.05*bk), last=i===n-1; if(sp>0){ g.save(); const k=rv(sp,0.45); g.globalAlpha*=k; const cy=y0+nh/2, sc=0.92+0.08*easeBack(clamp(sp/0.5,0,1)); g.translate(x+m.nw/2,cy); g.scale(sc,sc); g.translate(-(x+m.nw/2),-cy);
         roundRect(g,x,y0,m.nw,nh,0.022*bk); g.fillStyle=last?pal.accent:pal.card; g.fill(); if(!last){ g.lineWidth=Math.max(1,0.002*bk); g.strokeStyle=pal.cardLine; g.stroke(); g.fillStyle=pal.accent; roundRect(g,x+0.02*bk,y0,m.nw-0.04*bk,0.008*bk,0.004*bk); g.fill(); }
-        const fsi=m.fss[i], lh=fsi*1.25, ty=y0+(nh-m.ls[i].length*lh)/2; m.ls[i].forEach((l,q)=>dtx(g,l,x+m.nw/2,ty+q*lh,fsi,'700',last?(pal.dark?'#0b1220':'#ffffff'):pal.text,font,'center','top')); g.restore(); }
+        const fsi=m.fss[i], lh=fsi*1.25, AL=taX(it,x+0.02*bk,x+m.nw-0.02*bk), ty=vaOf(it)?y0+0.022*bk+vaFree(it,nh-0.044*bk-m.ls[i].length*lh):y0+(nh-m.ls[i].length*lh)/2; m.ls[i].forEach((l,q)=>dtx(g,l,AL?AL.x:x+m.nw/2,ty+q*lh,fsi,'700',last?(pal.dark?'#0b1220':'#ffffff'):pal.text,font,AL?AL.al:'center','top')); g.restore(); }   /* v114: 칸 안 글 위치 */
       if(i<n-1){ const sn=partSince(E,it,ps[i+1],i+1); if(sn>-0.1){ const k=rv(sn+0.1,0.4), ax=x+m.nw+0.008*bk, bx=x+m.nw+0.042*bk, ay=y0+nh/2; g.save(); g.globalAlpha*=k; g.strokeStyle=pal.accent; g.lineWidth=Math.max(2,0.007*bk); g.lineCap='round'; g.lineJoin='round'; g.beginPath(); g.moveTo(ax,ay); g.lineTo(bx,ay); g.moveTo(bx-0.014*bk,ay-0.016*bk); g.lineTo(bx,ay); g.lineTo(bx-0.014*bk,ay+0.016*bk); g.stroke(); g.restore(); } }
     });
   }else{
+    const yo=vaFree(it,c.y+c.h-0.02*bk-(y0+Math.max(1,n)*(m.nh+0.03*bk)-0.03*bk));   /* v114: 목록 전체를 위·중간·아래로 */
     ps.forEach((p,i)=>{
-      const sp=partSince(E,it,p,i), y=y0+i*(m.nh+0.03*bk), last=i===n-1; if(sp>0){ g.save(); const k=rv(sp,0.45); g.globalAlpha*=k; g.translate(0,(1-k)*0.03*bk);
+      const sp=partSince(E,it,p,i), y=y0+yo+i*(m.nh+0.03*bk), last=i===n-1; if(sp>0){ g.save(); const k=rv(sp,0.45); g.globalAlpha*=k; g.translate(0,(1-k)*0.03*bk);
         roundRect(g,c.x+0.04*bk,y,c.w-0.08*bk,m.nh,0.02*bk); g.fillStyle=last?pal.accent:pal.card; g.fill(); if(!last){ g.lineWidth=Math.max(1,0.002*bk); g.strokeStyle=pal.cardLine; g.stroke(); }
-        const fsi=m.fss[i], lh=fsi*1.25, ty=y+(m.nh-m.ls[i].length*lh)/2; m.ls[i].forEach((l,q)=>dtx(g,l,c.x+c.w/2,ty+q*lh,fsi,'700',last?(pal.dark?'#0b1220':'#ffffff'):pal.text,font,'center','top')); g.restore(); }
+        const fsi=m.fss[i], lh=fsi*1.25, AL=taX(it,c.x+0.06*bk,c.x+c.w-0.06*bk), ty=y+(m.nh-m.ls[i].length*lh)/2; m.ls[i].forEach((l,q)=>dtx(g,l,AL?AL.x:c.x+c.w/2,ty+q*lh,fsi,'700',last?(pal.dark?'#0b1220':'#ffffff'):pal.text,font,AL?AL.al:'center','top')); g.restore(); }
       if(i<n-1){ const sn=partSince(E,it,ps[i+1],i+1); if(sn>-0.1){ g.save(); g.globalAlpha*=rv(sn+0.1,0.4); g.fillStyle=pal.accent; const ax=c.x+c.w/2, ay=y+m.nh+0.006*bk; g.beginPath(); g.moveTo(ax-0.016*bk,ay); g.lineTo(ax+0.016*bk,ay); g.lineTo(ax,ay+0.02*bk); g.closePath(); g.fill(); g.restore(); } }
     });
   }
@@ -44790,7 +44838,7 @@ DRAW.scenario=(E,c,it)=>{
     roundRect(g,x,y0,m.cw,ch,0.02*bk); g.fillStyle=alphaOf(tc,pal.dark?0.10:0.07); g.fill(); g.lineWidth=Math.max(1.5,0.003*bk); g.strokeStyle=alphaOf(tc,0.6); g.stroke();
     const pw=pill(E,x+0.02*bk,y0+0.02*bk,String(p.l||''),0.032*bk*zl,'#ffffff',tc,'l');
     const pv=nz(p.p); if(pv!=null){ const fp0=0.075*bk*zp, fp=(zp!==1||zl!==1)?fitFont(g,String(pv)+'%',Math.max(0.06*bk,m.cw-0.05*bk-pw),fp0,'800',font,0.4):fp0; dtx(g,E.cf.count?countText(String(pv)+'%',rv(sp-0.05,0.7)):pv+'%',x+m.cw-0.02*bk,y0+0.014*bk,fp,'800',tc,font,'right','top'); g.fillStyle=pal.track; roundRect(g,x+0.02*bk,y0+by*bk,m.cw-0.04*bk,0.014*bk,0.007*bk); g.fill(); g.fillStyle=tc; roundRect(g,x+0.02*bk,y0+by*bk,Math.max(0.014*bk,(m.cw-0.04*bk)*clamp(pv/100,0,1)*rv(sp-0.1,0.8)),0.014*bk,0.007*bk); g.fill(); }
-    const fsi=m.fss[i], lh=fsi*1.3; m.ls[i].forEach((l,q)=>dtx(g,l,x+0.022*bk,y0+hd*bk+q*lh,fsi,'500',pal.text,font));
+    const fsi=m.fss[i], lh=fsi*1.3, AL=taX(it,x+0.022*bk,x+m.cw-0.022*bk), ty0=y0+hd*bk+vaFree(it,ch-hd*bk-0.02*bk-m.ls[i].length*lh); m.ls[i].forEach((l,q)=>dtx(g,l,AL?AL.x:x+0.022*bk,ty0+q*lh,fsi,'500',pal.text,font,AL?AL.al:'left','top'));   /* v114: 칸 안 글 위치 */
     g.restore();
   });
   g.restore();
@@ -45607,7 +45655,7 @@ function convertItem(it,t){   /* 블록 종류 바꾸기 — 같은 이름의 �
   const t0=mentionT0(P,it)!=null?mentionT0(P,it):ENG.pos, d=defaultBlock(t,t0); if(it.ld!=null) d.ld=it.ld;
   ['label','value','delta','note','text','tone','hl','from','to','v'].forEach(k=>{ if(it[k]!=null&&it[k]!==''&&Object.prototype.hasOwnProperty.call(d,k)) d[k]=it[k]; });
   if(it.fz&&FZK[t]){ const ok=new Set(FZK[t].f.map(x=>x[0])); Object.keys(it.fz).forEach(q=>{ if(ok.has(q)){ d.fz=d.fz||{}; d.fz[q]=it.fz[q]; } }); }   /* 같은 이름의 글은 글자 크기도 이어받음 */
-  d.id=it.id; d.at=it.at||d.at; d.dt=it.dt||0; if(it.bx) d.bx=it.bx; if(it.du>0) d.du=it.du; if(d.parts&&it.at){ d.parts.forEach((p,i)=>{ const a=anchorAtTime(P,(anchT(P,{sid:it.at.sid,f:it.at.f,dt:it.dt})||t0)+i*0.9); if(a){ p.at={sid:a.sid,f:a.f}; p.dt=a.dt; } }); }
+  d.id=it.id; d.at=it.at||d.at; d.dt=it.dt||0; if(it.bx) d.bx=it.bx; if(it.du>0) d.du=it.du; if(it.ta) d.ta=it.ta; if(it.va&&!AL_NOV[t]) d.va=it.va; if(d.parts&&it.at){ d.parts.forEach((p,i)=>{ const a=anchorAtTime(P,(anchT(P,{sid:it.at.sid,f:it.at.f,dt:it.dt})||t0)+i*0.9); if(a){ p.at={sid:a.sid,f:a.f}; p.dt=a.dt; } }); }
   return d;
 }
 function newClip(mode,type,s,dur,src,ss,ctx){
@@ -45680,6 +45728,26 @@ function fzBadgeRefresh(){
   const g=igById(UI.ig); if(!g) return; const has=o=>!!(o&&o.fz&&Object.keys(o.fz).length);
   document.querySelectorAll('#vsInsp .vs-it').forEach(el=>{ const it=g.items.find(x=>x.id===el.dataset.iid), sm=el.querySelector('details.vs-fz>summary'); if(!it||!sm) return; const any=has(it)||(it.parts||[]).some(has); sm.innerHTML='🔠 글자 크기'+(any?' <i class="on">조절됨</i>':'')+' <span class="hint">글마다 따로 · 기본 100%</span>'; });
 }
+/* ── 글 위치(v114) 단추 — 구성요소 안의 글을 좌우(왼쪽·가운데·오른쪽)·상하(위·중간·아래)로 놓음. 눌린 단추를 다시 누르면 기본(예전 모습)으로 ── */
+const AL_H=[['l','왼쪽'],['c','가운데'],['r','오른쪽']], AL_V=[['t','위'],['m','중간'],['b','아래']];
+const AL_NOV={bar:1,row:1,donut:1,gauge:1,line:1,level:1,map:1,cmp:1};   /* 상하 위치가 해당 없는 종류 — 글이 그림 자리에 붙어 있어요 */
+const alOK=g=>!!g&&['lower','ticker','corner','title'].indexOf(g.mode)<0;   /* 띠·배지·타이틀 형태는 칩/카드라 글 위치를 못 바꿈 */
+function alApply(its,ax,val){   /* its 의 글 위치를 바꿈 — ax 'h'|'v'|'x'(둘 다 기본). 모두 이미 그 값이면 기본으로. 바뀐 개수를 돌려줌 */
+  let n=0;
+  if(ax==='x'){ its.forEach(it=>{ if(it.ta!=null||it.va!=null){ delete it.ta; delete it.va; n++; } }); return n; }
+  const key=ax==='h'?'ta':ax==='v'?'va':'', ok=ax==='h'?'lcr':'tmb'; if(!key||!val||ok.indexOf(val)<0) return 0;
+  const tg=its.filter(it=>!(ax==='v'&&AL_NOV[it.type])); if(!tg.length) return 0; const same=tg.every(it=>it[key]===val);
+  tg.forEach(it=>{ if(same) delete it[key]; else it[key]=val; n++; }); return n;
+}
+function alBtns(act,id,its,dis,why){   /* 단추 줄 — act 는 단추 동작, id 는 data-id 앞부분, its 의 값이 모두 같으면 그 단추가 켜짐 */
+  const cur=k=>{ const v=its.map(it=>it[k]||''); return v.length&&v.every(x=>x===v[0])?v[0]:'~'; }, h=cur('ta'), v=cur('va'), noV=its.length>0&&its.every(it=>AL_NOV[it.type]);
+  const grp=(arr,ax,c,off)=>'<span class="g">'+arr.map(x=>F.btn(act,x[1],{d:id+ax+':'+x[0],c:c===x[0]?'on':'',dis:dis||off,title:dis?why:off?'이 종류는 상하 위치가 해당 없어요 — 글이 그림 자리에 붙어 있어요':'글을 칸 안 '+x[1]+'에 놓아요 (다시 누르면 기본)'})).join('')+'</span>';
+  return grp(AL_H,'h',h,false)+grp(AL_V,'v',v,noV)+F.btn(act,'기본',{d:id+'x:',dis:dis,title:dis?why:'글 위치를 기본(예전 모습)으로'});
+}
+function alHtml(g,it){
+  const ok=alOK(g);
+  return '<div class="vs-al"><i title="글을 상자 안 어디에 놓을지 — 상하 위치는 상자가 글보다 클 때 눈에 보여요([📐 크기/배치 수정]으로 상자를 키워 보세요)">글 위치</i>'+alBtns('igAl',g.id+':'+it.id+':',[it],!ok,ok?'':'하단 띠·상단 띠·모서리 배지·타이틀 형태는 글 위치를 바꿀 수 없어요')+'</div>';
+}
 function igBlockHtml(g,it){
   const bt=BT[it.type]||BT.point, pre='ig:'+g.id+':'+it.id+':', m0=mentionOf(P,it), t0=itemTime(P,it), cid=g.id+':'+it.id;
   let h='<div class="vs-it'+(it.id===UI.igIt?' sel':'')+'" data-iid="'+it.id+'"><div class="r">'+F.sel(pre+'type',it.type,BT_ORDER.map(k=>[k,BT[k].n]))+'<span class="vs-sp"></span>'+F.btn('igPlayIt','▶',{d:cid,title:'이 블록이 나오기 1초 전부터 재생'})+F.btn('igDelIt','🗑',{d:cid,c:'dng',title:'이 블록 지우기'})+'</div>';
@@ -45692,7 +45760,7 @@ function igBlockHtml(g,it){
     h+='<div class="r sm">'+timeIn(pre+'t',m0,m0==null)+F.btn('igPhIt','재생헤드로',{d:cid,title:'지금 재생헤드 위치를 이 블록이 나오는 시점으로'})+F.btn('igNudge','◀',{d:cid+':-0.1',title:'0.1초 일찍'})+F.btn('igNudge','▶',{d:cid+':0.1',title:'0.1초 늦게'})+'<label class="sm">보정 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'dt" data-t="n" step="0.05" value="'+(it.dt||0)+'">초</label>'+(m0==null?'<em class="bad">문장을 찾지 못함</em>':'')+'</div>';
   }
   h+='<div class="r sm"><label class="sm" title="블록이 말하는 시점보다 얼마나 먼저(또는 뒤에) 화면에 나타날지">나타나는 때 '+F.sel(pre+'when',whenOf(it),WHEN_OPTS)+'</label><label class="sm" title="화면에 보이는 시간 — 이 시간이 지나면 사라져요. 비우면 인포그래픽이 끝날 때까지 보여요(타임라인 [구성] 줄의 칩 오른쪽 끝을 끌어도 돼요)">보이는 길이 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'du" data-t="n" step="0.1" min="0.3" placeholder="끝까지" value="'+(it.du>0?r2(it.du):'')+'">초</label>'+(t0==null?'':'<span class="hint">화면에는 '+fmtT(t0,1)+(m0!=null&&Math.abs(m0-t0)>0.02?' · 말하기 '+r2(Math.abs(m0-t0))+'초 '+(m0>t0?'전':'후'):'')+'</span>')+'</div>';
-  return h+fzHtml(g,it)+'</div>';
+  return h+alHtml(g,it)+fzHtml(g,it)+'</div>';
 }
 function igEditor(g){
   const pre='ig:'+g.id+'::';
@@ -45710,7 +45778,8 @@ function igEditor(g){
   h+='<div class="vs-btns">'+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igAI','🔄 AI 로 다시',{d:g.id,title:'이 구간의 나레이션을 AI 가 다시 요약해 블록을 새로 만들어요'})+F.btn('igRule','🧮 규칙으로 다시',{d:g.id,title:'숫자·업종·일정을 규칙으로 뽑아요(무료)'})+F.btn('igNews','📰 뉴스체로',{d:g.id,title:'이 인포그래픽의 글을 TV 뉴스 자막처럼 명사형 헤드라인체로 다듬어요'})+F.btn('igSplit','✂ 재생헤드에서 나누기',{d:g.id})+F.btn('igDup','⧉ 복제',{d:g.id,title:'바로 뒤에 같은 길이로 복제'})+F.btn('igDel','🗑 삭제',{d:g.id,c:'dng'})+'</div>';
   h+='<div class="vs-sec">블록 ('+g.items.length+') <span class="hint">말하는 시점이 되면 차례로 나타나요 · 타임라인 [구성] 줄의 칩을 끌어 시점을 바꿔요</span></div>';
   h+='<div class="vs-btns">'+F.sel('ui.igType',UI.igType||'stat',BT_ORDER.map(k=>[k,BT[k].n]))+F.btn('igAddIt','＋ 블록 추가',{d:g.id})+'</div>';
-  h+=g.items.length?g.items.map(it=>igBlockHtml(g,it)).join(''):'<div class="vs-empty sm">블록이 없어요 — 위에서 종류를 골라 추가하세요</div>';
+  if(g.items.length>1){ const ok=alOK(g); h+='<div class="vs-al all"><i title="이 인포그래픽의 모든 구성요소 글 위치를 한꺼번에 — 구성요소마다 따로 고르려면 아래 각 블록의 [글 위치]">모든 구성요소 글 위치</i>'+alBtns('igAl',g.id+':*:',g.items,!ok,ok?'':'하단 띠·상단 띠·모서리 배지·타이틀 형태는 글 위치를 바꿀 수 없어요')+'</div>'; }
+  h+=g.items.length?g.items.map(it=>igBlockHtml(g,it)).join(''):'<div class="vs-empty sm">블록이 없어요 — 위에서 종류를 골라 추가하세요 · 구성요소를 다 지워도 이 인포그래픽(화면 요소)은 그대로 남아요</div>';
   return h;
 }
 function inspIg(){
@@ -45806,6 +45875,10 @@ async function infoAct(a,id,btn){
     case 'igPhPt': if(g){ const it=g.items.find(x=>x.id===ids[1]), p=it&&it.parts&&it.parts[+ids[2]], at=anchorAtTime(P,t); if(p&&at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; sortItems(g); done('항목 시점'); } } break;
     case 'igAI': case 'igRule': if(g) await igRegen(g,a==='igAI'?'ai':'rule'); break;
     case 'igNews': if(g){ newsAll(g); done('뉴스체'); } break;
+    case 'igAl': if(g){   /* v114: 글 위치 — ids = 클립:블록(또는 *):축(h·v·x):값 */
+      const its=ids[1]==='*'?g.items:g.items.filter(x=>x.id===ids[1]);
+      if(alApply(its,ids[2],ids[3])){ if(ids[2]==='v'&&!igBoxOK(g)) toast('상하 위치는 상자가 글보다 클 때 눈에 보여요 — [📐 크기/배치 수정]에서 상자를 키워 보세요'); done('글 위치'); }
+    } break;
     case 'igFzReset': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it){ delete it.fz; (it.parts||[]).forEach(p=>{ delete p.fz; }); done('글자 크기'); } } break;
     case 'aiPanel': showAiDlg(); break;
     case 'aiPick': setStudioProvider(id); paintAiBtn(); showAiDlg(); renderInspector(true); break;
@@ -46297,7 +46370,7 @@ DRAW.cmp=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,6), zl=FZ(it,'label'), za=FZ(it,'a'), zb=FZ(it,'b'), zc=FZ(it,'cap'), zh=Math.max(1,za,zb);
   popBegin(E,c,s0,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk);
   const A=pal.accent, Bc=pal.dark?'#fbbf24':'#d97706', mid=c.x+c.w/2, pad=0.03*bk, half=c.w/2-pad-0.034*bk;
-  if(it.label) dtf(g,String(it.label),mid,c.y+0.016*bk,c.w*0.8,0.026*bk*zl,'700',pal.mute,font,'center','top',0.6);
+  if(it.label){ const AL=taX(it,c.x+0.034*bk,c.x+c.w-0.034*bk); dtf(g,String(it.label),AL?AL.x:mid,c.y+0.016*bk,c.w*0.8,0.026*bk*zl,'700',pal.mute,font,AL?AL.al:'center','top',0.6); }   /* v114 */
   const dl=0.034*bk*posz(zl), dh=0.040*bk*posz(zh), hy=c.y+(it.label?0.050:0.018)*bk+dl, hc=hy+0.034*bk+dh*0.5;
   dtf(g,String(it.a||''),c.x+pad+half/2,hc,half*0.94,0.050*bk*za,'800',A,font,'center','middle',0.5); dtf(g,String(it.b||''),mid+0.034*bk+half/2,hc,half*0.94,0.050*bk*zb,'800',Bc,font,'center','middle',0.5);
   g.fillStyle=pal.track; roundRect(g,mid-0.030*bk*Math.max(1,zc),hc-0.026*bk*Math.max(1,zc),0.060*bk*Math.max(1,zc),0.052*bk*Math.max(1,zc),0.026*bk*Math.max(1,zc)); g.fill(); dtx(g,'VS',mid,hc,0.024*bk*zc,'800',pal.mute,font,'center','middle');
@@ -46320,34 +46393,34 @@ DRAW.cmp=(E,c,it)=>{
 function drawEventTL(E,c,it){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=it.parts||[], rz=hzf(it,null,{'d|t':0.8});
   popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
-  const y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.026*bk, rh=0.098*bk*rz, dateW=Math.min(0.21*bk,c.w*0.24), rx=c.x+0.04*bk+dateW+0.045*bk; let last=-1; ps.forEach((p,i)=>{ if(partSince(E,it,p,i)>0) last=i; });
+  const y00=c.y+(it.label?HDR*hzL(it)*bk:0)+0.026*bk, rh=0.098*bk*rz, y0=y00+vaFree(it,c.y+c.h-0.02*bk-(y00+Math.max(1,ps.length)*rh)), dateW=Math.min(0.21*bk,c.w*0.24), rx=c.x+0.04*bk+dateW+0.045*bk; let last=-1; ps.forEach((p,i)=>{ if(partSince(E,it,p,i)>0) last=i; });
   if(last>0){ const ya=y0+rh*0.5, yPrev=y0+rh*(last-0.5), yLast=y0+rh*(last+0.5), fr=rv(partSince(E,it,ps[last],last),0.5); g.strokeStyle=alphaOf(pal.accent,0.55); g.lineWidth=Math.max(2,0.005*bk); g.lineCap='round'; g.beginPath(); g.moveTo(rx,ya); g.lineTo(rx,yPrev+(yLast-yPrev)*fr); g.stroke(); }
   ps.forEach((p,i)=>{
     const sp=partSince(E,it,p,i); if(sp<=0) return; const cy=y0+i*rh+rh*0.5, k=rv(sp,0.45), lv=clamp(Math.round(nz(p.lv)||0),0,3), r=0.015*bk*(1+0.16*lv);
     g.save(); g.globalAlpha*=k; g.translate((1-k)*0.05*bk,0);
     dtf(g,String(p.d||''),c.x+0.04*bk+dateW,cy,dateW,0.036*bk*FZ(p,'d'),'800',pal.accent,font,'right','middle',0.5);
     g.fillStyle=pal.cardSolid; g.beginPath(); g.arc(rx,cy,r+0.007*bk,0,Math.PI*2); g.fill(); g.fillStyle=pal.accent; g.beginPath(); g.arc(rx,cy,r,0,Math.PI*2); g.fill();
-    dtf(g,String(p.t||''),rx+0.034*bk,cy,c.x+c.w-0.04*bk-(rx+0.034*bk),0.038*bk*FZ(p,'t'),'700',pal.text,font,'left','middle',0.55);
+    const AL=taX(it,rx+0.034*bk,c.x+c.w-0.04*bk); dtf(g,String(p.t||''),AL?AL.x:rx+0.034*bk,cy,c.x+c.w-0.04*bk-(rx+0.034*bk),0.038*bk*FZ(p,'t'),'700',pal.text,font,AL?AL.al:'left','middle',0.55);
     g.restore();
   });
   g.restore();
 }
 function drawFlowTL(E,c,it){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,5), m=c.m;
-  popBegin(E,c,s0,bk,0.3); hdrDraw(E,c,it,bk); const y0=c.y+(it.label?(HDR*hzL(it)+0.018)*bk:0), r=0.026*bk, txt=pal.dark?'#0b1220':'#ffffff';
+  popBegin(E,c,s0,bk,0.3); hdrDraw(E,c,it,bk); const y00=c.y+(it.label?(HDR*hzL(it)+0.018)*bk:0), r=0.026*bk, txt=pal.dark?'#0b1220':'#ffffff', y0=y00+vaFree(it,c.y+c.h-0.02*bk-y00-(m.horiz?0.080*bk+(m.ls.length?Math.max.apply(null,m.ls.map((l,i)=>l.length*m.fss[i]*1.25)):0):Math.max(1,ps.length)*m.nh+Math.max(0,ps.length-1)*0.03*bk));   /* v114: 내용 전체를 위·중간·아래로 */
   const vis=ps.map((p,i)=>partSince(E,it,p,i)), last=vis.reduce((a,v,i)=>v>0?i:a,-1);
   if(m.horiz){
     const x0=c.x+0.025*bk, ry=y0+0.034*bk, X=i=>x0+i*(m.nw+0.05*bk)+m.nw/2;
     if(last>0){ g.strokeStyle=alphaOf(pal.accent,0.55); g.lineWidth=Math.max(2,0.006*bk); g.lineCap='round'; g.beginPath(); g.moveTo(X(0),ry); g.lineTo(X(last-1)+(X(last)-X(last-1))*Math.max(0.15,rv(vis[last],0.5)),ry); g.stroke(); }
     ps.forEach((p,i)=>{ const sp=vis[i]; if(sp<=0) return; const k=rv(sp,0.45), x=X(i); g.save(); g.globalAlpha*=k; g.translate(0,(1-k)*0.02*bk);
       g.fillStyle=pal.accent; g.beginPath(); g.arc(x,ry,r,0,Math.PI*2); g.fill(); dtx(g,String(i+1),x,ry,0.030*bk,'800',txt,font,'center','middle');
-      const fsi=m.fss[i], lh=fsi*1.25; m.ls[i].forEach((l,q)=>dtx(g,l,x,y0+0.080*bk+q*lh,fsi,'700',pal.text,font,'center','top')); g.restore(); });
+      const fsi=m.fss[i], lh=fsi*1.25, AL=taX(it,x-m.nw/2,x+m.nw/2); m.ls[i].forEach((l,q)=>dtx(g,l,AL?AL.x:x,y0+0.080*bk+q*lh,fsi,'700',pal.text,font,AL?AL.al:'center','top')); g.restore(); });
   }else{
     const rx=c.x+0.075*bk, Y=i=>y0+i*(m.nh+0.03*bk)+m.nh/2;
     if(last>0){ g.strokeStyle=alphaOf(pal.accent,0.55); g.lineWidth=Math.max(2,0.006*bk); g.lineCap='round'; g.beginPath(); g.moveTo(rx,Y(0)); g.lineTo(rx,Y(last-1)+(Y(last)-Y(last-1))*Math.max(0.15,rv(vis[last],0.5))); g.stroke(); }
     ps.forEach((p,i)=>{ const sp=vis[i]; if(sp<=0) return; const k=rv(sp,0.45), cy=Y(i); g.save(); g.globalAlpha*=k; g.translate((1-k)*0.04*bk,0);
       g.fillStyle=pal.accent; g.beginPath(); g.arc(rx,cy,r,0,Math.PI*2); g.fill(); dtx(g,String(i+1),rx,cy,0.030*bk,'800',txt,font,'center','middle');
-      const fsi=m.fss[i], lh=fsi*1.25, ty=cy-m.ls[i].length*lh/2; m.ls[i].forEach((l,q)=>dtx(g,l,rx+0.06*bk,ty+q*lh,fsi,'700',pal.text,font)); g.restore(); });
+      const fsi=m.fss[i], lh=fsi*1.25, AL=taX(it,rx+0.06*bk,c.x+c.w-0.04*bk), ty=cy-m.ls[i].length*lh/2; m.ls[i].forEach((l,q)=>dtx(g,l,AL?AL.x:rx+0.06*bk,ty+q*lh,fsi,'700',pal.text,font,AL?AL.al:'left','top')); g.restore(); });
   }
   g.restore();
 }
@@ -47476,7 +47549,7 @@ MEAS.agenda=(E,it,iw,k)=>{
 DRAW.agenda=(E,c,it)=>{
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,10), m=c.m;
   popBegin(E,c,s0,bk,0.3); hdrDraw(E,c,it,bk);
-  const y0=c.y+m.hd+0.006*bk, gw=0.03*bk, cw=(c.w-gw*(m.cols-1))/m.cols, bh=m.rh;
+  const y00=c.y+m.hd+0.006*bk, gw=0.03*bk, cw=(c.w-gw*(m.cols-1))/m.cols, bh=m.rh, y0=y00+vaFree(it,c.y+c.h-0.03*bk-(y00+m.rows*(bh+0.014*bk)-0.014*bk));   /* v114: 목록 전체를 위·중간·아래로 */
   ps.forEach((p,i)=>{
     const sp=partSince(E,it,p,i); if(sp<=0) return; const col=Math.floor(i/m.rows), row=i%m.rows, x=c.x+col*(cw+gw), y=y0+row*(bh+0.014*bk), k=rv(sp,0.45), gl=Math.max(0,1-sp/1.4);
     g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.05*bk,0);
@@ -47484,7 +47557,7 @@ DRAW.agenda=(E,c,it)=>{
     if(gl>0.02){ g.save(); g.shadowColor=pal.accent; g.shadowBlur=0.05*bk*gl; g.globalAlpha*=gl; g.lineWidth=Math.max(2,0.004*bk); g.strokeStyle=pal.accent; roundRect(g,x,y,cw,bh,0.02*bk); g.stroke(); g.restore(); }
     const nb=bh*0.62*Math.min(1.25,FZ(p,'n')), bx=x+0.016*bk, by=y+(bh-nb)/2, ns=String(p.n==null||p.n===''?(i+1<10?'0'+(i+1):i+1):p.n);
     roundRect(g,bx,by,nb,nb,nb*0.28); g.fillStyle=pal.accent; g.fill(); dtf(g,ns,bx+nb/2,by+nb/2,nb*0.86,nb*0.50,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle',0.5);
-    const tx=bx+nb+0.022*bk, tw=x+cw-0.02*bk-tx; dtf(g,String(p.t||''),tx,y+bh/2,tw,Math.min(bh*0.50,0.046*bk)*FZ(p,'t'),'700',pal.text,font,'left','middle',0.55);
+    const tx=bx+nb+0.022*bk, tw=x+cw-0.02*bk-tx, AL=taX(it,tx,tx+tw); dtf(g,String(p.t||''),AL?AL.x:tx,y+bh/2,tw,Math.min(bh*0.50,0.046*bk)*FZ(p,'t'),'700',pal.text,font,AL?AL.al:'left','middle',0.55);
     g.restore();
   });
   g.restore();
@@ -47713,7 +47786,7 @@ function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
       const f=findItem(t.id); if(!f) break; const g=f.g, it=f.it;
       if(t.pi>=0&&it.parts&&it.parts.length>1&&it.parts[t.pi]){ it.parts.splice(t.pi,1); msg='항목 "'+lab+'" 삭제'; }
       else{ g.items=g.items.filter(x=>x!==it); msg='구성요소 "'+lab+'" 삭제'; }
-      if(!g.items.length){ P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; msg+=' — 마지막 구성요소라 인포그래픽도 함께 지웠어요'; }
+      if(!g.items.length) msg+=' — 마지막 구성요소를 지워도 인포그래픽(화면 요소)은 비어 있는 채로 남겨 뒀어요';   /* v114: 구성요소가 0개여도 인포그래픽은 독립된 화면 요소로 남음 — 지우려면 [인포] 줄에서 따로 */
       UI.igIt=''; UI.igPt=-1; break; }
     case 'sub': {
       if(String(t.id).indexOf('x:')===0){ const id=String(t.id).slice(2); if(!(P.xsubs||[]).some(x=>x.id===id)) break; P.xsubs=P.xsubs.filter(x=>x.id!==id); msg='추가 자막 "'+lab+'" 삭제'; }
@@ -47902,6 +47975,10 @@ function lePaintBoxes(drag){
   box.innerHTML=us.map((u,k)=>{ const it=g.items[u.i], bt=BT[it.type]||BT.point, sel=L.u===k;
     return '<div class="le-b'+(sel?' sel':'')+'" data-u="'+k+'" style="'+pos(it.bx)+'" title="끌어서 옮기고, 모서리·가장자리를 끌어 크기를 바꿔요 — 다른 상자 위에 놓으면 자리가 바뀌어요"><span class="lb">'+(k+1)+' · '+esc(bt.n)+(u.n>1?' ×'+u.n:'')+' — '+esc(clipS(leLabel(it),14))+'</span>'+(sel?LE_HND.map(h=>'<i class="le-h h-'+h+'" data-h="'+h+'"></i>').join(''):'')+'</div>'; }).join('');
 }
+function leAlBar(g,L){   /* v114: 고른 상자 안 글의 좌우·상하 위치 */
+  if(!g||L.u<0||!alOK(g)) return ''; const q=leUnit(L.u); if(!q) return ''; const its=[]; for(let i=0;i<q.u.n;i++) its.push(q.g.items[q.u.i+i]);
+  return '<span class="vs-al le"><i title="고른 상자 안 글을 놓을 자리 — 상하 위치는 상자가 글보다 클 때 눈에 보여요">글 위치</i>'+alBtns('leAl','',its,false,'')+'</span>';
+}
 function lePaintBar(){
   const g=leG(), bar=$('vsLeBar'), tp=$('vsLeTpl'), L=UI.le; if(!g||!bar||!L) return;
   const sc=P.scenes[sceneIdx(g.s+0.05)], gs=sc?igsOfScene(sc).slice().sort((a,b)=>a.s-b.s):[g], us=igUnits(g.items), M=us.length;
@@ -47910,6 +47987,7 @@ function lePaintBar(){
     +'<span class="vs-sp"></span>'
     +F.btn('leTpl','🧩 템플릿 '+(L.tpl?'닫기':'고르기'),{c:L.tpl?'on':'pri',title:'구성요소 개수별 배치 템플릿 '+LTPL.length+'개 — 고르면 모든 구성요소의 크기·위치가 한 번에 바뀌어요'})
     +F.btn('leSq','⬜ 정사각형',{dis:L.u<0,title:'고른 상자를 정사각형으로(가운데 기준)'})+F.btn('leSqAll','⬜ 모두 정사각형',{title:'모든 상자를 정사각형으로(각자 가운데 기준)'})+F.btn('leSame','🟰 같은 크기',{dis:L.u<0,title:'모든 상자를 고른 상자와 같은 크기로(각자 가운데 기준)'})
+    +leAlBar(g,L)
     +F.btn('leAuto','↺ 자동 배치',{title:'크기/배치를 지우고 자동 배치로 되돌려요'})+F.btn('leReset','↶ 처음 상태',{title:'이 창을 열었을 때의 크기/배치로'})+F.btn('leDone','✔ 완료',{c:'pri',title:'닫기 (Esc)'})
     +'<div class="le-hint" title="상자를 끌어 옮기고, 모서리·가장자리를 끌어 크기를 바꿔요 · 다른 상자 위에 놓으면 서로 자리(위치·크기)가 바뀌어요 · 방향키 = 미세 이동(Shift = 크게) · +/− = 크기 · Alt = 자석 끄기 · 되돌리기 Ctrl+Z">끌어서 옮기고 · 모서리로 크기 · <b>다른 상자 위에 놓으면 자리 맞바꿈</b> · 방향키 미세 이동 · Esc 닫기</div>';
   if(!L.tpl){ tp.style.display='none'; tp.innerHTML=''; lePlace(); return; }
@@ -48018,6 +48096,7 @@ function leAct(a,id){
     case 'leTplSide': if(UI.le){ const g=leG(); UI.le.side=(UI.le.side||(g&&g.mode==='right'?'l':'r'))==='l'?'r':'l'; lePaintBar(); } break;
     case 'leTplPick': leApplyTpl(id); break;
     case 'leClip': leSwitch(id); break;
+    case 'leAl': { const q=UI.le&&UI.le.u>=0?leUnit(UI.le.u):null; if(!q){ toast('먼저 상자를 하나 골라 주세요'); break; } const its=[]; for(let i=0;i<q.u.n;i++) its.push(q.g.items[q.u.i+i]); const p=String(id).split(':'); if(alApply(its,p[0],p[1])) leChanged('글 위치',true); break; }   /* v114 */
     case 'leSq': leSquare(false); break;
     case 'leSqAll': leSquare(true); break;
     case 'leSame': leSame(); break;
@@ -48115,12 +48194,12 @@ function tmulDelete(){   /* 여러 개 고른 구성요소·인포그래픽을 �
     by.forEach((arr,g)=>{
       arr.filter(x=>x.pi>=0&&x.it.parts&&x.it.parts.length>1).sort((a,b)=>b.pi-a.pi).forEach(x=>{ if(x.it.parts[x.pi]){ x.it.parts.splice(x.pi,1); n++; } });   /* 항목 칩은 번호가 밀리지 않게 뒤에서부터 */
       arr.filter(x=>x.pi<0||!(x.it.parts&&x.it.parts.length>1)).forEach(x=>{ if(g.items.indexOf(x.it)>=0){ g.items=g.items.filter(q=>q!==x.it); n++; } });
-      if(!g.items.length){ P.igs=P.igs.filter(q=>q!==g); gone++; if(UI.ig===g.id) UI.ig=''; }
+      if(!g.items.length) gone++;   /* v114: 비어도 인포그래픽은 남김 */
     });
     UI.igIt=''; UI.igPt=-1;
   }
   UI.tmul=[]; UI.tsel=null; layout(P); sortClips(P); commit('삭제 — 여러 개'); renderAll(); igPostersAll();
-  toastUndo((sel[0].k==='clip'?'인포그래픽 ':'구성요소 ')+n+'개 삭제'+(gone?' — 비어 버린 인포그래픽 '+gone+'개도 함께':'')); return true;
+  toastUndo((sel[0].k==='clip'?'인포그래픽 ':'구성요소 ')+n+'개 삭제'+(gone?' — 비어 버린 인포그래픽 '+gone+'개는 그대로 남겨 뒀어요':'')); return true;
 }
 /* ══ /v113 ══ */
 /* ══ v103 (2026-10-26) — 타임라인의 챕터 타이틀을 끌어서 길이·위치 바꾸기 ═════════════════════════════════════════════════════
@@ -49350,7 +49429,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,
+    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
