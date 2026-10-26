@@ -44280,12 +44280,33 @@ async function saveProject(){
   for(const k of keys){ if(!used.has(String(k).slice(P.id.length+1))) await dbDelBlob(k); }
   UI.saved=true; paintSaved();
 }
+/* v115: 목록 블록(일정·흐름·시나리오·개요·히트맵·지도)의 항목 '내용' 칸과 '시점' 칸이 같은 이름(t)이라, 내용을 고치면 글은 저장되지 않고 항목의 시점(앵커 f)이 숫자가 아닌 값으로 망가졌음(저장하면 null → 맨 앞 문장 시각으로 보임).
+   그렇게 망가진 항목은 불러올 때 앞 항목 0.9초 뒤(첫 항목은 블록 시점, 없으면 인포그래픽 시작)로 다시 잡고 바꾼 개수를 돌려줌 */
+function fixPartAnchors(p){
+  let n=0; const okA=a=>!!a&&a.sid!=null&&typeof a.f==='number'&&isFinite(a.f);
+  (p.igs||[]).forEach(g=>(g.items||[]).forEach(it=>{
+    const ps=it&&it.parts; if(!Array.isArray(ps)||!ps.length) return; let prev=null;
+    ps.forEach(q=>{
+      if(!q) return;
+      if(okA(q.at)&&(q.dt==null||(typeof q.dt==='number'&&isFinite(q.dt)))){ const t=anchT(p,{sid:q.at.sid,f:q.at.f,dt:q.dt||0}); if(t!=null) prev=t; return; }
+      let t0=prev!=null?prev+0.9:null;
+      if(t0==null&&okA(it.at)) t0=anchT(p,{sid:it.at.sid,f:it.at.f,dt:(typeof it.dt==='number'&&isFinite(it.dt))?it.dt:0});
+      if(t0==null&&g.a) t0=anchT(p,g.a);
+      if(t0==null) return;
+      const end=g.b?anchT(p,g.b):null; if(end!=null) t0=Math.min(t0,Math.max(0,end-0.05));
+      const a=anchorAtTime(p,t0); if(!a) return;
+      q.at={sid:a.sid,f:a.f}; q.dt=a.dt; prev=t0; n++;
+    });
+  }));
+  return n;
+}
 function fixProject(p){   /* 옛 형식 보정 */
   const hadTt=!!(p.cfg&&p.cfg.title&&typeof p.cfg.title==='object'); p.cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); if(!hadTt){ p.cfg.title.on=false; p.cfg.title.user=false; } p.ttl=p.ttl||{}; p.xsubs=p.xsubs||[]; p.chunks=p.chunks||[]; p.scenes=p.scenes||[];
   p.lang=V.norm(p.lang);   /* v108: 영상 언어(옛 프로젝트는 한국어) */
   p.sb=(p.sb&&typeof p.sb==='object')?p.sb:{on:true};   /* v107: 스토리보드 적용(켬이 기본 — 스토리보드가 없으면 sbOn 이 늘 꺼진 것으로 침) */
   p.scenes.forEach(c=>{ c.vis=c.vis||{kind:'none'}; c.trans=c.trans||{t:'inherit',d:0}; c.alt=c.alt||[]; });
   p.sents.forEach(s=>{ s.sub=s.sub||{text:null,ds:0,de:0,hide:false}; }); p.char=p.char||null; p.igs=p.igs||[]; igMigrate(p); p.igs.forEach(g=>{ if(!g.sty) g.sty='news'; });
+  { const fx=fixPartAnchors(p); if(fx) setTimeout(()=>{ try{ toast('예전 편집 오류로 시점이 망가진 목록 항목 '+fx+'개를 다시 잡았어요 — [인포] 탭에서 시점이 맞는지 확인해 주세요'); }catch(e){} },900); }   /* v115 */
   p.chunks.forEach(k=>{ if(k.state==='run') k.state=k.bid?'done':'none'; });
   p.scenes.forEach(c=>{ if(c.vis.gen&&c.vis.gen.state==='run') c.vis.gen.state='err',c.vis.gen.err='중단됨(창을 닫았어요)'; });
   return p;
@@ -45754,7 +45775,7 @@ function igBlockHtml(g,it){
   bt.f.forEach(f=>{ h+=F.row(f[1],fieldIn(pre+f[0],it[f[0]],f[2])); });
   if(bt.parts){
     (it.parts||[]).forEach((p,i)=>{ const pp='igp:'+g.id+':'+it.id+':'+i+':', tp=partMention(P,p);
-      h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+timeIn(pp+'t',tp,tp==null)+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
+      h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+timeIn(pp+'_t',tp,tp==null)+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
     h+='<div class="vs-btns">'+F.btn('igAddPt','＋ 항목 추가',{d:cid})+'</div><div class="r sm"><span class="hint">블록 전체 시점</span>'+F.btn('igNudge','◀ 0.1초',{d:cid+':-0.1',title:'항목 전부를 0.1초 일찍'})+F.btn('igNudge','0.1초 ▶',{d:cid+':0.1',title:'항목 전부를 0.1초 늦게'})+F.btn('igNudge','◀ 0.5초',{d:cid+':-0.5'})+F.btn('igNudge','0.5초 ▶',{d:cid+':0.5'})+'</div>';
   }else{
     h+='<div class="r sm">'+timeIn(pre+'t',m0,m0==null)+F.btn('igPhIt','재생헤드로',{d:cid,title:'지금 재생헤드 위치를 이 블록이 나오는 시점으로'})+F.btn('igNudge','◀',{d:cid+':-0.1',title:'0.1초 일찍'})+F.btn('igNudge','▶',{d:cid+':0.1',title:'0.1초 늦게'})+'<label class="sm">보정 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'dt" data-t="n" step="0.05" value="'+(it.dt||0)+'">초</label>'+(m0==null?'<em class="bad">문장을 찾지 못함</em>':'')+'</div>';
@@ -45833,7 +45854,7 @@ function setIgField(path,v){
     if(k.indexOf('fz.')===0){ setFz(it,k.slice(3),v); return 'draw'; }   /* 블록 글자 크기 */
     switch(k){
       case 'type': g.items[i]=convertItem(it,v); return 'insp';
-      case 't': if(v!=null){ const at=anchorAtTime(P,v); if(at){ it.at={sid:at.sid,f:at.f}; it.dt=at.dt; sortItems(g); } } return 'insp';
+      case 't': if(typeof v==='number'&&isFinite(v)){ const at=anchorAtTime(P,v); if(at){ it.at={sid:at.sid,f:at.f}; it.dt=at.dt; sortItems(g); } } return 'insp';
       case 'when': if(!v) delete it.ld; else if(WHEN_V[v]!=null) it.ld=WHEN_V[v]; return 'insp';   /* 나타나는 때: 자동(종류별 기본) / 먼저 / 조금 먼저 / 동시 / 뒤 */
       case 'du': if(v==null||!(v>0)) delete it.du; else it.du=r2(clamp(v,0.3,600)); return 'draw';   /* v113: 화면에 보이는 길이 */
       case 'dt': it.dt=v==null?0:v; return 'draw';
@@ -45846,7 +45867,7 @@ function setIgField(path,v){
   if(a[3]==='*'&&a[4]&&a[4].indexOf('fz.')===0){ it.parts.forEach(q=>setFz(q,a[4].slice(3),v)); return 'draw'; }   /* 모든 항목 글자 크기 */
   const idx=+a[3], p=it.parts[idx], k=a[4]; if(!p) return 'draw';
   if(k&&k.indexOf('fz.')===0){ setFz(p,k.slice(3),v); return 'draw'; }   /* 항목 글자 크기 */
-  if(k==='t'){ if(v!=null){ const at=anchorAtTime(P,v); if(at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; sortItems(g); } } return 'insp'; }
+  if(k==='_t'){ if(typeof v==='number'&&isFinite(v)){ const at=anchorAtTime(P,v); if(at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; sortItems(g); } } return 'insp'; }   /* 항목의 시점 — v115: 내용 칸(t)과 이름이 같아 내용을 고치면 시점이 망가지던 것을 _t 로 나눔, 숫자가 아니면 건드리지 않음 */
   const f=(BT[it.type].parts||[]).find(x=>x[0]===k); p[k]=f&&f[2]==='num'?(v==null?null:v):(f&&f[2]==='tone'?(v||''):String(v==null?'':v));
   return 'draw';
 }
@@ -49429,7 +49450,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
+    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,fixPartAnchors,fixProject,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
