@@ -2993,6 +2993,19 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-sumry{margin:8px 0;padding:8px 10px;border-radius:8px;background:#0f1b30;border:1px solid #223653;font-size:11.5px;line-height:1.7}
 .vs-sumry .t{display:block;color:#cbd5e1;margin-bottom:2px}
 .vs-sumry div{display:flex;gap:8px}.vs-sumry div b{flex:0 0 52px;color:#9fb0c9}.vs-sumry div span{color:#e2e8f0}
+/* v118 — 🧠 내 스타일 학습 */
+.vs-learn{flex:1 1 100%;min-width:0;max-width:100%;box-sizing:border-box;margin-top:6px;padding:7px 10px;border-radius:8px;background:#0f1b30;border:1px solid #2b4a6b;font-size:11.5px;line-height:1.65;color:#cbd5e1}
+.vs-learn.off{opacity:.55}
+.vs-learn b{color:#e2e8f0}.vs-learn .ok{color:#6ee7b7}.vs-learn .bad{color:#fca5a5}.vs-learn .mut{color:#8fa3c2}
+.vs-learn .tt{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9fb0c9}
+.vs-learn .vs-btns{margin:6px 0 4px}
+.vs-lv .vs-lvs{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:#cbd5e1}
+.vs-lv .vs-lvs span{color:#8da0bf;font-size:10.5px;margin-left:8px}
+.vs-lv .vs-lvt{padding:8px 10px;border-radius:8px;background:#111c30;border:1px solid #1f2d46;font-size:12px;line-height:1.7;color:#e2e8f0}
+.vs-lv .vs-lvl>div{display:flex;gap:8px;font-size:11.5px;line-height:1.7;padding:2px 0;border-bottom:1px dashed #1b2940}
+.vs-lv .vs-lvl>div b{flex:0 0 112px;color:#9fb0c9}.vs-lv .vs-lvl>div span{flex:1;min-width:0;color:#e2e8f0;word-break:keep-all;overflow-wrap:anywhere}
+.vs-lv pre{white-space:pre-wrap;margin:4px 0;padding:7px 10px;border-radius:8px;background:#0b1322;border:1px solid #1f2d46;font:inherit;font-size:11.5px;line-height:1.65;color:#dbe4f3}
+.vs-lv ul{margin:4px 0 0 16px;padding:0;font-size:11.5px;line-height:1.7;color:#cbd5e1}
 /* v108 — 다국어 영상 */
 .vs-lgb{font-style:normal;font-size:9.5px;font-weight:800;padding:1px 6px;margin-left:6px;border-radius:8px;background:#1e3a8a;color:#bfdbfe;vertical-align:middle}
 #vsLangBtn.on{border-color:#2563eb;background:#14264a;color:#bfdbfe}
@@ -42107,7 +42120,7 @@ L.en={id:'en',name:'영어',native:'English',short:'EN',ai:'English',cls:'latin'
   register:'natural spoken broadcast English — conversational yet professional, short sentences, jargon explained right away, numbers written so they are easy to read aloud',
   units:'Write currency and units the way English-language financial media do (e.g. "KRW 1,350" or "1,350 won", "5,412 points", "+1.2%", "$78 a barrel"). Use standard English names for indices, companies and terms (KOSPI, KOSDAQ, Samsung Electronics, SK hynix, S&P 500, Nasdaq, the Fed, FOMC).',
   chap:{open:'Opening',indices:'Market Indices Briefing',eco:'Economic Calendar Checkpoints',market:'Market Analysis',theme:'Sector & Theme Analysis',watch:'Watchlist Check',warren:"Warren Kim's View",radar:'AI Stock Radar Picks',tech:'Technical Analysis Points',strategy:'Trading Strategy Check',scenario:'Scenarios & Action Plan',close:'Wrap-up'},
-  tx:{fig:'Key figure',sec:'Sectors',evt:'Schedule',geo:'Major markets',tl:'Timeline',pct:'Change',val:'Level',up:'Strong',dn:'Weak',prev:'Before',now:'Now',sub:'Subtitle',ns:'New sentence',loading:'Loading the visual…',fg:'Fear & Greed Index',vix:'VIX',rsi:'RSI',ag:"Today's Overview",agi:'Topic'},
+  tx:{fig:'Key figure',sec:'Sectors',evt:'Schedule',geo:'Major markets',tl:'Timeline',pct:'Change',val:'Level',up:'Strong',dn:'Weak',prev:'Before',now:'Now',sub:'Subtitle',ns:'New sentence',loading:'Loading the visual…',fg:'Fear & Greed Index',vix:'VIX',rsi:'RSI',ag:"Today's Overview",agi:'Topic',base:'Base',open:'Open',high:'High',low:'Low',vol:'Volume',est:'Est.',act:'Actual',beat:'Beat',miss:'Miss',inl:'In line',tot:'Total',rku:'Top gainers',rkd:'Top losers',adv:'Advancing',dec:'Declining',unc:'Unchanged',fromhi:'vs high'},
   gz:{fg:['Extreme Fear','Fear','Neutral','Greed','Extreme Greed'],vix:['Calm','Caution','Alert','Fear'],rsi:['Oversold','Neutral','Overbought'],plain:['Low','Medium','High']},
   presets:[['News anchor','Read like an evening news anchor — calm and clear, numbers and proper nouns slowly and precisely'],['Breaking news','Deliver it like breaking news — fast and urgent, with emphasis on key figures'],['Friendly explainer','Explain it like talking to a friend — warm and natural, with comfortable pauses between sentences'],['Market close brief','Low, steady, trustworthy tone; finish each sentence firmly']]};
 L.zh={id:'zh',name:'중국어(간체)',native:'简体中文',short:'中',ai:'Simplified Chinese (简体中文)',cls:'cjk',cpm:270,tw:1,lcw:0.3,
@@ -42117,7 +42130,7 @@ L.zh={id:'zh',name:'중국어(간체)',native:'简体中文',short:'中',ai:'Sim
   register:'natural spoken broadcast Mandarin (口语化的播报风格) — professional yet approachable, short sentences, jargon explained right away, numbers written so they are easy to read aloud',
   units:'货币和单位按中文财经媒体的习惯书写(如“1,350韩元”“5,412点”“+1.2%”“每桶78美元”);指数、公司和术语使用标准中文名称(如 韩国综合指数KOSPI、三星电子、SK海力士、标普500、纳斯达克、美联储、FOMC)。',
   chap:{open:'开场',indices:'主要指数简报',eco:'经济日程要点',market:'市场分析',theme:'主题与板块分析',watch:'关注个股检查',warren:'Warren Kim 的观点',radar:'AI Stock Radar 捕捉个股',tech:'技术分析要点',strategy:'交易策略检查',scenario:'情景与应对策略',close:'结语'},
-  tx:{fig:'核心数据',sec:'板块',evt:'日程',geo:'主要市场',tl:'时间线',pct:'涨跌幅',val:'点位',up:'强势',dn:'弱势',prev:'此前',now:'现在',sub:'字幕',ns:'新句子',loading:'正在加载画面…',fg:'恐惧与贪婪指数',vix:'VIX',rsi:'RSI',ag:'今日概览',agi:'要点'},
+  tx:{fig:'核心数据',sec:'板块',evt:'日程',geo:'主要市场',tl:'时间线',pct:'涨跌幅',val:'点位',up:'强势',dn:'弱势',prev:'此前',now:'现在',sub:'字幕',ns:'新句子',loading:'正在加载画面…',fg:'恐惧与贪婪指数',vix:'VIX',rsi:'RSI',ag:'今日概览',agi:'要点',base:'基准',open:'开盘',high:'最高',low:'最低',vol:'成交量',est:'预期',act:'实际',beat:'超预期',miss:'不及预期',inl:'符合预期',tot:'合计',rku:'涨幅榜',rkd:'跌幅榜',adv:'上涨',dec:'下跌',unc:'平盘',fromhi:'较高点'},
   gz:{fg:['极度恐惧','恐惧','中性','贪婪','极度贪婪'],vix:['平稳','注意','警戒','恐慌'],rsi:['超卖','中性','超买'],plain:['低','中','高']},
   presets:[['新闻主播','像晚间新闻主播一样,沉稳清晰,数字和专有名词读得慢而准确'],['快讯语气','像播报快讯一样语速较快、节奏紧凑,关键数字加重语气'],['亲切讲解','像和朋友聊天一样亲切自然,句子之间留出充分停顿'],['收盘简报','语调低沉平稳、值得信赖,每句话收尾干脆']]};
 L.ja={id:'ja',name:'일본어',native:'日本語',short:'日',ai:'Japanese (日本語)',cls:'cjk',cpm:350,tw:1,lcw:0.3,
@@ -42127,7 +42140,7 @@ L.ja={id:'ja',name:'일본어',native:'日本語',short:'日',ai:'Japanese (日�
   register:'natural spoken Japanese news-broadcast style (です・ます調) — professional yet approachable, short sentences, jargon explained right away, numbers written so they are easy to read aloud',
   units:'通貨・単位は日本語の経済メディアの慣例で書く(例:「1,350ウォン」「5,412ポイント」「+1.2%」「1バレル78ドル」)。指数・企業名・用語は標準的な日本語表記(KOSPI、サムスン電子、SKハイニックス、S&P500、ナスダック、FRB、FOMC)にする。',
   chap:{open:'オープニング',indices:'主要指数ブリーフィング',eco:'経済指標カレンダー',market:'市況分析',theme:'テーマ・セクター分析',watch:'注目銘柄チェック',warren:'Warren Kim の視点',radar:'AI Stock Radar 注目銘柄',tech:'テクニカル分析ポイント',strategy:'トレード戦略チェック',scenario:'シナリオと対応戦略',close:'まとめ'},
-  tx:{fig:'注目の数値',sec:'セクター',evt:'日程',geo:'主要市場',tl:'タイムライン',pct:'騰落率',val:'水準',up:'強い',dn:'弱い',prev:'以前',now:'現在',sub:'字幕',ns:'新しい文',loading:'画面を読み込み中…',fg:'恐怖・強欲指数',vix:'VIX',rsi:'RSI',ag:'本日の概要',agi:'トピック'},
+  tx:{fig:'注目の数値',sec:'セクター',evt:'日程',geo:'主要市場',tl:'タイムライン',pct:'騰落率',val:'水準',up:'強い',dn:'弱い',prev:'以前',now:'現在',sub:'字幕',ns:'新しい文',loading:'画面を読み込み中…',fg:'恐怖・強欲指数',vix:'VIX',rsi:'RSI',ag:'本日の概要',agi:'トピック',base:'基準',open:'始値',high:'高値',low:'安値',vol:'出来高',est:'予想',act:'実績',beat:'上振れ',miss:'下振れ',inl:'一致',tot:'合計',rku:'値上がり上位',rkd:'値下がり上位',adv:'上昇',dec:'下落',unc:'変わらず',fromhi:'高値比'},
   gz:{fg:['極度の恐怖','恐怖','中立','強欲','極度の強欲'],vix:['安定','注意','警戒','恐怖'],rsi:['売られすぎ','中立','買われすぎ'],plain:['低い','普通','高い']},
   presets:[['ニュースキャスター','夜のニュースキャスターのように落ち着いて明瞭に、数字や固有名詞はゆっくり正確に読む'],['速報調','速報を伝えるように速くて緊迫感のある口調で、重要な数値は強調して読む'],['親しみやすい解説','友達に説明するように柔らかく自然に、文の間に十分な間を取る'],['引け後ブリーフィング','低く安定した信頼感のある声で、文末をきっぱり締める']]};
 const order=['ko','en','zh','ja'];
@@ -43860,7 +43873,7 @@ const DEF_CFG={
   sub:{on:true,font:FONTS[0][0],size:46,color:'#ffffff',stroke:'#000000',strokeW:7,bg:'#000000',bgA:0,pos:'bottom',off:7,maxW:84,lines:2,bold:true,anim:'fade'},
   look:{trans:'fade',transDur:0.35,fit:'auto',motion:'kenburns',clipVol:0,filter:{b:1,c:1,s:1}},
   bgm:{bid:'',name:'',vol:0.16,duck:0.35,fadeIn:1.5,fadeOut:3,loop:true},
-  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false},title:{on:true,dur:2.5,keepBgm:false,user:false}
+  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false,alearn:true},title:{on:true,dur:2.5,keepBgm:false,user:false}
 };
 function loadPref(lang){ let p={}; try{ p=JSON.parse(localStorage.getItem(LS_PREF)||'{}')||{}; }catch(e){} const cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); return (lang&&lang!=='ko')?langOverlay(cfg,lang,true):cfg; }
 function savePref(cfg){
@@ -44164,7 +44177,7 @@ const MC=document.createElement('canvas').getContext('2d');
 function setFont(g,st,h){ g.font=(st.bold?'700 ':'400 ')+(st.size*h/1080).toFixed(1)+'px '+st.font; }
 function wrapLines(g,text,maxW){
   const lines=[];
-  String(text).split('\n').forEach(par=>{
+  String(text).replace(NLRE2,'\n').split('\n').forEach(par=>{   /* v116: ↵·\n 표시 자리에서 줄을 바꿈 */
     const words=par.split(/\s+/).filter(Boolean); let cur='';
     words.forEach(wd=>{
       const t=cur?cur+' '+wd:wd;
@@ -44387,7 +44400,14 @@ const BT={
 };
 const BT_ORDER=['stat','hero','move','bar','row','heat','donut','gauge','line','vs','event','flow','scenario','level','point','quote','title'];
 const FAILED=new Set();   /* 불러오지 못한 이미지 id — 캐릭터 파일이 없을 때 기본 캐릭터로 */
-const clipS=(s,n)=>{ s=String(s==null?'':s).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(); if(s.length<=n) return s; const c=s.slice(0,n), i=c.lastIndexOf(' '); return (i>n*0.5?c.slice(0,i):c).trim(); };
+/* ── 줄바꿈(v116) — 글 안의 '↵'(글 칸에서 Shift+Enter 로 넣음)나 직접 친 \n 자리에서 줄을 바꿔 그림. 글 칸이 한 줄짜리라 줄바꿈 자리를 ↵ 표시로 저장하고,
+   그릴 때(wrapLines·dtx·fitFont·pill)만 줄바꿈으로 풀어 읽고, 짧게 보일 때(clipS·igName·칩)는 한 줄로 이어 보임. 줄 수만큼 글자를 줄여(nlK) 한 줄짜리 칸에도 들어가게 함 ── */
+const NL_MARK='↵', NLRE=/\s*(?:↵|\\n|\r?\n)\s*/g, NLRE2=/\s*(?:↵|\\n)\s*/g;
+const hasNL=s=>typeof s==='string'&&(s.indexOf('↵')>=0||s.indexOf('\\n')>=0||s.indexOf('\n')>=0);
+const nlLines=s=>String(s==null?'':s).split(NLRE).map(x=>x.trim()).filter(Boolean);
+const nlFlat=s=>hasNL(s)?nlLines(s).join(' '):s;
+const nlK=n=>n<=1?1:n===2?0.72:n===3?0.56:0.46;   /* 한 줄 자리에 여러 줄이 들어갈 때 글자 크기 배율 */
+const clipS=(s,n)=>{ s=String(s==null?'':s).replace(/<[^>]*>/g,'').replace(NLRE,' ').replace(/\s+/g,' ').trim(); if(s.length<=n) return s; const c=s.slice(0,n), i=c.lastIndexOf(' '); return (i>n*0.5?c.slice(0,i):c).trim(); };
 const cleanChap=s=>String(s||'').replace(/^\s*\d{1,2}\s*[.)\-:：]\s*/,'').trim();
 const easeOut=x=>1-Math.pow(1-x,3);
 const easeBack=x=>{ const c1=1.5, c3=c1+1; return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2); };
@@ -44499,8 +44519,16 @@ const toneCol=(pal,tone)=>tone==='up'?pal.up:tone==='down'?pal.down:tone==='flat
 const segCol=(pal,i,n)=>pal.dark?'hsl('+((pal.hue+i*(300/Math.max(3,n)))%360)+',72%,'+(62-(i%2)*6)+'%)':'hsl('+((pal.hue+i*(300/Math.max(3,n)))%360)+',66%,'+(46+(i%2)*6)+'%)';
 
 /* ── 그리기 도구 ── */
-function fitFont(g,text,maxW,fs,wt,font,minK){ g.font=wt+' '+fs.toFixed(1)+'px '+font; const w=g.measureText(text).width; return (w<=maxW||!(w>0))?fs:Math.max(fs*(minK||0.5),fs*maxW/w); }
-function dtx(g,s,x,y,fs,wt,col,font,al,bl){ g.font=wt+' '+fs.toFixed(1)+'px '+font; g.fillStyle=col; g.textAlign=al||'left'; g.textBaseline=bl||'top'; g.fillText(s,x,y); }
+function fitFont(g,text,maxW,fs,wt,font,minK){
+  if(hasNL(text)){ const ls=nlLines(text), fk=nlK(ls.length), f0=fs*fk; g.font=wt+' '+f0.toFixed(1)+'px '+font; let w=0; ls.forEach(l=>{ w=Math.max(w,g.measureText(l).width); }); return ((w<=maxW||!(w>0))?f0:Math.max(f0*(minK||0.5),f0*maxW/w))/fk; }   /* v116: 줄바꿈이 든 글 — 가장 긴 줄 기준(dtx 가 줄 수만큼 다시 줄임) */
+  g.font=wt+' '+fs.toFixed(1)+'px '+font; const w=g.measureText(text).width; return (w<=maxW||!(w>0))?fs:Math.max(fs*(minK||0.5),fs*maxW/w);
+}
+function dtx(g,s,x,y,fs,wt,col,font,al,bl){
+  if(hasNL(s)){ const ls=nlLines(s);   /* v116: 줄바꿈이 든 글 — 줄마다 따로(위·가운데·아래 기준은 덩어리 전체에 맞춤) */
+    if(ls.length>1){ const f=fs*nlK(ls.length), lh=f*1.14, b=bl||'top', y0=b==='bottom'?y-(ls.length-1)*lh:b==='middle'?y-(ls.length-1)*lh/2:y; g.font=wt+' '+f.toFixed(1)+'px '+font; g.fillStyle=col; g.textAlign=al||'left'; g.textBaseline=b; ls.forEach((l,i)=>g.fillText(l,x,y0+i*lh)); return; }
+    s=ls[0]||''; }
+  g.font=wt+' '+fs.toFixed(1)+'px '+font; g.fillStyle=col; g.textAlign=al||'left'; g.textBaseline=bl||'top'; g.fillText(s,x,y);
+}
 function dtf(g,s,x,y,maxW,fs,wt,col,font,al,bl,minK){ const f=fitFont(g,s,maxW,fs,wt,font,minK||0.5); dtx(g,s,x,y,f,wt,col,font,al,bl); return f; }
 const alphaOf=(col,a)=>{ col=String(col); if(col[0]==='#') return rgbaOf(col,a); const m=/^(hsl|rgb)\((.*)\)$/.exec(col); return m?m[1]+'a('+m[2]+','+a+')':col; };
 function countText(str,p){   /* 숫자 부분만 0 → 값으로 올라가는 글 (앞뒤 글자·쉼표·소수 자릿수는 그대로) */
@@ -44528,7 +44556,7 @@ function cardBox(E,x,y,w,h,bk,al){   /* 카드 바탕 — 스타일마다 모양
 }
 function strip(E,x,y,h,col,bk){ const g=E.g; g.fillStyle=col; roundRect(g,x,y,0.008*bk,h,0.004*bk); g.fill(); }
 function pill(E,x,y,s,fs,fg,bg,al){   /* 둥근 알약 글 — 너비를 돌려줌. al: 'l'|'r'|'c' 기준점 */
-  const g=E.g; g.font='700 '+fs.toFixed(1)+'px '+E.font; const tw=g.measureText(s).width, pw=tw+fs*1.1, ph=fs*1.55;
+  s=nlFlat(s); const g=E.g; g.font='700 '+fs.toFixed(1)+'px '+E.font; const tw=g.measureText(s).width, pw=tw+fs*1.1, ph=fs*1.55;
   const px=al==='r'?x-pw:al==='c'?x-pw/2:x; roundRect(g,px,y,pw,ph,ph/2); g.fillStyle=bg; g.fill(); dtx(g,s,px+pw/2,y+ph/2,fs,'700',fg,E.font,'center','middle'); return pw;
 }
 function popBegin(E,c,since,bk,dur){   /* 팝업 효과(투명→불투명+살짝 커졌다 자리잡음) — 끝낼 때 E.g.restore() */
@@ -44998,6 +45026,8 @@ function chipOf(it){   /* 겹치기 형태(띠·배지)에 쓸 한 줄 요약 �
   if(t==='event'){ const p=ps[0]||{}; return {l:p.d||it.label||'',v:p.t||'',d:'',tone:'',txt:true,z:Z(p.d?FZ(p,'d'):FZ(it,'label'),FZ(p,'t'))}; }
   if(t==='cmp'){ const r=ps[0]||{}; return {l:it.label||((it.a||'')+' vs '+(it.b||'')),v:(r.a||'')+' : '+(r.b||''),d:'',tone:'',z:Z(it.label?FZ(it,'label'):Math.max(FZ(it,'a'),FZ(it,'b')),Math.max(FZ(r,'a'),FZ(r,'b')))}; }
   if(t==='map'){ const p=ps[0]||{}, v=nz(p.v); return {l:it.label||p.l||'',v:v==null?String(p.t||''):(v>0?'+':'')+v+'%',d:'',tone:v==null?'':v>0?'up':v<0?'down':'',z:Z(it.label?FZ(it,'label'):FZ(p,'l'),FZ(p,'v'))}; }
+  if(t==='arrow'||t==='price') return {l:it.label||'',v:it.value||'',d:it.delta||'',tone:t==='arrow'&&it.tone!=='up'&&it.tone!=='down'&&it.tone!=='flat'&&ARW_ANG[it.dir]!=null?dirTone(it.dir):itemTone(it),z:Z(FZ(it,'label'),FZ(it,'value'),FZ(it,'delta'))};
+  if(t==='breadth') return {l:it.label||'',v:'▲'+fmtN(+it.up||0,0)+' ▼'+fmtN(+it.down||0,0),d:'',tone:'',z:Z(FZ(it,'label'),FZ(it,'value'),1)};
   if(t==='point'||t==='quote'||t==='title') return {l:'',v:'',d:'',txt:true,text:it.text||it.sub||'',tone:'',z:Z(1,1,1,FZ(it,it.text?'text':'sub'))};
   const p0=ps[0]||{}; return {l:it.label||'',v:String(p0.l||p0.t||''),d:'',tone:'',txt:true,z:Z(FZ(it,'label'),p0.l?FZ(p0,'l'):FZ(p0,'t'))};
 }
@@ -45034,7 +45064,7 @@ function igCustomCells(E,items,cr){   /* 상자(bx)대로 칸 목록을 만듦 �
       const rowN=(isBar?0.066:0.072)*B*(isBar?bg:1)*(1+0.85*posz(zr)), rgN=(isBar?0.010:0.008)*B, gpN=0.018*B, totN=u.n*rowN+(u.n-1)*rgN+2*gpN, k=clamp(r.h/totN,0.2,3.2), gp=gpN*k, rg=rgN*k, rowH=Math.max(4,(r.h-2*gp-(u.n-1)*rg)/u.n);
       for(let q=0;q<u.n;q++) cells.push({t:u.t,i:u.i+q,x:r.x,y:r.y+gp+q*(rowH+rg),w:r.w,h:rowH,k,gy:r.y,gh:r.h,first:q===0,last:q===u.n-1,n:u.n,mxp,mxn});
     }else{
-      const t=MEAS[it.type]?it.type:'point', mf=MEAS[t]; let k=clamp(r.h/Math.max(1,mf(E,it,r.w,1).h),0.2,3.2), m=mf(E,it,r.w,k);
+      const t=MEAS[it.type]?it.type:'point', mf=MEAS[t], m1=mf(E,it,r.w,1); let k=clamp(r.h/Math.max(1,m1.h),0.2,3.2); if(m1.mw) k=Math.min(k,Math.max(0.2,r.w/(m1.mw*E.B))); let m=mf(E,it,r.w,k);   /* v117: mw = 이 종류가 알맞게 보이는 최소 폭(bk 비율) — 상자가 더 좁으면 글자를 폭에 맞춰 줄임 */
       for(let n=0;n<28&&m.h>r.h+0.5&&k>0.2;n++){ k=Math.max(0.2,k*0.95); m=mf(E,it,r.w,k); }   /* 글이 줄바꿈되는 블록은 높이가 배율에 정확히 비례하지 않아 조금씩 줄여 가며 맞춤 */
       const cell=Object.assign({t,i:u.i,x:r.x,y:r.y,w:r.w,k,m},m); cell.h=r.h; if(it.type==='point'&&it.style==='num') cell.num=++numC; cells.push(cell);
     }
@@ -45482,7 +45512,7 @@ function igCtx(sc,o){   /* ss = 화면에 옮길 '내용 있는' 문장만(인�
 }
 function infoUser(ctx){
   const hv=ctx.vk==='image'||ctx.vk==='video', up=String((P.cfg.prompts&&P.cfg.prompts.info)||'').trim();
-  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx);
+  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info');
 }
 const toneOK=t=>{ t=String(t||'').toLowerCase(); return /^(up|down|flat|acc|cur)$/.test(t)?t:''; };
 function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체·글자 길이 제한·형식 점검·문장 번호와 글로 시각 계산). 쓸 수 없으면 null */
@@ -45507,6 +45537,21 @@ function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체�
     case 'cmp': it.label=LN(r.label,18); it.a=LN(r.a,10); it.b=LN(r.b,10); it.parts=parts(6,p=>{ const l=LN(p.l,12), a=L(p.a,12), b=L(p.b,12); return l&&(a||b)?{l,a,b}:null; }); if(!it.a||!it.b||!it.parts.length) return null; break;
     case 'map': it.label=LN(r.label,14); it.parts=parts(8,p=>{ const g0=geoFind(p.l), v=nz(p.v), t=LN(p.t,8); return g0&&(v!=null||t)?{l:g0.n,v,t,tone:toneOK(p.tone)}:null; }); if(it.parts.length<2) return null; break;
     case 'agenda': it.label=LN(r.label,18); it.parts=parts(10,p=>{ const t=LN(p.t,20); return t?{n:String(p.n==null?'':p.n).replace(/[^0-9A-Za-z]/g,'').slice(0,3),t}:null; }); if(it.parts.length<2) return null; break;
+    case 'arrow': it.label=LN(r.label,18); it.value=L(r.value,16); it.delta=L(r.delta,14); it.note=LN(r.note,16); it.tone=toneOK(r.tone); it.dir=/^(up|down|flat|up2|down2)$/.test(r.dir)?r.dir:''; if(!it.value&&!it.delta) return null; it.at=anch(r.s,r.q,[it.value,r.label]); break;
+    case 'arrows': it.label=LN(r.label,14); it.parts=parts(12,p=>{ const l=LN(p.l,10), v=nz(p.v); return l&&v!=null?{l,v,t:L(p.t,10)}:null; }); if(it.parts.length<2) return null; break;
+    case 'price': it.label=LN(r.label,14); it.sub=L(r.sub,14); it.value=L(r.value,14); it.delta=L(r.delta,20); ['open','high','low','vol'].forEach(k=>{ it[k]=L(r[k],12); }); it.spark=numList(r.spark).slice(0,40).join(' '); it.tone=toneOK(r.tone); if(!it.value) return null; it.at=anch(r.s,r.q,[it.value,r.label]); break;
+    case 'vbar': it.label=LN(r.label,14); it.parts=parts(14,p=>{ const l=LN(p.l,8), v=nz(p.v); return l&&v!=null?{l,v,t:L(p.t,8)}:null; }); if(it.parts.length<2) return null; break;
+    case 'wfall': it.label=LN(r.label,14); it.unit=L(r.unit,6); it.note=LN(r.note,8); it.parts=parts(12,p=>{ const l=LN(p.l,8), v=nz(p.v); return l&&v!=null?{l,v,t:L(p.t,8)}:null; }); if(it.parts.length<2) return null; break;
+    case 'stock': { const b0=nz(r.base); it.label=LN(r.label,16); it.unit=L(r.unit,6); it.note=LN(r.note,14); if(b0!=null) it.base=b0; it.parts=parts(60,p=>{ const y=nz(p.y); return y!=null?{l:L(p.l,6),y}:null; }); if(it.parts.length<3) return null; break; }
+    case 'candle': it.label=LN(r.label,16); it.unit=L(r.unit,6); it.parts=parts(40,p=>{ const o=nz(p.o), c0=nz(p.c); if(o==null||c0==null) return null; const q={l:L(p.l,6),o,c:c0}, hi=nz(p.hi), lo=nz(p.lo), vol=nz(p.vol); if(hi!=null) q.hi=hi; if(lo!=null) q.lo=lo; if(vol!=null) q.vol=vol; return q; }); if(it.parts.length<3) return null; break;
+    case 'curve': it.label=LN(r.label,16); it.a=LN(r.a,8); it.b=LN(r.b,8); it.unit=L(r.unit,6); it.parts=parts(16,p=>{ const y=nz(p.y), y2=nz(p.y2); return (y!=null||y2!=null)?{l:L(p.l,6),y,y2}:null; }); if(it.parts.length<3) return null; break;
+    case 'tape': it.label=LN(r.label,14); it.parts=parts(14,p=>{ const l=LN(p.l,10), v=L(p.v,12), d=L(p.d,10); return l&&(v||d)?{l,v,d}:null; }); if(it.parts.length<2) return null; break;
+    case 'watch': it.label=LN(r.label,14); it.parts=parts(10,p=>{ const l=LN(p.l,10), v=L(p.v,12); return l&&v?{l,v,d:L(p.d,10),sr:numList(p.sr).slice(0,40).join(' ')}:null; }); if(it.parts.length<2) return null; break;
+    case 'rank': it.label=LN(r.label,14); it.parts=parts(12,p=>{ const l=LN(p.l,10), v=nz(p.v); return l&&v!=null?{l,v,t:L(p.t,8)}:null; }); if(it.parts.length<2) return null; break;
+    case 'period': it.label=LN(r.label,14); it.parts=parts(8,p=>{ const l=LN(p.l,8), v=nz(p.v); return l&&v!=null?{l,v,t:L(p.t,8)}:null; }); if(it.parts.length<2) return null; break;
+    case 'breadth': { const up=nz(r.up), dn=nz(r.down), fl=nz(r.flat); if(up==null||dn==null) return null; it.label=LN(r.label,14); it.up=up; it.down=dn; if(fl!=null) it.flat=fl; it.unit=L(r.unit,6); it.note=LN(r.note,16); it.at=anch(r.s,r.q,[String(r.up),r.label]); break; }
+    case 'range': it.label=LN(r.label,14); it.unit=L(r.unit,6); it.parts=parts(4,p=>{ const lo=nz(p.lo), hi=nz(p.hi), v=nz(p.v); return lo!=null&&hi!=null&&hi>lo?{l:LN(p.l,8),lo,hi,v}:null; }); if(!it.parts.length) return null; break;
+    case 'surprise': it.label=LN(r.label,16); it.unit=L(r.unit,6); it.parts=parts(5,p=>{ const l=LN(p.l,8), est=nz(p.est), act=nz(p.act); return l&&(est!=null||act!=null)?{l,est,act}:null; }); if(!it.parts.length) return null; break;
     case 'quote': it.text=LN(r.text,40); it.by=LN(r.by,16); if(!it.text) return null; it.at=anch(r.s,r.q,[r.text]); break;
     case 'title': it.text=LN(r.text,30); it.sub=LN(r.sub,30); if(!it.text) return null; it.at=anch(r.s,r.q,[r.text]); break;
     default: { it.type='point'; it.text=LN(r.text||r.label||r.value,40); if(!it.text) return null; it.style=r.style==='num'?'num':''; const hl=Array.isArray(r.hl)?r.hl:(r.hl?[r.hl]:[]); it.hl=hl.map(x=>String(x||'').trim()).filter(Boolean).map(x=>it.text.indexOf(x)>=0?x:newsT(x)).filter(x=>x&&it.text.indexOf(x)>=0).slice(0,3); it.at=anch(r.s,r.q,[r.text||r.label||r.value]); }
@@ -45666,6 +45711,21 @@ function defaultBlock(type,t0){
     case 'cmp': Object.assign(b,{label:'비교',a:'A',b:'B',parts:pr([{l:'항목 1',a:'+1.2%',b:'-0.4%'},{l:'항목 2',a:'4.50%',b:'3.00%'}])}); break;
     case 'map': Object.assign(b,{label:'주요국 등락률',parts:pr([{l:'미국',v:1.2},{l:'한국',v:-0.4},{l:'일본',v:0.8},{l:'중국',v:-0.9}])}); break;
     case 'agenda': Object.assign(b,{label:'개요',parts:pr([{n:'01',t:'안내할 내용'},{n:'02',t:'안내할 내용'},{n:'03',t:'안내할 내용'}])}); break;
+    case 'arrow': Object.assign(b,{label:'코스피',value:'2,720',delta:'+1.2%',note:'전일 대비',dir:'',tone:''}); break;
+    case 'arrows': Object.assign(b,{label:'주요 지수',parts:pr([{l:'코스피',v:1.2},{l:'나스닥',v:-0.8},{l:'S&P500',v:0.4},{l:'닛케이',v:-1.5}])}); break;
+    case 'price': Object.assign(b,{label:'삼성전자',sub:'005930 · KOSPI',value:'78,000',delta:'▲ 1,200 (+1.56%)',open:'77,000',high:'78,500',low:'76,800',vol:'12.3M',spark:'76 77 76.5 77.5 78',tone:''}); break;
+    case 'vbar': Object.assign(b,{label:'업종별 등락',parts:pr([{l:'반도체',v:3.2},{l:'금융',v:1.1},{l:'에너지',v:-1.5},{l:'소비재',v:-0.6},{l:'바이오',v:0.8}])}); break;
+    case 'wfall': Object.assign(b,{label:'지수 기여도',unit:'',note:'합계',parts:pr([{l:'반도체',v:12},{l:'금융',v:5},{l:'에너지',v:-8},{l:'소비재',v:-3}])}); break;
+    case 'stock': Object.assign(b,{label:'종목 차트',base:100,unit:'',note:'',parts:pr([{l:'09시',y:100},{l:'10시',y:99},{l:'11시',y:98.5},{l:'12시',y:99.5},{l:'13시',y:101},{l:'14시',y:102.5},{l:'15시',y:103},{l:'15:30',y:104}])}); break;
+    case 'candle': Object.assign(b,{label:'주가 흐름',unit:'',parts:pr([{l:'1일',o:100,hi:103,lo:99,c:102,vol:120},{l:'2일',o:102,hi:105,lo:101,c:104,vol:150},{l:'3일',o:104,hi:106,lo:102,c:103,vol:90},{l:'4일',o:103,hi:104,lo:98,c:99,vol:200},{l:'5일',o:99,hi:101,lo:97,c:100,vol:130},{l:'6일',o:100,hi:104,lo:99,c:103,vol:110},{l:'7일',o:103,hi:108,lo:102,c:107,vol:170}])}); break;
+    case 'curve': Object.assign(b,{label:'국채 금리 곡선',a:'지금',b:'1주 전',unit:'%',parts:pr([{l:'2Y',y:4.10,y2:4.30},{l:'5Y',y:3.95,y2:4.15},{l:'10Y',y:4.05,y2:4.20},{l:'30Y',y:4.30,y2:4.40}])}); break;
+    case 'tape': Object.assign(b,{label:'주요 시세',parts:pr([{l:'코스피',v:'2,720',d:'+1.2%'},{l:'원/달러',v:'1,350',d:'-0.4%'},{l:'WTI',v:'$78.2',d:'+2.1%'},{l:'금',v:'$2,350',d:'+0.3%'}])}); break;
+    case 'watch': Object.assign(b,{label:'관심 종목',parts:pr([{l:'삼성전자',v:'78,000',d:'+1.6%',sr:'76 77 76.5 77.5 78'},{l:'SK하이닉스',v:'185,000',d:'-0.8%',sr:'188 187 189 186 185'},{l:'현대차',v:'250,000',d:'+0.4%',sr:'248 249 250 249 250'}])}); break;
+    case 'rank': Object.assign(b,{label:'등락률 순위',parts:pr([{l:'종목A',v:12.3},{l:'종목B',v:8.1},{l:'종목C',v:5.4},{l:'종목D',v:-4.2},{l:'종목E',v:-6.8},{l:'종목F',v:-9.5}])}); break;
+    case 'period': Object.assign(b,{label:'기간별 수익률',parts:pr([{l:'1일',v:1.2},{l:'1주',v:-0.8},{l:'1개월',v:3.5},{l:'3개월',v:7.2},{l:'YTD',v:12.4}])}); break;
+    case 'breadth': Object.assign(b,{label:'상승·하락 종목 수',up:1250,flat:90,down:620,unit:'종목',note:''}); break;
+    case 'range': Object.assign(b,{label:'가격 위치',unit:'',parts:pr([{l:'일중',lo:76800,hi:78500,v:78000},{l:'52주',lo:61000,hi:86000,v:78000}])}); break;
+    case 'surprise': Object.assign(b,{label:'실적 발표',unit:'',parts:pr([{l:'EPS',est:1.2,act:1.35},{l:'매출',est:50,act:48.5}])}); break;
     case 'quote': Object.assign(b,{text:'핵심 한마디',by:''}); break;
     case 'title': Object.assign(b,{text:'큰 제목',sub:''}); break;
     default: b.type='point'; Object.assign(b,{text:'강조할 내용',hl:[],style:''});
@@ -45676,7 +45736,7 @@ function convertItem(it,t){   /* 블록 종류 바꾸기 — 같은 이름의 �
   const t0=mentionT0(P,it)!=null?mentionT0(P,it):ENG.pos, d=defaultBlock(t,t0); if(it.ld!=null) d.ld=it.ld;
   ['label','value','delta','note','text','tone','hl','from','to','v'].forEach(k=>{ if(it[k]!=null&&it[k]!==''&&Object.prototype.hasOwnProperty.call(d,k)) d[k]=it[k]; });
   if(it.fz&&FZK[t]){ const ok=new Set(FZK[t].f.map(x=>x[0])); Object.keys(it.fz).forEach(q=>{ if(ok.has(q)){ d.fz=d.fz||{}; d.fz[q]=it.fz[q]; } }); }   /* 같은 이름의 글은 글자 크기도 이어받음 */
-  d.id=it.id; d.at=it.at||d.at; d.dt=it.dt||0; if(it.bx) d.bx=it.bx; if(it.du>0) d.du=it.du; if(it.ta) d.ta=it.ta; if(it.va&&!AL_NOV[t]) d.va=it.va; if(d.parts&&it.at){ d.parts.forEach((p,i)=>{ const a=anchorAtTime(P,(anchT(P,{sid:it.at.sid,f:it.at.f,dt:it.dt})||t0)+i*0.9); if(a){ p.at={sid:a.sid,f:a.f}; p.dt=a.dt; } }); }
+  d.id=it.id; d.at=it.at||d.at; d.dt=it.dt||0; if(it.bx) d.bx=it.bx; if(it.du>0) d.du=it.du; if(it.ta&&!AL_NOH[t]) d.ta=it.ta; if(it.va&&!AL_NOV[t]) d.va=it.va; if(d.parts&&it.at){ d.parts.forEach((p,i)=>{ const a=anchorAtTime(P,(anchT(P,{sid:it.at.sid,f:it.at.f,dt:it.dt})||t0)+i*0.9); if(a){ p.at={sid:a.sid,f:a.f}; p.dt=a.dt; } }); }
   return d;
 }
 function newClip(mode,type,s,dur,src,ss,ctx){
@@ -45698,12 +45758,12 @@ function igMigrate(p){   /* v96 의 '장면 화면 종류 info' → 클립으로
 
 /* ── 검사창(인포그래픽 탭) — 목록, 선택한 클립 편집, 블록·항목 편집(표 BT 로 자동), 캐릭터·모양 ── */
 const MODE_SHORT={left:'왼쪽 70%',right:'오른쪽 70%',full:'전체',hero:'큰 수치',title:'타이틀',cardR:'오른쪽 카드',cardL:'왼쪽 카드',lower:'하단 띠',ticker:'상단 띠',corner:'모서리 배지'};
-const igName=g=>g.name||g.title||((g.items[0]&&BT[g.items[0].type])?BT[g.items[0].type].n:'')||MODE_SHORT[g.mode]||'인포그래픽';
+const igName=g=>nlFlat(g.name||g.title||((g.items[0]&&BT[g.items[0].type])?BT[g.items[0].type].n:'')||MODE_SHORT[g.mode]||'인포그래픽');
 function fieldIn(path,val,fmt,ph){
-  if(fmt==='num') return '<input type="number" class="vs-in sm mobile-keep" data-f="'+path+'" data-t="n" step="any" value="'+(val==null||val===''?'':val)+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'>';
+  if(fmt==='num') return '<input type="number" class="vs-in sm mobile-keep" data-f="'+path+'" data-t="n" step="any" value="'+(val==null||val===''?'':val)+'"'+(ph?' placeholder="'+esc(ph)+'" title="'+esc(ph)+'"':'')+'>';
   if(fmt==='tone') return F.sel(path,val||'',INFO_TONES);
-  if(fmt&&fmt.indexOf('sel:')===0) return F.sel(path,val||'',fmt.slice(4).split('/').map(x=>[x,x]));
-  return '<input type="text" class="vs-in sm mobile-keep" data-f="'+path+'" value="'+esc(Array.isArray(val)?val.join(', '):val)+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'>';
+  if(fmt&&fmt.indexOf('sel:')===0) return F.sel(path,val||'',fmt.slice(4).split('/').map(x=>{ const i=x.indexOf('='); return i<0?[x,x]:[x.slice(0,i),x.slice(i+1)]; }));   /* 'sel:값=이름/값=이름' — 이름을 따로 쓸 수 있음 */
+  return '<input type="text" class="vs-in sm mobile-keep" data-f="'+path+'" value="'+esc(Array.isArray(val)?val.join(', '):val)+'"'+(ph?' placeholder="'+esc(ph)+'" title="'+esc(ph)+'"':'')+'>';
 }
 function timeIn(path,t,dis){ return '<label class="sm" title="나레이션에서 이 말이 나오는 시각">시점 <input type="number" class="vs-in sm mobile-keep" data-f="'+path+'" data-t="n" step="0.1" min="0" value="'+(t==null?'':r2(t))+'"'+(dis?' disabled':'')+'>초</label>'; }
 /* ── 글자 크기 입력(v105) — 블록마다 글 하나하나의 크기(%)를 슬라이더로. FZK = 블록 종류별 [키,이름] (f: 블록 자체 글, p: 항목마다 글) ── */
@@ -45751,19 +45811,20 @@ function fzBadgeRefresh(){
 }
 /* ── 글 위치(v114) 단추 — 구성요소 안의 글을 좌우(왼쪽·가운데·오른쪽)·상하(위·중간·아래)로 놓음. 눌린 단추를 다시 누르면 기본(예전 모습)으로 ── */
 const AL_H=[['l','왼쪽'],['c','가운데'],['r','오른쪽']], AL_V=[['t','위'],['m','중간'],['b','아래']];
+const AL_NOH={};   /* 좌우 위치도 해당 없는 종류(글이 여러 칸에 흩어진 카드) */
 const AL_NOV={bar:1,row:1,donut:1,gauge:1,line:1,level:1,map:1,cmp:1};   /* 상하 위치가 해당 없는 종류 — 글이 그림 자리에 붙어 있어요 */
 const alOK=g=>!!g&&['lower','ticker','corner','title'].indexOf(g.mode)<0;   /* 띠·배지·타이틀 형태는 칩/카드라 글 위치를 못 바꿈 */
 function alApply(its,ax,val){   /* its 의 글 위치를 바꿈 — ax 'h'|'v'|'x'(둘 다 기본). 모두 이미 그 값이면 기본으로. 바뀐 개수를 돌려줌 */
   let n=0;
   if(ax==='x'){ its.forEach(it=>{ if(it.ta!=null||it.va!=null){ delete it.ta; delete it.va; n++; } }); return n; }
   const key=ax==='h'?'ta':ax==='v'?'va':'', ok=ax==='h'?'lcr':'tmb'; if(!key||!val||ok.indexOf(val)<0) return 0;
-  const tg=its.filter(it=>!(ax==='v'&&AL_NOV[it.type])); if(!tg.length) return 0; const same=tg.every(it=>it[key]===val);
+  const tg=its.filter(it=>!(ax==='v'&&AL_NOV[it.type])&&!(ax==='h'&&AL_NOH[it.type])); if(!tg.length) return 0; const same=tg.every(it=>it[key]===val);
   tg.forEach(it=>{ if(same) delete it[key]; else it[key]=val; n++; }); return n;
 }
 function alBtns(act,id,its,dis,why){   /* 단추 줄 — act 는 단추 동작, id 는 data-id 앞부분, its 의 값이 모두 같으면 그 단추가 켜짐 */
-  const cur=k=>{ const v=its.map(it=>it[k]||''); return v.length&&v.every(x=>x===v[0])?v[0]:'~'; }, h=cur('ta'), v=cur('va'), noV=its.length>0&&its.every(it=>AL_NOV[it.type]);
-  const grp=(arr,ax,c,off)=>'<span class="g">'+arr.map(x=>F.btn(act,x[1],{d:id+ax+':'+x[0],c:c===x[0]?'on':'',dis:dis||off,title:dis?why:off?'이 종류는 상하 위치가 해당 없어요 — 글이 그림 자리에 붙어 있어요':'글을 칸 안 '+x[1]+'에 놓아요 (다시 누르면 기본)'})).join('')+'</span>';
-  return grp(AL_H,'h',h,false)+grp(AL_V,'v',v,noV)+F.btn(act,'기본',{d:id+'x:',dis:dis,title:dis?why:'글 위치를 기본(예전 모습)으로'});
+  const cur=k=>{ const v=its.map(it=>it[k]||''); return v.length&&v.every(x=>x===v[0])?v[0]:'~'; }, h=cur('ta'), v=cur('va'), noV=its.length>0&&its.every(it=>AL_NOV[it.type]), noH=its.length>0&&its.every(it=>AL_NOH[it.type]);
+  const grp=(arr,ax,c,off)=>'<span class="g">'+arr.map(x=>F.btn(act,x[1],{d:id+ax+':'+x[0],c:c===x[0]?'on':'',dis:dis||off,title:dis?why:off?(ax==='h'?'이 종류는 좌우 위치가 해당 없어요':'이 종류는 상하 위치가 해당 없어요 — 글이 그림 자리에 붙어 있어요'):'글을 칸 안 '+x[1]+'에 놓아요 (다시 누르면 기본)'})).join('')+'</span>';
+  return grp(AL_H,'h',h,noH)+grp(AL_V,'v',v,noV)+F.btn(act,'기본',{d:id+'x:',dis:dis,title:dis?why:'글 위치를 기본(예전 모습)으로'});
 }
 function alHtml(g,it){
   const ok=alOK(g);
@@ -45771,9 +45832,10 @@ function alHtml(g,it){
 }
 function igBlockHtml(g,it){
   const bt=BT[it.type]||BT.point, pre='ig:'+g.id+':'+it.id+':', m0=mentionOf(P,it), t0=itemTime(P,it), cid=g.id+':'+it.id;
-  let h='<div class="vs-it'+(it.id===UI.igIt?' sel':'')+'" data-iid="'+it.id+'"><div class="r">'+F.sel(pre+'type',it.type,BT_ORDER.map(k=>[k,BT[k].n]))+'<span class="vs-sp"></span>'+F.btn('igPlayIt','▶',{d:cid,title:'이 블록이 나오기 1초 전부터 재생'})+F.btn('igDelIt','🗑',{d:cid,c:'dng',title:'이 블록 지우기'})+'</div>';
+  let h='<div class="vs-it'+(it.id===UI.igIt?' sel':'')+'" data-iid="'+it.id+'"><div class="r">'+F.sel(pre+'type',it.type,btOpts())+'<span class="vs-sp"></span>'+F.btn('igPlayIt','▶',{d:cid,title:'이 블록이 나오기 1초 전부터 재생'})+F.btn('igDelIt','🗑',{d:cid,c:'dng',title:'이 블록 지우기'})+'</div>';
   bt.f.forEach(f=>{ h+=F.row(f[1],fieldIn(pre+f[0],it[f[0]],f[2])); });
   if(bt.parts){
+    if(bt.parts.length>1) h+='<div class="r sm"><span class="hint">항목 칸 순서 — '+bt.parts.map(f=>esc(f[1])).join(' · ')+' · 시점</span></div>';
     (it.parts||[]).forEach((p,i)=>{ const pp='igp:'+g.id+':'+it.id+':'+i+':', tp=partMention(P,p);
       h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+timeIn(pp+'_t',tp,tp==null)+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
     h+='<div class="vs-btns">'+F.btn('igAddPt','＋ 항목 추가',{d:cid})+'</div><div class="r sm"><span class="hint">블록 전체 시점</span>'+F.btn('igNudge','◀ 0.1초',{d:cid+':-0.1',title:'항목 전부를 0.1초 일찍'})+F.btn('igNudge','0.1초 ▶',{d:cid+':0.1',title:'항목 전부를 0.1초 늦게'})+F.btn('igNudge','◀ 0.5초',{d:cid+':-0.5'})+F.btn('igNudge','0.5초 ▶',{d:cid+':0.5'})+'</div>';
@@ -45791,14 +45853,14 @@ function igEditor(g){
   h+=F.row('스타일',F.sel(pre+'sty',styOf(g),STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'이 인포그래픽의 모양 — 새로 만들 때 기본 스타일은 아래 [캐릭터·모양]에서');
   h+=F.row('배경',F.sel(pre+'bg',g.bg||'solid',[['solid','전용 배경(기본)'],['scene','장면 화면 위에 겹침']]),isOver(g.mode)?'겹치기 형태는 늘 장면 화면 위':'');
   h+=F.row('시작·끝',F.num(pre+'s',r2(g.s),{min:0,step:0.1})+F.btn('igPhS','재생헤드로',{d:g.id})+'<span class="hint">~</span>'+F.num(pre+'e',r2(g.e),{min:0,step:0.1})+F.btn('igPhE','재생헤드로',{d:g.id}),'초 — 타임라인에서 끌어도 돼요');
-  h+=F.row('제목',F.txt(pre+'title',g.title||'',{ph:'패널 맨 위 제목'}));
+  h+=F.row('제목',F.txt(pre+'title',g.title||'',{ph:'패널 맨 위 제목'}),'줄을 나누려면 글 칸에서 Shift+Enter(↵ 표시) — 어느 글 칸에서나 돼요');
   h+=F.row('윗글',F.txt(pre+'kicker',g.kicker||'',{ph:'(선택) 제목 위 작은 글 — 예: 챕터 이름'}));
   h+=F.row('제목 크기',F.rng(pre+'fz.title',fzVal(g,'title'),40,250,5),'% — 기본 100')+F.row('윗글 크기',F.rng(pre+'fz.kicker',fzVal(g,'kicker'),40,250,5),'% — 기본 100');
   h+=F.row('요청 글',F.ta('cfg.prompts.info',P.cfg.prompts.info,{rows:2,ph:'(선택) [🔄 AI 로 다시] 때 AI 에게 요구할 내용 — 예) 숫자는 크게, 속보 헤드라인처럼 짧게'}),'모든 인포그래픽 공통 · 🤖 AI 창에서도 써요');
   { const ok=igBoxOK(g); h+=F.row('크기·배치','<span class="'+(ok?'ok':'hint')+'">'+(ok?'직접 정함'+(g.tpl?' · 템플릿 '+esc(g.tpl):''):'자동 배치')+'</span>'+F.btn('leOpen','📐 크기/배치 수정',{d:g.id,c:'pri',title:'구성요소를 미리보기 위에 상자로 띄워 끌어서 옮기고 크기를 바꿔요 — 템플릿 '+LTPL.length+'개'}),LE_MODES[g.mode]?'':'이 형태는 칸 배치가 아니에요 — 누르면 전체 화면 패널로 바꿀지 물어요'); }
   h+='<div class="vs-btns">'+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igAI','🔄 AI 로 다시',{d:g.id,title:'이 구간의 나레이션을 AI 가 다시 요약해 블록을 새로 만들어요'})+F.btn('igRule','🧮 규칙으로 다시',{d:g.id,title:'숫자·업종·일정을 규칙으로 뽑아요(무료)'})+F.btn('igNews','📰 뉴스체로',{d:g.id,title:'이 인포그래픽의 글을 TV 뉴스 자막처럼 명사형 헤드라인체로 다듬어요'})+F.btn('igSplit','✂ 재생헤드에서 나누기',{d:g.id})+F.btn('igDup','⧉ 복제',{d:g.id,title:'바로 뒤에 같은 길이로 복제'})+F.btn('igDel','🗑 삭제',{d:g.id,c:'dng'})+'</div>';
-  h+='<div class="vs-sec">블록 ('+g.items.length+') <span class="hint">말하는 시점이 되면 차례로 나타나요 · 타임라인 [구성] 줄의 칩을 끌어 시점을 바꿔요</span></div>';
-  h+='<div class="vs-btns">'+F.sel('ui.igType',UI.igType||'stat',BT_ORDER.map(k=>[k,BT[k].n]))+F.btn('igAddIt','＋ 블록 추가',{d:g.id})+'</div>';
+  h+='<div class="vs-sec">블록 ('+g.items.length+') <span class="hint">말하는 시점이 되면 차례로 나타나요 · 타임라인 [구성] 줄의 칩을 끌어 시점을 바꿔요 · 글 칸에서 Shift+Enter = 그 자리에서 줄바꿈(↵)</span></div>';
+  h+='<div class="vs-btns">'+F.sel('ui.igType',UI.igType||'stat',btOpts())+F.btn('igAddIt','＋ 블록 추가',{d:g.id})+'</div>';
   if(g.items.length>1){ const ok=alOK(g); h+='<div class="vs-al all"><i title="이 인포그래픽의 모든 구성요소 글 위치를 한꺼번에 — 구성요소마다 따로 고르려면 아래 각 블록의 [글 위치]">모든 구성요소 글 위치</i>'+alBtns('igAl',g.id+':*:',g.items,!ok,ok?'':'하단 띠·상단 띠·모서리 배지·타이틀 형태는 글 위치를 바꿀 수 없어요')+'</div>'; }
   h+=g.items.length?g.items.map(it=>igBlockHtml(g,it)).join(''):'<div class="vs-empty sm">블록이 없어요 — 위에서 종류를 골라 추가하세요 · 구성요소를 다 지워도 이 인포그래픽(화면 요소)은 그대로 남아요</div>';
   return h;
@@ -45965,7 +46027,7 @@ function showIgNewDlg(){
     +D_('형태',dsel('gmode',d.gmode,MODES.map(m=>[m[0],m[2]+' '+m[1]])))
     +D_('내용',dsel('gsrc',d.gsrc,[['hand','직접 채우기(예시 블록 1개)'],['rule','이 구간 나레이션에서 규칙으로 추출'],['ai','이 구간 나레이션을 AI 가 요약']]))
     +(d.gsrc==='ai'?D_('요청 글',F.ta('cfg.prompts.info',P.cfg.prompts.info,{rows:2,ph:'(선택) AI 에게 요구할 내용 — 예) 숫자는 크게, 속보 헤드라인처럼 짧게'})):'')
-    +(d.gsrc==='hand'?D_('첫 블록',dsel('gtype',d.gtype,BT_ORDER.map(k=>[k,BT[k].n]))):'')
+    +(d.gsrc==='hand'?D_('첫 블록',dsel('gtype',d.gtype,btOpts())):'')
     +'<div class="hint pad">만든 뒤 오른쪽 [인포그래픽] 탭에서 블록과 시점을 고치고, 타임라인에서 끌어 위치·길이를 바꿀 수 있어요.</div>',[{t:'만들기',a:'igGo',c:'pri'},{t:'취소',a:'dlgClose'}]);
 }
 async function igGo(){
@@ -46072,12 +46134,12 @@ function newsify(src){
   r=r.replace(/\s+,/g,',').replace(/,+/g,',').replace(/,\s*$/,'').replace(/^[,\s]+/,'').trim();
   return r.length>=2?r:orig.replace(/[.!?。]+$/,'');
 }
-const newsLabel=s=>{ const t=String(s==null?'':s).trim(); if(!t) return ''; if(!isKo()) return t; const x=newsify(t); return x||t; };   /* 뉴스체 다듬기는 한국어 전용 */
+const newsLabel=s=>{ const t=String(s==null?'':s).trim(); if(!t) return ''; if(hasNL(t)) return nlLines(t).map(x=>newsLabel(x)).join(NL_MARK); if(!isKo()) return t; const x=newsify(t); return x||t; };   /* 뉴스체 다듬기는 한국어 전용 */
 const newsT=s=>(P&&P.cfg&&P.cfg.info&&P.cfg.info.news===false)?String(s==null?'':s).trim():newsLabel(s);   /* 설정(뉴스체로 다듬기)을 따름 */
 function newsAll(g){   /* 이미 만든 클립의 글을 모두 뉴스체로 */
   const f=s=>newsLabel(s); g.title=f(g.title);
   g.items.forEach(it=>{
-    ['label','note','text','by','sub'].forEach(k=>{ if(it[k]) it[k]=f(it[k]); });
+    ['label','note','text','by','sub'].forEach(k=>{ if(it[k]&&!(k==='sub'&&it.type==='price')) it[k]=f(it[k]); });
     (it.parts||[]).forEach(p=>{ ['t','l'].forEach(k=>{ if(typeof p[k]==='string'&&p[k]) p[k]=f(p[k]); }); });
     if(it.hl) it.hl=it.hl.filter(h=>it.text&&it.text.indexOf(h)>=0);
   });
@@ -46187,7 +46249,7 @@ function subRules(){
   const st=P.cfg.sub, per=clamp(Math.floor(P.cfg.w*st.maxW/100/(st.size*P.cfg.h/1080*0.98)),10,40);
   return '규칙:\n1) 의미·숫자·단위·고유명사를 바꾸거나 새 사실을 더하지 않는다.\n2) 군말·반복·감탄·불필요한 접속어만 덜어 간결하게(원문 길이의 70~100%).\n3) 한 자막은 최대 '+st.lines+'줄, 한 줄 '+per+'자 안팎. 줄바꿈은 의미 단위(구·절)에서 \\n 으로.\n4) 나레이션의 말투(어미)는 그대로 두되, 사용자 요청이 있으면 그것을 따른다.\n5) 문장 끝 마침표는 생략하고, 쉼표·물음표·느낌표는 필요할 때만.';
 }
-function subUser(chunk){ const up=String((P.cfg.prompts&&P.cfg.prompts.sub)||'').trim(); return (up?'[사용자 요청] '+up+'\n\n':'')+'[문장]\n'+chunk.map((s,i)=>(i+1)+'. '+s.text).join('\n'); }
+function subUser(chunk){ const up=String((P.cfg.prompts&&P.cfg.prompts.sub)||'').trim(); return (up?'[사용자 요청] '+up+'\n\n':'')+slBlock('sub')+'[문장]\n'+chunk.map((s,i)=>(i+1)+'. '+s.text).join('\n'); }
 async function runSubs(scope){
   if(!P) return; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
   const ai=studioAi(); if(!ai.key){ toast(ai.name+' API Key 가 없어요 — 🤖 AI 에서 연결된 다른 AI 를 고르거나 관리 메뉴 › 🧩 AI 공급자에서 키를 넣어 주세요'); return; }
@@ -46547,7 +46609,7 @@ function styleGallery(d){
 
 /* ── 메뉴별 공통 설정(한 번에 만들기·음성·자막·화면) — 모든 프로젝트에 같게 + 초기화 ── */
 const PREF_GROUPS={
-  auto:{n:'한 번에 만들기',paths:['dlg.avoice','dlg.asub','dlg.vkind']},
+  auto:{n:'한 번에 만들기',paths:['dlg.avoice','dlg.asub','dlg.vkind','dlg.alearn']},
   voice:{n:'음성',paths:['voice','mix.narr','gap','lead','tail']},
   sub:{n:'자막',paths:['sub','prompts.sub']},
   vis:{n:'화면',paths:['look','img','vid','info','prompts.info','dlg.vkind','title']}
@@ -46567,7 +46629,7 @@ function applyMenuPrefs(p){   /* 프로젝트를 열 때 — 저장해 둔 메�
 /* 대화상자(화면 만들기·한 번에 만들기)에서 바꾼 값은 바로 설정에 저장 — 취소해도 남음 */
 const DLG_PREF={
   vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
-  avoice:v=>{ P.cfg.dlg.avoice=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; },
+  avoice:v=>{ P.cfg.dlg.avoice=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
   ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; },
   istyle:v=>{ if(ISTY[v]) P.cfg.info.style=v; }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); },
   asb:v=>{ P.sb=P.sb||{}; P.sb.on=(v==='on'); commit('스토리보드 적용 '+(v==='on'?'켬':'끔')); }   /* v107: 스토리보드대로 / AI 가 알아서 — 프로젝트에 저장(AI 수정 패널과 같은 값) */
@@ -46693,6 +46755,7 @@ function inspTitle(){
   if(openCi(P)>=0) h+=F.row('번호',F.chk('tt:*:num',numAfter(P),'오프닝 다음 챕터부터 CHAPTER 01'),'오프닝(개요) 뒤 첫 챕터가 CHAPTER 01 — 끄면 오프닝이 CHAPTER 01 이에요');
   h+='<div class="vs-note'+(on?'':' err')+'">'+(on?'타이틀 <b>'+list.length+'개</b> · 소리 없이 타이틀만 나오는 시간은 모두 '+tot.toFixed(1)+'초예요.'+(nov?' (겹쳐 얹은 '+nov+'개는 소리를 끄지 않고 화면 위에 얹혀요)':''):'타이틀이 꺼져 있어요 — 챕터가 바로 이어져요.')+'</div>';
   h+='<div class="vs-sec">챕터별 글·길이·위치 <span class="hint">비워 두면 챕터 이름·날짜가 들어가요. 타임라인의 [타이틀] 줄에서 몸통을 끌면 위치, 양 끝을 끌면 길이가 바뀌어요</span></div>';
+  h+='<div class="hint pad">글 칸에서 <b>Shift+Enter</b> 를 누르면 커서 자리에서 줄이 바뀌어요(<b>↵</b> 표시) — 지우면 다시 이어져요. 표시가 없으면 글이 길 때 알맞게 자동으로 나눠요.</div>';
   h+=cis.map(ci=>{
     const q=list.find(x=>x.ci===ci), o=(P.ttl&&P.ttl[ci])||{}, df=titleDef(P,ci), off=ttOff(P,ci), dim=!on||off;
     return '<div class="vs-sn'+(dim?' no':'')+(ci===UI.ttSel?' cur':'')+'" data-ci="'+ci+'"><div class="r"><span class="t">'+(q?fmtT(q.ta,1):'—')+'</span><span class="b '+(dim?'no':'ok')+'">'+(dim||!q?'타이틀 없음':'타이틀 '+(q.tb-q.ta).toFixed(1)+'초')+'</span>'+F.btn('ttPlay','▶',{d:String(ci),title:'이 타이틀부터 재생',dis:!q})+'<span class="vs-sp"></span>'+F.chk('tt:'+ci+':on',!off,'넣기')+'</div>'
@@ -46726,6 +46789,13 @@ function partText(it,p){   /* 항목 하나의 칩 글 */
   else if(t==='line') s=(p.l||'')+' '+(p.y!=null?p.y:'');
   else if(t==='cmp') s=(p.l||'')+' '+(p.a||'')+' : '+(p.b||'');
   else if(t==='vs'||t==='level') s=(p.l||'')+' '+(p.v==null?'':p.v)+' '+(p.d||'');
+  else if(t==='vbar'||t==='arrows'||t==='rank'||t==='period'||t==='wfall') s=(p.l||'')+' '+(String(p.t||'').trim()||(nz(p.v)!=null?chgTxt(nz(p.v)):''));
+  else if(t==='stock') s=(p.l||'')+' '+(p.y!=null?p.y:'');
+  else if(t==='candle') s=(p.l||'')+' '+(p.c!=null?p.c:'');
+  else if(t==='curve') s=(p.l||'')+' '+(p.y!=null?p.y:'')+(p.y2!=null?' / '+p.y2:'');
+  else if(t==='tape'||t==='watch') s=(p.l||'')+' '+(p.v||'')+' '+(p.d||'');
+  else if(t==='range') s=(p.l||'')+' '+(p.v!=null?p.v:'');
+  else if(t==='surprise') s=(p.l||'')+' '+(p.act!=null?p.act:'');
   else s=p.l||p.t||p.d||'';
   return (COMP_IC[t]||'•')+' '+clipS(String(s).replace(/\s+/g,' ').trim()||(BT[t]||BT.point).n,24);
 }
@@ -46845,7 +46915,7 @@ function edUser(scs,txt,w){
   });
   return u;
 }
-const itemSig=it=>JSON.stringify([it.type,it.label||'',it.value||'',it.delta||'',it.note||'',it.text||'',it.from||'',it.to||'',it.v==null?'':it.v,it.a||'',it.b||'',it.sub||'',it.by||'',(it.parts||[]).map(p=>[p.l||'',p.t||'',p.d||'',p.v==null?'':p.v,p.y==null?'':p.y,p.a||'',p.b||'',p.p==null?'':p.p])]);   /* 블록 내용 지문 — 시점·id 는 뺌 */
+const itemSig=it=>JSON.stringify([it.type,it.label||'',it.value||'',it.delta||'',it.note||'',it.text||'',it.from||'',it.to||'',it.v==null?'':it.v,it.a||'',it.b||'',it.sub||'',it.by||'',it.dir||'',it.unit||'',it.up==null?'':it.up,it.flat==null?'':it.flat,it.down==null?'':it.down,it.base==null?'':it.base,it.open||'',it.high||'',it.low||'',it.vol||'',it.spark||'',(it.parts||[]).map(p=>[p.l||'',p.t||'',p.d||'',p.v==null?'':p.v,p.y==null?'':p.y,p.a||'',p.b||'',p.p==null?'':p.p,p.lo==null?'':p.lo,p.hi==null?'':p.hi,p.o==null?'':p.o,p.c==null?'':p.c,p.est==null?'':p.est,p.act==null?'':p.act,p.y2==null?'':p.y2,p.sr||''])]);   /* 블록 내용 지문 — 시점·id 는 뺌 */
 function applyInfoEdit(sc,raw,all){   /* 장면의 인포그래픽을 AI 가 돌려준 clips 로 바꿈 — 그대로인 블록은 손으로 맞춘 시점까지 유지. 바꾼 내용을 글로 돌려줌('' = 안 바뀜) */
   if(Array.isArray(raw)) raw={clips:raw};   /* info 를 clips 배열로 바로 준 경우 */
   const old=igsOfScene(sc).slice().sort((a,b)=>a.s-b.s), sty=ISTY[raw.style]?raw.style:'', clipsRaw=Array.isArray(raw.clips)?raw.clips:(Array.isArray(raw.items)?[raw]:null);   /* clip 하나를 바로 준 경우도 */
@@ -47433,7 +47503,7 @@ function sysTr(from,to){
    +'[Output format] {"tr":[{"k":"<same key>","t":"<translation>"}, …]} — one output item per input item, with the same keys in the same order.\n\n'
    +'[Rules]\n1. Keep numbers, tickers, percentages and symbols exactly (S&P 500, +1.2%, 5,412, VIX …); only localize units and currency to '+lt.ai+' conventions. '+(lt.units||'')+'\n'
    +'2. kind "narration": one sentence spoken in a TV news briefing. Translate it as ONE natural sentence in '+lt.ai+' ('+(lt.register||'natural spoken broadcast style')+'); never merge it with a neighbor, split it, or add or drop facts.\n'
-   +'3. kind "caption": short on-screen text — keep it as short as the original, in headline style (no full sentences), in '+lt.ai+'.\n'
+   +'3. kind "caption": short on-screen text — keep it as short as the original, in headline style (no full sentences), in '+lt.ai+'. Keep every "↵" line-break mark where it is.\n'
    +'4. kind "subtitle": an on-screen subtitle — keep its line breaks and keep it concise.\n'
    +'5. kind "cue" or "storyboard": a visual description for AI image/video tools — translate faithfully and keep every visual detail; text shown on screen (inside quotation marks) must be translated into '+lt.ai+' too; keep the quotation marks.\n'
    +'6. kind "style": a style/tone design document — keep its structure (paragraphs, "- " bullets, and any [[MUST]] / [[AVOID]] placeholder lines exactly as they are).\n'
@@ -47583,6 +47653,401 @@ DRAW.agenda=(E,c,it)=>{
   });
   g.restore();
 };
+/* ══ v117 (2026-10-26) — 등락·증감 구성요소 15종 ═════════════════════════════════════════════════════════════════
+   주식 브리핑에 자주 나오는 '오르고 내림'을 보여 주는 구성요소를 [인포] 탭 종류 목록(묶음별)에 추가
+   · 수치·카드     arrow(대각선 화살표 ↗↘ 카드) · price(주가 카드 — 현재가·등락·시고저·거래량·미니 차트)
+   · 등락 막대·그래프 vbar(등락 막대 세로 — 위아래) · stock(주가 차트 — 기준선 위는 상승색·아래는 하락색) · candle(캔들 차트 — 시·고·저·종 + 거래량)
+                    curve(2선 비교 — 금리 곡선·지금 vs 이전) · wfall(증감 폭포 — 기여도)
+   · 등락 목록·표   tape(시세 전광판) · watch(관심종목 시세표 + 미니 차트) · rank(상승·하락 순위) · period(기간별 등락률) · arrows(방향 화살표 목록)
+                    breadth(상승·하락 종목 수) · range(고저 범위 안 위치 — 일중·52주) · surprise(실적 예상 대비)
+   색은 모두 인포그래픽의 등락 색(pal.up·pal.down — 설정의 한국식/미국식을 따름), 데이터·시점·글자 크기(FZ)·글 위치(ta/va)·상자 배치(bx)는 기존 구성요소와 같은 방식 ── */
+const numList=s=>{ const out=[]; String(s==null?'':s).split(/[\s;|\/]+/).forEach(t=>{ if(!t) return; if(/^[+\-−]?\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)){ const v=nz(t); if(v!=null) out.push(v); return; } t.split(',').forEach(u=>{ const v=u===''?null:nz(u); if(v!=null) out.push(v); }); }); return out; };   /* '76,77,76.5' · '76000 77000' · '76,000' 모두 숫자 목록으로 */
+const sgnCol=(pal,v)=>v>0?pal.up:v<0?pal.down:pal.flat;
+const chgTxt=(v,d)=>(v>0?'+':'')+fmtN(v,d==null?(Math.abs(v)>=10?1:2):d)+'%';
+const ARW_ANG={up:-Math.PI/4,down:Math.PI/4,flat:0,up2:-Math.PI/2,down2:Math.PI/2};   /* ↗ ↘ → ↑ ↓ */
+const dirTone=d=>d==='up'||d==='up2'?'up':d==='down'||d==='down2'?'down':'flat';
+const dirOfV=v=>v>0?'up':v<0?'down':'flat';
+function drawArrow(g,cx,cy,r,dir,col,lw){   /* 굵은 화살표 — r 은 몸통 반길이 */
+  const a=ARW_ANG[dir]!=null?ARW_ANG[dir]:0, hl=r*0.95, hw=r*0.62; g.save(); g.translate(cx,cy); g.rotate(a); g.strokeStyle=col; g.fillStyle=col; g.lineWidth=lw; g.lineCap='round'; g.lineJoin='round';
+  g.beginPath(); g.moveTo(-r,0); g.lineTo(r-hl*0.7,0); g.stroke(); g.beginPath(); g.moveTo(r,0); g.lineTo(r-hl,-hw); g.lineTo(r-hl,hw); g.closePath(); g.fill(); g.restore();
+}
+function sparkDraw(g,vals,x,y,w,h,col,lw,fillA,grow){   /* 미니 차트 — grow 0~1 만큼 그려짐 */
+  const n=vals.length; if(n<2) return; let mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals); if(mx===mn){ mx+=1; mn-=1; }
+  const X=i=>x+w*i/(n-1), Y=v=>y+h-h*(v-mn)/(mx-mn), tot=n-1, upto=tot*clamp(grow==null?1:grow,0,1); if(upto<=0) return;
+  g.save(); g.lineJoin='round'; g.lineCap='round'; g.lineWidth=lw; g.strokeStyle=col; g.beginPath(); g.moveTo(X(0),Y(vals[0])); let ex=X(0), ey=Y(vals[0]);
+  for(let i=1;i<=tot;i++){ const f=clamp(upto-(i-1),0,1); if(f<=0) break; const ax=X(i-1), ay=Y(vals[i-1]), bx=X(i), by=Y(vals[i]); ex=ax+(bx-ax)*f; ey=ay+(by-ay)*f; g.lineTo(ex,ey); }
+  g.stroke();
+  if(fillA>0){ g.lineTo(ex,y+h); g.lineTo(X(0),y+h); g.closePath(); const gr=g.createLinearGradient(0,y,0,y+h); gr.addColorStop(0,alphaOf(col,fillA)); gr.addColorStop(1,alphaOf(col,0)); g.fillStyle=gr; g.fill(); }
+  g.fillStyle=col; g.beginPath(); g.arc(ex,ey,Math.max(2,lw*1.2),0,Math.PI*2); g.fill(); g.restore();
+}
+
+/* ── ① arrow — 대각선 화살표 카드 ── */
+BT.arrow={n:'방향 화살표 카드(↗↘)',f:[['label','이름'],['value','수치'],['delta','변화'],['note','덧글'],['dir','화살표 방향','sel:=자동(부호로)/up=↗ 상승/down=↘ 하락/flat=→ 보합/up2=↑ 급등/down2=↓ 급락'],['tone','색','tone']]};
+FZK.arrow={f:[['label','이름'],['value','수치'],['delta','변화'],['note','덧글']]};
+MEAS.arrow=(E,it,iw,k)=>({h:0.255*E.B*k*hzf(it,{label:0.10,value:0.40,delta:0.16,note:0.10}),mw:0.66});   /* mw = 이 크기(bk 비율)보다 좁은 상자에서는 글자를 폭에 맞춰 줄임 */
+DRAW.arrow=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k;
+  const tn=(it.tone==='up'||it.tone==='down'||it.tone==='flat'||it.tone==='acc')?it.tone:(ARW_ANG[it.dir]!=null?dirTone(it.dir):(itemTone(it)||'flat')), dir=ARW_ANG[it.dir]!=null?it.dir:(tn==='up'?'up':tn==='down'?'down':'flat'), col=toneCol(E.pal,tn)||pal.flat;
+  const zl=FZ(it,'label'), zv=FZ(it,'value'), zd=FZ(it,'delta'), zn=FZ(it,'note'), pad=0.03*bk, S=Math.max(10,Math.min(c.h-0.04*bk,c.w*0.36)), gap=0.034*bk, tw=Math.max(10,c.w-pad*2-S-gap);
+  const dl=String(it.delta||'').trim(), nt=String(it.note||'').trim(), fl=0.028*bk*zl, fv=fitFont(g,String(it.value||''),tw,0.10*bk*zv,'800',font,0.45), fd=0.036*bk*zd, fn=0.026*bk*zn;
+  const Hs=(it.label?fl*1.45:0)+fv*1.12+((dl||nt)?Math.max(fd,fn)*1.3:0);
+  g.font='800 '+fv.toFixed(1)+'px '+font; let tW=g.measureText(String(it.value||'')).width; if(it.label){ g.font='700 '+fl.toFixed(1)+'px '+font; tW=Math.max(tW,g.measureText(String(it.label)).width); }
+  if(dl||nt){ g.font='800 '+fd.toFixed(1)+'px '+font; const w1=dl?g.measureText(dl).width:0; g.font='500 '+fn.toFixed(1)+'px '+font; tW=Math.max(tW,w1+(dl&&nt?0.02*bk:0)+(nt?g.measureText(nt).width:0)); }
+  tW=Math.min(tW,tw); const AL=taX(it,c.x+pad,c.x+c.w-pad), gw=S+gap+tW, gx=AL?c.x+pad+Math.max(0,c.w-pad*2-gw)*AL.k:c.x+pad;   /* v114: 타일+글을 한 묶음으로 좌우 위치 */
+  const ty0=vaOf(it)?c.y+0.02*bk+vaFree(it,c.h-0.04*bk-S):c.y+(c.h-S)/2;
+  popBegin(E,c,s,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk);
+  g.save(); const tcx=gx+S/2, tcy=ty0+S/2, sc=0.78+0.22*easeBack(clamp(s/0.5,0,1));
+  roundRect(g,gx,ty0,S,S,S*0.22); g.fillStyle=alphaOf(col,0.14); g.fill(); g.lineWidth=Math.max(1.5,0.003*bk); g.strokeStyle=alphaOf(col,0.55); g.stroke();
+  g.translate(tcx,tcy); g.scale(sc,sc); g.translate(-tcx,-tcy); drawArrow(g,tcx,tcy,S*0.30,dir,col,Math.max(3,S*0.085)); g.restore();
+  const tx=gx+S+gap; let y=ty0+(S-Hs)/2;
+  if(it.label){ dtf(g,String(it.label),tx,y,tw,fl,'700',pal.mute,font,'left','top',0.6); y+=fl*1.45; }
+  const val=E.cf.count?countText(it.value,rv(s-0.05,0.75)):String(it.value||''); dtx(g,val,tx,y,fv,'800',col,font,'left','top'); y+=fv*1.12;
+  if(dl||nt){ let x=tx; if(dl){ const f2=fitFont(g,dl,tw*0.7,fd,'800',font,0.6); dtx(g,dl,x,y,f2,'800',col,font,'left','top'); x+=g.measureText(dl).width+0.02*bk; } if(nt){ const rem=tx+tw-x; if(rem>0.06*bk) dtf(g,nt,x,y+0.004*bk,rem,fn,'500',pal.mute,font,'left','top',0.6); } }
+  g.restore();
+};
+
+/* ── ② arrows — 방향 화살표 목록(여러 종목·지수의 ↗↘) ── */
+BT.arrows={n:'방향 화살표 목록(↗↘)',f:[['label','제목']],parts:[['l','이름'],['v','등락(%)','num'],['t','표시 글(비우면 자동)']]};
+FZK.arrows={f:[['label','제목']],p:[['l','이름'],['v','값']]};
+MEAS.arrows=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,Math.min(12,(it.parts||[]).length)), cols=Math.min(n,clamp(Math.floor((iw+0.012*bk)/(0.40*bk+0.012*bk)),1,4)), rows=Math.ceil(n/cols), th=0.118*bk*hzf(it,null,{'l|v':0.8}); return {h:(it.label?HDR*hzL(it)*bk:0)+rows*th+(rows-1)*0.012*bk+0.04*bk,cols,rows,th,mw:0.42}; };
+DRAW.arrows=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,12), m=c.m;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.024*bk, iw=c.w-0.048*bk, gap=0.012*bk, tw=(iw-gap*(m.cols-1))/m.cols, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk;
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const v=nz(p.v), vv=v==null?0:v, col=sgnCol(pal,vv), dir=dirOfV(vv), cc=i%m.cols, rr=Math.floor(i/m.cols), x=x0+cc*(tw+gap), y=y0+rr*(m.th+gap), k=rv(sp,0.4);
+    g.save(); g.globalAlpha*=k; const cx=x+tw/2, cy=y+m.th/2, sc=0.9+0.1*easeBack(clamp(sp/0.5,0,1)); g.translate(cx,cy); g.scale(sc,sc); g.translate(-cx,-cy);
+    roundRect(g,x,y,tw,m.th,0.020*bk); g.fillStyle=alphaOf(col,pal.dark?0.13:0.10); g.fill(); g.lineWidth=Math.max(1,0.002*bk); g.strokeStyle=alphaOf(col,0.45); g.stroke();
+    const ic=m.th*0.27; drawArrow(g,x+m.th*0.52,cy,ic,dir,col,Math.max(2.5,m.th*0.07));
+    const tx=x+m.th*0.52+ic+0.026*bk, tww=Math.max(10,x+tw-0.018*bk-tx), txt=String(p.t||'').trim()||(v==null?'':chgTxt(v));
+    dtf(g,String(p.l||''),tx,cy-m.th*0.06,tww,0.030*bk*FZ(p,'l'),'700',pal.mute,font,'left','bottom',0.55);
+    dtf(g,txt,tx,cy-m.th*0.02,tww,0.046*bk*FZ(p,'v'),'800',col,font,'left','top',0.5);
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── ③ price — 주가 카드(시세) ── */
+BT.price={n:'주가 카드(시세·시고저)',f:[['label','종목명'],['sub','티커·시장'],['value','현재가'],['delta','등락(금액·%)'],['open','시가'],['high','고가'],['low','저가'],['vol','거래량'],['spark','미니 차트(숫자를 띄어쓰기·쉼표로)'],['tone','색','tone']]};
+FZK.price={f:[['label','종목명'],['sub','티커·시장'],['value','현재가'],['delta','등락'],['cap','시·고·저·거래량 글']]};
+const priceStats=it=>[['open','시가','open'],['high','고가','high'],['low','저가','low'],['vol','거래량','vol']].map(a=>({k:a[0],t:TX(a[2],a[1]),v:String(it[a[0]]==null?'':it[a[0]]).trim()})).filter(x=>x.v);
+MEAS.price=(E,it,iw,k)=>({h:(priceStats(it).length?0.37:0.27)*E.B*k*hzf(it,{label:0.10,sub:0.04,value:0.45,delta:0.12,cap:0.12}),mw:0.80});
+DRAW.price=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s=E.sinceBlock(it); if(s<=0) return; const bk=E.B*c.k, tone=itemTone(it), tc=toneCol(pal,tone)||pal.text, zl=FZ(it,'label'), zs=FZ(it,'sub'), zv=FZ(it,'value'), zd=FZ(it,'delta'), zc=FZ(it,'cap');
+  popBegin(E,c,s,bk,0.4); cardBox(E,c.x,c.y,c.w,c.h,bk); strip(E,c.x+0.014*bk,c.y+0.026*bk,c.h-0.052*bk,toneCol(pal,tone)||pal.accent,bk);
+  const st=priceStats(it), sv=numList(it.spark), px=c.x+0.045*bk, iw=c.w-0.07*bk, hasSp=sv.length>=2, leftW=hasSp?iw*0.58:iw, stH=st.length?(0.022*bk*zc*1.35+0.032*bk*zc*1.35+0.014*bk):0;
+  let y=c.y+0.02*bk;
+  if(it.label){ dtf(g,String(it.label),px,y,leftW,0.036*bk*zl,'800',pal.text,font,'left','top',0.6); y+=0.036*bk*zl*1.3; }
+  if(String(it.sub||'').trim()){ dtf(g,String(it.sub).trim(),px,y,leftW,0.024*bk*zs,'600',pal.mute,font,'left','top',0.6); y+=0.024*bk*zs*1.4; }
+  y+=0.008*bk; const dl=deltaText(it,tone), fsd=0.034*bk*zd; let pw0=0; if(dl){ g.font='700 '+fsd.toFixed(1)+'px '+font; pw0=g.measureText(dl).width+fsd*1.1; }
+  const fv=fitFont(g,String(it.value||''),Math.max(0.2*bk,leftW-(dl?pw0+0.02*bk:0)),0.115*bk*zv,'800',font,0.4), val=E.cf.count?countText(it.value,rv(s-0.05,0.75)):String(it.value||''); dtx(g,val,px,y,fv,'800',tc,font,'left','top');   /* 변화 알약이 같은 줄에 들어가도록 현재가 글자를 맞춤 */
+  if(dl){ g.font='800 '+fv.toFixed(1)+'px '+font; const vw=g.measureText(String(it.value||'')).width; pill(E,px+vw+0.02*bk,y+fv-fsd*1.55-0.004*bk,dl,fsd,tone==='up'||tone==='down'?'#ffffff':pal.text,tone==='up'||tone==='down'?toneCol(pal,tone):pal.track,'l'); }
+  if(hasSp){ const sx=c.x+c.w*0.62, sy=c.y+0.05*bk, sw=c.x+c.w-0.04*bk-sx, sh=Math.max(10,c.y+c.h-stH-0.05*bk-sy); const scol=sv[sv.length-1]>=sv[0]?pal.up:pal.down; sparkDraw(g,sv,sx,sy,sw,sh,scol,Math.max(2,0.006*bk),0.28,rv(s-0.1,0.9)); }
+  if(st.length){
+    const ly=c.y+c.h-stH-0.004*bk; g.fillStyle=alphaOf(pal.mute,0.25); g.fillRect(px,ly,iw,1); const cw=iw/st.length;
+    st.forEach((q,i)=>{ const cx=px+cw*i; dtf(g,q.t,cx,ly+0.010*bk,cw-0.012*bk,0.022*bk*zc,'600',pal.mute,font,'left','top',0.6); dtf(g,q.v,cx,ly+0.010*bk+0.022*bk*zc*1.35,cw-0.012*bk,0.032*bk*zc,'800',q.k==='high'?pal.up:q.k==='low'?pal.down:pal.text,font,'left','top',0.5); });
+  }
+  g.restore();
+};
+
+/* ── ④ vbar — 등락 막대(세로, 위아래) ── */
+BT.vbar={n:'등락 막대(세로·위아래)',f:[['label','제목']],parts:[['l','이름'],['v','등락(%)','num'],['t','표시 글(비우면 자동)']]};
+FZK.vbar={f:[['label','제목']],p:[['l','이름'],['v','값']]};
+MEAS.vbar=(E,it,iw,k)=>{ const bk=E.B*k; return {h:bk*((it.label?HDR*hzL(it):0)+0.34*bigf(E)*hzf(it,null,{'l|v':0.6})+0.05),mw:0.10*Math.max(2,(it.parts||[]).length)+0.12}; };
+DRAW.vbar=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,14), n=ps.length;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  if(!n){ g.restore(); return; }
+  const vals=ps.map(p=>nz(p.v)||0), mxp=Math.max(0,Math.max.apply(null,vals)), mxn=Math.max(0,Math.max.apply(null,vals.map(v=>-v))), span=(mxp+mxn)||1, zl=FZP(it,'l'), zv=FZP(it,'v'), lh=0.034*bk*zl*1.4, vh=0.032*bk*zv*1.45;
+  const x0=c.x+0.04*bk, x1=c.x+c.w-0.04*bk, top=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk, bot=c.y+c.h-0.02*bk-lh, yb0=top+(mxp>0?vh:0), yb1=bot-(mxn>0?vh:0), H=Math.max(10,yb1-yb0), zero=yb0+H*mxp/span, sw=(x1-x0)/n, bw=Math.min(sw*0.62,0.12*bk);
+  g.save(); g.strokeStyle=alphaOf(pal.mute,0.4); g.lineWidth=1; g.beginPath(); g.moveTo(x0,Math.round(zero)+0.5); g.lineTo(x1,Math.round(zero)+0.5); g.stroke(); g.restore();
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const v=vals[i], cx=x0+sw*(i+0.5), hh=Math.abs(v)/span*H*rv(sp,0.55), col=sgnCol(pal,v);
+    g.save(); g.globalAlpha*=rv(sp,0.4); g.fillStyle=col;
+    if(hh>1){ const r=Math.min(bw*0.25,hh/2); if(v>0) roundRect(g,cx-bw/2,zero-hh,bw,hh,r); else roundRect(g,cx-bw/2,zero,bw,hh,r); g.fill(); } else g.fillRect(cx-bw/2,zero-1,bw,2);
+    const txt=String(p.t||'').trim()||chgTxt(v), up=v>=0; dtf(g,txt,cx,up?zero-Math.max(hh,1)-0.006*bk:zero+Math.max(hh,1)+0.006*bk,sw*1.08,0.030*bk*FZ(p,'v'),'800',col,font,'center',up?'bottom':'top',0.5);
+    dtf(g,String(p.l||''),cx,bot+0.008*bk,sw*1.08,0.028*bk*FZ(p,'l'),'700',pal.text,font,'center','top',0.5);
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── ⑤ stock — 주가 차트(기준선 위는 상승색·아래는 하락색) ── */
+BT.stock={n:'주가 차트(등락 색·기준선)',f:[['label','종목·제목'],['base','기준가(전일 종가)','num'],['unit','단위'],['note','덧글']],parts:[['l','시각·날짜'],['y','가격','num']]};
+FZK.stock={f:[['label','제목'],['cap','가격 태그·기준선 글']],p:[['l','가로축 글']]};
+MEAS.stock=(E,it,iw,k)=>{ const bk=E.B*k; return {h:bk*((it.label?HDR*hzL(it):0)+0.38*bigf(E)*hzf(it,{cap:0.2},{l:0.3})+0.06),mw:0.62}; };
+DRAW.stock=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k;
+  const pts=(it.parts||[]).slice(0,80).map((p,i)=>({p,i,y:nz(p.y)})).filter(q=>q.y!=null), n=pts.length;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  if(n<2){ g.restore(); return; }
+  const unit=String(it.unit||''), b0=nz(it.base), base=b0!=null?b0:pts[0].y, zl=FZP(it,'l'), zc=FZ(it,'cap'), ys=pts.map(q=>q.y);
+  let mn=Math.min(base,Math.min.apply(null,ys)), mx=Math.max(base,Math.max.apply(null,ys)); const pd=(mx-mn||Math.abs(mx)*0.02||1)*0.16; mn-=pd; mx+=pd;
+  const x0=c.x+0.045*bk, x1=c.x+c.w-0.05*bk, tagH=0.056*bk*zc, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.016*bk+tagH, y1=c.y+c.h-0.016*bk-0.030*bk*zl*1.5;
+  const X=i=>x0+(x1-x0)*i/(n-1), Y=v=>y1-(y1-y0)*(v-mn)/(mx-mn), yB=Y(base);
+  g.save(); g.strokeStyle=alphaOf(pal.mute,0.55); g.lineWidth=Math.max(1,0.002*bk); g.setLineDash([0.014*bk,0.010*bk]); g.beginPath(); g.moveTo(x0,yB); g.lineTo(x1,yB); g.stroke(); g.restore();
+  dtx(g,TX('base','기준')+' '+fmtN(base)+unit,x0,yB-0.006*bk,0.022*bk*zc,'600',pal.mute,font,'left','bottom');
+  const rf=pts.map(q=>{ const sp=partSince(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.55); }); let last=-1; rf.forEach((f,i)=>{ if(f>0) last=i; });
+  if(last>=0){
+    g.lineWidth=Math.max(2.5,0.0085*bk); g.lineJoin='round'; g.lineCap='round'; let ex=X(0), ey=Y(pts[0].y);
+    const piece=(xa,ya,xb,yb,upS)=>{ const col=upS?pal.up:pal.down; g.fillStyle=alphaOf(col,pal.dark?0.20:0.16); g.beginPath(); g.moveTo(xa,ya); g.lineTo(xb,yb); g.lineTo(xb,yB); g.lineTo(xa,yB); g.closePath(); g.fill(); g.strokeStyle=col; g.beginPath(); g.moveTo(xa,ya); g.lineTo(xb,yb); g.stroke(); };
+    for(let i=1;i<=last;i++){
+      const f=i===last?rf[i]:1, xa=X(i-1), ya=Y(pts[i-1].y), xe=X(i), ye=Y(pts[i].y), xb=xa+(xe-xa)*f, yb=ya+(ye-ya)*f, da=ya-yB, db=yb-yB; ex=xb; ey=yb;   /* 화면 y 가 작을수록 위 = 기준선보다 위(상승) */
+      if(da*db<0){ const t=da/(da-db), xm=xa+(xb-xa)*t; piece(xa,ya,xm,yB,da<0); piece(xm,yB,xb,yb,db<0); } else piece(xa,ya,xb,yb,(da+db)<0);
+    }
+    const hiI=ys.slice(0,last+1).indexOf(Math.max.apply(null,ys.slice(0,last+1))), loI=ys.slice(0,last+1).indexOf(Math.min.apply(null,ys.slice(0,last+1)));
+    if(n>=5){ [[hiI,true],[loI,false]].forEach(([qi,isH])=>{ if(qi===last||qi<0||rf[qi]<=0) return; const mxp=X(qi), myp=Y(pts[qi].y); g.fillStyle=pal.cardSolid; g.strokeStyle=isH?pal.up:pal.down; g.lineWidth=Math.max(2,0.005*bk); g.beginPath(); g.arc(mxp,myp,0.009*bk,0,Math.PI*2); g.fill(); g.stroke(); dtf(g,fmtN(pts[qi].y)+unit,mxp,isH?myp-0.016*bk:myp+0.016*bk,0.2*bk,0.022*bk*zc,'700',pal.mute,font,'center',isH?'bottom':'top',0.6); }); }
+    const lp=pts[last], chg=lp.y-base, pct=base?chg/base*100:null, lc=sgnCol(pal,chg);
+    g.fillStyle=pal.cardSolid; g.strokeStyle=lc; g.lineWidth=Math.max(2,0.005*bk); g.beginPath(); g.arc(ex,ey,0.012*bk,0,Math.PI*2); g.fill(); g.stroke();
+    const fs=0.030*bk*zc, tag=fmtN(lp.y)+unit+(pct!=null&&last===n-1?'  '+(chg>0?'▲':chg<0?'▼':'')+Math.abs(pct).toFixed(2)+'%':''), ph=fs*1.55, py=(ey-ph-0.018*bk>=y0-tagH)?ey-ph-0.018*bk:ey+0.018*bk;
+    pill(E,Math.min(x1+0.02*bk,ex+0.04*bk),py,tag,fs,'#ffffff',lc,'r');
+  }
+  const idx=[]; const ln=Math.min(5,n); for(let q=0;q<ln;q++) idx.push(Math.round((n-1)*q/Math.max(1,ln-1))); [...new Set(idx)].forEach(i=>{ const t=String(pts[i].p.l==null?'':pts[i].p.l); if(t&&rf[i]>0) dtf(g,t,X(i),y1+0.012*bk,(x1-x0)/Math.max(1,ln-1)*1.05,0.026*bk*zl,'600',pal.mute,font,i===0?'left':i===n-1?'right':'center','top',0.5); });
+  g.restore();
+};
+
+/* ── ⑥ candle — 캔들 차트(시·고·저·종 + 거래량) ── */
+BT.candle={n:'캔들 차트(시·고·저·종)',f:[['label','종목·제목'],['unit','단위']],parts:[['l','날짜'],['o','시가','num'],['hi','고가','num'],['lo','저가','num'],['c','종가','num'],['vol','거래량','num']]};
+FZK.candle={f:[['label','제목'],['cap','가격 축·태그 글']],p:[['l','날짜']]};
+MEAS.candle=(E,it,iw,k)=>{ const bk=E.B*k; return {h:bk*((it.label?HDR*hzL(it):0)+0.42*bigf(E)*hzf(it,{cap:0.2},{l:0.3})+0.06),mw:0.07*Math.max(3,(it.parts||[]).length)+0.34}; };
+DRAW.candle=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k;
+  const cs=(it.parts||[]).slice(0,40).map((p,i)=>{ const o=nz(p.o), cl=nz(p.c); if(o==null||cl==null) return null; let hi=nz(p.hi), lo=nz(p.lo); hi=Math.max(hi==null?-Infinity:hi,o,cl); lo=Math.min(lo==null?Infinity:lo,o,cl); return {p,i,o,c:cl,hi,lo,vol:Math.max(0,nz(p.vol)||0)}; }).filter(Boolean), n=cs.length;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  if(!n){ g.restore(); return; }
+  const zl=FZP(it,'l'), zc=FZ(it,'cap'), unit=String(it.unit||''), hasVol=cs.some(q=>q.vol>0), p0=Math.min.apply(null,cs.map(q=>q.lo)), p1=Math.max.apply(null,cs.map(q=>q.hi)), pad=(p1-p0||Math.abs(p1)*0.02||1)*0.1, mn=p0-pad, mx=p1+pad;
+  const fa=0.024*bk*zc; g.font='600 '+fa.toFixed(1)+'px '+font; const axW=Math.max(g.measureText(fmtN(mx)+unit).width,g.measureText(fmtN(mn)+unit).width)+0.016*bk;
+  const x0=c.x+0.036*bk, x1=c.x+c.w-0.036*bk-axW, top=c.y+(it.label?HDR*hzL(it)*bk:0)+0.018*bk, labH=0.028*bk*zl*1.5, bot=c.y+c.h-0.016*bk-labH, volH=hasVol?(bot-top)*0.20:0, y0=top, y1=bot-volH-(hasVol?0.012*bk:0), Y=v=>y1-(y1-y0)*(v-mn)/(mx-mn);
+  g.save(); g.strokeStyle=alphaOf(pal.mute,0.2); g.lineWidth=1;
+  for(let q=0;q<=3;q++){ const v=mn+(mx-mn)*q/3, yy=Math.round(Y(v))+0.5; g.beginPath(); g.moveTo(x0,yy); g.lineTo(x1+0.006*bk,yy); g.stroke(); dtx(g,fmtN(v)+unit,c.x+c.w-0.036*bk,yy,fa,'600',pal.mute,font,'right','middle'); }
+  g.restore();
+  const sw=(x1-x0)/n, bw=Math.max(3,Math.min(sw*0.64,0.07*bk)), maxV=Math.max.apply(null,cs.map(q=>q.vol))||1; let lastVis=-1;
+  cs.forEach((q,j)=>{
+    const sp=partSince(E,it,q.p,q.i); if(sp<=0) return; lastVis=j; const cx=x0+sw*(j+0.5), col=q.c>=q.o?pal.up:pal.down, a=rv(sp,0.45), yo=Y(q.o), yc=Y(q.c), yh=Y(q.hi), yl=Y(q.lo);
+    g.save(); g.globalAlpha*=a; g.strokeStyle=col; g.fillStyle=col; g.lineWidth=Math.max(1.5,bw*0.14); g.beginPath(); g.moveTo(cx,yh); g.lineTo(cx,yl); g.stroke();
+    const bt=Math.min(yo,yc), bh=Math.max(2,Math.abs(yc-yo)); roundRect(g,cx-bw/2,bt,bw,bh,Math.min(bw*0.16,bh/2)); g.fill();
+    if(hasVol&&q.vol>0){ const vh=q.vol/maxV*volH; g.globalAlpha*=0.55; g.fillRect(cx-bw/2,bot-vh,bw,vh); }
+    g.restore();
+  });
+  const step=Math.max(1,Math.ceil(n/Math.max(1,Math.floor((x1-x0)/(0.13*bk))))); cs.forEach((q,j)=>{ if(j%step!==0&&j!==n-1) return; if(j!==n-1&&n-1-j<step*0.6) return; const t=String(q.p.l==null?'':q.p.l); if(!t||partSince(E,it,q.p,q.i)<=0) return; dtf(g,t,x0+sw*(j+0.5),bot+0.006*bk,sw*step*1.05,0.026*bk*zl,'600',pal.mute,font,'center','top',0.5); });
+  if(lastVis>=0){ const q=cs[lastVis], col=q.c>=q.o?pal.up:pal.down, yy=Y(q.c); g.save(); g.setLineDash([0.012*bk,0.008*bk]); g.strokeStyle=alphaOf(col,0.7); g.lineWidth=Math.max(1,0.002*bk); g.beginPath(); g.moveTo(x0+sw*(lastVis+0.5),yy); g.lineTo(x1+0.006*bk,yy); g.stroke(); g.restore();
+    const fs=0.026*bk*zc, tag=fmtN(q.c)+unit; g.font='800 '+fs.toFixed(1)+'px '+font; const tw=g.measureText(tag).width+fs*0.9, th=fs*1.5, tx=c.x+c.w-0.032*bk-tw, ty=clamp(yy-th/2,y0-th/2,y1-th/2); roundRect(g,tx,ty,tw,th,th*0.3); g.fillStyle=col; g.fill(); dtx(g,tag,tx+tw/2,ty+th/2,fs,'800','#ffffff',font,'center','middle'); }
+  g.restore();
+};
+
+/* ── ⑦ curve — 2선 비교(금리 곡선: 지금 vs 이전) ── */
+BT.curve={n:'2선 비교(금리 곡선·지금 vs 이전)',f:[['label','제목'],['a','지금 이름'],['b','이전 이름'],['unit','단위']],parts:[['l','가로축 이름'],['y','지금 값','num'],['y2','이전 값','num']]};
+FZK.curve={f:[['label','제목'],['cap','범례·값 글']],p:[['l','가로축 글']]};
+MEAS.curve=(E,it,iw,k)=>{ const bk=E.B*k; return {h:bk*((it.label?HDR*hzL(it):0)+0.38*bigf(E)*hzf(it,{cap:0.15},{l:0.3})+0.05),mw:0.62}; };
+DRAW.curve=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k;
+  const pts=(it.parts||[]).slice(0,16).map((p,i)=>({p,i,y:nz(p.y),y2:nz(p.y2)})).filter(q=>q.y!=null||q.y2!=null), n=pts.length;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  if(n<2){ g.restore(); return; }
+  const unit=String(it.unit||''), zl=FZP(it,'l'), zc=FZ(it,'cap'), all=[]; pts.forEach(q=>{ if(q.y!=null) all.push(q.y); if(q.y2!=null) all.push(q.y2); });
+  let mn=Math.min.apply(null,all), mx=Math.max.apply(null,all); const pd=(mx-mn||Math.abs(mx)*0.02||1)*0.2; mn-=pd; mx+=pd;
+  const x0=c.x+0.06*bk, x1=c.x+c.w-0.06*bk, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.05*bk, y1=c.y+c.h-0.016*bk-0.030*bk*zl*1.5, X=i=>x0+(x1-x0)*i/(n-1), Y=v=>y1-(y1-y0)*(v-mn)/(mx-mn);
+  g.save(); g.strokeStyle=alphaOf(pal.mute,0.22); g.lineWidth=1; for(let q=0;q<=3;q++){ const yy=Math.round(y0+(y1-y0)*q/3)+0.5; g.beginPath(); g.moveTo(x0,yy); g.lineTo(x1,yy); g.stroke(); } g.restore();
+  const rf=pts.map(q=>{ const sp=partSince(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.55); }); let last=-1; rf.forEach((f,i)=>{ if(f>0) last=i; });
+  const both=i=>pts[i].y!=null&&pts[i].y2!=null;
+  if(last>=0){
+    g.save(); g.lineJoin='round'; g.lineCap='round';
+    for(let i=1;i<=last;i++){ if(!(both(i-1)&&both(i))) continue; const f=i===last?rf[i]:1, xa=X(i-1), xb=xa+(X(i)-xa)*f, ya=Y(pts[i-1].y), yb=ya+(Y(pts[i].y)-ya)*f, ya2=Y(pts[i-1].y2), yb2=ya2+(Y(pts[i].y2)-ya2)*f, up=(pts[i-1].y+pts[i].y)>=(pts[i-1].y2+pts[i].y2); g.fillStyle=alphaOf(up?pal.up:pal.down,pal.dark?0.20:0.15); g.beginPath(); g.moveTo(xa,ya); g.lineTo(xb,yb); g.lineTo(xb,yb2); g.lineTo(xa,ya2); g.closePath(); g.fill(); }
+    const line=(key,col,w,dash)=>{ g.strokeStyle=col; g.lineWidth=w; g.setLineDash(dash||[]); g.beginPath(); let st=false; for(let i=0;i<=last;i++){ const v=pts[i][key]; if(v==null){ st=false; continue; } const f=i===last?rf[i]:1, xx=i===0?X(0):X(i-1)+(X(i)-X(i-1))*f; let yy=Y(v); if(i>0&&pts[i-1][key]!=null&&f<1) yy=Y(pts[i-1][key])+(Y(v)-Y(pts[i-1][key]))*f; if(!st){ g.moveTo(xx,yy); st=true; } else g.lineTo(xx,yy); } g.stroke(); g.setLineDash([]); };
+    line('y2',alphaOf(pal.mute,0.9),Math.max(2,0.0055*bk),[0.016*bk,0.010*bk]); line('y',pal.accent,Math.max(2.5,0.0085*bk));
+    for(let i=0;i<=last;i++){ const f=i===last?rf[i]:1; if(f<0.6) continue; if(pts[i].y!=null){ const xx=X(i), yy=Y(pts[i].y); g.fillStyle=pal.cardSolid; g.strokeStyle=pal.accent; g.lineWidth=Math.max(2,0.005*bk); g.beginPath(); g.arc(xx,yy,0.010*bk,0,Math.PI*2); g.fill(); g.stroke(); if(n<=8) dtf(g,fmtN(pts[i].y,2)+unit,xx,yy-0.016*bk,(x1-x0)/n*1.1,0.026*bk*zc,'800',pal.text,font,'center','bottom',0.5); } }
+    g.restore();
+  }
+  pts.forEach((q,i)=>{ if(rf[i]>0&&String(q.p.l||'')) dtf(g,String(q.p.l),X(i),y1+0.012*bk,(x1-x0)/n*1.05,0.026*bk*zl,'600',pal.mute,font,i===0?'left':i===n-1?'right':'center','top',0.5); });
+  const lf=0.024*bk*zc, nm=String(it.a||'').trim()||TX('now','지금'), pm=String(it.b||'').trim()||TX('prev','이전'); g.font='700 '+lf.toFixed(1)+'px '+font; const w2=g.measureText(pm).width, w1=g.measureText(nm).width, lx=c.x+c.w-0.04*bk, ly=c.y+(it.label?HDR*hzL(it)*bk*0.5+0.014*bk:0.03*bk);
+  dtx(g,pm,lx,ly,lf,'700',pal.mute,font,'right','middle'); g.save(); g.strokeStyle=alphaOf(pal.mute,0.9); g.lineWidth=Math.max(2,0.005*bk); g.setLineDash([0.010*bk,0.007*bk]); g.beginPath(); g.moveTo(lx-w2-0.050*bk,ly); g.lineTo(lx-w2-0.012*bk,ly); g.stroke(); g.restore();
+  const l2=lx-w2-0.074*bk; dtx(g,nm,l2,ly,lf,'700',pal.text,font,'right','middle'); g.save(); g.strokeStyle=pal.accent; g.lineWidth=Math.max(2.5,0.007*bk); g.lineCap='round'; g.beginPath(); g.moveTo(l2-w1-0.050*bk,ly); g.lineTo(l2-w1-0.012*bk,ly); g.stroke(); g.restore();
+  g.restore();
+};
+
+/* ── ⑧ wfall — 증감 폭포(기여도) ── */
+BT.wfall={n:'증감 폭포(기여도)',f:[['label','제목'],['unit','단위'],['note','합계 이름']],parts:[['l','이름'],['v','증감','num'],['t','표시 글(비우면 자동)']]};
+FZK.wfall={f:[['label','제목']],p:[['l','이름'],['v','값']]};
+MEAS.wfall=(E,it,iw,k)=>{ const bk=E.B*k; return {h:bk*((it.label?HDR*hzL(it):0)+0.36*bigf(E)*hzf(it,null,{'l|v':0.6})+0.05),mw:0.10*(Math.max(2,(it.parts||[]).length)+1)+0.12}; };
+DRAW.wfall=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,12), n=ps.length, unit=String(it.unit||'');
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  if(!n){ g.restore(); return; }
+  const vs=ps.map(p=>nz(p.v)||0); let cum=0; const lv=vs.map(v=>{ const a=cum; cum+=v; return [a,cum]; }), tot=cum, ext=lv.reduce((a,q)=>a.concat(q),[0,tot]), lo=Math.min.apply(null,ext), hi=Math.max.apply(null,ext), span=(hi-lo)||1, N=n+1;
+  const zl=FZP(it,'l'), zv=FZP(it,'v'), lh=0.034*bk*zl*1.4, vh=0.030*bk*zv*1.45, x0=c.x+0.04*bk, x1=c.x+c.w-0.04*bk, top=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk+vh, bot=c.y+c.h-0.02*bk-lh-vh*0.6, H=Math.max(10,bot-top), Y=v=>bot-H*(v-lo)/span, sw=(x1-x0)/N, bw=Math.min(sw*0.62,0.12*bk);
+  g.save(); g.strokeStyle=alphaOf(pal.mute,0.4); g.lineWidth=1; g.beginPath(); g.moveTo(x0,Math.round(Y(0))+0.5); g.lineTo(x1,Math.round(Y(0))+0.5); g.stroke(); g.restore();
+  const bar=(i,a,b,col,txt,label,sp)=>{ const cx=x0+sw*(i+0.5), ya=Y(a), yb=Y(b), yt=Math.min(ya,yb), hh=Math.max(2,Math.abs(ya-yb))*rv(sp,0.55); g.save(); g.globalAlpha*=rv(sp,0.4); g.fillStyle=col; roundRect(g,cx-bw/2,b>=a?Y(a)-hh:Y(a),bw,hh,Math.min(bw*0.22,hh/2)); g.fill();
+    const up=b>=a; dtf(g,txt,cx,up?yt-0.006*bk:yt+Math.abs(ya-yb)+0.006*bk,sw*1.08,0.028*bk*zv,'800',col,font,'center',up?'bottom':'top',0.5); dtf(g,label,cx,bot+0.008*bk+vh*0.6,sw*1.08,0.028*bk*zl,'700',pal.text,font,'center','top',0.5); g.restore(); };
+  ps.forEach((p,i)=>{ const sp=partSince(E,it,p,i); if(sp<=0) return; const v=vs[i], col=sgnCol(pal,v), cx=x0+sw*(i+0.5);
+    if(i>0){ g.save(); g.globalAlpha*=rv(sp,0.4)*0.8; g.strokeStyle=alphaOf(pal.mute,0.6); g.lineWidth=1; g.setLineDash([3,3]); g.beginPath(); g.moveTo(cx-sw,Math.round(Y(lv[i][0]))+0.5); g.lineTo(cx-bw/2,Math.round(Y(lv[i][0]))+0.5); g.stroke(); g.restore(); }
+    bar(i,lv[i][0],lv[i][1],col,String(p.t||'').trim()||((v>0?'+':'')+fmtN(v)+unit),String(p.l||''),sp); });
+  const sps=ps.map((p,i)=>partSince(E,it,p,i)), spT=Math.max.apply(null,sps); if(spT>0){ const cx=x0+sw*(n+0.5); g.save(); g.globalAlpha*=rv(spT-0.3,0.4)*0.8; g.strokeStyle=alphaOf(pal.mute,0.6); g.lineWidth=1; g.setLineDash([3,3]); g.beginPath(); g.moveTo(cx-sw,Math.round(Y(tot))+0.5); g.lineTo(cx-bw/2,Math.round(Y(tot))+0.5); g.stroke(); g.restore(); bar(n,0,tot,pal.flat,fmtN(tot)+unit,String(it.note||'').trim()||TX('tot','합계'),spT-0.3); }
+  g.restore();
+};
+
+/* ── ⑨ tape — 시세 전광판(티커) ── */
+BT.tape={n:'시세 전광판(티커)',f:[['label','제목']],parts:[['l','이름'],['v','현재가·수준'],['d','등락(+1.2% 등)']]};
+FZK.tape={f:[['label','제목']],p:[['l','이름'],['v','현재가'],['d','등락']]};
+function tapeLay(E,it,iw,bk){   /* 칩을 가로로 늘어놓다 줄이 차면 다음 줄로 — {rows,chips:[{x,y,w,...}],ph} */
+  const g=E.g, font=E.font, ps=(it.parts||[]).slice(0,16), zl=FZP(it,'l'), zv=FZP(it,'v'), zd=FZP(it,'d'), fl=0.030*bk*zl, fv=0.034*bk*zv, fd=0.028*bk*zd, ph=0.072*bk*Math.max(1,(zl+zv+zd)/3), gp=0.012*bk, pad=0.020*bk, chips=[]; let x=0, row=0;
+  ps.forEach((p,i)=>{
+    const dv=nz(p.d), tone=itemTone({delta:p.d,value:p.v}), dl=String(p.d||'').trim()?deltaText({delta:p.d},tone):''; g.font='700 '+fl.toFixed(1)+'px '+font; const w1=String(p.l||'')?g.measureText(String(p.l)).width:0; g.font='800 '+fv.toFixed(1)+'px '+font; const w2=String(p.v||'')?g.measureText(String(p.v)).width:0; g.font='800 '+fd.toFixed(1)+'px '+font; const w3=dl?g.measureText(dl).width:0;
+    let w=Math.min(iw,pad*2+w1+(w1&&(w2||w3)?0.014*bk:0)+w2+(w2&&w3?0.014*bk:0)+w3+(dl?0.004*bk:0)); if(x>0&&x+w>iw){ row++; x=0; } chips.push({p,i,x,row,w,dl,tone,fl,fv,fd,w1,w2,w3,pad}); x+=w+gp; void dv;
+  });
+  return {rows:row+1,chips,ph,gp};
+}
+MEAS.tape=(E,it,iw,k)=>{ const bk=E.B*k, lay=tapeLay(E,it,iw-0.048*bk,bk); return {h:(it.label?HDR*hzL(it)*bk:0)+lay.rows*lay.ph+(lay.rows-1)*lay.gp+0.04*bk,lay,mw:0.34}; };
+DRAW.tape=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, lay=c.m&&c.m.lay?c.m.lay:tapeLay(E,it,c.w-0.048*bk,bk);
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.024*bk, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk;
+  lay.chips.forEach(q=>{
+    const sp=partSince(E,it,q.p,q.i); if(sp<=0) return; const x=x0+q.x, y=y0+q.row*(lay.ph+lay.gp), tc=toneCol(pal,q.tone)||pal.text, k=rv(sp,0.4);
+    g.save(); g.globalAlpha*=k; g.translate((1-k)*0.03*bk,0); roundRect(g,x,y,q.w,lay.ph,lay.ph*0.30); g.fillStyle=pal.dark?alphaOf('#ffffff',0.06):alphaOf('#0f172a',0.045); g.fill(); g.lineWidth=Math.max(1,0.002*bk); g.strokeStyle=alphaOf(toneCol(pal,q.tone)||pal.mute,0.45); g.stroke();
+    let cx=x+q.pad; const cy=y+lay.ph/2; if(String(q.p.l||'')){ dtx(g,String(q.p.l),cx,cy,q.fl,'700',pal.mute,font,'left','middle'); cx+=q.w1+(q.w2||q.w3?0.014*bk:0); } if(String(q.p.v||'')){ dtx(g,String(q.p.v),cx,cy,q.fv,'800',pal.text,font,'left','middle'); cx+=q.w2+(q.w3?0.014*bk:0); } if(q.dl) dtx(g,q.dl,cx,cy,q.fd,'800',tc,font,'left','middle');
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── ⑩ watch — 관심종목 시세표(미니 차트) ── */
+BT.watch={n:'관심종목 시세표(미니 차트)',f:[['label','제목']],parts:[['l','종목명'],['v','현재가'],['d','등락(+1.2% 등)'],['sr','미니 차트 추이(숫자를 띄어쓰기·쉼표로)']]};   /* 항목 키 s·q 는 AI 가 '몇 번째 문장·말'로 쓰므로 추이는 sr */
+FZK.watch={f:[['label','제목']],p:[['l','종목명'],['v','현재가'],['d','등락']]};
+MEAS.watch=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,Math.min(10,(it.parts||[]).length)), rh=0.085*bk*hzf(it,null,{'l|v|d':0.8}); return {h:(it.label?HDR*hzL(it)*bk:0)+n*rh+0.04*bk,rh,mw:0.85}; };
+DRAW.watch=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,10), rh=c.m.rh;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.03*bk, iw=c.w-0.06*bk, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk, cn=iw*0.30, cs=iw*0.22, cp=iw*0.24, cd=iw*0.24;
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const y=y0+i*rh, cy=y+rh/2, k=rv(sp,0.45), tone=itemTone({delta:p.d,value:p.v}), tc=toneCol(pal,tone)||pal.text, sv=numList(p.sr);
+    g.save(); g.globalAlpha*=k; g.translate((1-k)*0.04*bk,0);
+    if(i>0){ g.fillStyle=alphaOf(pal.mute,0.16); g.fillRect(x0,y,iw,1); }
+    dtf(g,String(p.l||''),x0,cy,cn-0.01*bk,0.034*bk*FZ(p,'l'),'700',pal.text,font,'left','middle',0.55);
+    if(sv.length>=2){ const scol=sv[sv.length-1]>=sv[0]?pal.up:pal.down, sh=rh*0.52; sparkDraw(g,sv,x0+cn,cy-sh/2,cs-0.02*bk,sh,scol,Math.max(2,0.005*bk),0.20,rv(sp-0.05,0.8)); }
+    dtf(g,String(p.v||''),x0+cn+cs+cp,cy,cp-0.01*bk,0.036*bk*FZ(p,'v'),'800',pal.text,font,'right','middle',0.5);
+    const dl=String(p.d||'').trim()?deltaText({delta:p.d},tone):''; if(dl){ const fs=0.030*bk*FZ(p,'d'); g.font='800 '+fs.toFixed(1)+'px '+font; const w=Math.min(cd-0.012*bk,g.measureText(dl).width+fs*1.1); pill(E,x0+iw,cy-fs*1.55/2,dl,fs,tone==='up'||tone==='down'?'#ffffff':pal.text,tone==='up'||tone==='down'?toneCol(pal,tone):pal.track,'r'); void w; }
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── ⑪ rank — 상승·하락 순위(TOP) ── */
+BT.rank={n:'상승·하락 순위(TOP)',f:[['label','제목']],parts:[['l','종목명'],['v','등락(%)','num'],['t','표시 글(비우면 자동)']]};
+FZK.rank={f:[['label','제목'],['cap','"상승/하락 TOP" 글']],p:[['l','이름'],['v','값']]};
+function rankSplit(it){ const ps=(it.parts||[]).slice(0,12).map((p,i)=>({p,i,v:nz(p.v)})).filter(q=>q.v!=null), up=ps.filter(q=>q.v>=0).sort((a,b)=>b.v-a.v).slice(0,6), dn=ps.filter(q=>q.v<0).sort((a,b)=>a.v-b.v).slice(0,6); return {up,dn}; }
+MEAS.rank=(E,it,iw,k)=>{ const bk=E.B*k, r=rankSplit(it), rows=Math.max(1,r.up.length,r.dn.length), rh=0.066*bk*hzf(it,null,{'l|v':0.8}); return {h:(it.label?HDR*hzL(it)*bk:0)+0.056*bk*FZ(it,'cap')+rows*rh+(rows-1)*0.008*bk+0.04*bk,rh,rows,mw:(r.up.length&&r.dn.length)?0.95:0.50}; };
+DRAW.rank=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, r=rankSplit(it), m=c.m, zc=FZ(it,'cap'), two=r.up.length>0&&r.dn.length>0;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.03*bk, iw=c.w-0.06*bk, gap=0.03*bk, cw=two?(iw-gap)/2:iw, yh=c.y+(it.label?HDR*hzL(it)*bk:0)+0.016*bk, y0=yh+0.056*bk*zc;
+  const col=(list,cx,side)=>{
+    const colr=side>0?pal.up:pal.down, mxv=Math.max.apply(null,list.map(q=>Math.abs(q.v)))||1;
+    dtx(g,(side>0?'▲ ':'▼ ')+(side>0?TX('rku','상승 TOP'):TX('rkd','하락 TOP')),cx+0.006*bk,yh+0.024*bk*zc,0.028*bk*zc,'800',colr,font,'left','middle');
+    list.forEach((q,j)=>{ const sp=partSince(E,it,q.p,q.i); if(sp<=0) return; const y=y0+j*(m.rh+0.008*bk), cy=y+m.rh/2, k=rv(sp,0.45), bw=(cw-0.02*bk)*Math.abs(q.v)/mxv*rv(sp,0.7); g.save(); g.globalAlpha*=k;
+      roundRect(g,cx,y,Math.max(0.02*bk,bw),m.rh,0.012*bk); g.fillStyle=alphaOf(colr,pal.dark?0.16:0.12); g.fill();
+      const nb=m.rh*0.58; roundRect(g,cx+0.010*bk,cy-nb/2,nb,nb,nb*0.3); g.fillStyle=alphaOf(colr,0.9); g.fill(); dtx(g,String(j+1),cx+0.010*bk+nb/2,cy,nb*0.62,'800','#ffffff',font,'center','middle');
+      const tx=cx+0.010*bk+nb+0.014*bk, txt=String(q.p.t||'').trim()||chgTxt(q.v), vw=cw*0.30; dtf(g,String(q.p.l||''),tx,cy,cw-(tx-cx)-vw-0.014*bk,0.030*bk*FZ(q.p,'l'),'700',pal.text,font,'left','middle',0.5); dtf(g,txt,cx+cw-0.012*bk,cy,vw,0.032*bk*FZ(q.p,'v'),'800',colr,font,'right','middle',0.5); g.restore(); });
+  };
+  if(r.up.length) col(r.up,x0,1); if(r.dn.length) col(r.dn,two?x0+cw+gap:x0,-1);
+  g.restore();
+};
+
+/* ── ⑫ period — 기간별 등락률(1일·1주·1개월…) ── */
+BT.period={n:'기간별 등락률(1일·1주·1개월)',f:[['label','종목·제목']],parts:[['l','기간'],['v','등락(%)','num'],['t','표시 글(비우면 자동)']]};
+FZK.period={f:[['label','제목']],p:[['l','기간'],['v','값']]};
+MEAS.period=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,Math.min(8,(it.parts||[]).length)), cols=Math.min(n,clamp(Math.floor((iw+0.012*bk)/(0.19*bk+0.012*bk)),2,8)), rows=Math.ceil(n/cols), th=0.15*bk*hzf(it,null,{'l|v':0.8}); return {h:(it.label?HDR*hzL(it)*bk:0)+rows*th+(rows-1)*0.012*bk+0.04*bk,cols,rows,th,mw:0.22}; };
+DRAW.period=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,8), m=c.m;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.024*bk, iw=c.w-0.048*bk, gap=0.012*bk, tw=(iw-gap*(m.cols-1))/m.cols, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.02*bk;
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const v=nz(p.v), vv=v==null?0:v, col=sgnCol(pal,vv), cc=i%m.cols, rr=Math.floor(i/m.cols), x=x0+cc*(tw+gap), y=y0+rr*(m.th+gap), cx=x+tw/2, k=rv(sp,0.4);
+    g.save(); g.globalAlpha*=k; const sc=0.9+0.1*easeBack(clamp(sp/0.5,0,1)); g.translate(cx,y+m.th/2); g.scale(sc,sc); g.translate(-cx,-(y+m.th/2));
+    roundRect(g,x,y,tw,m.th,0.020*bk); g.fillStyle=alphaOf(col,pal.dark?0.13:0.10); g.fill(); g.lineWidth=Math.max(1,0.002*bk); g.strokeStyle=alphaOf(col,0.45); g.stroke();
+    dtf(g,String(p.l||''),cx,y+m.th*0.20,tw-0.02*bk,0.030*bk*FZ(p,'l'),'700',pal.mute,font,'center','middle',0.5);
+    const txt=String(p.t||'').trim()||(v==null?'':(vv>0?'▲ ':vv<0?'▼ ':'')+fmtN(Math.abs(vv),Math.abs(vv)>=10?1:2)+'%'); dtf(g,txt,cx,y+m.th*0.62,tw-0.02*bk,0.040*bk*FZ(p,'v'),'800',col,font,'center','middle',0.45);
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── ⑬ breadth — 상승·하락 종목 수 ── */
+BT.breadth={n:'상승·하락 종목 수(시장 폭)',f:[['label','제목'],['up','상승 종목 수','num'],['flat','보합 종목 수','num'],['down','하락 종목 수','num'],['unit','단위(예: 종목)'],['note','덧글']]};
+FZK.breadth={f:[['label','제목'],['value','숫자 글'],['note','덧글']]};
+MEAS.breadth=(E,it,iw,k)=>({h:E.B*k*((it.label?HDR*hzL(it):0)+0.17*hzf(it,{value:0.5,note:0.3})+(String(it.note||'').trim()?0.04*FZ(it,'note'):0)+0.03),mw:0.75});
+DRAW.breadth=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, up=Math.max(0,nz(it.up)||0), fl=Math.max(0,nz(it.flat)||0), dn=Math.max(0,nz(it.down)||0), tot=up+fl+dn, unit=String(it.unit||'').trim(), zv=FZ(it,'value'), zn=FZ(it,'note');
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.04*bk, iw=c.w-0.08*bk, bh=0.050*bk, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.028*bk, grow=rv(s0,0.8);
+  g.save(); roundRect(g,x0,y0,iw,bh,bh/2); g.fillStyle=pal.track; g.fill(); g.clip();
+  if(tot>0){ const wu=iw*up/tot, wf=iw*fl/tot, wd=iw*dn/tot; g.fillStyle=pal.up; g.fillRect(x0,y0,wu*grow,bh); g.fillStyle=alphaOf(pal.flat,0.6); g.fillRect(x0+wu*grow,y0,wf*grow,bh); g.fillStyle=pal.down; g.fillRect(x0+(wu+wf)*grow,y0,wd*grow,bh); }
+  g.restore();
+  const fs=0.034*bk*zv, ty=y0+bh+0.014*bk, pc=v=>tot>0?' ('+Math.round(v/tot*100)+'%)':'', u=unit?' '+unit:'';
+  dtf(g,'▲ '+TX('adv','상승')+' '+fmtN(up,0)+u+pc(up),x0,ty,iw*0.42,fs,'800',pal.up,font,'left','top',0.5);
+  if(fl>0) dtf(g,TX('unc','보합')+' '+fmtN(fl,0)+u,x0+iw/2,ty,iw*0.2,fs*0.86,'700',pal.mute,font,'center','top',0.5);
+  dtf(g,'▼ '+TX('dec','하락')+' '+fmtN(dn,0)+u+pc(dn),x0+iw,ty,iw*0.42,fs,'800',pal.down,font,'right','top',0.5);
+  const nt=String(it.note||'').trim(); if(nt) dtf(g,nt,x0+iw/2,ty+fs*1.45,iw,0.028*bk*zn,'600',pal.mute,font,'center','top',0.6);
+  g.restore();
+};
+
+/* ── ⑭ range — 고저 범위 안 위치(일중·52주) ── */
+BT.range={n:'고저 범위 위치(일중·52주)',f:[['label','제목'],['unit','단위']],parts:[['l','구간(일중·52주)'],['lo','저가','num'],['hi','고가','num'],['v','현재가','num']]};
+FZK.range={f:[['label','제목'],['cap','저가·고가 글']],p:[['l','구간 이름'],['v','현재가 글']]};
+MEAS.range=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,Math.min(4,(it.parts||[]).length)), rh=0.150*bk*hzf(it,{cap:0.2},{'l|v':0.8}); return {h:(it.label?HDR*hzL(it)*bk:0)+n*rh+(n-1)*0.008*bk+0.04*bk,rh,mw:0.70}; };
+DRAW.range=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,4), unit=String(it.unit||''), zc=FZ(it,'cap'), rh=c.m.rh;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.04*bk, iw=c.w-0.08*bk, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.016*bk;
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const lo=nz(p.lo), hi=nz(p.hi), v=nz(p.v); if(lo==null||hi==null||hi<=lo) return; const y=y0+i*(rh+0.008*bk), k=rv(sp,0.45), pos=v==null?null:clamp((v-lo)/(hi-lo),0,1), th=0.022*bk, ty=y+rh*0.56, zp=FZ(p,'l'), zq=FZ(p,'v');
+    g.save(); g.globalAlpha*=k;
+    dtf(g,String(p.l||''),x0,y+0.004*bk,iw*0.5,0.030*bk*zp,'700',pal.mute,font,'left','top',0.6);
+    if(v!=null){ const fh=(v-hi)/hi*100, tx=(fh>=0?'':'')+TX('fromhi','고점 대비')+' '+(fh>0?'+':'')+fmtN(fh,1)+'%'; dtf(g,tx,x0+iw,y+0.004*bk,iw*0.5,0.026*bk*zc,'700',fh<0?pal.down:pal.up,font,'right','top',0.5); }
+    const gr=g.createLinearGradient(x0,0,x0+iw,0); gr.addColorStop(0,alphaOf(pal.down,0.55)); gr.addColorStop(1,alphaOf(pal.up,0.55)); roundRect(g,x0,ty-th/2,iw,th,th/2); g.fillStyle=gr; g.fill();
+    if(pos!=null){ const mx=x0+iw*pos*rv(sp-0.1,0.7), r=0.020*bk; g.fillStyle=pal.cardSolid; g.strokeStyle=pal.text; g.lineWidth=Math.max(2,0.005*bk); g.beginPath(); g.arc(mx,ty,r,0,Math.PI*2); g.fill(); g.stroke(); dtf(g,fmtN(v)+unit,clamp(mx,x0+0.08*bk,x0+iw-0.08*bk),ty-r-0.006*bk,0.30*bk,0.032*bk*zq,'800',pal.text,font,'center','bottom',0.5); }
+    dtx(g,fmtN(lo)+unit,x0,ty+th/2+0.008*bk,0.026*bk*zc,'600',pal.mute,font,'left','top'); dtx(g,fmtN(hi)+unit,x0+iw,ty+th/2+0.008*bk,0.026*bk*zc,'600',pal.mute,font,'right','top');
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── ⑮ surprise — 실적 예상 대비(서프라이즈) ── */
+BT.surprise={n:'실적 예상 대비(서프라이즈)',f:[['label','종목·제목'],['unit','단위']],parts:[['l','항목(EPS·매출)'],['est','예상치','num'],['act','실제','num']]};
+FZK.surprise={f:[['label','제목'],['cap','"예상·실제" 글']],p:[['l','항목'],['v','값']]};
+MEAS.surprise=(E,it,iw,k)=>{ const bk=E.B*k, n=Math.max(1,Math.min(5,(it.parts||[]).length)), rh=0.135*bk*hzf(it,null,{'l|v':0.8}); return {h:(it.label?HDR*hzL(it)*bk:0)+n*rh+(n-1)*0.008*bk+0.04*bk,rh,mw:0.95}; };
+DRAW.surprise=(E,c,it)=>{
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, ps=(it.parts||[]).slice(0,5), unit=String(it.unit||''), zc=FZ(it,'cap'), rh=c.m.rh;
+  popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const x0=c.x+0.04*bk, iw=c.w-0.08*bk, y0=c.y+(it.label?HDR*hzL(it)*bk:0)+0.016*bk, cl=iw*0.24, cb=iw*0.50, cp=iw*0.26;
+  ps.forEach((p,i)=>{
+    const sp=partSince(E,it,p,i); if(sp<=0) return; const est=nz(p.est), act=nz(p.act); if(est==null&&act==null) return; const y=y0+i*(rh+0.008*bk), cy=y+rh/2, k=rv(sp,0.45), mxv=Math.max(Math.abs(est||0),Math.abs(act||0))||1, bh=0.026*bk, zv=FZ(p,'v');
+    let col=pal.flat, pill_='', pc=null; if(est!=null&&act!=null){ pc=est!==0?(act-est)/Math.abs(est)*100:null; col=act>est?pal.up:act<est?pal.down:pal.flat; pill_=pc==null?'':(Math.abs(pc)<0.05?TX('inl','부합'):(pc>0?'▲ '+(pc>0?'+':'')+fmtN(pc,1)+'% '+TX('beat','상회'):'▼ '+fmtN(pc,1)+'% '+TX('miss','하회'))); }
+    g.save(); g.globalAlpha*=k; if(i>0){ g.fillStyle=alphaOf(pal.mute,0.16); g.fillRect(x0,y-0.004*bk,iw,1); }
+    dtf(g,String(p.l||''),x0,cy,cl-0.012*bk,0.036*bk*FZ(p,'l'),'800',pal.text,font,'left','middle',0.55);
+    const capW=0.074*bk*Math.max(1,zc), bx=x0+cl+capW, bwMax=Math.max(0.05*bk,cb-capW-0.12*bk*zv), rows=[[TX('est','예상'),est,alphaOf(pal.mute,0.55),pal.mute],[TX('act','실제'),act,col,col]];
+    rows.forEach((r,j)=>{ if(r[1]==null) return; const by=cy+(j-0.5)*(bh+0.014*bk)-bh/2, w=Math.max(0.01*bk,Math.abs(r[1])/mxv*bwMax*rv(sp-0.05,0.7)); dtx(g,r[0],x0+cl,by+bh/2,0.021*bk*zc,'600',pal.mute,font,'left','middle'); roundRect(g,bx,by,w,bh,bh/2); g.fillStyle=r[2]; g.fill(); dtf(g,fmtN(r[1])+unit,bx+w+0.010*bk,by+bh/2,cb-capW-w-0.01*bk,0.028*bk*zv,'800',r[3],font,'left','middle',0.5); });
+    if(pill_){ const fs=0.028*bk; pill(E,x0+iw,cy-fs*1.55/2,pill_,fs,'#ffffff',col,'r'); }
+    g.restore();
+  });
+  g.restore();
+};
+
+/* ── 등록 — 종류 목록 묶음·순서, 타임라인 칩 아이콘·묶음, 나타나는 시점, 대시보드 타일, 글 위치 ── */
+BT_ORDER.splice(BT_ORDER.indexOf('hero')+1,0,'arrow','price');
+BT_ORDER.splice(BT_ORDER.indexOf('move')+1,0,'arrows');
+BT_ORDER.splice(BT_ORDER.indexOf('bar')+1,0,'vbar','wfall');
+BT_ORDER.splice(BT_ORDER.indexOf('line')+1,0,'stock','candle','curve');
+BT_ORDER.splice(BT_ORDER.indexOf('row')+1,0,'tape','watch','rank','period','breadth','range','surprise');
+Object.assign(LEAD_DEF,{arrow:0.30,price:0.30,arrows:0.20,vbar:0.20,wfall:0.20,stock:0.20,candle:0.20,curve:0.20,tape:0.25,watch:0.20,rank:0.20,period:0.20,breadth:0.25,range:0.25,surprise:0.25});
+Object.assign(COMP_IC,{arrow:'↗',price:'$',arrows:'⬈',vbar:'▥',wfall:'⇵',stock:'⌇',candle:'▯',curve:'⌢',tape:'⇉',watch:'◫',rank:'№',period:'◴',breadth:'◑',range:'⇹',surprise:'✓'});
+Object.assign(COMP_G,{arrow:1,price:1,breadth:1,arrows:2,vbar:2,wfall:2,stock:2,candle:2,curve:2,tape:2,watch:2,rank:2,period:2,range:2,surprise:2});
+Object.assign(TILEG,{arrow:1});
+Object.assign(AL_NOV,{vbar:1,wfall:1,stock:1,candle:1,curve:1,tape:1,watch:1,rank:1,period:1,arrows:1,breadth:1,range:1,surprise:1,price:1});
+Object.assign(AL_NOH,{price:1});
+/* 종류 목록 묶음 — 블록 종류를 고르는 목록(칸마다 <optgroup>)과 같은 묶음 순서. 여기 없는 종류는 '기타' 로 */
+const BT_GRP=[['수치·카드',['stat','hero','move','arrow','price']],['등락 막대·그래프',['bar','vbar','line','stock','candle','curve','wfall']],['등락 목록·표',['row','tape','watch','rank','period','arrows','breadth','range','surprise']],['분포·지표',['heat','map','donut','gauge','level']],['비교·전망',['vs','cmp','scenario']],['일정·흐름',['event','flow','agenda']],['글',['point','quote','title']]];
+function btOpts(){ const seen=new Set(), out=[]; BT_GRP.forEach(g=>{ const ks=g[1].filter(k=>BT[k]); if(!ks.length) return; out.push(['@',g[0]]); ks.forEach(k=>{ out.push([k,BT[k].n]); seen.add(k); }); }); const rest=BT_ORDER.filter(k=>!seen.has(k)); if(rest.length){ out.push(['@','기타']); rest.forEach(k=>out.push([k,BT[k].n])); } return out; }
+/* ══ /v117 ══ */
 /* ── 개요 문장·챕터 찾기 ── */
 function agSpan(texts,lang){   /* 문장 글 목록에서 '오늘 다룰 내용'을 안내하는 구간 → {a,b}(목록 안 번호) 또는 null */
   if(!texts.length) return null;
@@ -48749,11 +49214,15 @@ let _ov=null;
 const ICON={none:'▫',card:'🃏',image:'🖼',video:'🎞',info:'📊'};
 const KIND={none:'카드(자동)',card:'카드',image:'이미지',video:'영상',info:'인포그래픽'};
 const TABS=[['scene','장면'],['vis','화면'],['ig','인포'],['tt','타이틀'],['sub','자막'],['voice','음성'],['out','출력']];
+function optHtml(opts,val){   /* <option> 목록 — ['@','묶음 이름'] 항목은 <optgroup> 으로 */
+  let h='', open=false; opts.forEach(x=>{ if(x[0]==='@'){ if(open) h+='</optgroup>'; h+='<optgroup label="'+esc(x[1])+'">'; open=true; } else h+='<option value="'+esc(x[0])+'"'+(String(x[0])===String(val)?' selected':'')+'>'+esc(x[1])+'</option>'; });
+  return h+(open?'</optgroup>':'');
+}
 const F={
   num:(path,val,o)=>{ o=o||{}; return '<input type="number" class="vs-in mobile-keep" data-f="'+path+'" data-t="n" value="'+(val==null||val===''?'':val)+'"'+(o.min!=null?' min="'+o.min+'"':'')+(o.max!=null?' max="'+o.max+'"':'')+(o.step?' step="'+o.step+'"':'')+(o.ph!=null?' placeholder="'+esc(o.ph)+'"':'')+(o.dis?' disabled':'')+'>'; },
   txt:(path,val,o)=>{ o=o||{}; return '<input type="text" class="vs-in wide mobile-keep" data-f="'+path+'" value="'+esc(val)+'"'+(o.ph?' placeholder="'+esc(o.ph)+'"':'')+(o.list?' list="'+o.list+'"':'')+'>'; },
   ta:(path,val,o)=>{ o=o||{}; return '<textarea class="vs-ta mobile-keep" rows="'+(o.rows||3)+'" data-f="'+path+'"'+(o.ph?' placeholder="'+esc(o.ph)+'"':'')+'>'+esc(val)+'</textarea>'; },
-  sel:(path,val,opts,o)=>'<select class="vs-in mobile-keep" data-f="'+path+'"'+(o&&o.t?' data-t="'+o.t+'"':'')+'>'+opts.map(x=>'<option value="'+esc(x[0])+'"'+(String(x[0])===String(val)?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select>',
+  sel:(path,val,opts,o)=>'<select class="vs-in mobile-keep" data-f="'+path+'"'+(o&&o.t?' data-t="'+o.t+'"':'')+'>'+optHtml(opts,val)+'</select>',
   chk:(path,val,label)=>'<label class="vs-ck"><input type="checkbox" class="mobile-keep" data-f="'+path+'" data-t="b"'+(val?' checked':'')+'><span>'+label+'</span></label>',
   rng:(path,val,min,max,step)=>'<input type="range" class="vs-rg mobile-keep" data-f="'+path+'" data-t="n" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"><output>'+val+'</output>',
   col:(path,val)=>'<input type="color" class="vs-co mobile-keep" data-f="'+path+'" value="'+esc(val)+'">',
@@ -48891,7 +49360,7 @@ function inspVis(){
   if(k==='image'||k==='video'){ const f=v.filter||{b:1,c:1,s:1};
     h+='<div class="vs-sec">색 보정</div>'+F.row('밝기',F.rng('sc.fb',f.b,0.5,1.6,0.05))+F.row('대비',F.rng('sc.fc',f.c,0.5,1.6,0.05))+F.row('채도',F.rng('sc.fs',f.s,0,2,0.05)); }
   if(k==='none'||k==='card'){ const cd=v.card||{};
-    h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}))+F.row('배경색',F.col('sc.cc1',cd.c1||'#1b2a41')+F.col('sc.cc2',cd.c2||'#2f4a73')+F.btn('ccReset','자동색')); }
+    h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}),'줄바꿈: Shift+Enter(↵ 표시)')+F.row('배경색',F.col('sc.cc1',cd.c1||'#1b2a41')+F.col('sc.cc2',cd.c2||'#2f4a73')+F.btn('ccReset','자동색')); }
   { const gs=igsOfScene(c); h+='<div class="vs-sec">이 장면의 인포그래픽 <span class="hint">'+gs.length+'개 — 타임라인 [인포] 줄에서 편집해요</span></div>'+(gs.length?'<div class="vs-btns">'+gs.map(x=>F.btn('igSel',esc(igName(x)),{d:x.id})).join('')+'</div>':'')+'<div class="vs-btns">'+F.btn('infoMk','📊 이 장면 자동 구성')+F.btn('igNew','＋ 인포그래픽 추가')+'</div>'; }
   h+='<div class="vs-sec">챕터 타이틀 <span class="hint">'+(titleOn(P)?'켜짐 · 기본 '+titleDur(P)+'초 소리 없이':'꺼짐')+'</span></div><div class="vs-btns">'+F.btn('tab','🏷 타이틀 설정',{d:'tt'})+'</div>';
   return h;
@@ -48978,7 +49447,7 @@ function dlg(title,body,btns,cls){
 }
 function dlgClose(){ const d=$('vsDlg'); if(d){ d.classList.remove('on'); d.innerHTML=''; } }
 const D_=(k,html)=>'<div class="vs-fr"><label>'+k+'</label><div class="c">'+html+'</div></div>';
-const dsel=(key,val,opts)=>'<select class="vs-in mobile-keep" data-d="'+key+'">'+opts.map(x=>'<option value="'+esc(x[0])+'"'+(String(x[0])===String(val)?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select>';
+const dsel=(key,val,opts)=>'<select class="vs-in mobile-keep" data-d="'+key+'">'+optHtml(opts,val)+'</select>';
 const dnum=(key,val,o)=>'<input type="number" class="vs-in mobile-keep" data-d="'+key+'" data-t="n" value="'+val+'"'+(o&&o.min!=null?' min="'+o.min+'"':'')+(o&&o.step?' step="'+o.step+'"':'')+'>';
 const dchk=(key,val,label)=>'<label class="vs-ck"><input type="checkbox" class="mobile-keep" data-d="'+key+'" data-t="b"'+(val?' checked':'')+'><span>'+label+'</span></label>';
 function dlgVisual(){ const c=P.cfg, ic=c.info||{}, dl=c.dlg||{}; UI.dd={vmode:'empty',vkind:dl.vkind||(geminiKey()?'image':'card'),ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',istyle:ic.style||'news',iov:true}; Object.assign(UI.dd,ttInit(c)); showVisualDlg(); }   /* 저장된 설정으로 시작 */
@@ -49020,13 +49489,13 @@ async function dlgProjects(){
   dlg('📂 영상 프로젝트',list.length?'<div class="vs-pl">'+list.map(x=>'<div class="pj"><div class="m"><b>'+esc(x.title||'(이름 없음)')+langBadge(x.lang)+'</b><span>'+x.scenes+'장면 · '+fmtDur(x.dur||0)+' · '+new Date(x.updated).toLocaleString()+'</span></div><button class="vs-b pri mobile-keep" data-a="openProj" data-id="'+esc(x.id)+'">열기</button><button class="vs-b dng mobile-keep" data-a="delProj" data-id="'+esc(x.id)+'">삭제</button></div>').join('')+'</div>':'<div class="vs-empty">저장된 프로젝트가 없어요<br><span class="hint">스크립트 만들기 결과나 이력의 [🎞 영상 만들기]로 새 프로젝트를 시작하세요.</span></div>',[{t:'닫기',a:'dlgClose'}]);
 }
 function dlgAuto(){
-  const key=!!geminiKey(), ic=P.cfg.info||{}, dl=P.cfg.dlg||{}, pend=P.chunks.some(k=>k.state!=='done'||k.stale); const d=UI.dd={akind:dl.vkind||(key?'image':'card'),avoice:dl.avoice!=null?!!dl.avoice:(key&&pend),async:true,ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',asub:!!dl.asub,istyle:ic.style||'news',iov:true}; Object.assign(d,ttInit(P.cfg));   /* 각 메뉴에 저장된 설정으로 시작 */
-  showAutoDlg();
+  const key=!!geminiKey(), ic=P.cfg.info||{}, dl=P.cfg.dlg||{}, pend=P.chunks.some(k=>k.state!=='done'||k.stale); const d=UI.dd={akind:dl.vkind||(key?'image':'card'),avoice:dl.avoice!=null?!!dl.avoice:(key&&pend),async:true,ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',asub:!!dl.asub,alearn:dl.alearn!==false,istyle:ic.style||'news',iov:true}; Object.assign(d,ttInit(P.cfg));   /* 각 메뉴에 저장된 설정으로 시작 */
+  slScan(); showAutoDlg();   /* v118: 학습할 영상 찾기(비동기 — 🧠 줄이 채워짐) */
 }
 function showAutoDlg(){
   const d=UI.dd, key=!!geminiKey(), todoV=P.chunks.filter(k=>k.state!=='done'||k.stale).length, items=d.akind==='card'?[]:genTargets('empty',d.akind), est=genEstimate(items,d.akind);
   dlg('🚀 한 번에 만들기',
-    '<div class="vs-note">음성 → 자막 → 화면 → 싱크 점검을 차례로 해요. 끝나면 ⑤ 내보내기만 누르면 돼요.<br>쓰는 AI — 글: <b>'+esc(studioAi().name)+'</b> '+(studioAi().key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' · 음성·이미지·영상: <b>Gemini</b> '+(key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' <span class="hint">(위쪽 🤖 버튼에서 바꾸고 요청 글을 쓸 수 있어요)</span></div>'+menuSummary()+sbRow(d.akind)
+    '<div class="vs-note">음성 → 자막 → 화면 → 싱크 점검을 차례로 해요. 끝나면 ⑤ 내보내기만 누르면 돼요.<br>쓰는 AI — 글: <b>'+esc(studioAi().name)+'</b> '+(studioAi().key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' · 음성·이미지·영상: <b>Gemini</b> '+(key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' <span class="hint">(위쪽 🤖 버튼에서 바꾸고 요청 글을 쓸 수 있어요)</span></div>'+menuSummary()+sbRow(d.akind)+slRow(d)
     +D_('음성',dchk('avoice',d.avoice,'② AI 음성 만들기('+todoV+'묶음)')+(key?'':' <span class="bad">키 없음</span>'))
     +D_('자막',dchk('asub',d.asub,'AI 로 자막 다듬기 (글 AI: '+esc(studioAi().name)+' · 나레이션은 그대로, 되돌리기 가능)'))
     +D_('화면',dsel('akind',d.akind,[['card','카드 화면(무료)'],['image','AI 이미지(저렴)'],['video','AI 영상(비싸고 느려요)'],['info','인포그래픽 화면(수치·강조 + 캐릭터)'],['skip','건너뛰기']]))
@@ -49117,7 +49586,7 @@ function onField(e,final){
 }
 function onDlgField(e){
   const el=e.target; if(!el.dataset||el.dataset.d==null) return; const k=el.dataset.d; let v=el.type==='checkbox'?el.checked:el.value;
-  if(el.dataset.t==='n') v=num(v,0); UI.dd[k]=v;
+  if(el.dataset.t==='n') v=num(v,0); UI.dd[k]=v; (UI.dd._t=UI.dd._t||{})[k]=1; if(k==='alearn'||k==='asub') slPrefill();   /* v118: 손댄 칸 기록(학습이 미리 맞춘 값을 사용자가 고른 값과 구별) */
   if(DLG_PREF[k]){ DLG_PREF[k](v); savePref(P.cfg); }
   if('vmode' in UI.dd) showVisualDlg(); else if('efrom' in UI.dd) showExportDlg(); else if('akind' in UI.dd) showAutoDlg(); else if('gmode' in UI.dd) showIgNewDlg(); else if('lcur' in UI.dd) showLangDlg();
 }
@@ -49246,6 +49715,12 @@ async function act(a,btn){
     }
     case 'expGo': await expGo(); break;
     case 'autoGo': await autoGo(); break;
+    case 'slShow': slShow(); break;   /* v118: 🧠 내 스타일 */
+    case 'slBack': if(UI.dd&&'akind' in UI.dd) showAutoDlg(); else dlgClose(); break;
+    case 'slSet': { const a=String(id).split(':'), d=UI.dd; if(d&&('akind' in d)&&(a[0]==='akind'||a[0]==='istyle')){ d[a[0]]=a[1]; (d._t=d._t||{})[a[0]]=1; if(DLG_PREF[a[0]]){ DLG_PREF[a[0]](a[1]); savePref(P.cfg); } showAutoDlg(); } break; }   /* 학습 제안 [바꾸기] */
+    case 'slRun': await slRunBtn(); break;
+    case 'slClear': slClearBtn(); break;
+    case 'slCopy': { const pf=slGet(); if(pf) copyTxt(slPlain(pf),'학습 내용을 복사했어요'); break; }
     case 'goT': dlgClose(); seekTo(+btn.dataset.t); break;
     case 'openProj': { dlgClose(); try{ const p=await loadProject(id); await startProject(p,false); }catch(e){ toast('프로젝트를 열지 못했어요: '+((e&&e.message)||'')); } break; }
     case 'delProj': if(confirm('이 프로젝트를 삭제할까요?\n(만든 음성·영상 파일도 함께 지워져요)')){ await dbDelProject(id); if(P&&P.id===id){ P=null; } dlgProjects(); } break;
@@ -49269,16 +49744,388 @@ async function expGo(){
   }catch(e){ progress(0,'내보내기 실패'); toast('내보내기 실패: '+((e&&e.message)||'')); }
   finally{ UI.busy=''; paintBusy(); renderAll(); commit('내보내기 설정'); }
 }
+
+/* ══ v118 (2026-10-26) — 🧠 내 스타일 학습 ═══════════════════════════════════════════════════════════════════════════════
+   한 번에 만들기를 시작하면 먼저 '지금까지 만든 영상 중 가장 최근 완성본 7개'(이 프로젝트 제외 · 같은 영상 언어 · 음성·화면·인포그래픽을 실제로 만든 것만)를 읽어
+   내 취향을 배운 뒤, 그 취향대로 만든다.
+   · 읽기: dbListProjects(최신순) → dbGetProject → JSON → slPrint(영상 하나의 지문). 7개가 안 되면 있는 만큼, 하나도 없으면 학습 없이 기본대로
+   · 규칙으로 센 것 slAgg: 화면 구성·인포그래픽(스타일·형태·블록 종류·개수)·직접 손댄 글 위치·글자 크기·자막을 다듬은 정도·전환·타이틀·음성 — AI 키 없이도 됨
+   · AI 가 정리 slAsk: 센 숫자와 완성본에 남은 인포그래픽·자막 예시를 보고 '이 사람은 이렇게 만든다'를 JSON(요약·특징·인포그래픽 지침·자막 지침)으로. 키가 없거나 실패하면 규칙으로 센 것만
+   · 반영(한 번에 만들기 안에서만, UI.sl): ① 인포그래픽 AI 요청(infoUser)·자막 다듬기 요청(subUser)에 '[내 스타일]' 덧붙임
+     ② 새로 만든 인포그래픽에 내가 늘 하던 손질(글 위치·글자 크기)을 같게 입힘(slReplay) ③ 챕터 첫 장면 전환을 내가 늘 쓰던 것으로(slTrans — 스토리보드가 정한 전환이 우선)
+     ④ 자막을 다듬어 쓰는 영상이 많으면 'AI 로 자막 다듬기'를 미리 켬(slPrefill — 손대지 않았을 때만)
+   · 저장: localStorage BTMStyleLearn_v1(언어별 · 같은 영상 7개면 AI 를 다시 부르지 않음) · 켜고 끄기 cfg.dlg.alearn(기본 켬 — 한 번에 만들기 창의 🧠 줄).
+     끄거나 학습할 영상이 없으면 AI 요청 글·만든 결과가 v117 과 똑같음(UI.sl 이 없으면 slBlock 은 빈 글)
+   ── */
+const SL_KEY='BTMStyleLearn_v1', SL_N=7, SL_SCAN=30;
+const SL_AI_TYPES=['stat','hero','move','bar','row','heat','map','donut','gauge','line','vs','cmp','event','flow','scenario','level','point','quote'];   /* 인포그래픽 AI 지침(SYS_INFO)이 아는 블록 — 예시·지침은 이것만 */
+const SL_AI_MODES=['left','right','full','hero','cardR','cardL','lower','ticker','corner'];
+const SL_MODE_N={left:'왼쪽 패널',right:'오른쪽 패널',full:'전체 패널',hero:'큰 수치',cardR:'오른쪽 카드',cardL:'왼쪽 카드',lower:'하단 띠',ticker:'상단 띠',corner:'모서리 배지',title:'타이틀'};
+const SL_VIS_N={none:'비어 있음',card:'카드',image:'AI 이미지',video:'AI 영상',file:'내 파일',info:'인포그래픽'};
+const slTr=k=>TRK[k]?trName(k).replace(/\s*\(.*\)\s*$/,''):k;   /* 전환 이름 — 설명 괄호는 뺌 */
+const SL_TA_N={l:'왼쪽',c:'가운데',r:'오른쪽'}, SL_VA_N={t:'위',m:'중간',b:'아래'}, SL_SRC_N={ai:'AI',rule:'규칙',hand:'직접'};
+const slTxt=(s,n)=>String(s==null?'':s).replace(/\s+/g,' ').trim().slice(0,n);
+const slTally=(arr,fn)=>{ const m={}; arr.forEach(x=>{ const k=fn(x); if(k!=null&&k!==''&&k!==false) m[k]=(m[k]||0)+1; }); return m; };
+const slSum=(a,b)=>{ Object.keys(b||{}).forEach(k=>{ a[k]=(a[k]||0)+b[k]; }); return a; };
+const slTot=m=>Object.keys(m||{}).reduce((a,k)=>a+m[k],0);
+const slRank=(m,max)=>Object.keys(m||{}).sort((a,b)=>(m[b]-m[a])||(a<b?-1:1)).slice(0,max||5);
+const slTop=m=>{ const k=slRank(m,1)[0]; return k==null?null:{k,n:m[k],t:slTot(m),share:r2(m[k]/Math.max(1,slTot(m)))}; };
+const slMed=a=>{ const s=a.slice().sort((x,y)=>x-y), n=s.length; return n?(n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2):0; };
+const slPct=x=>Math.round((+x||0)*100)+'%';
+const slWhen=ms=>{ const d=new Date(ms), z=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+' '+z(d.getHours())+':'+z(d.getMinutes()); };
+const slBt=k=>BT[k]?BT[k].n:k;
+const slFzName=(t,k,part)=>{ const sp=FZK[t], a=sp?((part?sp.p:sp.f)||[]).find(f=>f[0]===k):null; return a?a[1]:k; };
+const slAbort=()=>{ const e=new Error('중단했어요'); e.name='AbortError'; return e; };
+
+/* ── 저장 — 언어별 학습 결과 ── */
+function slAll(){ try{ const o=JSON.parse(localStorage.getItem(SL_KEY)||'null'); return (o&&o.v===1&&o.by&&typeof o.by==='object')?o:{v:1,by:{}}; }catch(e){ return {v:1,by:{}}; } }
+const slGet=lang=>slAll().by[V.norm(lang||(P&&P.lang)||'ko')]||null;
+function slPut(lang,prof){ const o=slAll(), k=V.norm(lang||'ko'); if(prof) o.by[k]=prof; else delete o.by[k]; try{ if(Object.keys(o.by).length) localStorage.setItem(SL_KEY,JSON.stringify(o)); else localStorage.removeItem(SL_KEY); }catch(e){} }
+
+/* ── 영상 하나의 지문 — 저장된 프로젝트 JSON 에서 센 것(숫자·분포)과 예시. 파일(음성·이미지)은 읽지 않음 ── */
+function slItemJson(it){   /* 완성본에 남은 블록을 AI 가 내놓는 모양(JSON)으로 줄임 — AI 지침이 아는 블록만 */
+  const bt=BT[it&&it.type]; if(!bt||SL_AI_TYPES.indexOf(it.type)<0) return null; const r={type:it.type};
+  (bt.f||[]).forEach(f=>{ const v=it[f[0]]; if(v==null||v===''||(f[2]==='tone'&&!v)) return; r[f[0]]=typeof v==='string'?slTxt(v,36):Array.isArray(v)?v.slice(0,3):v; });
+  if(bt.parts&&Array.isArray(it.parts)&&it.parts.length) r.parts=it.parts.slice(0,5).map(p=>{ const x={}; bt.parts.forEach(f=>{ const v=p&&p[f[0]]; if(v!=null&&v!=='') x[f[0]]=typeof v==='string'?slTxt(v,22):v; }); return x; });
+  return r;
+}
+function slClipJson(g){
+  const items=(g.items||[]).map(slItemJson).filter(Boolean).slice(0,3); if(!items.length) return '';
+  const mk=()=>JSON.stringify({mode:g.mode,title:slTxt(g.title,26),items}); let s=mk(); while(s.length>430&&items.length>1){ items.pop(); s=mk(); }
+  return s.length>520?'':s;
+}
+function slPrint(q,rec){
+  const S=Array.isArray(q.sents)?q.sents:[], SC=Array.isArray(q.scenes)?q.scenes:[], IG=(Array.isArray(q.igs)?q.igs:[]).filter(g=>g&&Array.isArray(g.items)), cf=q.cfg||{}, lk=cf.look||{}, dur=+q.dur||+(rec&&rec.dur)||0;
+  const kindOf=c=>(c&&c.vis&&c.vis.kind)||'none', chapFirst=SC.map((c,j)=>{ if(!j) return true; const a=S[c.first], b=S[SC[j-1].first]; return !a||!b||a.ci!==b.ci; });
+  const effT=c=>{ const t=c&&c.trans&&c.trans.t; return t&&t!=='inherit'?t:(lk.trans||'fade'); };
+  const fp={id:q.id||(rec&&rec.id)||'',title:slTxt(q.title||(rec&&rec.title),60),updated:+q.updated||+(rec&&rec.updated)||0,dur:r2(dur),nScene:SC.length,nSent:S.length,nChap:(Array.isArray(q.chap)?q.chap:[]).length};
+  fp.vis=slTally(SC,kindOf);
+  fp.tr={chap:slTally(SC.filter((c,j)=>j>0&&chapFirst[j]),effT),mid:slTally(SC.filter((c,j)=>j>0&&!chapFirst[j]),effT),set:SC.filter(c=>c&&c.trans&&c.trans.t&&c.trans.t!=='inherit').length,dflt:lk.trans||'fade',d:+lk.transDur||0.35};
+  const vc=cf.voice||{}, chunks=Array.isArray(q.chunks)?q.chunks:[], done=chunks.filter(k=>k&&k.bid&&k.state==='done').length;
+  fp.voice={name:vc.name||'',style:slTxt(vc.style,120),mode:vc.mode||'',done,all:chunks.length};
+  fp.built=done>0||IG.length>0||SC.some(c=>{ const k=kindOf(c); return k!=='none'&&k!=='card'; });   /* 음성·화면·인포그래픽 중 하나라도 실제로 만든 영상만 '완성본'으로 침 */
+  /* 자막 — 원문과 다르게 다듬어 쓴 것(직접 고친 것과 'AI 로 자막 다듬기'로 다듬은 것 둘 다 — 어느 쪽이든 완성본에 남긴 자막) */
+  const sb=cf.sub||{}, nrm=x=>String(x==null?'':x).replace(/\s+/g,' ').trim(), ed=S.filter(s=>s&&s.sub&&typeof s.sub.text==='string'&&s.sub.text.trim()&&nrm(s.sub.text)!==nrm(s.text));
+  fp.sub={on:sb.on!==false,font:(FONTS.find(f=>f[0]===sb.font)||['',''])[1],size:+sb.size||0,pos:sb.pos||'',lines:+sb.lines||0,anim:sb.anim||'',edited:ed.length,of:S.length,hide:S.filter(s=>s&&s.sub&&s.sub.hide).length,xs:(Array.isArray(q.xsubs)?q.xsubs:[]).length,
+    ratio:ed.length?r2(ed.reduce((a,s)=>a+s.sub.text.replace(/\s+/g,'').length/Math.max(1,String(s.text||'').replace(/\s+/g,'').length),0)/ed.length):0,
+    nl:ed.length?r2(ed.filter(s=>s.sub.text.indexOf('\n')>=0).length/ed.length):0};
+  fp.subEx=ed.filter(s=>{ const a=String(s.text||'').replace(/\s+/g,'').length, b=s.sub.text.replace(/\s+/g,'').length; return a>=10&&b>=4&&b>=a*0.3&&b<=a*1.6; }).map(s=>({o:slTxt(s.text,72),s:s.sub.text.replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean).join(' / ').slice(0,72)}));
+  /* 타이틀·음악·요청 글 */
+  const tt=(q.ttl&&typeof q.ttl==='object')?q.ttl:{}, tk=Object.keys(tt).map(k=>tt[k]||{}), ct=cf.title||{};
+  fp.ttl={on:!!ct.on,dur:+ct.dur||0,custom:tk.filter(o=>o.t||o.k||o.s).length,timing:tk.filter(o=>o.dur!=null||o.pre!=null||o.post!=null||o.ov!=null||o.ofs!=null).length,off:tk.filter(o=>o.off).length};
+  fp.bgm={has:!!(cf.bgm&&cf.bgm.bid),vol:+(cf.bgm&&cf.bgm.vol)||0};
+  fp.ask={info:slTxt(cf.prompts&&cf.prompts.info,160),sub:slTxt(cf.prompts&&cf.prompts.sub,160)};
+  /* 인포그래픽 — 클립(개요 제외)·블록 분포와, 직접 손댄 흔적(글 위치 ta·va, 글자 크기 fz, 상자 배치 bx, 길이 du) */
+  const body=IG.filter(g=>!g.ov), blocks=[]; body.forEach(g=>g.items.forEach(it=>{ if(it&&it.type) blocks.push(it); }));
+  const cov=dur>0?Math.min(1,IG.reduce((a,g)=>a+Math.max(0,(+g.e||0)-(+g.s||0)),0)/dur):0, multi=blocks.filter(it=>Array.isArray(it.parts)&&it.parts.length);
+  fp.info={n:body.length,ovn:IG.length-body.length,cover:r2(cov),modes:slTally(body,g=>g.mode),styles:slTally(IG,g=>g.sty||'news'),srcs:slTally(body,g=>g.src||''),nb:blocks.length,types:slTally(blocks,it=>it.type),parts:multi.length?r2(multi.reduce((a,it)=>a+it.parts.length,0)/multi.length):0};
+  const tw={}, gz={}, pf=(dst,fz)=>{ if(fz&&typeof fz==='object') Object.keys(fz).forEach(k=>{ const v=+fz[k]; if(v>0&&Math.abs(v-1)>=0.04) (dst[k]=dst[k]||[]).push(r2(v)); }); };
+  body.filter(alOK).forEach(g=>{   /* 띠·배지·타이틀 형태는 글 위치·크기를 못 바꾸는 형태라 손질 통계에서 뺌 */
+    pf(gz,g.fz);
+    g.items.forEach(it=>{ if(!it||!it.type) return; const o=tw[it.type]||(tw[it.type]={n:0,np:0,ta:{},va:{},fz:{},pfz:{},bx:0,du:0}), ps=Array.isArray(it.parts)?it.parts:[]; o.n++; o.np+=ps.length;
+      if(taOf(it)) o.ta[it.ta]=(o.ta[it.ta]||0)+1; if(vaOf(it)) o.va[it.va]=(o.va[it.va]||0)+1; if(it.bx) o.bx++; if(it.du>0) o.du++; pf(o.fz,it.fz); ps.forEach(p=>{ if(p) pf(o.pfz,p.fz); }); });
+  });
+  fp.tw=tw; fp.gfz=gz; fp.nbt=body.filter(alOK).length;
+  const touched=g=>g.src==='hand'||g.items.some(it=>it&&(taOf(it)||vaOf(it)||it.fz||it.bx||it.du>0));
+  fp.hand=body.filter(touched).length;
+  fp.igEx=body.filter(g=>g.mode!=='title').map(g=>({g,j:slClipJson(g),h:touched(g)?1:0})).filter(x=>x.j).sort((a,b)=>(b.h-a.h)||((+a.g.s||0)-(+b.g.s||0))).slice(0,3).map(x=>x.j);
+  return fp;
+}
+/* 최근 완성본 SL_N 개 읽기 — 같은 언어, 이 프로젝트 제외, 아직 안 만든 것(대본만 있는 것) 제외. 같은 목록이면 앞서 읽은 결과를 그대로 */
+async function slCollect(){
+  const lang=V.norm((P&&P.lang)||'ko'), rows=await dbListProjects(), me=P&&P.id, pool=rows.filter(r=>r.id!==me), same=pool.filter(r=>V.norm(r.lang)===lang);
+  const sig=lang+'|'+same.slice(0,SL_SCAN).map(r=>r.id+':'+r.updated).join('|'); if(UI._slCol&&UI._slCol.sig===sig) return UI._slCol;
+  const items=[], skip={other:pool.length-same.length,empty:0,bad:0,scanned:0};
+  for(const r of same){
+    if(items.length>=SL_N||skip.scanned>=SL_SCAN) break; skip.scanned++;
+    let q=null; try{ const rec=await dbGetProject(r.id); q=rec&&JSON.parse(rec.json); }catch(e){}
+    if(!q||typeof q!=='object'||!Array.isArray(q.scenes)||!Array.isArray(q.sents)){ skip.bad++; continue; }
+    const fp=slPrint(q,r); if(!fp.built){ skip.empty++; continue; }
+    items.push({id:r.id,updated:r.updated,fp});
+  }
+  return UI._slCol={sig,lang,items,skip};
+}
+
+/* ── 모아 세기 — 영상 여러 개의 지문 → 취향(많이 쓴 것·늘 하던 손질) ── */
+function slAgg(items){
+  const Fs=items.map(x=>x.fp), n=Fs.length, sum=fn=>Fs.reduce((a,f)=>a+(+fn(f)||0),0), avg=fn=>n?sum(fn)/n:0, A={n};
+  A.from=Math.min.apply(null,Fs.map(f=>f.updated)); A.to=Math.max.apply(null,Fs.map(f=>f.updated));
+  A.avgDur=r2(avg(f=>f.dur)); A.avgScene=r2(avg(f=>f.nScene)); A.avgChap=r2(avg(f=>f.nChap)); A.sceneLen=r2(sum(f=>f.dur)/Math.max(1,sum(f=>f.nScene)));
+  A.vis=Fs.reduce((a,f)=>slSum(a,f.vis),{});
+  const I=A.info={videos:Fs.filter(f=>f.info.n>0).length,clips:sum(f=>f.info.n),modes:{},styles:{},types:{},srcs:{},nb:sum(f=>f.info.nb),hand:sum(f=>f.hand),ov:Fs.filter(f=>f.info.ovn>0).length};
+  Fs.forEach(f=>{ slSum(I.modes,f.info.modes); slSum(I.styles,f.info.styles); slSum(I.types,f.info.types); slSum(I.srcs,f.info.srcs); });
+  I.perVideo=r2(I.clips/Math.max(1,n)); I.perClip=r2(I.clips?I.nb/I.clips:0); I.cover=r2(I.videos?Fs.filter(f=>f.info.n>0).reduce((a,f)=>a+f.info.cover,0)/I.videos:0);
+  /* 늘 하던 손질 — 같은 종류 블록이 3개 이상 쌓였고, 절반 안팎 이상에 같은 손질이 있을 때만 '습관'으로 침 */
+  const tw={}, gz={}; Fs.forEach(f=>{
+    Object.keys(f.tw||{}).forEach(t=>{ const s=f.tw[t], o=tw[t]||(tw[t]={n:0,np:0,ta:{},va:{},fz:{},pfz:{},bx:0,du:0}); o.n+=s.n; o.np+=s.np; o.bx+=s.bx; o.du+=s.du; slSum(o.ta,s.ta); slSum(o.va,s.va); ['fz','pfz'].forEach(w=>Object.keys(s[w]).forEach(k=>{ (o[w][k]=o[w][k]||[]).push.apply(o[w][k],s[w][k]); })); });
+    Object.keys(f.gfz||{}).forEach(k=>{ (gz[k]=gz[k]||[]).push.apply(gz[k],f.gfz[k]); });
+  });
+  const H=A.tweaks={ta:{},va:{},fz:{},pfz:{},gfz:{},cnt:{ta:0,va:0,fz:0,bx:0,du:0}}, nClip=sum(f=>f.nbt);
+  Object.keys(tw).forEach(t=>{ const o=tw[t]; H.cnt.bx+=o.bx; H.cnt.du+=o.du; if(o.n<3) return; const spec=FZK[t];
+    const a=slTop(o.ta), nA=slTot(o.ta); if(a&&nA/o.n>=0.5&&a.share>=0.6&&!AL_NOH[t]) H.ta[t]=a.k;
+    const b=slTop(o.va), nB=slTot(o.va); if(b&&nB/o.n>=0.5&&b.share>=0.6&&!AL_NOV[t]) H.va[t]=b.k;
+    if(spec) [['fz',spec.f||[],o.n],['pfz',spec.p||[],o.np]].forEach(w=>w[1].forEach(f=>{ const arr=o[w[0]][f[0]]; if(!arr||arr.length<3||arr.length/Math.max(1,w[2])<0.4) return; const m=slMed(arr); if(Math.abs(m-1)>=0.1) (H[w[0]][t]=H[w[0]][t]||{})[f[0]]=r2(clamp(m,FZ_MIN,FZ_MAX)); }));
+  });
+  ['title','kicker'].forEach(k=>{ const arr=gz[k]; if(!arr||arr.length<3||arr.length/Math.max(1,nClip)<0.4) return; const m=slMed(arr); if(Math.abs(m-1)>=0.1) H.gfz[k]=r2(clamp(m,FZ_MIN,FZ_MAX)); });
+  H.cnt.ta=Object.keys(H.ta).length; H.cnt.va=Object.keys(H.va).length; H.cnt.fz=Object.keys(H.fz).length+Object.keys(H.pfz).length+Object.keys(H.gfz).length;
+  /* 자막 */
+  const su=A.sub={videos:Fs.filter(f=>f.sub.of&&f.sub.edited/f.sub.of>=0.2).length,edited:sum(f=>f.sub.edited),of:sum(f=>f.sub.of),hide:sum(f=>f.sub.hide),xs:sum(f=>f.sub.xs)}, ev=Fs.filter(f=>f.sub.edited>0);
+  su.share=r2(su.edited/Math.max(1,su.of)); su.ratio=ev.length?r2(ev.reduce((a,f)=>a+f.sub.ratio,0)/ev.length):0; su.nl=ev.length?r2(ev.reduce((a,f)=>a+f.sub.nl,0)/ev.length):0;
+  su.font=slTop(slTally(Fs,f=>f.sub.font)); su.size=slTop(slTally(Fs,f=>f.sub.size)); su.pos=slTop(slTally(Fs,f=>f.sub.pos)); su.lines=slTop(slTally(Fs,f=>f.sub.lines));
+  /* 전환·타이틀·음성·음악·요청 글 */
+  const tc={}, tm={}, td={}; Fs.forEach(f=>{ slSum(tc,f.tr.chap); slSum(tm,f.tr.mid); td[f.tr.dflt]=(td[f.tr.dflt]||0)+1; });
+  A.trans={chap:slTop(tc),mid:slTop(tm),dflt:slTop(td),set:r2(sum(f=>f.tr.set)/Math.max(1,sum(f=>f.nScene)))};
+  const tOn=Fs.filter(f=>f.ttl.on); A.title={on:tOn.length,dur:r2(tOn.length?tOn.reduce((a,f)=>a+f.ttl.dur,0)/tOn.length:0),custom:Fs.filter(f=>f.ttl.custom>0).length,timing:Fs.filter(f=>f.ttl.timing>0).length};
+  A.voice={name:slTop(slTally(Fs,f=>f.voice.name)),mode:slTop(slTally(Fs,f=>f.voice.mode)),style:(Fs.find(f=>f.voice.style)||{voice:{}}).voice.style||''};
+  const bg=Fs.filter(f=>f.bgm.has); A.bgm={videos:bg.length,vol:r2(bg.length?bg.reduce((a,f)=>a+f.bgm.vol,0)/bg.length:0)};
+  A.ask={info:(Fs.find(f=>f.ask.info)||{ask:{}}).ask.info||'',sub:(Fs.find(f=>f.ask.sub)||{ask:{}}).ask.sub||''};
+  return A;
+}
+function slExamples(items){   /* 영상마다 하나씩 돌아가며(최신 영상부터) — 자막 6개·인포그래픽 4개까지 */
+  const rr=(lists,max)=>{ const out=[], seen=new Set(); for(let r=0;out.length<max;r++){ let any=false; lists.forEach(l=>{ if(out.length<max&&l[r]!=null){ any=true; const k=JSON.stringify(l[r]); if(!seen.has(k)){ seen.add(k); out.push(l[r]); } } }); if(!any) break; } return out; };   /* 같은 예시는 한 번만 */
+  return {sub:rr(items.map(x=>x.fp.subEx),6),info:rr(items.map(x=>x.fp.igEx),4)};
+}
+/* 숫자로 센 것을 사람이 읽는 줄로 — 학습 내용 보기·AI 에게 보내는 자료 둘 다 */
+function slLines(A){
+  const L=[], I=A.info, su=A.sub, tr=A.trans, H=A.tweaks, vt=Math.max(1,slTot(A.vis));
+  L.push(['영상 규모','평균 '+fmtDur(A.avgDur)+' · 장면 '+A.avgScene+'개(평균 '+A.sceneLen+'초) · 챕터 '+A.avgChap+'개']);
+  L.push(['화면 구성',slRank(A.vis,5).map(k=>(SL_VIS_N[k]||k)+' '+slPct(A.vis[k]/vt)).join(' · ')+' / '+(I.videos?'인포그래픽은 영상 '+A.n+'개 중 '+I.videos+'개에 있고 평균 영상의 '+slPct(I.cover)+' 구간':'인포그래픽은 쓰지 않음')]);
+  if(I.clips){
+    L.push(['인포그래픽 스타일',slRank(I.styles,3).map(k=>(ISTY[k]?ISTY[k].n:k)+' '+slPct(I.styles[k]/slTot(I.styles))).join(' · ')]);
+    L.push(['형태',slRank(I.modes,4).map(k=>(SL_MODE_N[k]||k)+' '+slPct(I.modes[k]/slTot(I.modes))).join(' · ')]);
+    L.push(['블록',slRank(I.types,6).map(k=>slBt(k)+' '+slPct(I.types[k]/Math.max(1,I.nb))).join(' · ')+' / 클립당 평균 '+I.perClip+'개 · 만든 방식 '+slRank(I.srcs,3).map(k=>(SL_SRC_N[k]||k)+' '+slPct(I.srcs[k]/slTot(I.srcs))).join(' ')]);
+    const hs=[]; Object.keys(H.ta).forEach(t=>hs.push(slBt(t)+' 글 '+SL_TA_N[H.ta[t]])); Object.keys(H.va).forEach(t=>hs.push(slBt(t)+' 글 '+SL_VA_N[H.va[t]]));
+    Object.keys(H.fz).forEach(t=>hs.push(slBt(t)+' '+Object.keys(H.fz[t]).map(k=>slFzName(t,k)+' ×'+H.fz[t][k]).join('·'))); Object.keys(H.pfz).forEach(t=>hs.push(slBt(t)+' 항목 '+Object.keys(H.pfz[t]).map(k=>slFzName(t,k,1)+' ×'+H.pfz[t][k]).join('·')));
+    Object.keys(H.gfz).forEach(k=>hs.push('클립 '+(k==='title'?'제목':'윗글')+' ×'+H.gfz[k]));
+    L.push(['늘 하던 손질',hs.length?hs.join(' / '):'글 위치·글자 크기를 같은 방식으로 반복해 손본 블록은 없어요'+(I.hand?' (직접 만든·손본 클립 '+I.hand+'개)':'')]);
+  }
+  if(su.edited) L.push(['자막',slPct(su.share)+'를 원문과 다르게 다듬어 씀(영상 '+A.n+'개 중 '+su.videos+'개는 20% 이상) · 평균 원문의 '+slPct(su.ratio)+' 길이 · 줄바꿈 '+slPct(su.nl)+(su.hide?' · 숨긴 자막 '+su.hide+'개':'')+(su.xs?' · 추가 자막 '+su.xs+'개':'')]);
+  else L.push(['자막','나레이션 그대로 쓰는 편(다듬은 자막이 거의 없어요)']);
+  if(tr.chap||tr.mid) L.push(['전환',(tr.chap?'챕터 첫 장면 '+slTr(tr.chap.k)+' '+slPct(tr.chap.share)+'('+tr.chap.t+'곳 중)':'')+(tr.mid?(tr.chap?' · ':'')+'그 밖 '+slTr(tr.mid.k)+' '+slPct(tr.mid.share):'')+' · 장면마다 따로 고른 전환 '+slPct(tr.set)]);
+  L.push(['챕터 타이틀',A.title.on?'켜 둔 영상 '+A.title.on+'개 · 평균 '+A.title.dur+'초'+(A.title.custom?' · 글을 고친 영상 '+A.title.custom+'개':''):'쓰지 않는 편']);
+  L.push(['음성',(A.voice.name?A.voice.name.k+'('+A.voice.name.n+'/'+A.n+'개)':'—')+(A.voice.mode?' · '+(A.voice.mode.k==='sent'?'문장별':'묶음')+' 합성':'')+(A.voice.style?' · 말투 지시 “'+slTxt(A.voice.style,50)+'”':'')]);
+  if(A.ask.info||A.ask.sub) L.push(['적어 둔 요청 글',[A.ask.info?'인포그래픽 “'+slTxt(A.ask.info,60)+'”':'',A.ask.sub?'자막 “'+slTxt(A.ask.sub,60)+'”':''].filter(Boolean).join(' · ')]);
+  return L;
+}
+const slLine1=prof=>'영상 '+prof.n+'개 학습 · '+(prof.ai?'AI 요약 ✓'+(prof.reused?'(저장된 것)':''):'규칙으로 센 것만');
+
+/* ── AI 가 정리 — 센 숫자·예시를 주고 '이 사용자의 스타일'을 JSON 으로 ── */
+const SL_SYS=`당신은 영상 편집 스타일 분석가입니다. 아래는 한 사용자가 '영상 스튜디오'로 직접 만들고 편집을 마친 최근 영상들의 구조·설정·손댄 흔적과, 완성본에 실제로 남은 작업 예시입니다. 이 사용자가 어떤 영상을 선호하는지(어떻게 구성하고, 인포그래픽을 어떤 밀도로 쓰고, 글을 어떻게 다듬고, 무엇을 손보는지)를 자료의 숫자와 예시에 근거해 정리하세요. 정리한 내용은 다음 영상을 AI 가 이 사용자가 만든 것처럼 만드는 데 그대로 쓰입니다. JSON 하나로만 답하세요(설명·머리말·코드블록 표시 금지).
+
+형식:
+{"summary":"이 사용자의 스타일을 2~3문장으로","traits":[{"k":"구성","v":"특징 한 줄(근거 숫자 포함)"}],"info":"인포그래픽을 설계할 때 따를 지침","sub":"자막을 다듬을 때 따를 지침","avoid":["이 사용자가 쓰지 않거나 피하는 것"],"confidence":"high|medium|low"}
+
+규칙:
+1. 자료에 없는 것을 지어내지 않는다. 숫자·비율은 자료의 값 그대로 쓴다. 근거가 약한 것(영상 3개 미만에서만 보이거나 비율 40% 미만)은 단정하지 말고 쓰지 않거나 '경향'이라고 쓴다. 영상이 적으면 confidence 를 낮춘다.
+2. traits 는 3~8개, 각 v 는 90자 안팎. k 는 구성·인포그래픽·글·자막·전환·타이틀·음성 같은 짧은 분류.
+3. info 는 700자 이내의 명령문 목록(줄바꿈은 \\n). 블록 종류·한 클립당 개수·형태(mode)·글 길이와 말투·강조 방식·피할 것을 구체적으로 쓴다. 쓸 수 있는 블록은 stat·hero·move·bar·row·heat·map·donut·gauge·line·vs·cmp·event·flow·scenario·level·point·quote, 형태는 left·right·full·hero·cardR·cardL·lower·ticker·corner 뿐이다.
+4. sub 는 450자 이내. 자막을 원문과 다르게 다듬은 흔적이 없으면 빈 문자열("")로 둔다. 있으면 길이 비율·줄바꿈·덜어내는 말·말투를 예시처럼 구체적으로 쓴다.
+5. avoid 는 0~5개. 자료에서 일관되게 쓰지 않는 것만.
+6. 글꼴·크기·음성 같은 설정 값은 이미 저장돼 있으니 지침에 넣지 않는다 — 내용을 어떻게 구성하고 다듬는지에 집중한다.`;
+function slDigest(prof){
+  const A=prof.agg, ex=prof.ex, vids=prof.src.map((x,i)=>(i+1)+') 「'+x.title+'」 '+fmtDur(x.dur)+' · 장면 '+x.scenes+'개 · '+new Date(x.updated).toISOString().slice(0,10)).join('\n');
+  return '[분석 대상 — 같은 언어('+V.get(prof.lang).native+')로 만든 최근 완성 영상 '+prof.n+'개, 최신순]\n'+vids+'\n\n[숫자로 센 것]\n'+slLines(A).map(l=>'- '+l[0]+': '+l[1]).join('\n')
+    +(ex.info.length?'\n\n[완성본에 남은 인포그래픽 예시 — 실제 AI 지침이 쓰는 JSON 모양]\n'+ex.info.map(s=>'- '+s).join('\n'):'')
+    +(ex.sub.length?'\n\n[완성본에 남은 자막 예시 — 원문 → 자막 ( / 는 줄바꿈)]\n'+ex.sub.map(x=>'- '+x.o+' → '+x.s).join('\n'):'');
+}
+function slNorm(r){
+  if(!r||typeof r!=='object') return null; const arr=Array.isArray(r.traits)?r.traits:[];
+  const o={summary:slTxt(r.summary,260),traits:arr.slice(0,8).map(x=>x&&typeof x==='object'?{k:slTxt(x.k,12),v:slTxt(x.v,120)}:{k:'',v:slTxt(x,120)}).filter(x=>x.v),
+    info:String(r.info==null?'':r.info).replace(/\r/g,'').trim().slice(0,760),sub:String(r.sub==null?'':r.sub).replace(/\r/g,'').trim().slice(0,500),
+    avoid:(Array.isArray(r.avoid)?r.avoid:[]).slice(0,5).map(x=>slTxt(x,80)).filter(Boolean),conf:/^(high|medium|low)$/.test(r.confidence)?r.confidence:'medium'};
+  return (o.summary||o.info||o.sub||o.traits.length)?o:null;
+}
+async function slAsk(digest,ai,signal){
+  if(typeof window._runTextPrompt!=='function') throw new Error('AI 모듈을 찾지 못했어요');
+  const txt=await window._runTextPrompt(ai.mapKey,SL_SYS,digest,{signal}); if(signal&&signal.aborted) throw slAbort();
+  const r=slNorm(parseJsonLoose(txt)); if(!r) throw new Error('AI 가 쓸 만한 정리를 주지 않았어요'); return r;
+}
+/* 학습 한 번 — 영상 읽기 → 모아 세기 → (AI 정리) → 저장. 학습할 영상이 없으면 null. 같은 영상 목록으로 이미 AI 정리를 받아 뒀으면 그대로 씀(force 가 아니면) */
+async function slRun(o){
+  o=o||{}; const lang=V.norm((P&&P.lang)||'ko'), col=await slCollect(); if(o.signal&&o.signal.aborted) throw slAbort();
+  if(!col.items.length) return null;
+  if(o.onStep) o.onStep('영상 '+col.items.length+'개의 편집 내용을 분석하는 중…');
+  const A=slAgg(col.items), ex=slExamples(col.items), sig=lang+'|'+col.items.map(x=>x.id+':'+x.updated).join('|'), old=slGet(lang);
+  const prof={v:1,lang,sig,at:Date.now(),n:col.items.length,src:col.items.map(x=>({id:x.id,title:x.fp.title,updated:x.updated,dur:x.fp.dur,scenes:x.fp.nScene})),skip:col.skip,agg:A,ex,ai:null,aiBy:'',err:'',reused:false};
+  if(old&&old.sig===sig&&old.ai&&!o.force){ prof.ai=old.ai; prof.aiBy=old.aiBy||''; prof.reused=true; }
+  else{
+    const ai=studioAi();
+    if(ai.key){
+      if(o.onStep) o.onStep('AI ('+ai.name+')가 내 취향을 정리하는 중…');
+      try{ prof.ai=await slAsk(slDigest(prof),ai,o.signal); prof.aiBy=ai.name; }
+      catch(e){ if(e&&e.name==='AbortError') throw e; prof.err=slTxt((e&&e.message)||e,90); }
+    }else prof.err=ai.name+' API Key 가 없어 AI 요약은 건너뛰었어요';
+  }
+  slPut(lang,prof); return prof;
+}
+
+/* ── 반영 ① AI 요청에 덧붙임 — 한 번에 만들기 안(UI.sl)에서만. 아니면 빈 글이라 요청 글이 예전과 똑같음 ── */
+function slBlock(kind){
+  const L=UI.sl, pf=L&&L.on&&L.prof; if(!pf) return '';
+  const A=pf.agg, ai=pf.ai||{}, I=A.info, ln=[];
+  if(kind==='info'){
+    if(ai.info) ln.push(ai.info);
+    if(I.clips){
+      const ty=slRank(I.types,9).filter(k=>SL_AI_TYPES.indexOf(k)>=0).slice(0,6), mo=slRank(I.modes,6).filter(k=>SL_AI_MODES.indexOf(k)>=0).slice(0,4);
+      ln.push('- 숫자로 본 구성: 블록은 '+ty.map(k=>k+'('+slBt(k)+') '+slPct(I.types[k]/Math.max(1,I.nb))).join('·')+' 위주 · 클립당 평균 '+I.perClip+'개 · 형태는 '+mo.map(k=>k+' '+slPct(I.modes[k]/Math.max(1,slTot(I.modes)))).join('·')+' · 인포그래픽이 영상의 평균 '+slPct(I.cover)+' 구간에 나옴');
+    }
+    if(pf.ex.info.length) ln.push('- 이 사용자가 만들어 남긴 인포그래픽(말투·길이·밀도를 참고):\n'+pf.ex.info.map(s=>'  '+s).join('\n'));
+    if(!ln.length) return '';
+    return '\n\n[내 스타일 — 이 사용자가 직접 만든 최근 영상 '+pf.n+'개에서 배운 취향. 위 규칙(JSON 형식·나레이션에 없는 사실 금지·뉴스체)을 어기지 않는 범위에서 이 사용자가 만든 것처럼 설계하세요'+(isKo()?'':' · 화면 글은 이 영상의 언어로 쓰세요')+']\n'+ln.join('\n');
+  }
+  if(kind==='sub'){
+    const S=A.sub; if(!S.edited&&!ai.sub) return '';
+    if(ai.sub) ln.push(ai.sub);
+    if(S.edited) ln.push('- 숫자로 본 습관: 자막의 '+slPct(S.share)+'를 원문과 다르게 다듬고, 평균 원문의 '+slPct(S.ratio)+' 길이로 줄이며, 줄바꿈이 있는 자막은 '+slPct(S.nl));
+    if(pf.ex.sub.length) ln.push('- 이 사용자가 남긴 자막(원문 → 자막, / 는 줄바꿈):\n'+pf.ex.sub.map(x=>'  '+x.o+' → '+x.s).join('\n'));
+    return '[내 자막 습관 — 이 사용자가 만든 최근 영상 '+pf.n+'개에서 배운 것. 아래 규칙과 [사용자 요청]을 어기지 않는 범위에서 반영하세요]\n'+ln.join('\n')+'\n\n';
+  }
+  return '';
+}
+/* ── 반영 ② 새로 만든 인포그래픽에 내가 늘 하던 손질을 같게 — 손대지 않은 블록에만, 띠·배지·타이틀 형태는 건너뜀. 바꾼 블록 수 ── */
+function slReplay(prof,ids){
+  const H=prof&&prof.agg&&prof.agg.tweaks; if(!H||!ids||!ids.size) return 0; let n=0;
+  (P.igs||[]).forEach(g=>{
+    if(!ids.has(g.id)||g.ov||!alOK(g)) return;
+    if(Object.keys(H.gfz).length&&!g.fz){ g.fz=Object.assign({},H.gfz); n++; }
+    (g.items||[]).forEach(it=>{
+      const t=it.type; let c=false;
+      if(H.ta[t]&&!taOf(it)&&!AL_NOH[t]){ it.ta=H.ta[t]; c=true; }
+      if(H.va[t]&&!vaOf(it)&&!AL_NOV[t]){ it.va=H.va[t]; c=true; }
+      if(H.fz[t]&&!it.fz){ it.fz=Object.assign({},H.fz[t]); c=true; }
+      if(H.pfz[t]) (it.parts||[]).forEach(p=>{ if(p&&!p.fz){ p.fz=Object.assign({},H.pfz[t]); c=true; } });
+      if(c) n++;
+    });
+  });
+  return n;
+}
+/* ── 반영 ③ 챕터 첫 장면의 전환 — 늘 쓰던 것(3곳 이상·60% 이상)이 기본 전환과 다를 때만, 따로 정하지 않은 장면에만 ── */
+function slTrans(prof){
+  const T=prof&&prof.agg&&prof.agg.trans, c=T&&T.chap; if(!c||c.n<3||c.share<0.6||!TRK[c.k]) return 0;
+  if(c.k===((P.cfg.look&&P.cfg.look.trans)||'fade')) return 0; let n=0;
+  P.scenes.forEach((sc,j)=>{ if(j===0) return; const a=P.sents[sc.first], b=P.sents[P.scenes[j-1].first]; if(!a||!b||a.ci===b.ci) return;
+    sc.trans=sc.trans||{t:'inherit',d:0}; if(sc.trans.t&&sc.trans.t!=='inherit') return; sc.trans.t=c.k; n++; });
+  return n;
+}
+/* ── 한 번에 만들기 창 — 🧠 줄 ── */
+function slPrefill(){   /* ④ 학습 결과로 미리 맞출 것 — 자막을 다듬어 쓰는 영상이 절반 이상이면 'AI 로 자막 다듬기'(손대지 않았을 때만). 학습을 끄면 도로 끔 */
+  const d=UI.dd, m=UI.slMeta; if(!d||!m||!('akind' in d)) return;
+  const A=m.A, on=d.alearn!==false, touched=!!(d._t&&d._t.asub);
+  if(m.pre==='asub'&&(touched||!on)){ if(!touched) d.asub=false; m.pre=''; }   /* 직접 눌렀으면 안내만 걷고, 학습을 끄면 미리 켠 것도 도로 끔 */
+  else if(!m.pre&&on&&!touched&&!d.asub&&A&&infoTextAi()&&A.sub.videos>=Math.ceil(A.n/2)&&A.sub.share>=0.2){ d.asub=true; m.pre='asub'; }
+}
+const SL_KIND_N={card:'카드 화면',image:'AI 이미지',video:'AI 영상',info:'인포그래픽 화면'};
+function slSuggest(A,d){   /* 최근 영상과 지금 고른 것이 다를 때의 제안 — [바꾸기]를 누르기 전에는 아무것도 바꾸지 않음 */
+  const out=[]; if(!A||!d||d.alearn===false) return out; const I=A.info, v=A.vis; let k='';
+  if(I.videos>=Math.ceil(A.n/2)&&I.cover>=0.25) k='info'; else{ const t=['image','video','card'].sort((a,b)=>(v[b]||0)-(v[a]||0))[0]; if((v[t]||0)>=slTot(v)*0.5) k=t; }
+  if(k&&d.akind&&d.akind!=='skip'&&d.akind!==k) out.push({id:'akind:'+k,txt:'최근 영상은 ‘'+SL_KIND_N[k]+'’ 중심이었는데 지금은 ‘'+(SL_KIND_N[d.akind]||d.akind)+'’로 골라져 있어요',btn:'‘'+SL_KIND_N[k]+'’로 바꾸기'});
+  const st=slTop(I.styles); if(d.akind==='info'&&st&&st.share>=0.6&&st.n>=3&&ISTY[st.k]&&d.istyle&&d.istyle!==st.k) out.push({id:'istyle:'+st.k,txt:'최근 인포그래픽은 ‘'+ISTY[st.k].n+'’ 스타일이 '+slPct(st.share)+'였는데 지금은 ‘'+(ISTY[d.istyle]?ISTY[d.istyle].n:d.istyle)+'’예요',btn:'‘'+ISTY[st.k].n+'’로 바꾸기'});
+  return out;
+}
+function slCard(){
+  const m=UI.slMeta||{busy:1}, prof=slGet();
+  if(m.busy) return '<span class="mut">🧠 최근 영상을 찾는 중…</span>';
+  if(m.err) return '<span class="bad">영상 목록을 읽지 못했어요 — '+esc(m.err)+'</span> <span class="mut">(학습 없이 기본 방식으로 만들어요)</span>';
+  if(!m.n){ const sk=m.skip||{}; return '<b>학습할 완성 영상이 아직 없어요</b> <span class="mut">— 이 영상과 같은 언어로 음성·화면·인포그래픽을 만든 영상이 저장돼 있어야 해요'+((sk.empty||sk.other)?' (아직 안 만든 영상 '+(sk.empty||0)+'개'+(sk.other?' · 다른 언어 '+sk.other+'개':'')+'는 뺐어요)':'')+'. 지금은 기본 방식으로 만들어요.</span>'; }
+  const same=!!prof&&prof.sig===m.sig; let st;
+  if(m.run) st='<span class="mut">🧠 '+esc(m.run)+'</span>';
+  else if(same) st='<span class="ok">✓ 학습 기록 있음</span> <span class="mut">'+esc(slWhen(prof.at))+' · '+(prof.ai?'AI 요약('+esc(prof.aiBy||'AI')+')':'규칙으로 센 것만')+(prof.err&&!prof.ai?' · '+esc(prof.err):'')+'</span>';
+  else st='<span class="mut">'+(prof?'학습 기록은 있지만 영상이 바뀌어서 시작할 때 다시 배워요':'시작하면 먼저 학습해요')+'</span>';
+  return '<b>최근 완성 영상 '+m.n+'개</b>'+(m.n<SL_N?' <span class="mut">('+SL_N+'개가 안 돼서 있는 만큼)</span>':'')+' <span class="tt" title="'+esc(m.items.map(x=>x.title).join(' / '))+'">'+m.items.map(x=>'「'+esc(slTxt(x.title,16))+'」').join(' ')+'</span>'+st
+    +(m.pre==='asub'?'<br><span class="ok">↳ 자막을 다듬어 쓰는 영상이 많아서 ‘AI 로 자막 다듬기’를 미리 켰어요(원하지 않으면 끄세요)</span>':'')
+    +slSuggest(m.A,UI.dd).map(s=>'<br><span class="mut">📌 '+esc(s.txt)+'</span> '+F.btn('slSet',s.btn,{d:s.id})).join('')
+    +'<div class="vs-btns">'+F.btn('slShow','👁 학습 내용 보기',{dis:!prof})+F.btn('slRun','🔄 지금 다시 학습',{title:'최근 영상을 다시 읽고 AI 에게 취향을 다시 정리시켜요'})+F.btn('slClear','🗑 기록 지우기',{dis:!prof,c:'dng'})+'</div>'
+    +'<div class="mut">AI 에는 영상 제목·설정·예시 글만 보내요(음성·이미지·영상 파일은 안 보내요).</div>';
+}
+function slRow(d){
+  return D_('🧠 내 스타일',dchk('alearn',d.alearn!==false,'시작하면 먼저 최근 완성 영상 '+SL_N+'개를 학습하고, 그 취향대로 만들기')+'<div id="vsLearn" class="vs-learn'+(d.alearn===false?' off':'')+'">'+slCard()+'</div>');
+}
+function slPaint(){
+  const el=$('vsLearn'); if(el){ el.innerHTML=slCard(); el.classList.toggle('off',!!UI.dd&&UI.dd.alearn===false); }
+  const d=UI.dd, cb=document.querySelector('#vsDlg [data-d="asub"]'); if(cb&&d&&'akind' in d) cb.checked=!!d.asub;
+}
+async function slScan(){   /* 한 번에 만들기 창을 열 때 — 학습할 영상을 찾아 카드를 채움(AI 는 안 부름) */
+  const tok=UI._slTok=(UI._slTok||0)+1; UI.slMeta={busy:1}; slPaint();
+  let col=null, err=''; try{ col=await slCollect(); }catch(e){ err=slTxt((e&&e.message)||e,80)||'알 수 없는 오류'; }
+  if(tok!==UI._slTok) return;   /* 그 사이 창을 다시 열었으면 이 결과는 버림 */
+  if(!col){ UI.slMeta={err,n:0}; slPaint(); return; }
+  UI.slMeta={n:col.items.length,sig:col.lang+'|'+col.items.map(x=>x.id+':'+x.updated).join('|'),skip:col.skip,items:col.items.map(x=>({id:x.id,title:x.fp.title,updated:x.updated,dur:x.fp.dur,scenes:x.fp.nScene})),A:col.items.length?slAgg(col.items):null,pre:''};
+  slPrefill(); slPaint();
+}
+/* 한 번에 만들기의 첫 단계 — 학습하고, 켜졌으면(UI.sl) 이후 AI 요청·손질이 이 결과를 씀. 중단하면 null(UI.aborted) */
+async function slStart(){
+  UI.busy='gen'; UI.ctl=new AbortController(); paintBusy(); progress(0.02,'🧠 내 스타일 학습 — 최근 영상을 읽는 중…'); let prof=null, bad=false;
+  try{ prof=await slRun({signal:UI.ctl.signal,onStep:t=>progress(0.04,'🧠 '+t)}); }
+  catch(e){ if(e&&e.name==='AbortError'){ UI.aborted=true; progress(0,'중단했어요'); } else{ bad=true; toast('내 스타일을 배우지 못했어요 — '+slTxt((e&&e.message)||e,70)+' · 기본 방식으로 만들어요'); } }
+  finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
+  if(UI.aborted) return null;
+  if(!prof){ if(!bad) toast('🧠 학습할 완성 영상이 없어 기본 방식으로 만들어요'); return null; }
+  UI.sl={on:true,prof}; progress(0.06,'🧠 내 스타일 학습 끝 — '+slLine1(prof));
+  if(prof.err&&!prof.ai) toast('🧠 '+(/Key|키/.test(prof.err)?'글 AI 키가 없어 AI 요약은 건너뛰고':'AI 요약은 못 했어요('+prof.err+') —')+' 규칙으로 센 취향만 써요');
+  return prof;
+}
+async function slRunBtn(){   /* [🔄 지금 다시 학습] */
+  if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
+  UI.busy='gen'; UI.ctl=new AbortController(); paintBusy(); UI.slMeta=Object.assign({},UI.slMeta,{run:'최근 영상을 읽고 AI 가 정리하는 중…'}); slPaint(); let prof=null, ab=false, er='';
+  try{ prof=await slRun({force:true,signal:UI.ctl.signal}); }catch(e){ if(e&&e.name==='AbortError') ab=true; else er=slTxt((e&&e.message)||e,80); }
+  finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
+  UI.slMeta=Object.assign({},UI.slMeta,{run:''}); slPaint();
+  toast(ab?'학습을 멈췄어요':er?'학습하지 못했어요 — '+er:prof?'🧠 '+slLine1(prof)+(prof.err&&!prof.ai?' ('+prof.err+')':''):'학습할 완성 영상이 없어요');
+}
+function slClearBtn(){
+  if(!slGet()){ toast('지울 학습 기록이 없어요'); return; }
+  if(!confirm('학습해 둔 내 스타일 기록을 지울까요?\n(영상은 그대로예요 — 다음 한 번에 만들기 때 다시 배워요)')) return;
+  slPut(P.lang,null); slPaint(); toast('학습 기록을 지웠어요');
+}
+/* 학습 내용 보기 */
+function slPlain(prof){
+  const ai=prof.ai, out=['🧠 내 스타일 — 최근 완성 영상 '+prof.n+'개에서 학습('+slWhen(prof.at)+')',''];
+  prof.src.forEach((x,i)=>out.push((i+1)+') '+x.title+' · '+fmtDur(x.dur)+' · 장면 '+x.scenes+'개'));
+  if(ai){ out.push('','[AI 가 정리한 스타일'+(prof.aiBy?' — '+prof.aiBy:'')+']',ai.summary); ai.traits.forEach(t=>out.push('- '+(t.k?t.k+': ':'')+t.v)); if(ai.info) out.push('','[인포그래픽 지침]',ai.info); if(ai.sub) out.push('','[자막 지침]',ai.sub); if(ai.avoid.length) out.push('','[쓰지 않는 것]',ai.avoid.map(x=>'- '+x).join('\n')); }
+  out.push('','[숫자로 센 것]'); slLines(prof.agg).forEach(l=>out.push('- '+l[0]+': '+l[1])); return out.join('\n');
+}
+function slView(prof){
+  const ai=prof.ai, sk=prof.skip||{}, H=prof.agg.tweaks, uses=[];
+  uses.push('인포그래픽을 AI 로 만들 때 — 위 지침과 내가 만든 예시를 함께 보내요');
+  if(prof.agg.sub.edited||(ai&&ai.sub)) uses.push('‘AI 로 자막 다듬기’를 할 때 — 자막 지침과 내가 고친 자막 예시를 함께 보내요'); else uses.push('자막 — 다듬은 자막이 거의 없어서 따로 반영하지 않아요');
+  uses.push('새로 만든 인포그래픽에 — 늘 하던 손질을 같게 적용해요: '+(H.cnt.ta+H.cnt.va+H.cnt.fz?'글 위치 '+(H.cnt.ta+H.cnt.va)+'종 · 글자 크기 '+H.cnt.fz+'종':'(반복해 손본 것이 없어 적용할 게 없어요)'));
+  const tc=prof.agg.trans.chap; uses.push('챕터 첫 장면의 전환 — '+(tc&&tc.n>=3&&tc.share>=0.6&&TRK[tc.k]?'늘 쓰던 “'+slTr(tc.k)+'”로(따로 정하지 않은 장면만)':'바꾸지 않아요(뚜렷한 습관이 없어요)'));
+  let h='<div class="vs-lv"><div class="vs-sec" style="margin-top:0">배운 영상 '+prof.n+'개 <span class="hint">같은 언어 · 최신순 · 이 프로젝트 제외'+((sk.empty||sk.other)?' · 아직 안 만든 영상 '+(sk.empty||0)+'개'+(sk.other?'·다른 언어 '+sk.other+'개':'')+'는 뺌':'')+'</span></div><div class="vs-lvs">'
+    +prof.src.map((x,i)=>'<div>'+(i+1)+') <b>'+esc(x.title||'(이름 없음)')+'</b><span>'+fmtDur(x.dur)+' · 장면 '+x.scenes+'개 · '+esc(slWhen(x.updated))+'</span></div>').join('')+'</div>';
+  if(ai){
+    h+='<div class="vs-sec">🧠 AI 가 정리한 내 스타일 <span class="hint">'+esc(prof.aiBy||'AI')+(prof.reused?' · 저장된 정리':'')+' · 신뢰도 '+({high:'높음',medium:'보통',low:'낮음'})[ai.conf]+'</span></div>'+(ai.summary?'<div class="vs-lvt">'+esc(ai.summary)+'</div>':'')
+      +(ai.traits.length?'<div class="vs-lvl">'+ai.traits.map(t=>'<div><b>'+esc(t.k||'특징')+'</b><span>'+esc(t.v)+'</span></div>').join('')+'</div>':'')
+      +(ai.info?'<div class="vs-sec">인포그래픽 지침 <span class="hint">AI 에게 보내는 글</span></div><pre>'+esc(ai.info)+'</pre>':'')+(ai.sub?'<div class="vs-sec">자막 지침 <span class="hint">AI 에게 보내는 글</span></div><pre>'+esc(ai.sub)+'</pre>':'')
+      +(ai.avoid.length?'<div class="vs-sec">쓰지 않는 것</div><ul>'+ai.avoid.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'');
+  }else h+='<div class="vs-note">AI 요약이 없어요 — '+esc(prof.err||'AI 키가 없어요')+'. 아래 숫자로 센 것만 써요.</div>';
+  h+='<div class="vs-sec">숫자로 센 것 <span class="hint">영상 파일에서 직접 센 값 — AI 가 아니에요</span></div><div class="vs-lvl">'+slLines(prof.agg).map(l=>'<div><b>'+esc(l[0])+'</b><span>'+esc(l[1])+'</span></div>').join('')+'</div>'
+    +'<div class="vs-sec">이 취향이 쓰이는 곳</div><ul>'+uses.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
+    +'<div class="hint pad">학습은 이 창의 🧠 체크를 켜고 시작할 때만 쓰여요. 글꼴·음성 같은 설정 값은 건드리지 않아요(각 메뉴에 저장된 값 그대로).</div></div>';
+  return h;
+}
+function slShow(){
+  const prof=slGet(); if(!prof){ toast('아직 학습한 기록이 없어요 — [🔄 지금 다시 학습]을 누르거나 시작하면 먼저 학습해요'); return; }
+  dlg('🧠 내 스타일 — 학습 결과',slView(prof),[{t:'← 한 번에 만들기로',a:'slBack',c:'pri'},{t:'📋 복사',a:'slCopy'},{t:'닫기',a:'dlgClose'}],'wide');
+}
+/* ══ /v118 ══ */
+
 async function autoGo(){
-  const d=UI.dd; dlgClose(); UI.aborted=false; applyTitle(d.ttl,d.tdur);   /* 챕터 타이틀부터 정해야 뒤의 음성·화면이 최종 시간표로 만들어짐 */
-  const sb=sbOn(P), pr=sb?sbPrepare():null;   /* v107: 스토리보드대로 — 전환·이미지 움직임 지시를 먼저 모든 장면에 반영 */
+  const d=UI.dd; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
+  dlgClose(); UI.aborted=false; applyTitle(d.ttl,d.tdur);   /* 챕터 타이틀부터 정해야 뒤의 음성·화면이 최종 시간표로 만들어짐 */
+  try{
+    let lp=null; if(d.alearn!==false){ lp=await slStart(); if(UI.aborted) return; }   /* v118: 먼저 최근 완성 영상 7개를 읽고 내 취향을 배움 — 이후 AI 요청·손질이 이 결과를 씀(없으면 예전 그대로) */
+    await autoMake(d,lp);
+  }finally{ UI.sl=null; }
+}
+async function autoMake(d,lp){
+  const sb=sbOn(P), pr=sb?sbPrepare():null, lt=lp?slTrans(lp):0; let lh=0;   /* v107: 스토리보드대로 — 전환·이미지 움직임 지시를 먼저 모든 장면에 반영 · v118: 그 위에 내가 늘 쓰던 챕터 첫 장면 전환(스토리보드가 정한 것은 그대로) */
   if(d.avoice){ if(!geminiKey()) toast('Gemini 키가 없어 음성은 건너뛰어요'); else{ await runVoice({}); if(UI.aborted) return; } }
   if(d.asub){ await runSubs('all'); if(UI.aborted) return; }
   if(d.akind==='card'){ P.scenes.forEach(c=>{ if((c.vis.kind||'none')==='none'){ setCard(c); if(sb) sbMkCard(c); } }); commit('카드'); }
-  else if(d.akind==='info'){ const its=genTargets('empty','info'); if(its.length||d.iov!==false){ await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,remember:true,style:d.istyle,ov:d.iov!==false}); if(UI.aborted) return; } if(sb){ its.forEach(it=>{ const c=P.scenes.find(x=>x.id===it.id); if(c) sbTopUpInfo(c); }); P.scenes.forEach(c=>{ if(['none','card'].indexOf((c.vis&&c.vis.kind)||'none')>=0) sbMkCard(c,{noText:true}); }); } }
+  else if(d.akind==='info'){ const its=genTargets('empty','info'); if(its.length||d.iov!==false){ const before=new Set((P.igs||[]).map(g=>g.id)); await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,remember:true,style:d.istyle,ov:d.iov!==false}); if(UI.aborted) return; if(lp){ const ids=new Set((P.igs||[]).filter(g=>!before.has(g.id)).map(g=>g.id)); lh=slReplay(lp,ids); if(lh){ igPostersAll(true); commit('내 스타일 손질'); } } } if(sb){ its.forEach(it=>{ const c=P.scenes.find(x=>x.id===it.id); if(c) sbTopUpInfo(c); }); P.scenes.forEach(c=>{ if(['none','card'].indexOf((c.vis&&c.vis.kind)||'none')>=0) sbMkCard(c,{noText:true}); }); } }
   else if(d.akind==='image'||d.akind==='video'){ if(!geminiKey()) toast('키가 없어 화면은 카드로 둬요'); else{ await qRun(genTargets('empty',d.akind)); if(UI.aborted) return; } }
-  if(sb) commit('스토리보드 적용');
-  renderAll(); const rep=syncReport(); progress(1,'한 번에 만들기 끝 · 점검 '+rep.length+'건'+(sb?' · 📐 스토리보드 적용(전환 '+pr.tr+'곳 · 이미지 움직임 '+pr.mo+'곳)':'')); dlgSync();
+  if(sb) commit('스토리보드 적용'); if(lt) commit('내 스타일 전환');
+  renderAll(); const rep=syncReport(); progress(1,'한 번에 만들기 끝 · 점검 '+rep.length+'건'+(sb?' · 📐 스토리보드 적용(전환 '+pr.tr+'곳 · 이미지 움직임 '+pr.mo+'곳)':'')+(lp?' · 🧠 내 스타일 반영(영상 '+lp.n+'개'+(lp.ai?' · AI 요약':'')+(lh?' · 인포그래픽 손질 '+lh+'곳':'')+(lt?' · 챕터 전환 '+lt+'곳':'')+')':'')); dlgSync();
 }
 
 /* ═════════ 타임라인 끌기 — 컷 경계·자막 막대·재생 위치 ═════════ */
@@ -49397,11 +50244,20 @@ function ensureModal(){
   const el=document.createElement('div'); el.id='vsModal'; el.className='vs-ov no-print'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','영상 스튜디오');
   el.innerHTML=modalHtml(); document.body.appendChild(el); _ov=el; bindEvents(el); return el;
 }
+const NL_OK=/^(ig:|igp:|tt:|sc\.ctitle$)/;   /* 줄바꿈 표시를 넣을 수 있는 글 칸 — 인포그래픽(제목·윗글·블록·항목)·챕터 타이틀·카드 큰 글자 */
+function nlKey(e){   /* v116: 글 칸에서 Shift+Enter — 커서 자리에 줄바꿈 표시(↵)를 넣고 미리보기에 바로 반영. 넣었으면 true */
+  const el=e.target; if(e.isComposing||e.keyCode===229||!el||el.tagName!=='INPUT'||el.type!=='text'||!el.dataset||!el.dataset.f||!NL_OK.test(el.dataset.f)) return false;
+  e.preventDefault(); e.stopPropagation(); const v=el.value, a=el.selectionStart==null?v.length:el.selectionStart, b=el.selectionEnd==null?a:el.selectionEnd; let ok=false;
+  try{ ok=document.execCommand('insertText',false,NL_MARK); }catch(x){}   /* 브라우저 편집 기록(Ctrl+Z)에 남도록 */
+  if(!ok){ el.value=v.slice(0,a)+NL_MARK+v.slice(b); try{ el.setSelectionRange(a+1,a+1); }catch(x){} el.dispatchEvent(new Event('change',{bubbles:true})); return true; }
+  onField({target:el},false); return true;
+}
 document.addEventListener('keydown',e=>{
   if(!_ov||!_ov.classList.contains('open')) return;
   const tg=e.target, tag=(tg.tagName||'').toLowerCase(), typing=tag==='input'||tag==='textarea'||tag==='select'||tg.isContentEditable;
   if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')){ dlgClose(); return; } if(UI.le){ leKey(e); return; } closeStudio(); return; }
   if(!P) return;
+  if(e.key==='Enter'&&e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&nlKey(e)) return;
   if(UI.le&&leKey(e)) return;
   if((e.ctrlKey||e.metaKey)&&!typing){ const k=e.key.toLowerCase(); if(k==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); } else if(k==='y'){ e.preventDefault(); redo(); } else if(k==='s'){ e.preventDefault(); act('save'); } return; }
   if(typing||UI.busy==='export'||$('vsDlg').classList.contains('on')) return;
@@ -49450,12 +50306,13 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,fixPartAnchors,fixProject,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
+    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,fixPartAnchors,fixProject,btOpts,BT_GRP,numList,drawArrow,sparkDraw,tapeLay,hasNL,nlLines,nlFlat,nlKey,dtx,fitFont,pill,clipS,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
-    hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay}};
+    hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
