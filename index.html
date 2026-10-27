@@ -2716,6 +2716,49 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .sc-seg .tcw .tc{margin-top:0}
 .sc-seg .ln{font-size:10px;font-weight:800;line-height:1.5;border-radius:999px;padding:0 7px;white-space:nowrap;color:#64748b;background:#f1f5f9}
 .sc-seg .ln.i3{color:#92400e;background:#fef3c7}
+/* ── v119 직접 수정 (✏️ 수정) — ①②③ 부분마다 수정 모드로 바꿔 고치고 [저장] (2026-10-27) ── */
+.sc-sh{flex-wrap:wrap;row-gap:5px}
+.sc-sh b{white-space:nowrap}
+.sc-sh .sc-meta{flex:1 1 150px}
+.sc-sec .sc-eds{display:none}
+.sc-sec.ed .sc-eds{display:inline-block}
+.sc-sec.ed .sc-edb,.sc-sec.ed .sc-cpb{display:none}
+#scMakerModal.busy .sc-edb{display:none}
+.sc-edmsg{display:none;font-size:11.5px;line-height:1.6;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:7px 10px;margin:0 0 8px;word-break:break-word}
+.sc-edmsg.on{display:block}
+.sc-edhint{font-size:11.5px;line-height:1.65;color:#78350f;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:7px 11px;margin:0 0 10px;word-break:keep-all}
+.sc-edhint b{color:#92400e}
+.sc-edhint code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:11px;background:#fef3c7;border-radius:4px;padding:0 4px;color:#0369a1}
+.sc-edtot{font-size:11.5px;font-weight:700;color:#475569;margin:0 0 8px}
+.sc-edcnt{font-size:11px;color:#94a3b8;margin-top:4px;text-align:right}
+#scMakerModal .sc-ef{pointer-events:auto!important}
+#scMakerModal textarea.sc-ef-x{display:block;width:100%;min-height:70px;padding:9px 11px;font-family:inherit;font-size:13.5px;line-height:1.8;color:#1e293b;resize:vertical;overflow-y:auto}
+#scMakerModal input.sc-ef-t{flex:1 1 220px;min-width:0;height:30px;min-height:30px;padding:0 9px;font-family:inherit;font-size:13px;font-weight:700;color:#78350f;background:#fff;border:1px solid #fcd34d;border-radius:7px}
+#scMakerModal input.sc-ef-t:focus,#scMakerModal input.sc-ef-tm:focus{outline:none;border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.18)}
+.sc-ch.ed .sc-ch-h .d{margin-left:0;white-space:nowrap}
+#scOut .bad{outline:2px solid #ef4444;outline-offset:-1px;border-radius:8px}
+.sc-seg.ed{gap:8px;padding:8px 0}
+.sc-edtm{flex:0 0 auto;width:132px;display:flex;align-items:center;flex-wrap:wrap;gap:3px 4px}
+#scMakerModal input.sc-ef-tm{width:58px;height:26px;min-height:26px;padding:0 4px;font-family:ui-monospace,Consolas,Menlo,monospace;font-size:11.5px;font-weight:800;text-align:center;color:#0369a1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px}
+.sc-edtm .dsh{color:#94a3b8;font-weight:700}
+.sc-edtm .du{flex:0 0 100%;font-size:10px;font-weight:800;color:#64748b}
+.sc-edtm .nt{flex:0 0 100%;font-size:10px;font-weight:700;color:#b45309}
+.sc-edtm .nt:empty{display:none}
+#scMakerModal .sc-seg.ed.inv input.sc-ef-tm{border-color:#ef4444;background:#fef2f2;color:#b91c1c}
+#scMakerModal .sc-seg.ed textarea.sc-ef-x{min-height:58px;padding:7px 10px}
+.sc-seg.ed .sc-ef-x{flex:1;min-width:0}
+.sc-edbt{flex:0 0 auto;display:flex;flex-direction:column;gap:4px}
+.sc-edbt .sc-mini{height:26px;width:32px;padding:0}
+.sc-seg.ed .sc-deln{display:none;flex:1;font-size:12px;color:#94a3b8;padding:5px 0}
+.sc-seg.ed .sc-deln a{color:#0369a1;font-weight:700;cursor:pointer;text-decoration:underline;margin-left:8px}
+#scMakerModal .sc-seg.ed.del textarea.sc-ef-x,.sc-seg.ed.del .sc-edbt{display:none}
+.sc-seg.ed.del .sc-edtm{opacity:.45}
+.sc-seg.ed.del .sc-deln{display:block}
+.sc-seg.ed.new{background:#f0fdf4}
+.sc-stale{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11.5px;line-height:1.6;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:6px 11px;margin:0 0 10px}
+.sc-stale .sc-mini{height:26px}
+.sc-tag.ed{background:#fef9c3;color:#a16207}
+@media(max-width:560px){.sc-edtm{width:auto;flex-wrap:nowrap}.sc-edtm .du,.sc-edtm .nt{flex:0 0 auto}.sc-edbt{flex-direction:row}}
 @media(max-width:560px){.sc-seg{flex-direction:column;gap:3px}}
 @media(max-width:860px){
   .sc-body{flex-direction:column}
@@ -42259,6 +42302,9 @@ window.BTMVLang={L,order,get,norm,split,filler,substance,agendaScore,isAgenda,AG
        AI 자동 = 설계서 앞에 챕터마다 '장면 나누기' 요청 1회(sysSegPlanFor·segPlanUser — 나레이션 문장마다 시각을 보여 주고 장면을 끊는 시각·중요도(3 핵심/2 보통/1 연결)·주제를 받음, planBoard) →
        코드가 답을 검증·보정(parseSegPlan·fitSegs — 시각 어긋남·빈틈·겹침·최소/최대 길이·장면 수 상한, 읽을 수 없으면 균등 분할 uniformSegs 로 대체하고 경고) → 보정한 구간으로 예전과 똑같이 구간 묶음(12개)마다 묘사 요청(구간 길이가 달라 길수록 문장을 더 씀 — sysBoardSeg(…,auto)).
        직접 정하기는 예전 요청·결과와 같음(AI 에 보내는 글이 한 글자도 안 바뀜). 기록은 cfg.segMode='auto'·segMin·segMax 만 더 저장(직접 정하기 기록은 모양이 그대로).
+   · 직접 수정 (2026-10-27, v119) — 만든 ① 보고서·② 스크립트·③ 스토리보드를 부분마다 [✏️ 수정]으로 직접 고치고 [💾 저장] (ED·edOpen·edSave — 코드는 '만든 결과를 직접 고치기' 구역).
+       스크립트: 챕터 이름·나레이션·[화면: …] 지시 / 스토리보드: 스타일·분위기, 장면 시간·묘사, 장면 추가(둘로 나눔)·삭제 / 보고서: 통째로. 저장하면 같은 이력 기록에 반영(기록에 ed 표시만 더 붙음, 고친 적 없는 기록은 모양 그대로).
+       스크립트 길이가 바뀌면 board.tch(옛 글자 수)와 비교해 ③ 위에 [시간 맞추기](retimeBoard)를 보여 줌. 이력 상세의 [✏️ 수정]은 그 기록을 만들기 화면 결과로 불러옴. 고친 내용은 이미 만든 영상 프로젝트에는 반영되지 않음(스튜디오 [새로 시작]부터).
    · 수정 요령: 이 블록(표식 BTMSCRIPT-JS-BEGIN~END)과 위쪽 BTMSCRIPT-CSS 블록만 고치면 됨
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
@@ -42986,6 +43032,7 @@ function beginBoard(c,cfg){
   c.cfg.board=true; c.cfg.seg=isAuto(cfg)?segOf(cfg):cfg.seg; c.cfg.bstyle=cfg.bstyle; c.cfg.bpre=cfg.bpre||'';
   if(isAuto(cfg)){ const r=segRange(cfg); c.cfg.segMode='auto'; c.cfg.segMin=r.min; c.cfg.segMax=r.max; } else{ delete c.cfg.segMode; delete c.cfg.segMin; delete c.cfg.segMax; }
   c.board=null; c.reportDone=true; c.shr={rw:0,sw:0,bw:100}; c.sig=sigOf(cfg); c.status='run';
+  if(c.ed){ delete c.ed.brd; if(!c.ed.rep&&!c.ed.scr) c.ed=null; }   /* v119 — 스토리보드를 새로 만들면 '직접 고침' 표시도 지움 */
 }
 /* 예상 장면 수·AI 호출 수(설계서 1회 + 묶음마다 1회) */
 function boardShape(cfg,aug){
@@ -43099,9 +43146,10 @@ function segStat(c){
   return 'AI 자동 길이(평균 약 '+Math.round(L.reduce((a,v)=>a+v,0)/L.length)+'초 · '+Math.min.apply(null,L)+'~'+Math.max.apply(null,L)+'초)';
 }
 function paintBoard(){
-  const c=S.ctx, el=$('scBrd'); if(!c||!el) return;
-  el.innerHTML=boardHtml(c,false);
-  const m=$('scBrdMeta'); if(m) m.textContent=boardMeta(c);
+  const c=S.ctx, el=$('scBrd'); if(!c||!el||ED.open.brd) return;
+  el.innerHTML=(!S.running&&boardStale(c)?'<div class="sc-stale"><span>⏱ 스크립트 길이가 바뀌어서 장면 시간이 스크립트와 맞지 않아요.</span><button type="button" class="sc-mini pri mobile-keep" data-act="retime" title="스크립트 챕터 길이가 바뀐 만큼 장면 시간을 비례해서 옮겨요">시간 맞추기</button></div>':'')+boardHtml(c,false);
+  const m=$('scBrdMeta'); if(m) m.textContent=boardMeta(c)+edMark(c,'brd');
+  edBtnSync();
 }
 /* ═════════ v112 — 장면 길이 '✨ AI 자동': 챕터마다 AI 가 장면을 어디서 끊고 몇 초로 할지 정함 ═════════
    직접 정하기(fixed)는 예전 그대로(buildBoard — 모든 장면 같은 길이). 자동(auto)은 설계서 앞에 챕터마다 요청 1회(planBoard) → 답을 검증·보정(fitSegs)해 구간(장면)을 만들고,
@@ -43254,21 +43302,24 @@ function scriptTotals(c){ const chars=c.plan.reduce((a,u)=>a+(u.chars||0),0), ta
 
 /* ═════════ 상태 ═════════ */
 const S={ctx:null,running:false,ctrl:null,canResume:false,follow:true,raf:0,dbWarned:false};
+const ED={open:{},dirty:{},stack:[]};   /* v119 — 수정 모드: 켜진 부분(rep·scr·brd), 저장 안 한 내용이 있는 부분, 켠 순서 */
 let _mk=null,_hs=null,_histView=null;
 const toast=m=>{ try{ _showToast('_scToast',m); }catch(e){} };
 function showErr(m,note){ const e=$('scErr'); if(!e) return; e.textContent=m||''; e.className='sc-err'+(note?' note':'')+(m?' on':''); }
 function setProg(p,t){ const b=$('scPb'), x=$('scPt'); if(b) b.style.width=Math.max(0,Math.min(100,p))+'%'; if(x) x.textContent=t||''; }
 function paintReport(){
-  const c=S.ctx, el=$('scRep'); if(!c||!el) return;
+  const c=S.ctx, el=$('scRep'); if(!c||!el||ED.open.rep) return;   /* 수정 중인 부분은 다시 그리지 않음(v119) */
   el.innerHTML=c.report?mdLite(c.report):'<div class="sc-wait">'+(S.running&&!c.reportDone?'작성 중…':'—')+'</div>';
-  const m=$('scRepMeta'); if(m) m.textContent=c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'';
+  const m=$('scRepMeta'); if(m) m.textContent=(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+edMark(c,'rep');
+  edBtnSync();
 }
 function paintScript(){
-  const c=S.ctx, el=$('scScr'); if(!c||!el) return;
+  const c=S.ctx, el=$('scScr'); if(!c||!el||ED.open.scr) return;
   el.innerHTML=scriptHtml(c);
   const t=scriptTotals(c), m=$('scScrMeta');
   const all=c.plan.every(u=>u.state==='done');
-  if(m) m.textContent=c.cfg.len+'분 · '+(t.chars?(all?'':'지금까지 ')+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')':'목표 약 '+t.target.toLocaleString()+'자');
+  if(m) m.textContent=c.cfg.len+'분 · '+(t.chars?(all?'':'지금까지 ')+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')':'목표 약 '+t.target.toLocaleString()+'자')+edMark(c,'scr');
+  edBtnSync();
 }
 function paintSoon(){
   if(S.raf) return;
@@ -43276,11 +43327,14 @@ function paintSoon(){
 }
 function renderOut(){
   const out=$('scOut'); if(!out) return;
+  ED.open={}; ED.dirty={}; ED.stack=[];   /* 결과를 통째로 다시 그리면 수정 모드는 풀림(저장 안 한 내용은 닫기·이동 전에 edLeave 가 물어봄) */
   const c=S.ctx;
   if(!c){ out.innerHTML='<div class="sc-empty"><div class="big">🎬</div>왼쪽에서 만들 것(① 종합 분석 보고서 · ② 영상 스크립트 · ③ 스토리보드)과 영상 길이, 반영할 섹션을 고른 뒤 <b>[만들기]</b>를 누르세요.<br>여러 개를 고르면 ① 종합 분석 보고서 → ② 영상 길이에 맞는 스크립트 → ③ 그 스크립트의 스토리보드 순서로 이어서 만들어요.<div class="sub">만든 결과는 자동으로 [🕘 스크립트 이력]에 저장됩니다.</div></div>'; return; }
-  out.innerHTML=(showRep(c)?'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta" id="scRepMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyRep">복사</button></div><div class="sc-doc" id="scRep"></div></section>':'')
-    +(showScr(c)?'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta" id="scScrMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">복사</button></div><div class="sc-doc" id="scScr"></div></section>':'')
-    +(showBoard(c)?'<section class="sc-sec"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta" id="scBrdMeta"></span><button type="button" class="sc-mini mobile-keep" data-act="copyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">복사</button></div><div class="sc-doc" id="scBrd"></div></section>':'');
+  const eb=k=>'<button type="button" class="sc-mini mobile-keep sc-edb" data-act="edit" data-k="'+k+'" title="이 부분의 내용을 직접 고쳐요" hidden>✏️ 수정</button><button type="button" class="sc-mini pri mobile-keep sc-eds" data-act="edSave" data-k="'+k+'" title="고친 내용을 저장해요 (Ctrl+Enter)">💾 저장</button><button type="button" class="sc-mini mobile-keep sc-eds" data-act="edCancel" data-k="'+k+'" title="고친 내용을 버리고 닫아요 (Esc)">취소</button>';
+  const em=k=>'<div class="sc-edmsg" data-m="'+k+'" role="alert"></div>';
+  out.innerHTML=(showRep(c)?'<section class="sc-sec" data-k="rep"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta" id="scRepMeta"></span>'+eb('rep')+'<button type="button" class="sc-mini mobile-keep sc-cpb" data-act="copyRep">복사</button></div>'+em('rep')+'<div class="sc-doc" id="scRep"></div></section>':'')
+    +(showScr(c)?'<section class="sc-sec" data-k="scr"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta" id="scScrMeta"></span>'+eb('scr')+'<button type="button" class="sc-mini mobile-keep sc-cpb" data-act="copyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">복사</button></div>'+em('scr')+'<div class="sc-doc" id="scScr"></div></section>':'')
+    +(showBoard(c)?'<section class="sc-sec" data-k="brd"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta" id="scBrdMeta"></span>'+eb('brd')+'<button type="button" class="sc-mini mobile-keep sc-cpb" data-act="copyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">복사</button></div>'+em('brd')+'<div class="sc-doc" id="scBrd"></div></section>':'');
   paintReport(); paintScript(); paintBoard();
 }
 
@@ -43344,17 +43398,17 @@ const dbPut=rec=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction
 const dbAll=()=>openDb().then(d=>new Promise((res,rej)=>{ const q=d.transaction(STORE,'readonly').objectStore(STORE).getAll(); q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.ts-a.ts)); q.onerror=()=>rej(q.error); }));
 const dbDel=id=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction(STORE,'readwrite'); t.objectStore(STORE).delete(id); t.oncomplete=()=>res(); t.onerror=t.onabort=()=>rej(t.error||new Error('삭제 실패')); }));
 function recOf(c){
-  return {id:c.id,ts:c.ts,upd:Date.now(),date:baseLabel(c),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
+  return Object.assign({id:c.id,ts:c.ts,upd:Date.now(),date:baseLabel(c),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
     plan:c.plan.map(u=>({title:u.title,key:u.key,names:u.names,target:u.target,chars:u.chars,text:u.text,state:u.state})),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0),
-    board:c.board?{bible:c.board.bible,bibleDone:c.board.bibleDone,done:c.board.done,mode:c.board.mode,
-      units:c.board.units.map(u=>Object.assign({pi:u.pi,part:u.part,parts:u.parts,title:u.title,start:u.start,end:u.end,n:u.segs?u.segs.length:u.n,warn:!!u.warn,state:u.state,blocks:u.blocks},u.plw?{plw:true}:null))}:null};   /* segs(구간별 나레이션)는 저장하지 않음 — 다시 만들 때 스크립트에서 계산 */
+    board:c.board?Object.assign({bible:c.board.bible,bibleDone:c.board.bibleDone,done:c.board.done,mode:c.board.mode,
+      units:c.board.units.map(u=>Object.assign({pi:u.pi,part:u.part,parts:u.parts,title:u.title,start:u.start,end:u.end,n:u.segs?u.segs.length:u.n,warn:!!u.warn,state:u.state,blocks:u.blocks},u.plw?{plw:true}:null))},c.board.tch?{tch:c.board.tch}:null):null},c.ed?{ed:c.ed}:null);   /* segs(구간별 나레이션)는 저장하지 않음 — 다시 만들 때 스크립트에서 계산. v119: 직접 고친 기록만 ed(고친 부분·시각)·board.tch(스토리보드 시간이 맞춰진 기준 글자 수)가 더 붙음 */
 }
 function persist(){
   const c=S.ctx; if(!hasContent(c)) return Promise.resolve();
   return dbPut(recOf(c)).catch(e=>{ if(!S.dbWarned){ S.dbWarned=true; toast('이력 저장에 실패했어요 — '+((e&&e.message)||'')); } });
 }
 /* 이력 레코드 → 화면용 ctx 형태(복사·TXT 저장 재사용) */
-function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u)),board:r.board||null}; }
+function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u)),board:r.board||null,ed:r.ed||null}; }
 
 /* ═════════ 영상 스튜디오(BTMVideo)에 넘길 자료 — 챕터별 문단·문장(화면 지시 포함) + 스토리보드 구간·스타일 ═════════ */
 function videoSource(c){
@@ -43426,6 +43480,8 @@ function ensureMaker(){
   $('scLang').addEventListener('change',langChange);
   $('scProv').addEventListener('change',e=>{ saveProv(e.target.value); });
   $('scOut').addEventListener('scroll',()=>{ const o=$('scOut'); S.follow=(o.scrollHeight-o.scrollTop-o.clientHeight)<90; });
+  $('scOut').addEventListener('input',onEdInput);   /* v119 — 수정 모드의 칸을 고칠 때 */
+  $('scOut').addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ const sec=e.target.closest&&e.target.closest('.sc-sec.ed'); if(sec){ e.preventDefault(); edSave(sec.getAttribute('data-k')); } } });
   return el;
 }
 function saveProv(v){ let m={}; try{ m=JSON.parse(localStorage.getItem('BTMAiProviderMap')||'{}')||{}; }catch(e){} m[MAP_KEY]=v; try{ localStorage.setItem('BTMAiProviderMap',JSON.stringify(m)); }catch(e){} }
@@ -43548,6 +43604,8 @@ function closeMaker(force){
     if(!confirm('스크립트를 만드는 중이에요.\n중단하고 닫을까요?\n(지금까지 만든 내용은 [🕘 스크립트 이력]에 저장돼요)')) return false;
     abortRun();
   }
+  if(!force&&edDirty()&&!confirm('수정 중인 내용이 있어요.\n저장하지 않고 닫을까요?')) return false;
+  edCancelAll();
   _mk.classList.remove('open'); return true;
 }
 function abortRun(){ if(S.ctrl) try{ S.ctrl.abort(); }catch(e){} }
@@ -43557,7 +43615,13 @@ function makerAct(act,btn){
   else if(act==='restart') run(true);
   else if(act==='stop') abortRun();
   else if(act==='hist') openHistory();
-  else if(act==='video') openVideo(S.ctx);
+  else if(act==='video'){ if(edDirty()){ toast('수정 중인 내용이 있어요 — 먼저 저장하거나 취소해 주세요'); return; } openVideo(S.ctx); }
+  else if(act==='edit') edOpen(btn.getAttribute('data-k'));
+  else if(act==='edSave') edSave(btn.getAttribute('data-k'));
+  else if(act==='edCancel') edCancel(btn.getAttribute('data-k'));
+  else if(act==='edSegAdd') edSegAdd(btn);
+  else if(act==='edSegDel') edSegDel(btn);
+  else if(act==='retime') edRetime();
   else if(act==='secCore'||act==='secAll'||act==='secNone'){
     if(S.running) return;
     SECS.forEach(s=>{ const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'); if(cb&&!cb.disabled) cb.checked=act==='secAll'?true:act==='secNone'?false:!!s.core; });
@@ -43565,6 +43629,7 @@ function makerAct(act,btn){
   }
   else if(act==='copyAll'||act==='txt'||act==='copyRep'||act==='copyScr'||act==='copyBrd'||act==='copyBrdCh'){
     const c=S.ctx; if(!hasContent(c)){ toast('아직 복사할 내용이 없어요'); return; }
+    if(edDirty()){ toast('수정 중인 내용이 있어요 — 먼저 저장하거나 취소해 주세요(복사·저장은 저장된 내용 기준이에요)'); return; }
     if(act==='copyAll') copyText(composeText(c),'전체를 복사했어요');
     else if(act==='copyRep') copyText((c.report||'').trim(),'보고서를 복사했어요');
     else if(act==='copyScr') copyNarration(c);
@@ -43600,6 +43665,7 @@ function progFor(c,i,curFrac){   /* 보고서를 같이 만들면 보고서가 1
 }
 async function run(fresh){
   if(S.running) return;
+  if(edAny()){ if(edDirty()){ showErr('수정 중인 내용이 있어요. 저장하거나 취소한 뒤 만들어 주세요.'); return; } edCancelAll(); }   /* v119 — 저장 안 한 수정이 있으면 막고, 없으면 수정 모드만 닫고 진행 */
   const cfg=readCfg(), bad=validate(cfg);
   if(bad){ showErr(bad); return; }
   saveCfg(cfg); showErr('');
@@ -43609,7 +43675,11 @@ async function run(fresh){
   const resume=!fresh&&S.canResume&&S.ctx&&S.ctx.sig===sigOf(cfg);
   let c;
   if(resume) c=S.ctx;
-  else if(boardOnly(cfg)&&boardBase()){ c=S.ctx; beginBoard(c,cfg); }   /* 스토리보드만 — 화면의 완성된 스크립트에 덧붙임(같은 이력 기록에 저장) */
+  else if(boardOnly(cfg)&&boardBase()){
+    c=S.ctx;
+    if(c.ed&&c.ed.brd&&!confirm('직접 고친 스토리보드가 있어요.\n다시 만들면 고친 내용이 사라져요. 계속할까요?')) return;   /* v119 */
+    beginBoard(c,cfg);
+  }   /* 스토리보드만 — 화면의 완성된 스크립트에 덧붙임(같은 이력 기록에 저장) */
   else {
     c=newCtx(cfg);
     if(!c.secs.length){ showErr('선택한 섹션에 내용이 없어요. 섹션에 내용을 채우거나 다른 섹션을 선택해 주세요.'); return; }
@@ -43728,7 +43798,7 @@ async function renderHistList(){
   let day='', h='';
   rows.forEach(r=>{
     const d=dateOfTs(r.ts); if(d!==day){ day=d; h+='<div class="sc-day">'+esc(d)+' 생성</div>'; }
-    h+='<div class="sc-hi" data-id="'+esc(r.id)+'" data-act="open"><div class="sc-hi-main"><div class="sc-hi-t">기준일 '+esc(r.date)+' · '+r.cfg.len+'분 영상 '+statusTag(r)+partTag(r)+langTag(r)+'<span class="tm">'+timeOf(r.ts)+'</span></div>'
+    h+='<div class="sc-hi" data-id="'+esc(r.id)+'" data-act="open"><div class="sc-hi-main"><div class="sc-hi-t">기준일 '+esc(r.date)+' · '+r.cfg.len+'분 영상 '+statusTag(r)+partTag(r)+langTag(r)+edTag(r)+'<span class="tm">'+timeOf(r.ts)+'</span></div>'
       +'<div class="sc-hi-p">'+esc(previewOf(r)||'(보고서 없음)')+'</div>'
       +'<div class="sc-hi-m"><b>섹션</b> '+esc((r.secs||[]).map(labelOf).join(' · '))+' · '+sizeOf(r)+' · '+esc(provLabel(r.provider))+'</div></div>'
       +'<button type="button" class="sc-hi-x mobile-keep" data-act="del" title="삭제">✕</button></div>';
@@ -43743,17 +43813,17 @@ async function showDetail(id){
   const c=ctxOfRec(rec), t=scriptTotals(c), body=$('shBody'), rep=showRep(c), scr=showScr(c), brd=showBoard(c);
   const canBoard=c.plan.length>0&&c.plan.every(u=>u.state==='done'&&u.text);   /* 끝까지 만든 스크립트가 있어야 그 기록으로 스토리보드를 만들 수 있음 */
   $('shTitle').textContent='🕘 '+rec.date+' · '+rec.cfg.len+'분 영상'; $('shSub').textContent=dateOfTs(rec.ts)+' '+timeOf(rec.ts)+' 생성'; $('shBar').style.display='none'; _hs.querySelector('.sc-back').style.display='';
-  body.innerHTML='<div class="sc-dact"><button type="button" class="sc-mini pri mobile-keep" data-act="dCopyAll">전체 복사</button>'+(rep?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyRep">보고서 복사</button>':'')+(scr?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">스크립트 복사</button>':'')+(brd?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">스토리보드 복사</button>':'')+'<button type="button" class="sc-mini mobile-keep" data-act="dTxt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="dReuse" title="이 영상 길이·섹션·말 속도로 새로 만들기 화면을 엽니다">↩ 이 설정으로 만들기</button>'+(canBoard?'<button type="button" class="sc-mini mobile-keep" data-act="dBoard" title="이 기록의 스크립트를 바탕으로 스토리보드를 만들어 이 기록에 덧붙여요">🎞 스토리보드 '+(brd?'다시 ':'')+'만들기</button>':'')+(canBoard?'<button type="button" class="sc-mini pri mobile-keep" data-act="dVideo" title="이 스크립트로 영상 만들기 — 음성(TTS)·자막·화면·내보내기">🎥 영상 만들기</button>':'')+'<span class="sc-sp"></span><button type="button" class="sc-mini dng mobile-keep" data-act="dDel">삭제</button></div>'
+  body.innerHTML='<div class="sc-dact"><button type="button" class="sc-mini pri mobile-keep" data-act="dCopyAll">전체 복사</button>'+(rep?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyRep">보고서 복사</button>':'')+(scr?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">스크립트 복사</button>':'')+(brd?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">스토리보드 복사</button>':'')+'<button type="button" class="sc-mini mobile-keep" data-act="dTxt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="dReuse" title="이 영상 길이·섹션·말 속도로 새로 만들기 화면을 엽니다">↩ 이 설정으로 만들기</button>'+(hasContent(c)?'<button type="button" class="sc-mini mobile-keep" data-act="dEdit" title="이 기록을 스크립트 만들기 화면으로 불러와 내용을 직접 고쳐요">✏️ 수정</button>':'')+(canBoard?'<button type="button" class="sc-mini mobile-keep" data-act="dBoard" title="이 기록의 스크립트를 바탕으로 스토리보드를 만들어 이 기록에 덧붙여요">🎞 스토리보드 '+(brd?'다시 ':'')+'만들기</button>':'')+(canBoard?'<button type="button" class="sc-mini pri mobile-keep" data-act="dVideo" title="이 스크립트로 영상 만들기 — 음성(TTS)·자막·화면·내보내기">🎥 영상 만들기</button>':'')+'<span class="sc-sp"></span><button type="button" class="sc-mini dng mobile-keep" data-act="dDel">삭제</button></div>'
     +'<div class="sc-dmeta">'+(V.norm(rec.cfg.lang)!=='ko'?'<b>영상 언어</b> '+esc(V.label(V.norm(rec.cfg.lang)))+' · ':'')+'<b>반영 섹션</b> '+esc((rec.secs||[]).map(labelOf).join(', '))+(scr||brd?' · <b>말 속도</b> '+rec.cfg.cpm+'자/분':'')+(brd?' · <b>장면 길이</b> '+(isAuto(rec.cfg)?'AI 자동('+segRange(rec.cfg).min+'~'+segRange(rec.cfg).max+'초)':'약 '+(rec.cfg.seg||DEF_SEG)+'초')+(bpreOf(rec.cfg.bpre)?' · <b>스토리보드 스타일</b> '+esc(bpreOf(rec.cfg.bpre).icon+' '+bpreOf(rec.cfg.bpre).name):''):'')+' · <b>AI</b> '+esc(provLabel(rec.provider))+(rec.cfg.extra?'<br><b>추가 요청</b> '+esc(rec.cfg.extra):'')+(brd&&rec.cfg.bstyle?'<br><b>스타일·컨셉 요청</b> '+esc(rec.cfg.bstyle):'')+(rec.status!=='done'?'<br><span class="sc-tag">'+(rec.status==='error'?'오류':'중단됨')+'</span> 끝까지 만들어지지 않은 기록이에요.':'')+'</div>'
-    +(rep?'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta">'+(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+'</span></div><div class="sc-doc">'+(c.report?mdLite(c.report):'<div class="sc-wait">—</div>')+'</div></section>':'')
-    +(scr?'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta">'+rec.cfg.len+'분 · '+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')</span></div><div class="sc-doc">'+scriptHtml(c)+'</div></section>':'')
-    +(brd?'<section class="sc-sec"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta">'+esc(boardMeta(c))+'</span></div><div class="sc-doc">'+boardHtml(c,true)+'</div></section>':'');
+    +(rep?'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta">'+(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+edMark(c,'rep')+'</span></div><div class="sc-doc">'+(c.report?mdLite(c.report):'<div class="sc-wait">—</div>')+'</div></section>':'')
+    +(scr?'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta">'+rec.cfg.len+'분 · '+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')'+edMark(c,'scr')+'</span></div><div class="sc-doc">'+scriptHtml(c)+'</div></section>':'')
+    +(brd?'<section class="sc-sec"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta">'+esc(boardMeta(c))+edMark(c,'brd')+'</span></div><div class="sc-doc">'+boardHtml(c,true)+'</div></section>':'');
   body.scrollTop=0;
 }
 async function histAct(act,id,btn){
   if(act==='close') closeHistory();
   else if(act==='back') renderHistList();
-  else if(act==='new'){ closeHistory(); openMaker(); }
+  else if(act==='new'){ if(!edLeave()) return; closeHistory(); openMaker(); }
   else if(act==='open') showDetail(id);
   else if(act==='del'||act==='dDel'){
     if(!confirm('이 스크립트 기록을 삭제할까요?\n삭제하면 되돌릴 수 없어요.')) return;
@@ -43769,8 +43839,17 @@ async function histAct(act,id,btn){
     else if(act==='dCopyBrd') copyBoard(c);
     else if(act==='dCopyBrdCh') copyBoard(c,+btn.getAttribute('data-pi'));
     else if(act==='dTxt') downloadTxt(fileName(c),composeText(c));
+    else if(act==='dEdit'){   /* v119 — 이 기록을 만들기 화면의 결과로 불러와 거기서 ✏️ 수정 */
+      if(S.running){ toast('지금 스크립트를 만드는 중이라 불러올 수 없어요'); return; }
+      if(!edLeave()) return;
+      const r=_histView;
+      S.ctx=Object.assign(c,{cfg:Object.assign({},r.cfg),pack:{},reportDone:true,shr:{rw:0,sw:0,bw:100},sig:'',psig:''}); S.canResume=false;
+      closeHistory(); openMaker();
+      setProg(100,'이력에서 불러왔어요 — 각 부분의 [✏️ 수정]을 눌러 내용을 직접 고칠 수 있어요');
+    }
     else if(act==='dReuse'||act==='dBoard'){
       if(S.running){ toast('지금 스크립트를 만드는 중이라 설정을 바꿀 수 없어요'); return; }
+      if(!edLeave()) return;
       const r=_histView, bd=act==='dBoard';
       const rl=V.norm(r.cfg.lang), cfg=Object.assign({lang:rl,cpms:Object.assign({},loadCfg().cpms,{[rl]:r.cfg.cpm}),len:r.cfg.len,cpm:r.cfg.cpm,secs:(r.cfg.secs||[]).slice(),extra:r.cfg.extra||'',rep:!bd&&r.cfg.rep!==false,scr:!bd&&r.cfg.scr!==false,board:bd||r.cfg.board===true,seg:r.cfg.seg>=MIN_SEG&&r.cfg.seg<=MAX_SEG?r.cfg.seg:DEF_SEG,bstyle:r.cfg.bstyle||'',bpre:bpreOf(r.cfg.bpre)?r.cfg.bpre:''},segCfgOf(r.cfg));
       if(bd){   /* 이 기록을 화면 결과로 불러와 스토리보드만 덧붙여 만들 수 있게 함(같은 기록에 저장) */
@@ -43784,11 +43863,295 @@ async function histAct(act,id,btn){
 function openHistory(){ const h=ensureHist(); $('shQ').value=''; h.classList.add('open'); renderHistList(); }
 function closeHistory(){ if(_hs) _hs.classList.remove('open'); _histView=null; }
 
+/* ═════════ v119 — 만든 결과를 직접 고치기 (✏️ 수정) ═════════
+   ① 종합 분석 보고서 · ② 영상 스크립트(챕터 이름·나레이션·[화면: …] 지시) · ③ 스토리보드(스타일·분위기, 장면마다 시간·묘사, 장면 추가·삭제)를 부분마다 '수정 모드'로 바꿔 직접 고침.
+   · 수정 모드(ED) — 부분(rep·scr·brd)마다 따로 켬. 칸을 고쳐도 [💾 저장]을 누르기 전에는 데이터가 안 바뀌고([취소]·Esc 로 버림), 저장하면 화면 결과(S.ctx)에 반영하고 같은 이력 기록(IndexedDB)에 저장.
+     고친 기록에만 c.ed={rep,scr,brd,ts}(고친 부분)가 더 붙음 — 고친 적 없는 기록은 모양이 그대로. 이력 상세의 [✏️ 수정]은 그 기록을 만들기 화면의 결과(S.ctx)로 불러옴.
+   · 스크립트를 고치면 글자 수(chars)·시간표가 바뀜 → 처음 고치기 직전의 글자 수를 board.tch 에 남겨 두고, 지금 글자 수로 계산한 챕터 구간이 1초 이상 달라지면 ③ 위에 [시간 맞추기](retimeBoard)를 보여 줌
+     (챕터 구간이 늘거나 준 비율로 장면 시간을 옮김). 장면 시간은 직접 고칠 수도 있음(앞 장면과 겹치거나 비면 표시만 하고 막지는 않음).
+   · 만드는 중엔 수정 단추가 숨고(.busy), 저장 안 한 수정이 있으면 만들기·닫기·복사·영상 만들기를 막거나 확인함(edLeave). 이미 만든 영상 프로젝트(영상 스튜디오)에는 반영되지 않음 — 스튜디오에서 [새로 시작]하면 고친 내용으로 만듦. */
+const edOn=k=>!!ED.open[k], edAny=()=>ED.stack.length>0, edDirty=()=>ED.stack.some(k=>ED.dirty[k]);
+const edSec=k=>document.querySelector('#scOut .sc-sec[data-k="'+k+'"]');
+const edMark=(c,k)=>c&&c.ed&&c.ed[k]?' · ✏️ 직접 수정함':'';
+const edTag=r=>r&&r.ed?'<span class="sc-tag ed" title="직접 고친 내용이 있어요">✏️ 수정함</span>':'';
+const cleanEdit=t=>String(t==null?'':t).replace(/\r/g,'').replace(/[ \t]+$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
+const normT=t=>String(t==null?'':t).replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean).join('\n');   /* 장면 묘사 — 줄마다 다듬고 빈 줄은 뺌(만들 때와 같은 모양) */
+const rowsFor=(t,min)=>{ let n=0; String(t||'').split('\n').forEach(l=>{ n+=Math.max(1,Math.ceil(l.length/60)); }); return Math.max(min||3,Math.min(22,n)); };
+/* 시각 읽기 — "분:초"·"시:분:초"·"75"(초) → 초, 못 읽으면 NaN */
+function parseClock(v){
+  const s=String(v==null?'':v).trim().replace(/：/g,':'); if(!s) return NaN;
+  if(/^\d+(\.\d+)?$/.test(s)) return Math.round(parseFloat(s));
+  const m=/^(\d{1,3}):(\d{1,2})(?::(\d{1,2}))?(?:\.\d+)?$/.exec(s); if(!m) return NaN;
+  const a=+m[1], b=+m[2];
+  if(m[3]==null) return b>59?NaN:a*60+b;
+  const c=+m[3]; return b>59||c>59?NaN:a*3600+b*60+c;
+}
+/* 고칠 수 있는 부분인가 — 만드는 중이 아니고 고칠 내용이 있을 때 */
+const canEdit=(k,c)=>{
+  if(!c||S.running) return false;
+  if(k==='rep') return !!String(c.report||'').trim();
+  if(k==='scr') return (c.plan||[]).some(u=>u.state==='done'&&u.text);
+  return boardCount(c)>0;
+};
+function edBtnSync(){ const c=S.ctx; document.querySelectorAll('#scOut .sc-edb').forEach(b=>{ b.hidden=!canEdit(b.getAttribute('data-k'),c); }); }
+function edMsg(k,t){ const m=document.querySelector('#scOut .sc-edmsg[data-m="'+k+'"]'); if(m){ m.textContent=t||''; m.classList.toggle('on',!!t); } }
+function edGrow(ta){ if(!ta||!ta.offsetParent) return; ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight+2,2400)+'px'; }
+async function edPersist(c){
+  if(!hasContent(c)) return true;
+  try{ await dbPut(recOf(c)); return true; }
+  catch(e){ toast('이력 저장에 실패했어요 — 화면에는 반영했어요 ('+((e&&e.message)||'')+')'); return false; }
+}
+/* ── 수정 화면 만들기 ── */
+function edRepHtml(c){
+  return '<div class="sc-edhint"><b>✏️ 수정 중</b> — 보고서를 직접 고쳐요. <code>## 소제목</code>·<code>- 불릿</code> 형식으로 쓰면 저장한 뒤 보기 좋게 나와요. <b>[저장]</b>을 눌러야 반영돼요.</div>'
+    +'<textarea class="sc-ef sc-ef-x mobile-keep" data-f="rep" rows="'+rowsFor(c.report,10)+'" spellcheck="false" aria-label="종합 분석 보고서">'+esc(c.report)+'</textarea><div class="sc-edcnt" id="scEdCntRep"></div>';
+}
+function edCountRep(){ const t=document.querySelector('#scRep [data-f="rep"]'), m=$('scEdCntRep'); if(t&&m) m.textContent=t.value.replace(/\s+/g,'').length.toLocaleString()+'자'; }
+function edScrHtml(c){
+  const cpm=c.cfg.cpm; let acc=0;
+  const items=c.plan.map((u,i)=>{
+    const tc=fmtTime(acc/cpm*60); acc+=(u.state==='done'?u.chars:u.target);
+    if(!(u.state==='done'&&u.text)) return '<div class="sc-ch wait" data-i="'+i+'"><div class="sc-ch-h"><span class="tc" data-tc>'+tc+'</span><b>'+esc(u.title)+'</b><span class="d">아직 만들지 않은 챕터 — 수정할 수 없어요</span></div></div>';
+    return '<div class="sc-ch ed" data-i="'+i+'" data-c0="'+(u.chars||0)+'"><div class="sc-ch-h"><span class="tc" data-tc>'+tc+'</span><input type="text" class="sc-ef sc-ef-t mobile-keep" data-f="title" value="'+esc(u.title)+'" maxlength="80" aria-label="챕터 이름" title="챕터 이름 — 스토리보드와 영상의 챕터 타이틀에 쓰여요"><span class="d" data-cnt></span></div><div class="sc-ch-b"><textarea class="sc-ef sc-ef-x mobile-keep" data-f="text" rows="'+rowsFor(u.text,6)+'" spellcheck="false" aria-label="'+esc(u.title)+' 나레이션">'+esc(u.text)+'</textarea></div></div>';
+  }).join('');
+  return '<div class="sc-edhint"><b>✏️ 수정 중</b> — 챕터 이름과 나레이션을 직접 고쳐요. 한 줄이 한 문단이고, <code>[화면: …]</code> 줄은 그때 보여 줄 화면 지시예요(말하는 글자 수에는 안 셈). 시간은 공백 뺀 글자 수 ÷ 말 속도('+cpm+'자/분)로 계산해요. <b>[저장]</b>을 눌러야 반영돼요.</div><div class="sc-edtot" id="scEdTot"></div>'+items;
+}
+/* 챕터마다 글자 수·시작 시각, 맨 위 합계를 고치는 대로 다시 셈 */
+function edCountScr(){
+  const doc=$('scScr'), c=S.ctx, tot=$('scEdTot'); if(!doc||!c||!ED.open.scr) return;
+  const cpm=c.cfg.cpm; let acc=0, sum=0, tgt=0;
+  c.plan.forEach((u,i)=>{
+    const el=doc.querySelector('.sc-ch[data-i="'+i+'"]'); let n;
+    if(el&&el.classList.contains('ed')){
+      n=narrChars(el.querySelector('[data-f="text"]').value); const dl=n-(+el.getAttribute('data-c0')||0);
+      el.querySelector('[data-cnt]').textContent=n.toLocaleString()+'자 · 약 '+fmtDur(n/cpm*60)+(dl?' ('+(dl>0?'+':'')+dl.toLocaleString()+'자)':'');
+    }else n=u.state==='done'?(u.chars||0):u.target;
+    if(el){ const tc=el.querySelector('[data-tc]'); if(tc) tc.textContent=fmtTime(acc/cpm*60); }
+    acc+=n; if(u.state==='done') sum+=n; tgt+=u.target;
+  });
+  if(tot) tot.textContent='전체 '+sum.toLocaleString()+'자 / 목표 '+tgt.toLocaleString()+'자 · 약 '+fmtDur(sum/cpm*60);
+}
+function edSegHtml(b,ui,bi){
+  return '<div class="sc-seg ed" data-u="'+ui+'" data-b="'+bi+'"><div class="sc-edtm"><input type="text" class="sc-ef sc-ef-tm mobile-keep" data-f="s" value="'+fmtTime(b.s)+'" inputmode="numeric" maxlength="9" aria-label="시작 시각" title="시작 시각 (분:초)"><span class="dsh">–</span><input type="text" class="sc-ef sc-ef-tm mobile-keep" data-f="e" value="'+fmtTime(b.e)+'" inputmode="numeric" maxlength="9" aria-label="끝 시각" title="끝 시각 (분:초)"><small class="du" data-du></small><small class="nt" data-nt></small></div>'
+    +'<textarea class="sc-ef sc-ef-x mobile-keep" data-f="t" rows="'+rowsFor(b.t,2)+'" spellcheck="false" aria-label="장면 묘사">'+esc(b.t)+'</textarea>'
+    +'<div class="sc-edbt"><button type="button" class="sc-mini mobile-keep" data-act="edSegAdd" title="이 장면을 둘로 나누고 아래에 새 장면을 넣어요">＋</button><button type="button" class="sc-mini dng mobile-keep" data-act="edSegDel" title="이 장면을 지워요 (저장하기 전에는 되돌릴 수 있어요)">🗑</button></div>'
+    +'<div class="sc-deln">지울 장면이에요<a data-act="edSegDel">↩ 되돌리기</a></div></div>';
+}
+function edBrdHtml(c){
+  const B=c.board;
+  const bx=(f,t,v)=>'<div class="sc-bb"><div class="sc-bb-h">'+t+'</div><div class="sc-doc"><textarea class="sc-ef sc-ef-x mobile-keep" data-f="'+f+'" rows="'+rowsFor(v,5)+'" spellcheck="false" aria-label="'+t+'">'+esc(v||'')+'</textarea></div></div>';
+  let h='<div class="sc-edhint"><b>✏️ 수정 중</b> — 스타일·분위기와 장면 묘사를 직접 고쳐요. 시간은 <code>분:초</code>(예: 01:25)로 쓰고, <b>＋</b>는 그 장면을 둘로 나눠 아래에 새 장면을 넣고 <b>🗑</b>는 장면을 지워요(저장하기 전에는 되돌릴 수 있어요). <b>[저장]</b>을 눌러야 반영돼요.</div>';
+  if(B.bible) h+=bx('style','스타일 (Style)',B.bible.style);
+  const groups=[];
+  B.units.forEach((u,ui)=>{ if(!(u.blocks||[]).length) return; let g=groups[groups.length-1]; if(!g||g.pi!==u.pi){ g={pi:u.pi,title:u.title,us:[]}; groups.push(g); } g.us.push({u,ui}); });
+  groups.forEach(g=>{
+    const f=g.us[0].u, l=g.us[g.us.length-1].u;
+    h+='<div class="sc-ch bd ed" data-pi="'+g.pi+'"><div class="sc-ch-h"><span class="tc">'+fmtTime(f.start)+'</span><b>'+esc(g.title)+'</b><span class="d">'+fmtRange(f.start,l.end)+'</span></div><div class="sc-ch-b">'
+      +g.us.map(x=>x.u.blocks.map((b,bi)=>edSegHtml(b,x.ui,bi)).join('')).join('')+'</div></div>';
+  });
+  if(B.bible) h+=bx('tone','분위기 (Tone)',B.bible.tone);
+  return h;
+}
+/* 장면 시간 점검 — 길이 표시, 시간이 틀린 곳(.inv), 앞 장면과 겹치거나 비는 곳 안내(막지는 않음) */
+function edSegCheck(sec){
+  sec=sec||edSec('brd'); if(!sec) return;
+  let pe=null;
+  sec.querySelectorAll('.sc-seg.ed').forEach(el=>{
+    const du=el.querySelector('[data-du]'), nt=el.querySelector('[data-nt]');
+    if(el.classList.contains('del')){ du.textContent=''; nt.textContent=''; el.classList.remove('inv'); return; }
+    const s=parseClock(el.querySelector('[data-f="s"]').value), e=parseClock(el.querySelector('[data-f="e"]').value), ok=s>=0&&e>s;
+    el.classList.toggle('inv',!ok);
+    du.textContent=ok?(e-s)+'초':'시간 확인';
+    let note='';
+    if(ok&&pe!=null){ if(s<pe) note='앞 장면과 '+(pe-s)+'초 겹쳐요'; else if(s>pe) note='앞 장면과 '+(s-pe)+'초 비어요'; }
+    nt.textContent=note;
+    pe=ok?e:null;   /* 시간이 틀린 장면 다음은 비교하지 않음(틀린 값 때문에 엉뚱한 안내가 뜨지 않게) */
+  });
+}
+/* ── 열기 · 닫기 · 버리기 ── */
+function edOpen(k){
+  const c=S.ctx; if(!canEdit(k,c)||edOn(k)) return;
+  const sec=edSec(k); if(!sec) return;
+  ED.open[k]=true; ED.dirty[k]=false; ED.stack.push(k);
+  sec.classList.add('ed'); edMsg(k,'');
+  const doc=sec.querySelector('.sc-doc');
+  doc.innerHTML=k==='rep'?edRepHtml(c):k==='scr'?edScrHtml(c):edBrdHtml(c);
+  if(k==='rep'){ edCountRep(); edGrow(doc.querySelector('textarea')); }
+  else if(k==='scr'){ doc.querySelectorAll('textarea').forEach(edGrow); edCountScr(); }
+  else edSegCheck(sec);
+  const f=doc.querySelector('.sc-ef'); if(f) f.focus({preventScroll:true});
+  try{ sec.scrollIntoView({block:'nearest'}); }catch(e){}
+}
+function edClose(k){   /* 수정 상태만 걷고 그 부분을 저장된 내용으로 다시 그림 */
+  ED.open[k]=false; ED.dirty[k]=false; ED.stack=ED.stack.filter(x=>x!==k);
+  const sec=edSec(k); if(sec) sec.classList.remove('ed');
+  edMsg(k,'');
+  if(k==='rep') paintReport(); else if(k==='scr') paintScript(); else paintBoard();
+}
+function edCancel(k,force){
+  if(!edOn(k)) return true;
+  if(ED.dirty[k]&&!force&&!confirm('고치던 내용을 버릴까요?\n저장하지 않으면 사라져요.')) return false;
+  edClose(k); return true;
+}
+function edCancelAll(){ ED.stack.slice().forEach(k=>edClose(k)); }
+/* 다른 곳으로 넘어가기 전 — 저장 안 한 수정이 있으면 물어보고, 괜찮으면 수정 모드를 모두 닫음 */
+function edLeave(){
+  if(edDirty()&&!confirm('수정 중인 내용이 있어요.\n저장하지 않고 넘어갈까요?')) return false;
+  edCancelAll(); return true;
+}
+/* ── 저장: 칸 읽기·검사(edRead*) → 데이터에 반영(edApply*, 바뀐 곳 수를 돌려줌) → 이력에 저장 ── */
+function edReadRep(doc){
+  const ta=doc.querySelector('[data-f="rep"]'), text=cleanEdit(ta.value);
+  return text?{text}:{err:'보고서 내용이 비어 있어요. 내용을 입력하거나 [취소]로 되돌려 주세요.',el:doc};
+}
+function edReadScr(doc,c){
+  const rows=[];
+  for(const el of doc.querySelectorAll('.sc-ch.ed')){
+    const i=+el.getAttribute('data-i'), u=c.plan[i]; if(!u) continue;
+    const title=(el.querySelector('[data-f="title"]').value||'').replace(/\s+/g,' ').trim()||u.title;
+    const text=cleanEdit(el.querySelector('[data-f="text"]').value), chars=narrChars(text);
+    if(!chars) return {err:'「'+title+'」 챕터의 나레이션이 비어 있어요. 내용을 입력하거나 [취소]로 되돌려 주세요.',el};
+    rows.push({i,title,text,chars});
+  }
+  return {rows};
+}
+function edReadBrd(doc,c){
+  const B=c.board, byU={}, seen=[];
+  const gt=(f,d)=>{ const t=doc.querySelector('[data-f="'+f+'"]'); return t?cleanEdit(t.value):d; };
+  const bible=B.bible?{style:gt('style',B.bible.style||''),tone:gt('tone',B.bible.tone||'')}:null;
+  for(const el of doc.querySelectorAll('.sc-seg.ed')){
+    const ui=+el.getAttribute('data-u'); if(seen.indexOf(ui)<0) seen.push(ui);
+    if(el.classList.contains('del')) continue;
+    const s=parseClock(el.querySelector('[data-f="s"]').value), e=parseClock(el.querySelector('[data-f="e"]').value);
+    if(!(s>=0)||!(e>s)) return {err:'표시된 장면의 시간이 올바르지 않아요 — 시작·끝 시각을 분:초로 쓰고, 끝이 시작보다 늦어야 해요 (예: 00:08 ~ 00:16).',el};
+    const t=normT(el.querySelector('[data-f="t"]').value);
+    if(!t) return {err:'표시된 장면의 묘사가 비어 있어요. 내용을 입력하거나 🗑 로 삭제해 주세요.',el};
+    const bi=el.getAttribute('data-b'), o=bi!=='n'?((B.units[ui]||{}).blocks||[])[+bi]:null, blk={s,e,t};
+    if(o&&o.imp) blk.imp=o.imp;   /* ✨ AI 자동의 중요도 표시는 그대로 이어 감 */
+    else if(!o&&((B.units[ui]||{}).blocks||[]).some(x=>x.imp)) blk.imp=2;   /* 새로 넣은 장면은 '보통' — 이웃 장면처럼 길이 알약이 보이게 */
+    (byU[ui]=byU[ui]||[]).push(blk);
+  }
+  return {bible,byU,seen};
+}
+function edApplyRep(c,r){ if(r.text===cleanEdit(c.report)) return 0; c.report=r.text; return 1; }
+function edApplyScr(c,r){
+  const B=c.board, diff=r.rows.filter(x=>{ const u=c.plan[x.i]; return x.text!==cleanEdit(u.text)||x.title!==u.title; });
+  if(!diff.length) return 0;
+  if(B&&!Array.isArray(B.tch)) B.tch=curChars(c);   /* 스토리보드 시간이 맞춰져 있던 기준 글자 수 — 처음 고치기 직전 값 */
+  diff.forEach(x=>{
+    const u=c.plan[x.i];
+    if(x.title!==u.title&&B){ if(B.chap&&B.chap[x.i]) B.chap[x.i].title=x.title; (B.units||[]).forEach(y=>{ if(y.pi===x.i) y.title=x.title; }); }
+    u.title=x.title; u.text=x.text; u.chars=x.chars;
+  });
+  return diff.length;
+}
+function edApplyBrd(c,r){
+  const B=c.board; let n=0;
+  if(r.bible&&B.bible&&(r.bible.style!==cleanEdit(B.bible.style)||r.bible.tone!==cleanEdit(B.bible.tone))){ B.bible.style=r.bible.style; B.bible.tone=r.bible.tone; n++; }
+  const drop=[];
+  r.seen.forEach(ui=>{
+    const u=B.units[ui]; if(!u) return;
+    const nb=r.byU[ui]||[], ob=u.blocks||[];
+    if(!nb.length){ drop.push(u); n++; return; }   /* 구간의 장면을 모두 지움 — 같은 챕터에 다른 장면이 남아 있을 때만 가능(화면에서 막음) */
+    if(nb.length===ob.length&&nb.every((b,i)=>b.s===ob[i].s&&b.e===ob[i].e&&b.t===normT(ob[i].t))) return;
+    n++;
+    if(nb.length!==ob.length){ u.n=nb.length; u.warn=false; delete u.segs; }   /* 장면 수가 달라졌으니 '구간 수가 달라요' 표시는 지우고, 기록에 남기는 n 도 새 개수로(segs 가 있으면 recOf 가 그 길이를 씀) */
+    u.blocks=nb; u.start=nb[0].s; u.end=nb[nb.length-1].e;
+  });
+  drop.forEach(u=>{ const i=B.units.indexOf(u); if(i>=0) B.units.splice(i,1); });
+  return n;
+}
+async function edSave(k){
+  const c=S.ctx; if(!c||!edOn(k)||S.running) return;
+  const sec=edSec(k); if(!sec) return;
+  sec.querySelectorAll('.bad').forEach(x=>x.classList.remove('bad'));
+  const doc=sec.querySelector('.sc-doc'), r=k==='rep'?edReadRep(doc):k==='scr'?edReadScr(doc,c):edReadBrd(doc,c);
+  if(r.err){
+    edMsg(k,r.err);
+    if(r.el){ r.el.classList.add('bad'); try{ r.el.scrollIntoView({block:'center'}); }catch(e){} const f=r.el.querySelector('textarea,input'); if(f) f.focus({preventScroll:true}); }
+    return;
+  }
+  const n=k==='rep'?edApplyRep(c,r):k==='scr'?edApplyScr(c,r):edApplyBrd(c,r);
+  if(n) c.ed=Object.assign({},c.ed||{},{[k]:1,ts:Date.now()});
+  edClose(k);
+  if(k==='scr') paintBoard();   /* 스크립트 길이가 바뀌었으면 ③ 위에 '시간 맞추기' 안내가 뜰 수 있음 */
+  if(!n){ toast('바뀐 내용이 없어요'); return; }
+  if(await edPersist(c)) toast(k==='scr'&&boardStale(c)?'저장했어요 — 스크립트 길이가 바뀌어 스토리보드 시간이 어긋났어요. ③ 위의 [시간 맞추기]를 눌러 보세요':'저장했어요 — 이력에도 반영했어요');
+}
+/* ── 스토리보드 장면 추가·삭제(저장하기 전까지는 화면 위 초안일 뿐) ── */
+function edSegAdd(btn){
+  const el=btn.closest('.sc-seg.ed'); if(!el) return;
+  const eI=el.querySelector('[data-f="e"]'), s=parseClock(el.querySelector('[data-f="s"]').value), e=parseClock(eI.value);
+  if(!(s>=0)||!(e>s)){ toast('먼저 이 장면의 시간을 올바르게 고쳐 주세요 (예: 00:08)'); return; }
+  const d=e-s, m=d>=2?s+Math.floor(d/2):e;   /* 2초 이상이면 가운데에서 둘로 나누고, 1초짜리면 바로 뒤에 1초를 붙임 */
+  if(d>=2) eI.value=fmtTime(m);
+  const tmp=document.createElement('div'); tmp.innerHTML=edSegHtml({s:m,e:d>=2?e:e+1,t:''},+el.getAttribute('data-u'),'n');
+  const nw=tmp.firstChild; nw.classList.add('new'); el.after(nw);
+  const ta=nw.querySelector('textarea'); ta.placeholder='새 장면의 묘사를 입력하세요';
+  ED.dirty.brd=true; edSegCheck(edSec('brd')); ta.focus();
+}
+function edSegDel(btn){
+  const el=btn.closest('.sc-seg.ed'); if(!el) return;
+  if(el.classList.contains('del')) el.classList.remove('del');
+  else{
+    if(el.closest('.sc-ch').querySelectorAll('.sc-seg.ed:not(.del)').length<2){ toast('챕터에는 장면이 하나 이상 있어야 해요'); return; }
+    if(el.classList.contains('new')) el.remove(); else el.classList.add('del');
+  }
+  ED.dirty.brd=true; edSegCheck(edSec('brd'));
+}
+function onEdInput(e){
+  const t=e.target, sec=t.closest&&t.closest('.sc-sec.ed'); if(!sec) return;
+  const k=sec.getAttribute('data-k'); ED.dirty[k]=true;
+  const b=t.closest('.bad'); if(b) b.classList.remove('bad');
+  edMsg(k,'');
+  if(t.tagName==='TEXTAREA') edGrow(t);
+  if(k==='scr') edCountScr(); else if(k==='rep') edCountRep();
+  else if(t.getAttribute('data-f')==='s'||t.getAttribute('data-f')==='e') edSegCheck(sec);
+}
+/* ── 스크립트 길이가 바뀌었을 때 스토리보드 시간 맞추기 ──
+   chapRanges: buildBoard 와 같은 계산으로 챕터별 구간(초) — 글자 수 배열 ch 를 주면 그 글자 수 기준. B.tch = 스토리보드 시간이 맞춰져 있던 글자 수 */
+const curChars=c=>c.plan.map(u=>u.text?(u.chars||0):u.target);
+function chapRanges(c,ch){
+  const cpm=c.cfg.cpm; let acc=0, pe=0; const o=[];
+  c.plan.forEach((u,i)=>{ const n=ch[i]||0, t0=acc/cpm*60, D=n/cpm*60; acc+=n; const s=i?pe:Math.round(t0), e=Math.max(s+1,Math.round(t0+D)); o.push({s,e}); pe=e; });
+  return o;
+}
+function boardStale(c){
+  const B=c&&c.board; if(!B||!Array.isArray(B.tch)||!boardCount(c)) return false;
+  const a=chapRanges(c,B.tch), b=chapRanges(c,curChars(c));
+  return boardUnits(c).some(u=>(u.blocks||[]).length&&a[u.pi]&&b[u.pi]&&(Math.abs(a[u.pi].s-b[u.pi].s)>=1||Math.abs(a[u.pi].e-b[u.pi].e)>=1));
+}
+/* 챕터 구간이 늘거나 준 비율로 그 챕터의 장면 시간을 옮김(챕터 안에서 장면 사이 간격·길이 비율은 그대로) — 옮긴 장면 수를 돌려줌 */
+function retimeBoard(c){
+  const B=c.board, a=chapRanges(c,B.tch), b=chapRanges(c,curChars(c)); let n=0;
+  const by={}; boardUnits(c).forEach(u=>{ if((u.blocks||[]).length) (by[u.pi]=by[u.pi]||[]).push(u); });
+  Object.keys(by).forEach(k=>{
+    const pi=+k, A=a[pi], N=b[pi]; if(!A||!N) return;
+    const f=(N.e-N.s)/Math.max(1,A.e-A.s);
+    by[k].forEach(u=>{
+      u.blocks.forEach(bl=>{ const s=Math.max(0,Math.round(N.s+(bl.s-A.s)*f)), e=Math.max(s+1,Math.round(N.s+(bl.e-A.s)*f)); bl.s=s; bl.e=e; n++; });
+      u.start=u.blocks[0].s; u.end=u.blocks[u.blocks.length-1].e;
+    });
+    if(B.chap&&B.chap[pi]){ B.chap[pi].start=N.s; B.chap[pi].end=N.e; }
+  });
+  B.tch=curChars(c);
+  return n;
+}
+async function edRetime(){
+  const c=S.ctx; if(!c||!c.board||S.running||!boardStale(c)) return;
+  if(edOn('brd')){ if(ED.dirty.brd){ toast('수정 중인 스토리보드를 먼저 저장하거나 취소해 주세요'); return; } edCancel('brd',true); }
+  const n=retimeBoard(c);
+  c.ed=Object.assign({},c.ed||{},{brd:1,ts:Date.now()});
+  paintBoard();
+  if(await edPersist(c)) toast('스크립트 길이에 맞춰 장면 시간을 옮겼어요 (장면 '+n+'개)');
+}
+
 /* Esc — 이력 → 만들기 순으로 닫음 */
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
   if(window.BTMVideo&&BTMVideo.isOpen&&BTMVideo.isOpen()) return;   /* 영상 스튜디오가 위에 열려 있으면 그쪽이 처리 */
   if(_hs&&_hs.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); if(_histView) renderHistList(); else closeHistory(); return; }
+  if(_mk&&_mk.classList.contains('open')&&edAny()){ e.stopPropagation(); e.preventDefault(); edCancel(ED.stack[ED.stack.length-1]); return; }   /* v119 — 수정 중이면 Esc 는 수정만 닫음(만들기 창은 그대로) */
   if(_mk&&_mk.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); closeMaker(); }
 },true);
 
@@ -43798,7 +44161,8 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
   _dbg:{buildPlan,sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
     buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur,
     V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,
-    isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted}};
+    isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted,
+    ED,edOpen,edSave,edCancel,edCancelAll,edLeave,edReadRep,edReadScr,edReadBrd,edApplyRep,edApplyScr,edApplyBrd,edSegAdd,edSegDel,edSegCheck,edRetime,parseClock,cleanEdit,normT,canEdit,retimeBoard,boardStale,chapRanges,curChars}};
 })();
 /* ═══ BTMSCRIPT-JS-END ═══ */
 </script>
