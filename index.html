@@ -3070,6 +3070,100 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-dbx.ed .vs-ta{margin-top:2px}
 </style>
 <!-- BTMVIDEO-CSS-END -->
+<!-- BTMLEARN-CSS-BEGIN -->
+<style>
+/* ── 🎓 AI학습 (2026-10-29, v121) — 영상 스튜디오 머리 단추·대화상자. 클래스 접두어 lr-. 스튜디오(BTMVIDEO-CSS)의 어두운 테마와 같은 색을 씀 ── */
+.vs-learnbtn{flex:0 0 auto;border-color:#6b4fb0;background:#221838;color:#e4d9ff;font-size:11.5px;white-space:nowrap}
+.vs-learnbtn:hover{background:#2c2049;border-color:#8a6fd6}
+.vs-learnbtn b{color:#fcd34d;margin-left:3px}.vs-learnbtn i{font-style:normal;color:#7dd3fc;margin-left:3px}.vs-learnbtn .bad{color:#f87171;font-size:10px;margin-left:3px}
+.vs-learnbtn.run{border-color:#38bdf8;background:#10263a}
+.vs-head .vs-name{flex:1 1 120px;width:auto;min-width:100px;max-width:260px}   /* 단추가 하나 늘어도 머리줄이 두 줄로 접히지 않게 — 자리가 모자랄 때만 이름 칸이 줄고, 넉넉하면 예전처럼 260px */
+@media(max-width:1320px){.vs-learnbtn b{display:none}}   /* 좁은 화면에선 노하우 개수 배지를 숨겨 머리줄을 한 줄로 */
+.vs-dl.lr{width:min(1100px,97%);height:93%;max-height:93%}
+.vs-dl.lr .vs-db{flex:1 1 0;display:flex;flex-direction:column;overflow:hidden;padding:10px 14px 8px}
+.lr-root{display:flex;flex-direction:column;flex:1;min-height:0;font-size:12px;color:#d6e0f0}
+.lr-sum{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;padding:7px 10px;margin-bottom:8px;border:1px solid #2b4a6b;border-radius:8px;background:#0f1b30;font-size:11.5px;line-height:1.6;flex-shrink:0}
+.lr-sum b{color:#fcd34d}.lr-sum .ok{color:#6ee7b7}.lr-sum .bad{color:#fca5a5}.lr-sum .mut{color:#8fa3c2}.lr-sum .run{color:#7dd3fc}
+.lr-sum .vs-mb{height:22px}
+.lr-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;flex-shrink:0}
+.vs-ov .lr-tab{height:30px;padding:0 13px;font-size:12px;font-weight:700;border-radius:8px;border:1px solid #2a3a56;background:#16233b;color:#cbd5e1;cursor:pointer}
+.vs-ov .lr-tab:hover{background:#1f3253;border-color:#3b537c}
+.vs-ov .lr-tab.on{background:#6d4fc2;border-color:#8a6fd6;color:#fff}
+.lr-tab i{font-style:normal;font-size:10.5px;margin-left:5px;padding:0 6px;border-radius:8px;background:rgba(255,255,255,.14)}
+.lr-pane{flex:1 1 0;min-height:0;overflow-y:auto;padding:0 3px 6px 0}
+.lr-note{margin:0 0 9px;padding:7px 10px;border-radius:8px;background:#15233a;border:1px solid #28406a;color:#bcd0ee;font-size:11.5px;line-height:1.65}
+.lr-note b{color:#e2e8f0}.lr-note .warn{color:#fbbf24}
+.lr-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.lr-box{padding:9px 11px;border:1px solid #1f2d46;border-radius:9px;background:#111c30;min-width:0}
+.lr-box.wide{grid-column:1/-1}
+.lr-box h4{margin:0 0 6px;font-size:12.5px;color:#fcd34d;display:flex;align-items:center;gap:6px}
+.lr-row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px}
+.lr-row label{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#cbd5e1}
+.lr-row .sp{flex:1 1 0}
+.vs-ov .lr-box .vs-ta{min-height:58px}
+.vs-ov .lr-box input.vs-in[type=text]{width:100%}
+.lr-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:92px;padding:10px;border:2px dashed #3a4f78;border-radius:10px;background:#0d1729;color:#a9bad3;text-align:center;cursor:pointer;line-height:1.6}
+.lr-drop:hover,.lr-drop.on{border-color:#a78bfa;background:#17142b;color:#e4d9ff}
+.lr-drop b{font-size:13px;color:#e2e8f0}
+.lr-focus{display:flex;gap:8px;align-items:center;margin:10px 0 4px;font-size:11.5px;color:#9fb0c9}
+.lr-focus label{flex:0 0 auto;font-weight:700;color:#cbd5e1}
+.vs-ov .lr-focus .vs-in{flex:1 1 0;min-width:0}
+.lr-qh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:12px 0 6px;padding-top:9px;border-top:1px dashed #243149}
+.lr-qh b{font-size:12.5px;color:#cbd5e1}.lr-qh .sp{flex:1 1 0}
+.lr-q{display:flex;flex-direction:column;gap:6px}
+.lr-qi{display:flex;align-items:flex-start;gap:9px;padding:7px 9px;border:1px solid #1f2d46;border-radius:8px;background:#111c30;border-left:3px solid #475a80}
+.lr-qi.st-run{border-left-color:#38bdf8;background:#0f2338}.lr-qi.st-err{border-left-color:#f87171;background:#25151a}.lr-qi.st-queued{border-left-color:#a78bfa}
+.lr-qic{flex:0 0 26px;height:26px;border-radius:7px;background:#1b2a46;display:flex;align-items:center;justify-content:center;font-size:14px}
+.lr-qm{flex:1;min-width:0;line-height:1.55}
+.lr-qm b{display:block;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr-qm span{font-size:10.5px;color:#8da0bf}
+.lr-qm .st{display:inline-block;font-style:normal;font-size:10px;padding:0 7px;margin-right:6px;border-radius:8px;background:#243149;color:#cbd5e1}
+.lr-qi.st-run .st{background:#0c4a6e;color:#7dd3fc}.lr-qi.st-err .st{background:#7f1d1d;color:#fecaca}
+.lr-qm .er{display:block;margin-top:2px;color:#fca5a5;font-size:11px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+.lr-qm .sp2{display:block;margin-top:1px;color:#7dd3fc;font-size:10.5px}
+.lr-x{flex:0 0 auto;width:24px;height:24px;padding:0;border-radius:50%;border:1px solid transparent;background:rgba(255,255,255,.08);color:#cbd5e1;cursor:pointer;font-size:12px}
+.lr-x:hover:not(:disabled){background:rgba(248,113,113,.28);color:#fff}.lr-x:disabled{opacity:.35;cursor:not-allowed}
+.lr-empty{padding:18px 10px;text-align:center;color:#7f90ab;line-height:1.8;border:1px dashed #243149;border-radius:9px}
+.lr-tb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+.vs-ov .lr-tb .vs-in.q{flex:1 1 180px;min-width:120px}
+.lr-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.lr-chip{cursor:pointer;font-size:11px;padding:2px 9px;border-radius:12px;border:1px solid #2a3a56;background:#101a2e;color:#9fb0c9;white-space:nowrap}
+.lr-chip:hover{border-color:#3b537c;color:#e2e8f0}.lr-chip.on{background:#2a2050;border-color:#a78bfa;color:#fff}
+.lr-chip i{font-style:normal;margin-left:4px;color:#7f90ab}.lr-chip.on i{color:#ddd6fe}
+.lr-list{display:flex;flex-direction:column;gap:6px}
+.lr-ls{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border:1px solid #1f2d46;border-radius:9px;background:#111c30;border-left:3px solid var(--c,#475a80)}
+.lr-ls.off{opacity:.5}
+.lr-ls.pin{box-shadow:0 0 0 1px rgba(250,204,21,.4) inset}
+.lr-ls .on{flex:0 0 auto;margin-top:2px;accent-color:#a78bfa;width:15px;height:15px;cursor:pointer}
+.lr-lb{flex:1;min-width:0}
+.lr-lh{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;margin-bottom:3px;font-size:10.5px;color:#8da0bf}
+.lr-cat{font-weight:800;font-size:10.5px;padding:0 8px;border-radius:9px;background:var(--cb,rgba(71,90,128,.2));color:var(--c,#cbd5e1);border:1px solid var(--cd,#475a80)}
+.lr-n{font-weight:800;color:#fcd34d}
+.lr-lh .sp{flex:1 1 0}
+.lr-lh .lr-x{width:22px;height:22px;font-size:11px}
+.lr-rule{font-size:12.5px;line-height:1.65;color:#f1f5f9;word-break:keep-all;overflow-wrap:anywhere}
+.lr-why{margin-top:2px;font-size:11px;line-height:1.55;color:#8da0bf;word-break:keep-all;overflow-wrap:anywhere}
+.lr-ed{display:flex;flex-direction:column;gap:6px;margin-top:3px}
+.vs-ov .lr-ed .vs-ta{min-height:54px}
+.lr-add{margin-bottom:8px;padding:9px 11px;border:1px solid #6b4fb0;border-radius:9px;background:#17122b}
+.lr-sr{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border:1px solid #1f2d46;border-radius:9px;background:#111c30;margin-bottom:6px}
+.lr-sr .th{flex:0 0 64px;height:40px;border-radius:6px;background:#1a2740 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:18px;color:#6b7fa3;overflow:hidden}
+.lr-sr .th img{width:100%;height:100%;object-fit:cover;display:block}
+.lr-sr .m{flex:1;min-width:0;line-height:1.6}
+.lr-sr .m b{display:block;color:#f1f5f9;word-break:keep-all;overflow-wrap:anywhere}
+.lr-sr .m span{font-size:10.5px;color:#8da0bf;margin-right:9px}
+.lr-sr .sm{margin-top:4px;padding:6px 9px;border-radius:7px;background:#0b1322;border:1px solid #1f2d46;font-size:11.5px;line-height:1.65;color:#c3cfe2;word-break:keep-all;overflow-wrap:anywhere}
+.lr-sr .bt{display:flex;flex-direction:column;gap:4px}
+.lr-cf{display:flex;flex-direction:column;gap:8px}
+.lr-cf .lr-box>div.d{font-size:11px;color:#8da0bf;margin:2px 0 0 22px}
+.lr-use{display:flex;flex-direction:column;gap:3px}
+.lr-use label{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#e2e8f0;padding:4px 0;border-bottom:1px dashed #1b2940;cursor:pointer}
+.lr-use label input{margin-top:3px;accent-color:#a78bfa}
+.lr-use label span{flex:1}.lr-use label em{display:block;font-style:normal;font-size:10.5px;color:#8da0bf}
+.lr-pre{white-space:pre-wrap;margin:6px 0 0;padding:8px 10px;max-height:260px;overflow:auto;border-radius:8px;background:#0b1322;border:1px solid #1f2d46;font:inherit;font-size:11.5px;line-height:1.65;color:#dbe4f3}
+@media(max-width:760px){.lr-grid{grid-template-columns:1fr}}
+</style>
+<!-- BTMLEARN-CSS-END -->
 <!-- BTMLH-CSS-BEGIN -->
 <style>
 /* ── 텍스트박스별 행간격 조절 버튼 (2026-10-18) — 박스에 마우스를 올리거나 포커스하면 BTMLH-JS 가 이 버튼(#lhPill)을 박스 오른쪽 위로 옮겨 보임. 화면 고정(fixed)이라 리포트(#report-root) 밖 → PDF·이미지 저장에 안 들어감 ── */
@@ -31153,6 +31247,44 @@ async function _fetchClaudeBalance(){
     }
     throw lastErr;
   };
+  /* 팝업 UI 없이 여러 장의 이미지·PDF·YouTube 주소 + 글을 보내고 텍스트 응답을 받는 headless 호출 — 영상 스튜디오 🎓 AI학습(v121)이 씀.
+     blocks = Claude 형식 블록 배열: {type:'image'|'document',source:{type:'base64',media_type,data}} · {type:'youtube',url,start,end(초)}.
+     공급자·키는 mapKey(BTMAiProviderMap)로 정하되 o.provider('claude'·'gemini-flash'·'gemini-pro'·'chatgpt-flash' 등)가 있으면 그것을 씀.
+     YouTube 는 Gemini 만(영상을 직접 봄) — 다른 공급자는 명시적으로 막고, DeepSeek 은 이미지·PDF 도 막음. o={onDelta(지금까지 받은 전체 글),signal,onRetry(회차,최대)} — 429/503 은 3회 자동 재시도 */
+  window._runMediaPrompt=async function(mapKey, sys, blocks, userText, o){
+    o=o||{}; blocks=Array.isArray(blocks)?blocks:[];
+    const names={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'};
+    let provider, key, name;
+    if(o.provider&&names[o.provider]){ provider=o.provider; name=names[provider]; key=provider.startsWith('deepseek')?localStorage.getItem(AK_DS):provider.startsWith('gemini')?localStorage.getItem(AK_GM):provider.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK); }
+    else{ const r=window._resolveAiProvider(mapKey); provider=r.provider; key=r.key; name=r.name; }
+    if(!key) throw new Error(name+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.');
+    if(blocks.some(b=>b&&b.type==='youtube')&&!provider.startsWith('gemini')) throw new Error('YouTube 영상은 Gemini로만 직접 볼 수 있어요. 관리 메뉴 > 🧩 AI 공급자에서 Gemini 키를 설정하세요.');
+    if(blocks.length&&provider.startsWith('deepseek')) throw new Error('DeepSeek은 PDF·이미지 인식을 지원하지 않습니다. 관리 메뉴 > 🧩 AI 공급자에서 Claude, Gemini 또는 ChatGPT로 바꿔주세요.');
+    const msgs=[{role:'user',content:blocks.concat([{type:'text',text:userText}])}];
+    const isBusyErr=(e)=>(e&&(e.status===429||e.status===503))||/high demand|overloaded|unavailable|try again|rate.?limit/i.test((e&&e.message)||'');
+    const MAX_TRY=3;
+    let lastErr;
+    for(let attempt=1;attempt<=MAX_TRY;attempt++){
+      let acc='';
+      const target={ get textContent(){ return acc; }, set textContent(v){ acc=v; if(typeof o.onDelta==='function'){ try{ o.onDelta(v); }catch(_){} } } };
+      try{
+        return provider.startsWith('gemini')
+          ? await _streamGemini(key,sys,msgs,target,o.signal,provider==='gemini-pro')
+          : provider.startsWith('chatgpt')
+          ? await _streamChatGPT(key,sys,msgs,target,o.signal,provider==='chatgpt-pro')
+          : await _stream(key,sys,msgs,target,o.signal);
+      }catch(e){
+        lastErr=e;
+        if(attempt<MAX_TRY && isBusyErr(e) && !(o.signal&&o.signal.aborted)){
+          if(typeof o.onRetry==='function') o.onRetry(attempt,MAX_TRY);
+          await new Promise(r=>setTimeout(r,attempt*2500));
+          continue;
+        }
+        throw e;
+      }
+    }
+    throw lastErr;
+  };
   /* Claude 형식(content blocks) → OpenAI 호환 메시지로 변환 (DeepSeek용, 텍스트만 지원) */
   function _histToOpenAIMsgs(sys, msgs){
     const out=[{role:'system',content:sys}];
@@ -31175,6 +31307,7 @@ async function _fetchClaudeBalance(){
         if(b.type==='text') parts.push({text:b.text});
         else if(b.type==='image') parts.push({inline_data:{mime_type:b.source.media_type, data:b.source.data}});
         else if(b.type==='document') parts.push({inline_data:{mime_type:b.source.media_type||'application/pdf', data:b.source.data}});
+        else if(b.type==='youtube'){ const pt={file_data:{file_uri:b.url}}; if(b.start>0||b.end>0){ pt.video_metadata={}; if(b.start>0) pt.video_metadata.start_offset=Math.round(b.start)+'s'; if(b.end>0) pt.video_metadata.end_offset=Math.round(b.end)+'s'; } parts.push(pt); }   /* v121: YouTube 주소를 Gemini 가 직접 봄(공개 영상만, 구간 지정 가능) */
       }
       return {role, parts};
     });
@@ -42711,7 +42844,7 @@ ${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
 ${outline}
 ${prev?'\n[앞 챕터의 마지막 부분 — 여기서 자연스럽게 이어 쓰기]\n'+prev+'\n':''}
 ${rep?'[종합 분석 보고서]\n'+c.report:''}
-${data?'\n[참고 원자료]\n'+data:''}${rest?'\n\n[다른 챕터에서 다룰 자료의 일부 — 이 챕터와 연결해 해석할 때만 참고하고, 이 챕터에서 따로 풀어 설명하지 마세요]\n'+rest:''}`;
+${data?'\n[참고 원자료]\n'+data:''}${rest?'\n\n[다른 챕터에서 다룰 자료의 일부 — 이 챕터와 연결해 해석할 때만 참고하고, 이 챕터에서 따로 풀어 설명하지 마세요]\n'+rest:''}${LB('script',c)}`;
 }
 const SYS_ADJUST=`아래 나레이션 초안의 분량을 조정하세요. 내용·톤·사실관계는 그대로 두고 지정한 글자 수(공백 제외)에 맞게 늘리거나 줄이세요. 늘릴 때는 새 수치나 사건을 만들지 말고 설명·비유·시청자에게 던지는 질문으로 보강하고, 줄일 때는 중복과 사족부터 덜어내세요. [화면: …] 줄은 그대로 유지하세요. 조정한 나레이션만 출력하세요(제목·설명·마크다운·글자 수 표기 금지).`;
 function adjustUser(c,u){
@@ -42724,6 +42857,7 @@ ${u.text}`;
 
 /* ── v108 다국어 — 한국어가 아닌 영상 언어의 프롬프트(영어 지시문 + 출력 언어 지정). 한국어(ko)는 위의 옛 프롬프트를 그대로 씀 ── */
 const langLine=c=>{ const lg=V.norm((c.cfg||{}).lang); return lg==='ko'?'':'[영상 언어] '+V.get(lg).ai+' — 결과물은 전부 이 언어로 작성\n'; };
+const LB=(t,c)=>{ try{ return (window.BTMLearn&&window.BTMLearn.block)?window.BTMLearn.block(t,{lang:V.norm(((c&&c.cfg)||{}).lang)}):''; }catch(e){ return ''; } };   /* v121: 🎓 AI학습 — 배운 노하우를 요청 글 끝에 덧붙임(쌓인 게 없거나 꺼져 있으면 빈 글이라 요청이 예전과 똑같음) */
 const lenLine=(u,lang)=>(lang&&lang!=='ko')?'[Target length] '+V.lenNote(u.target,lang)+' ('+Math.round(u.target*0.9)+'–'+Math.round(u.target*1.1)+' characters excluding spaces)':'[이 챕터의 목표 분량] 공백 제외 약 '+u.target+'자 ('+Math.round(u.target*0.9)+'~'+Math.round(u.target*1.1)+'자)';
 const RPT_EN={indices:'Market thermometer — reading the major indices',eco:'Event calendar — economic checkpoints',market:'Market analysis — drivers up and down, flows and sentiment',theme:'Theme & sector analysis — leading themes and staying power',watch:'Watchlist check',warren:'Summary of The Whispers of Warren Kim',radar:'AI Stock Radar picks and strategy',tech:'Technical analysis points',strategy:'Trading strategy check'};
 const REP_LEN={en:'about 1,600–2,600 words',zh:'about 3,000–4,500 Chinese characters',ja:'about 3,500–5,000 Japanese characters'};
@@ -43054,7 +43188,7 @@ function bibleUser(c){
 [챕터 구성]
 ${B.chap.map((x,i)=>(i+1)+'. '+x.title+' ('+fmtRange(x.start,x.end)+')').join('\n')}
 ${pre?'[스토리보드 스타일] '+bpreLine(pre)+'\n[스타일 연출 지침]\n'+bpreGuide(pre)+'\n':''}[스타일·컨셉 요청] ${c.cfg.bstyle||(pre?'(없음 — 위 스토리보드 스타일의 기본 연출을 따르세요)':'(없음 — 시황 분석 영상에 어울리는 스타일을 직접 정하세요)')}
-${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}${basis}`;
+${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}${basis}${LB('board',c)}`;
 }
 function boardUser(c,u,k){
   const B=c.board, pre=bpreOf(c.cfg.bpre), scr=B.mode==='script', ch=B.chap[u.pi], P=c.plan[u.pi], prev=k>0?lastBlockText(B.units[k-1]):'', au=isAuto(c.cfg);
@@ -43068,7 +43202,7 @@ function boardUser(c,u,k){
 [스타일·분위기 설계서 — 모든 구간에 똑같이 적용]
 ${bibleBlock(B.bible)}
 ${pre?bpreScene(pre):''}
-${body}${prev?'\n\n[앞 구간의 마지막 장면 — 여기서 자연스럽게 이어 쓰기]\n'+prev:''}`;
+${body}${prev?'\n\n[앞 구간의 마지막 장면 — 여기서 자연스럽게 이어 쓰기]\n'+prev:''}${LB('board',c)}`;
 }
 /* 결과 읽기 — 설계서(## 스타일·## 분위기)와 구간 블록(시간 범위 줄 + 설명 줄들) */
 function parseBible(t){
@@ -43225,7 +43359,7 @@ function segPlanUser(c,x){
   }
   return `${langLine(c)}[영상 정보] 총 ${fmtTime(total)} · 챕터 ${x.pi+1}/${c.plan.length}: "${x.title}" (챕터 구간 ${fmtRange(x.start,x.end)} = ${L}초)
 [장면 길이 범위] 최소 ${r.min}초 ~ 최대 ${r.max}초 (전체 평균은 약 ${Math.round(autoMean(r))}초가 되게)
-${pre?'[스토리보드 스타일] '+bpreLine(pre)+'\n':''}${body}`;
+${pre?'[스토리보드 스타일] '+bpreLine(pre)+'\n':''}${body}${LB('plan',c)}`;
 }
 /* 챕터마다 장면 나누기 요청 1회 → 검증·보정 → 구간·묶음 만들기. 이미 나눈 챕터는 건너뜀(이어서 만들기) */
 async function planBoard(c,sig){
@@ -44195,6 +44329,8 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
    · 챕터 타이틀 길이·위치 끌기 (2026-10-26, v103) — 타임라인 [타이틀] 줄 블록의 몸통을 끌면 위치, 오른쪽 끝은 길이(뒤 내용이 밀리거나 당겨짐), 왼쪽 끝은 시작(끝은 그대로). 챕터마다 p.ttl[챕터]={dur,pre,post}(길이·앞 쉼·뒤 쉼)로 저장하고
        layout() 이 챕터 사이를 앞 쉼+길이+뒤 쉼으로 짬(안 정하면 v100 과 같음). [타이틀] 탭에서 숫자로도 고침. (v104) 오프닝 타이틀도 챕터 타이틀과 똑같은 규칙 — 맨 앞에 묶어 두지 않고 앞 쉼·길이·뒤 쉼으로 끌어서 옮김(기본 앞 쉼만 0).
        (v109) 타이틀마다 '겹쳐 얹기'(p.ttl[챕터].ov — 새 프로젝트 p.tv≥2 의 오프닝은 기본) / '끼워 넣기' 선택, 겹쳐 얹은 타이틀은 시간을 안 잡고 영상·음성·자막·BGM 위에 얹힘(자리 ofs). 오프닝 챕터가 있으면 CHAPTER 01 은 개요(오프닝) 뒤 첫 챕터부터, 오프닝의 '오늘 다룰 내용' 안내 문장에는 개요(agenda) 인포그래픽 — 자세히는 코드의 v109 블록(ov109) 머리말
+   · 🎓 AI학습 (2026-10-29, v121) — 머리의 [🎓 AI학습]: YouTube 주소·PDF·PPTX·이미지·글에서 영상 표현력·제작 노하우를 AI 가 뽑아 IndexedDB 'BTM_LearnDB' 에 계속 쌓고(같은 뜻은 합쳐 확인 횟수만 올림),
+       다음 영상을 만들 때 스크립트·스토리보드·인포그래픽·자막·장면 수정 AI 요청 끝에 '[학습한 영상 제작 노하우]' 로 덧붙임(lnBlock — 꺼져 있거나 없으면 빈 글이라 요청이 예전과 똑같음). 코드: 'v121' 표시 구역, 스타일 BTMLEARN-CSS, AI 호출 window._runMediaPrompt.
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
@@ -45876,7 +46012,7 @@ function igCtx(sc,o){   /* ss = 화면에 옮길 '내용 있는' 문장만(인�
 }
 function infoUser(ctx){
   const hv=ctx.vk==='image'||ctx.vk==='video', up=String((P.cfg.prompts&&P.cfg.prompts.info)||'').trim();
-  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info');
+  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
 }
 const toneOK=t=>{ t=String(t||'').toLowerCase(); return /^(up|down|flat|acc|cur)$/.test(t)?t:''; };
 function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체·글자 길이 제한·형식 점검·문장 번호와 글로 시각 계산). 쓸 수 없으면 null */
@@ -46613,7 +46749,7 @@ function subRules(){
   const st=P.cfg.sub, per=clamp(Math.floor(P.cfg.w*st.maxW/100/(st.size*P.cfg.h/1080*0.98)),10,40);
   return '규칙:\n1) 의미·숫자·단위·고유명사를 바꾸거나 새 사실을 더하지 않는다.\n2) 군말·반복·감탄·불필요한 접속어만 덜어 간결하게(원문 길이의 70~100%).\n3) 한 자막은 최대 '+st.lines+'줄, 한 줄 '+per+'자 안팎. 줄바꿈은 의미 단위(구·절)에서 \\n 으로.\n4) 나레이션의 말투(어미)는 그대로 두되, 사용자 요청이 있으면 그것을 따른다.\n5) 문장 끝 마침표는 생략하고, 쉼표·물음표·느낌표는 필요할 때만.';
 }
-function subUser(chunk){ const up=String((P.cfg.prompts&&P.cfg.prompts.sub)||'').trim(); return (up?'[사용자 요청] '+up+'\n\n':'')+slBlock('sub')+'[문장]\n'+chunk.map((s,i)=>(i+1)+'. '+s.text).join('\n'); }
+function subUser(chunk){ const up=String((P.cfg.prompts&&P.cfg.prompts.sub)||'').trim(); return (up?'[사용자 요청] '+up+'\n\n':'')+slBlock('sub')+lnBlock('sub')+'[문장]\n'+chunk.map((s,i)=>(i+1)+'. '+s.text).join('\n'); }
 async function runSubs(scope){
   if(!P) return; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
   const ai=studioAi(); if(!ai.key){ toast(ai.name+' API Key 가 없어요 — 🤖 AI 에서 연결된 다른 AI 를 고르거나 관리 메뉴 › 🧩 AI 공급자에서 키를 넣어 주세요'); return; }
@@ -47277,7 +47413,7 @@ function edUser(scs,txt,w){
     u+='[문장 — 나레이션 / 자막]\n'+all.map((s,i)=>(i+1)+'. '+s.text+(s.sub.hide?'  ← 자막 숨김':(s.sub.text!=null&&s.sub.text!==s.text?'  ← 자막: '+s.sub.text.replace(/\n/g,' / '):''))+(isFiller(s.text)?'  (인사·진행 멘트)':'')+(s.cue?'  [화면 지시: '+s.cue+']':'')).join('\n')+'\n';
     const spec=sceneInfoSpec(sc,all); u+='[인포그래픽] '+(spec.clips.length?JSON.stringify(spec):'없음')+'\n';
   });
-  return u;
+  return u+lnBlock('scene');
 }
 const itemSig=it=>JSON.stringify([it.type,it.label||'',it.value||'',it.delta||'',it.note||'',it.text||'',it.from||'',it.to||'',it.v==null?'':it.v,it.a||'',it.b||'',it.sub||'',it.by||'',it.dir||'',it.unit||'',it.up==null?'':it.up,it.flat==null?'':it.flat,it.down==null?'':it.down,it.base==null?'':it.base,it.open||'',it.high||'',it.low||'',it.vol||'',it.spark||'',(it.parts||[]).map(p=>[p.l||'',p.t||'',p.d||'',p.v==null?'':p.v,p.y==null?'':p.y,p.a||'',p.b||'',p.p==null?'':p.p,p.lo==null?'':p.lo,p.hi==null?'':p.hi,p.o==null?'':p.o,p.c==null?'':p.c,p.est==null?'':p.est,p.act==null?'':p.act,p.y2==null?'':p.y2,p.sr||''])]);   /* 블록 내용 지문 — 시점·id 는 뺌 */
 function applyInfoEdit(sc,raw,all){   /* 장면의 인포그래픽을 AI 가 돌려준 clips 로 바꿈 — 그대로인 블록은 손으로 맞춘 시점까지 유지. 바꾼 내용을 글로 돌려줌('' = 안 바뀜) */
@@ -49597,7 +49733,7 @@ function modalHtml(){
   const stp=(a,ic,tx,id)=>'<button class="vs-step mobile-keep" data-a="'+a+'"><span class="n">'+ic+'</span><b>'+tx+'</b><i id="'+id+'"></i></button>';
   return '<div class="vs-card" role="document">'
    +'<div class="vs-head"><span class="vs-title">🎥 영상 스튜디오</span><input id="vsName" class="vs-name mobile-keep" data-f="p.title" maxlength="80" placeholder="프로젝트 이름" aria-label="프로젝트 이름"><span class="vs-saved" id="vsSaved"></span><span class="vs-sp"></span>'
-   +'<button class="vs-b mobile-keep" data-a="docScript" title="이 영상의 스크립트(나레이션)를 봐요">📜 스크립트</button><button class="vs-b mobile-keep" data-a="docBoard" title="이 영상의 스토리보드(스타일·분위기·장면별 묘사)를 봐요">🎞 스토리보드</button><button class="vs-b mobile-keep" id="vsLangBtn" data-a="langDlg" title="영상 언어 — 언어 바꾸기 · 다른 언어 버전(번역본) 만들기">🌐 한국어</button><button class="vs-b vs-aibtn mobile-keep" id="vsAiBtn" data-a="aiPanel" title="영상 제작에 쓰는 AI"></button><button class="vs-ib mobile-keep" data-a="undo" title="되돌리기 (Ctrl+Z)">↶</button><button class="vs-ib mobile-keep" data-a="redo" title="다시 실행 (Ctrl+Y)">↷</button><button class="vs-b mobile-keep" data-a="save">💾 저장</button><button class="vs-b mobile-keep" data-a="projects">📂 프로젝트</button><button class="vs-x mobile-keep" data-a="close" title="닫기 (Esc)">✕</button></div>'
+   +'<button class="vs-b mobile-keep" data-a="docScript" title="이 영상의 스크립트(나레이션)를 봐요">📜 스크립트</button><button class="vs-b mobile-keep" data-a="docBoard" title="이 영상의 스토리보드(스타일·분위기·장면별 묘사)를 봐요">🎞 스토리보드</button><button class="vs-b mobile-keep" id="vsLangBtn" data-a="langDlg" title="영상 언어 — 언어 바꾸기 · 다른 언어 버전(번역본) 만들기">🌐 한국어</button><button class="vs-b vs-aibtn mobile-keep" id="vsAiBtn" data-a="aiPanel" title="영상 제작에 쓰는 AI"></button><button class="vs-b vs-learnbtn mobile-keep" id="vsLearnBtn" data-a="lrOpen" title="참고 영상·문서·이미지에서 영상 표현력과 제작 노하우를 배워요">🎓 AI학습</button><button class="vs-ib mobile-keep" data-a="undo" title="되돌리기 (Ctrl+Z)">↶</button><button class="vs-ib mobile-keep" data-a="redo" title="다시 실행 (Ctrl+Y)">↷</button><button class="vs-b mobile-keep" data-a="save">💾 저장</button><button class="vs-b mobile-keep" data-a="projects">📂 프로젝트</button><button class="vs-x mobile-keep" data-a="close" title="닫기 (Esc)">✕</button></div>'
    +'<div class="vs-steps"><button class="vs-auto mobile-keep" data-a="auto" title="음성 → 자막 → 화면 → 싱크 점검을 한 번에">🚀 한 번에 만들기</button>'
    +stp('stVoice','①','음성','vsS1')+stp('stSub','②','자막','vsS2')+stp('stVis','③','화면','vsS3')+stp('stSync','④','싱크 점검','vsS4')+stp('stExp','⑤','내보내기','vsS5')
    +'<span class="vs-prog"><div class="vs-pbar"><i id="vsPb"></i></div><span id="vsPt">준비됨</span><button class="vs-mb dng mobile-keep" id="vsCancel" data-a="cancel" style="display:none">⏹ 중단</button></span></div>'
@@ -49973,6 +50109,7 @@ async function act(a,btn){
   if(UI.busy==='export'&&a!=='cancel') return;
   if(/^(info|char|ig|ai|pref|ist)/.test(a)){ await infoAct(a,id,btn); return; }
   if(/^le[A-Z]/.test(a)){ leAct(a,id); return; }   /* v113 */
+  if(/^lr[A-Z]/.test(a)){ await lrAct(a,id,btn); return; }   /* v121: 🎓 AI학습 */
   if(a==='tmAlign'){ tmulApply(id); return; }
   switch(a){
     case 'close': closeStudio(); break;
@@ -50473,6 +50610,643 @@ function slShow(){
 }
 /* ══ /v118 ══ */
 
+/* ══ v121 ══ 🎓 AI학습 (2026-10-29) — 참고 영상(YouTube)·문서(PDF·PPT)·이미지·글에서 '영상 표현력·제작 노하우'를 배워 계속 쌓아 두고, 다음 영상을 만들 때 AI 요청에 덧붙임
+   · 머리의 [🎓 AI학습] → lrOpen 대화상자(자료 추가 · 학습한 노하우 · 배운 자료 · 적용 설정). 코드: 'v121' 표시 구역 검색 — 저장소 ln 계열 · 자료 읽기 zip 계열·lrPptx·lrImg·lrB64·lrYtMeta · AI 배우기 lrLearnOne/lnParse/lnMerge · 화면 lr* · 반영 lnBlock
+   · 저장: IndexedDB 'BTM_LearnDB'(lessons 노하우 · sources 배운 자료) + 설정 localStorage BTMLearnCfg. 요청 글을 만들 때 동기로 읽으려고 메모리 사본(LRN)을 둠. 원본 파일은 보관하지 않음(글·PPT 는 읽어 낸 글만 보관해 다시 배울 수 있음).
+   · 배우기: 자료마다 AI 한 번 — YouTube=Gemini 가 영상을 직접 봄(video_metadata 로 처음 N분만, 키 필요), PDF·이미지=보는 AI(Claude·Gemini·ChatGPT), PPTX=브라우저에서 직접 열어 글·구조·색·글꼴을 읽고 글 AI 가 정리, 붙여넣은 글=글 AI.
+       AI 는 노하우를 {cat,rule,why,use,w,same} 로 돌려주고, lnMerge 가 기존 것과 같은 뜻(AI 가 same 으로 지목 / 글자 쌍 유사도 ≥ 0.5)이면 새로 안 만들고 '확인된 곳 수(n)'만 올림 — 누적돼도 중복이 늘지 않음.
+   · 반영: lnBlock(대상) = 켜진 노하우 중 그 일에 맞는 것 최대 N개를 '[학습한 영상 제작 노하우 …]' 글로 돌려줌. 대상 script(스크립트 챕터)·board(스토리보드 설계·구간)·plan(장면 길이 나누기)·info(인포그래픽)·sub(자막)·scene(장면 AI 수정).
+       꺼져 있거나 쌓인 게 없으면 빈 글 → 요청 글이 예전과 똑같음. 스크립트 만들기(BTMScript)는 window.BTMLearn.block 으로 부름. 음성·AI 이미지·AI 영상 생성 요청에는 안 씀(비용·품질 위험). 번역에도 안 씀.
+══ */
+const LN_DB='BTM_LearnDB', LN_CFG_KEY='BTMLearnCfg', LN_SIM=0.5;
+const LN_CAT={
+  hook:{n:'오프닝·훅',ic:'🎣',c:'#f59e0b',d:'첫 5~10초에 시선을 잡는 법',use:['script','board']},
+  story:{n:'구성·화법',ic:'🧩',c:'#38bdf8',d:'전개 순서·스크립트 문체·설명 방식',use:['script']},
+  pace:{n:'리듬·전환',ic:'⏱',c:'#a78bfa',d:'장면 길이·컷 속도·전환 효과',use:['board','scene']},
+  visual:{n:'화면 연출',ic:'🎬',c:'#34d399',d:'구도·카메라·움직임·화면 구성',use:['board','scene']},
+  info:{n:'인포그래픽',ic:'📊',c:'#60a5fa',d:'차트·도표·수치 강조 표현',use:['info','board']},
+  text:{n:'자막·글자',ic:'🔤',c:'#fbbf24',d:'자막·타이틀·글자 디자인',use:['sub','info']},
+  color:{n:'색·분위기',ic:'🎨',c:'#f472b6',d:'색 조합·톤·조명·분위기',use:['board','info']},
+  audio:{n:'소리',ic:'🎧',c:'#fb923c',d:'말투·BGM·효과음·침묵',use:['script']},
+  thumb:{n:'제목·썸네일',ic:'🖼',c:'#94a3b8',d:'제목·썸네일·첫 화면',use:['script']},
+  prod:{n:'제작 노하우',ic:'🛠',c:'#4ade80',d:'제작 순서·품질 점검·도구 활용',use:[]}
+};
+const LN_CATS=Object.keys(LN_CAT);
+const LN_ALIAS={opening:'hook',intro:'hook','오프닝':'hook','훅':'hook','도입':'hook',structure:'story',narration:'story',script:'story','화법':'story','구성':'story','문체':'story',pacing:'pace',rhythm:'pace',transition:'pace',editing:'pace','리듬':'pace','전환':'pace','편집':'pace',camera:'visual',composition:'visual',scene:'visual',layout:'visual','화면':'visual','연출':'visual','구도':'visual',infographic:'info',chart:'info',data:'info',graph:'info','인포':'info','차트':'info','도표':'info',subtitle:'text',caption:'text',typography:'text',font:'text',title:'text','자막':'text','글자':'text','타이포':'text',palette:'color',tone:'color',mood:'color','색':'color','분위기':'color',sound:'audio',voice:'audio',music:'audio',bgm:'audio','소리':'audio','음성':'audio','음악':'audio',thumbnail:'thumb','썸네일':'thumb','제목':'thumb',workflow:'prod',production:'prod',tip:'prod','제작':'prod','노하우':'prod'};
+const LN_USE={
+  script:{n:'스크립트 만들기',d:'챕터 나레이션을 쓸 때 — 오프닝 훅·구성·말투',c:{hook:1,story:1,pace:.6,audio:.6,thumb:.4,prod:.2}},
+  board:{n:'스토리보드 만들기',d:'스타일·분위기 설계와 구간별 장면 묘사',c:{visual:1,color:.9,pace:.8,hook:.8,info:.6,text:.4}},
+  plan:{n:'장면 길이 나누기',d:'스토리보드의 장면 길이 계획',c:{pace:1,visual:.4}},
+  info:{n:'인포그래픽 구성',d:'스튜디오 AI 인포그래픽 설계',c:{info:1,color:.8,text:.8,visual:.5}},
+  sub:{n:'자막 다듬기',d:'스튜디오 AI 자막',c:{text:1,pace:.5}},
+  scene:{n:'장면 AI 수정',d:'스튜디오 장면 AI 수정(자막·인포그래픽·화면 글·전환)',c:{visual:1,pace:.9,text:.7,info:.7,color:.6,hook:.4}}
+};
+const LN_TARGETS=Object.keys(LN_USE), LN_TAGS=['script','board','info','sub','scene'];
+const LN_HINT={
+  script:'이 챕터 나레이션에 어울리는 것만 자연스럽게 반영하세요. 위 [원칙]·분량·사실 규칙이 우선이고, 자료의 문장을 그대로 베끼지 마세요',
+  board:'스타일·분위기 설계와 장면 묘사에 어울리는 것만 반영하세요. 위 규칙과 [스타일·컨셉 요청]이 우선이며, 같은 표현을 모든 구간에 반복하지 마세요',
+  plan:'장면 길이를 나눌 때 어울리는 것만 참고하세요. 위 [장면 길이 범위] 규칙이 우선입니다',
+  info:'인포그래픽을 설계할 때 어울리는 것만 반영하세요. 위 [규칙](JSON 형식·나레이션에 없는 사실 금지·뉴스체)을 어기지 않는 범위에서',
+  sub:'자막을 다듬을 때 어울리는 것만 반영하세요. 아래 규칙과 [사용자 요청]을 어기지 않는 범위에서',
+  scene:'수정 요청에 어울리는 것만 반영하세요. [수정 규칙]과 요청이 우선이고, 요청과 상관없는 부분은 건드리지 마세요'
+};
+const LN_BAD=/ignore (?:all |any )?(?:the )?(?:previous|prior|above|earlier)|disregard|system ?prompt|jailbreak|이전.{0,8}(?:지시|명령|규칙|프롬프트).{0,8}(?:무시|따르지|잊)|시스템 ?프롬프트|(?:api|API) ?키|비밀번호|password/i;
+const LN_TYPE={youtube:['▶','YouTube'],pdf:['📄','PDF'],pptx:['📑','PPT'],image:['🖼','이미지'],text:['📝','글']};
+const LN_MAX={pdf:15*1048576,pptx:150*1048576,image:25*1048576,text:60000,imgN:8};
+const LN_DEF={on:true,max:12,per:12,use:{script:true,board:true,plan:true,info:true,sub:true,scene:true}};
+const LRN={ready:false,lessons:[],sources:[],cfg:null,db:null,err:'',undo:null};   /* 노하우·배운 자료의 메모리 사본 + 설정 */
+const LUI={tab:'add',q:'',cat:'',sort:'rein',queue:[],run:null,tidy:null,draft:{yt:'',min:10,txt:'',ttl:'',focus:''},edit:'',ed:null,adding:false,prev:'script',open:{}};   /* 화면·진행 상태 */
+const lnClip=(s,n)=>{ s=String(s==null?'':s).replace(/\s+/g,' ').trim(); return s.length>n?s.slice(0,Math.max(1,n-1))+'…':s; };
+const lnWhen=ts=>{ const d=new Date(ts), z=n=>String(n).padStart(2,'0'); return d.getFullYear()+'.'+z(d.getMonth()+1)+'.'+z(d.getDate()); };
+const lnCv=C=>{ const n=parseInt(String(C.c).slice(1),16), rgb=(n>>16&255)+','+(n>>8&255)+','+(n&255); return '--c:'+C.c+';--cb:rgba('+rgb+',.2);--cd:rgba('+rgb+',.55)'; };   /* 분류 색 → 알약 배경·테두리(color-mix 를 안 써서 구형 브라우저·캡처 도구에서도 됨) */
+
+/* ── 저장소 ── */
+function lnOpen(){
+  if(LRN.db) return Promise.resolve(LRN.db);
+  return new Promise((res,rej)=>{
+    if(!window.indexedDB){ rej(new Error('이 브라우저는 IndexedDB 를 지원하지 않아요')); return; }
+    const r=indexedDB.open(LN_DB,1);
+    r.onupgradeneeded=()=>{ const d=r.result; if(!d.objectStoreNames.contains('lessons')) d.createObjectStore('lessons',{keyPath:'id'}); if(!d.objectStoreNames.contains('sources')) d.createObjectStore('sources',{keyPath:'id'}); };
+    r.onsuccess=()=>{ LRN.db=r.result; LRN.db.onclose=()=>{ LRN.db=null; }; LRN.db.onversionchange=()=>{ try{ LRN.db.close(); }catch(e){} LRN.db=null; }; res(LRN.db); };
+    r.onerror=()=>rej(r.error||new Error('DB 열기 실패'));
+    r.onblocked=()=>rej(new Error('DB 가 다른 탭에서 사용 중이에요'));
+  });
+}
+const lnRead=store=>lnOpen().then(d=>new Promise((res,rej)=>{ const q=d.transaction(store,'readonly').objectStore(store).getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error||new Error('DB 읽기 실패')); }));
+function lnTx(stores,fn){ return lnOpen().then(d=>new Promise((res,rej)=>{ const t=d.transaction(stores,'readwrite'); try{ fn(t); }catch(e){ rej(e); return; } t.oncomplete=()=>res(); t.onerror=t.onabort=()=>rej(t.error||new Error('DB 오류')); })); }
+const lnSrcRec=s=>{ const o={}; Object.keys(s).forEach(k=>{ if(k[0]!=='_') o[k]=s[k]; }); return o; };
+function lnSave(o){   /* o={pl:[노하우],ps:[자료],dl:[지울 노하우 id],ds:[지울 자료 id]} — 한 번에 */
+  o=o||{}; const pl=o.pl||[], ps=o.ps||[], dl=o.dl||[], ds=o.ds||[]; if(!pl.length&&!ps.length&&!dl.length&&!ds.length) return Promise.resolve();
+  return lnTx(['lessons','sources'],t=>{ const L=t.objectStore('lessons'), S=t.objectStore('sources'); pl.forEach(x=>L.put(clone(x))); dl.forEach(id=>L.delete(id)); ps.forEach(x=>S.put(clone(lnSrcRec(x)))); ds.forEach(id=>S.delete(id)); })
+    .then(()=>{ try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist(); }catch(e){} })
+    .catch(e=>{ toast('학습 내용을 저장하지 못했어요 — '+lnClip((e&&e.message)||e,60)); throw e; });
+}
+function lnFix(l){
+  if(!l||typeof l!=='object'||!l.id||typeof l.rule!=='string'||!l.rule.trim()) return null;
+  l.cat=LN_CAT[l.cat]?l.cat:'prod'; l.use=Array.isArray(l.use)?l.use.filter(u=>LN_TAGS.indexOf(u)>=0):[]; l.w=clamp(Math.round(+l.w||2),1,3); l.n=Math.max(1,Math.round(+l.n||1));
+  l.src=Array.isArray(l.src)?l.src.filter(Boolean):[]; l.on=l.on!==false; l.pin=!!l.pin; l.user=!!l.user; l.at=+l.at||Date.now(); l.upd=+l.upd||l.at; l.why=String(l.why||''); return l;
+}
+function lnCfgLoad(){
+  let c={}; try{ c=JSON.parse(localStorage.getItem(LN_CFG_KEY)||'{}')||{}; }catch(e){}
+  const d=clone(LN_DEF); if(typeof c.on==='boolean') d.on=c.on;
+  if(c.max>=3&&c.max<=40) d.max=Math.round(c.max); if(c.per>=3&&c.per<=30) d.per=Math.round(c.per);
+  if(c.use&&typeof c.use==='object') Object.keys(d.use).forEach(k=>{ if(typeof c.use[k]==='boolean') d.use[k]=c.use[k]; });
+  return d;
+}
+function lnCfgSave(){ try{ localStorage.setItem(LN_CFG_KEY,JSON.stringify(LRN.cfg)); }catch(e){} }
+async function lnLoad(){
+  LRN.cfg=lnCfgLoad();
+  try{ const L=await lnRead('lessons'), S=await lnRead('sources'); LRN.lessons=L.map(lnFix).filter(Boolean); LRN.sources=S.filter(s=>s&&s.id); LRN.err=''; }
+  catch(e){ LRN.err=lnClip((e&&e.message)||e,80); }
+  LRN.ready=true; paintLearnBtn(); lrPaintAll();
+}
+
+/* ── 비슷한 글 찾기(글자 두 쌍 겹침) · 노하우 합치기 ── */
+function lnGrams(s){ const t=String(s||'').toLowerCase().replace(/[\s .,!?'"“”‘’()\[\]{}:;·~\-–—\/\\|*_]+/g,''), g=new Set(); for(let i=0;i<t.length-1;i++) g.add(t.slice(i,i+2)); return g; }
+function lnSim(a,b){   /* 글자 두 쌍이 얼마나 겹치나(0~1). 양쪽에 숫자가 있는데 서로 다르면('14자'↔'20자') 다른 규칙이라 반으로 깎음 */
+  const A=lnGrams(a), B=lnGrams(b); if(!A.size||!B.size) return 0; let n=0; A.forEach(x=>{ if(B.has(x)) n++; }); let s=n/(A.size+B.size-n);
+  const na=(String(a).match(/\d+(?:\.\d+)?/g)||[]).sort().join(','), nb=(String(b).match(/\d+(?:\.\d+)?/g)||[]).sort().join(','); if(na&&nb&&na!==nb) s*=0.5;
+  return s;
+}
+function lnCat(c){
+  let s=String(c==null?'':c).toLowerCase().trim(); if(LN_CAT[s]) return s; if(LN_ALIAS[s]) return LN_ALIAS[s];
+  for(const k of Object.keys(LN_ALIAS)){ if(s.indexOf(k)>=0) return LN_ALIAS[k]; } return 'prod';
+}
+function lnMerge(items,sid){   /* AI 가 준 항목들 → 기존과 같은 뜻이면 강화(n+1), 아니면 새로. {add,rein,list(바뀐 노하우)} */
+  const now=Date.now(), ch=new Map(), res={add:0,rein:0,list:[]};
+  items.forEach(it=>{
+    let ex=it.same?LRN.lessons.find(l=>l.id===it.same):null;
+    if(!ex&&it.rule){ let best=null, bs=0; LRN.lessons.forEach(l=>{ const s=lnSim(l.rule,it.rule); if(s>bs){ bs=s; best=l; } }); if(best&&bs>=LN_SIM) ex=best; }
+    if(ex){
+      if(ex.src.indexOf(sid)<0){ ex.src.push(sid); ex.n=(ex.n||1)+1; res.rein++; }
+      ex.w=Math.max(ex.w,it.w||2); (it.use||[]).forEach(u=>{ if(ex.use.indexOf(u)<0) ex.use.push(u); }); if(!ex.why&&it.why) ex.why=it.why; ex.upd=now; ch.set(ex.id,ex);
+    }else if(it.rule){
+      const l={id:uid('l'),cat:it.cat,rule:it.rule,why:it.why||'',use:(it.use&&it.use.length)?it.use.slice():LN_CAT[it.cat].use.slice(),w:it.w||2,n:1,src:[sid],on:true,pin:false,user:false,at:now,upd:now};
+      LRN.lessons.push(l); ch.set(l.id,l); res.add++;
+    }
+  });
+  res.list=Array.from(ch.values()); return res;
+}
+function lnDropSource(sid){
+  const pl=[], dl=[];
+  LRN.lessons.forEach(l=>{ const i=l.src.indexOf(sid); if(i<0) return; l.src.splice(i,1); if(!l.src.length&&!l.user) dl.push(l.id); else{ l.n=Math.max(1,(l.n||1)-1); pl.push(l); } });
+  LRN.lessons=LRN.lessons.filter(l=>dl.indexOf(l.id)<0); LRN.sources=LRN.sources.filter(s=>s.id!==sid);
+  return lnSave({pl,dl,ds:[sid]});
+}
+/* AI 에게 '이미 아는 노하우'로 보여 줄 목록 — K1.. 번호로 줄여 보냄(같은 뜻이면 same 으로 번호만 적게) */
+function lnKnown(max){
+  const arr=LRN.lessons.slice().sort((a,b)=>(b.pin?1:0)-(a.pin?1:0)||(b.n-a.n)||(b.upd-a.upd)).slice(0,max||80), map={};
+  const txt=arr.map((l,i)=>{ const k='K'+(i+1); map[k]=l.id; return k+' ['+l.cat+'] '+lnClip(l.rule,80); }).join('\n');
+  return {txt,map};
+}
+
+/* ── 반영 — 요청 글에 덧붙일 노하우 고르기 ── */
+function lnPick(t){
+  const U=LN_USE[t]; if(!U||!LRN.cfg) return []; const max=LRN.cfg.max, sc=[];
+  LRN.lessons.forEach(l=>{
+    if(!l.on) return; let w=U.c[l.cat]||0;
+    if(l.use.indexOf(t)>=0) w=Math.max(w,0.7)+0.5; else if(t==='plan'&&l.use.indexOf('board')>=0) w=Math.max(w,0.3);
+    if(!w) return;
+    sc.push({l,s:w*(1+0.3*Math.min(4,Math.max(0,(l.n||1)-1)))*(l.w/2)+(l.pin?100:0)+(l.user?0.4:0)});
+  });
+  sc.sort((a,b)=>b.s-a.s||b.l.upd-a.l.upd);
+  const cap=Math.max(3,Math.ceil(max*0.5)), cnt={}, out=[];
+  for(const x of sc){ if(out.length>=max) break; const c=x.l.cat; if((cnt[c]||0)>=cap) continue; cnt[c]=(cnt[c]||0)+1; out.push(x.l); }
+  out.sort((a,b)=>LN_CATS.indexOf(a.cat)-LN_CATS.indexOf(b.cat));
+  return out;
+}
+function lnBlock(t,o){   /* 요청 글에 덧붙일 글 — 없으면 '' (요청 글이 예전과 똑같음). 'sub' 는 [문장] 앞에 넣어서 끝에 빈 줄을 붙임 */
+  try{
+    const C=LRN.cfg; if(!LRN.ready||!C||!C.on||!C.use[t]) return '';
+    const pk=lnPick(t); if(!pk.length) return '';
+    const ko=(o&&o.lang)?String(o.lang)==='ko':isKo(), n=LRN.sources.length;
+    const head='[학습한 영상 제작 노하우 — 참고 영상·자료'+(n?' '+n+'개':'')+'에서 배운 것. '+LN_HINT[t]+(ko?'':' · 아래 문구는 한국어지만 결과물은 위에 지정한 영상 언어로 쓰세요')+']';
+    const body=pk.map(l=>'- ['+LN_CAT[l.cat].n+'] '+l.rule+(l.n>1?' ('+l.n+'곳에서 확인)':'')).join('\n');
+    return t==='sub'?head+'\n'+body+'\n\n':'\n\n'+head+'\n'+body;
+  }catch(e){ return ''; }
+}
+
+/* ── 자료 읽기 ① YouTube 주소 ── */
+function ytId(u){ const m=/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/.exec(String(u||'').trim()); return m?m[1]:''; }
+async function lrYtMeta(id){   /* 제목·채널(실패해도 괜찮음 — 영상 번호로 표시) */
+  try{ const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),6000); const r=await fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id),{signal:ctl.signal}); clearTimeout(to); if(!r.ok) return null; const j=await r.json(); return {title:String(j.title||''),by:String(j.author_name||'')}; }catch(e){ return null; }
+}
+/* ── 자료 읽기 ② 파일 — base64 · 이미지 줄이기 ── */
+function lrB64(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const s=String(r.result||''), i=s.indexOf(','); res(i>=0?s.slice(i+1):''); }; r.onerror=()=>rej(r.error||new Error('파일을 읽지 못했어요')); r.readAsDataURL(file); }); }
+async function lrImg(file){   /* 긴 변 1568px 이하 JPEG + 작은 미리보기 */
+  let bmp=null; try{ bmp=await createImageBitmap(file); }catch(e){}
+  if(!bmp) bmp=await new Promise((res,rej)=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ URL.revokeObjectURL(u); res(im); }; im.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('이미지를 열지 못했어요: '+file.name)); }; im.src=u; });
+  const w0=bmp.width||bmp.naturalWidth, h0=bmp.height||bmp.naturalHeight; if(!w0||!h0) throw new Error('이미지 크기를 읽지 못했어요: '+file.name);
+  const k=Math.min(1,1568/Math.max(w0,h0)), w=Math.max(1,Math.round(w0*k)), h=Math.max(1,Math.round(h0*k));
+  const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,w,h); x.drawImage(bmp,0,0,w,h);
+  const url=c.toDataURL('image/jpeg',0.9), tk=Math.min(1,96/Math.max(w,h)), t=document.createElement('canvas'); t.width=Math.max(1,Math.round(w*tk)); t.height=Math.max(1,Math.round(h*tk)); t.getContext('2d').drawImage(c,0,0,t.width,t.height);
+  try{ if(bmp.close) bmp.close(); }catch(e){}
+  return {data:url.slice(url.indexOf(',')+1),thumb:t.toDataURL('image/jpeg',0.7),w:w0,h:h0};
+}
+/* ── 자료 읽기 ③ PPTX — ZIP 을 직접 열어 슬라이드의 글·구조·색·글꼴을 읽음(라이브러리 없이 DecompressionStream) ── */
+function zipRead(buf){
+  const u8=new Uint8Array(buf), dv=new DataView(buf), n=u8.length; let e=-1;
+  for(let i=n-22;i>=Math.max(0,n-22-65535);i--){ if(dv.getUint32(i,true)===0x06054b50){ e=i; break; } }
+  if(e<0) throw new Error('PPTX(ZIP) 형식이 아니에요');
+  const cnt=dv.getUint16(e+10,true), ents=new Map(); let p=dv.getUint32(e+16,true);
+  for(let i=0;i<cnt;i++){
+    if(p+46>n||dv.getUint32(p,true)!==0x02014b50) break;
+    const method=dv.getUint16(p+10,true), csz=dv.getUint32(p+20,true), nl=dv.getUint16(p+28,true), el=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), lo=dv.getUint32(p+42,true);
+    ents.set(new TextDecoder('utf-8').decode(u8.subarray(p+46,p+46+nl)),{method,csz,lo}); p+=46+nl+el+cl;
+  }
+  return {u8,dv,ents};
+}
+async function zipFile(z,name){
+  const e=z.ents.get(name); if(!e) return null;
+  if(z.dv.getUint32(e.lo,true)!==0x04034b50) throw new Error('PPTX 파일이 깨져 있어요');
+  const nl=z.dv.getUint16(e.lo+26,true), el=z.dv.getUint16(e.lo+28,true), st=e.lo+30+nl+el, raw=z.u8.subarray(st,st+e.csz);
+  if(e.method===0) return raw;
+  if(e.method!==8) throw new Error('지원하지 않는 압축 방식이에요');
+  if(typeof DecompressionStream==='undefined') throw new Error('이 브라우저는 PPTX 를 열 수 없어요 — PDF 로 저장해서 올려 주세요');
+  return new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+}
+const zipText=async(z,name)=>{ const u=await zipFile(z,name); return u?new TextDecoder('utf-8').decode(u):''; };
+function zipPath(base,t){ if(!t) return ''; if(t[0]==='/') return t.slice(1); const seg=base.split('/'); seg.pop(); t.split('/').forEach(p=>{ if(p==='..') seg.pop(); else if(p&&p!=='.') seg.push(p); }); return seg.join('/'); }
+function xmlDoc(s){ const d=new DOMParser().parseFromString(s,'application/xml'); if(d.getElementsByTagName('parsererror').length) throw new Error('PPTX 안의 XML 을 읽지 못했어요'); return d; }
+const xAll=(n,tag)=>Array.prototype.slice.call(n.getElementsByTagName(tag));
+const xParas=n=>xAll(n,'a:p').map(p=>xAll(p,'a:t').map(t=>t.textContent).join('').replace(/\s+/g,' ').trim()).filter(Boolean);
+async function xRels(z,part){ const rp=part.replace(/([^\/]+)$/,'_rels/$1.rels'), s=await zipText(z,rp), out={}; if(!s) return out; xAll(xmlDoc(s),'Relationship').forEach(r=>{ out[r.getAttribute('Id')]={type:(r.getAttribute('Type')||'').replace(/^.*\//,''),path:zipPath(part,r.getAttribute('Target'))}; }); return out; }
+const LN_TR={fade:'페이드',push:'밀기',wipe:'와이프',split:'가르기',cover:'덮기',pull:'당기기',zoom:'줌',randomBar:'랜덤 바',blinds:'블라인드',checker:'체크',circle:'원형',diamond:'다이아몬드',dissolve:'디졸브',comb:'빗',newsflash:'뉴스플래시',plus:'플러스',random:'랜덤',strips:'스트립',wedge:'쐐기',wheel:'바퀴'};
+async function lrPptx(file,onStep){
+  const z=zipRead(await file.arrayBuffer()); const pres=await zipText(z,'ppt/presentation.xml'); if(!pres) throw new Error('올바른 PPTX 파일이 아니에요(presentation.xml 이 없어요)');
+  const pd=xmlDoc(pres), sz=xAll(pd,'p:sldSz')[0], cx=sz?+sz.getAttribute('cx'):0, cy=sz?+sz.getAttribute('cy'):0, ratio=cx&&cy?(Math.abs(cx/cy-16/9)<0.03?'16:9':Math.abs(cx/cy-4/3)<0.03?'4:3':(cx/cy).toFixed(2)+':1'):'?';
+  const prels=await xRels(z,'ppt/presentation.xml'), order=xAll(pd,'p:sldId').map(x=>prels[x.getAttribute('r:id')]).filter(r=>r&&/slide$/.test(r.type)).map(r=>r.path);
+  if(!order.length) throw new Error('슬라이드를 찾지 못했어요');
+  const theme={}; try{ const t=xmlDoc(await zipText(z,'ppt/theme/theme1.xml')); const cs=xAll(t,'a:clrScheme')[0]; if(cs) Array.prototype.forEach.call(cs.children,c=>{ const v=c.firstElementChild; theme[c.localName]=v?(v.getAttribute('lastClr')||v.getAttribute('val')||''):''; }); const mj=xAll(t,'a:majorFont')[0], mn=xAll(t,'a:minorFont')[0], lf=n=>{ const a=n&&n.getElementsByTagName('a:latin')[0], e=n&&n.getElementsByTagName('a:ea')[0]; return [a&&a.getAttribute('typeface'),e&&e.getAttribute('typeface')].filter(Boolean).join('/'); }; theme.major=lf(mj); theme.minor=lf(mn); }catch(e){}
+  const colors={}, fonts={}, trs={}, lay={}, slides=[]; let anim=0, nPic=0, nChart=0, nTbl=0;
+  for(let i=0;i<order.length;i++){
+    if(onStep&&(i%6===0)) onStep('슬라이드 읽는 중 '+(i+1)+'/'+order.length);
+    const path=order[i], sx=await zipText(z,path); if(!sx) continue; const d=xmlDoc(sx), rels=await xRels(z,path); let layout='', notes='';
+    const lr=Object.values(rels).find(r=>/slideLayout$/.test(r.type)); if(lr){ if(!(lr.path in lay)){ const ls=await zipText(z,lr.path); let nm=''; if(ls){ const c=xAll(xmlDoc(ls),'p:cSld')[0]; nm=c?(c.getAttribute('name')||''):''; } lay[lr.path]=nm; } layout=lay[lr.path]; }
+    const nr=Object.values(rels).find(r=>/notesSlide$/.test(r.type)); if(nr){ const ns=await zipText(z,nr.path); if(ns){ const nd=xmlDoc(ns), body=xAll(nd,'p:sp').filter(sp=>{ const ph=xAll(sp,'p:ph')[0]; return ph&&ph.getAttribute('type')==='body'; }); notes=(body.length?body.map(xParas).flat():xParas(nd)).join(' ').trim(); } }
+    let title=''; const paras=[]; let maxPt=0, bold=0;
+    xAll(d,'p:sp').forEach(sp=>{ const ph=xAll(sp,'p:ph')[0], ty=ph?(ph.getAttribute('type')||''):'', ps=xParas(sp); if(!ps.length) return; if(/^(title|ctrTitle)$/.test(ty)&&!title) title=ps.join(' '); else if(!/^(sldNum|dt|ftr)$/.test(ty)) ps.forEach(p=>paras.push(p)); });
+    ['a:rPr','a:defRPr','a:endParaRPr'].forEach(tg=>xAll(d,tg).forEach(r=>{ const s=+r.getAttribute('sz'); if(s>maxPt) maxPt=s; if(r.getAttribute('b')==='1') bold++; }));
+    xAll(d,'a:srgbClr').forEach(c=>{ const v=(c.getAttribute('val')||'').toUpperCase(); if(v) colors[v]=(colors[v]||0)+1; });
+    xAll(d,'a:latin').concat(xAll(d,'a:ea')).forEach(f=>{ const v=f.getAttribute('typeface'); if(v&&v[0]!=='+') fonts[v]=(fonts[v]||0)+1; });
+    const pics=xAll(d,'p:pic').length, charts=xAll(d,'c:chart').length, tbls=xAll(d,'a:tbl').length, shapes=xAll(d,'p:sp').length, media=xAll(d,'a:videoFile').length+xAll(d,'a:audioFile').length;
+    const tr=xAll(d,'p:transition')[0], tn=tr?Array.prototype.map.call(tr.children,c=>c.localName).filter(x=>x&&!/^(sndAc|extLst)$/.test(x)):[]; tn.forEach(x=>{ trs[x]=(trs[x]||0)+1; });
+    const ha=!!xAll(d,'p:timing')[0]&&(xAll(d,'p:anim').length+xAll(d,'p:animEffect').length+xAll(d,'p:animMotion').length+xAll(d,'p:animScale').length+xAll(d,'p:set').length>0); if(ha) anim++;
+    nPic+=pics; nChart+=charts; nTbl+=tbls;
+    slides.push({i:i+1,title,paras,layout,pics,charts,tbls,shapes,media,maxPt:Math.round(maxPt/100),bold,tn,ha,notes});
+  }
+  const top=(o,n)=>Object.keys(o).sort((a,b)=>o[b]-o[a]).slice(0,n);
+  const th=['dk1','lt1','dk2','lt2','accent1','accent2','accent3','accent4','accent5','accent6'].filter(k=>theme[k]).map(k=>k+' #'+String(theme[k]).replace('#','').toUpperCase()).join(' · ');
+  let h='[PPT 구조 자료 — 파일 안의 글·구조·색·글꼴을 직접 읽은 것이고, 화면에 실제로 어떻게 보이는지(그림·배치)는 보지 못했습니다]\n파일: '+file.name+' · 슬라이드 '+slides.length+'장 · 비율 '+ratio+(theme.major||theme.minor?' · 글꼴(제목/본문) '+(theme.major||'?')+' / '+(theme.minor||'?'):'')+'\n';
+  if(th) h+='테마 색: '+th+'\n';
+  const tc=top(colors,8); if(tc.length) h+='슬라이드에 직접 쓴 색(많은 순): '+tc.map(k=>'#'+k+'×'+colors[k]).join(' ')+'\n';
+  const tf=top(fonts,5); if(tf.length) h+='쓴 글꼴: '+tf.map(k=>k+'×'+fonts[k]).join(' · ')+'\n';
+  h+='시각 요소 합계: 그림 '+nPic+' · 차트 '+nChart+' · 표 '+nTbl+' / 전환 효과: '+(Object.keys(trs).length?top(trs,5).map(k=>(LN_TR[k]||k)+' '+trs[k]+'장').join(' · '):'없음')+' / 애니메이션 있는 슬라이드 '+anim+'장\n\n[슬라이드별]\n';
+  const show=slides.length>60?slides.slice(0,44).concat(slides.slice(-10)):slides, lines=[];
+  show.forEach((s,k)=>{
+    if(slides.length>60&&k===44) lines.push('… (중간 '+(slides.length-54)+'장 생략)');
+    lines.push(s.i+'. 〈'+(s.title||'제목 없음')+'〉'+(s.layout?' · 레이아웃 '+s.layout:'')+' · 글상자 '+s.shapes+' · 그림 '+s.pics+(s.charts?' · 차트 '+s.charts:'')+(s.tbls?' · 표 '+s.tbls:'')+(s.media?' · 영상·소리 '+s.media:'')+(s.maxPt?' · 최대 글자 '+s.maxPt+'pt':'')+(s.tn.length?' · 전환 '+s.tn.map(x=>LN_TR[x]||x).join('+'):'')+(s.ha?' · 애니메이션':'')
+      +(s.paras.length?'\n   본문: '+lnClip(s.paras.slice(0,10).join(' / '),260):'')+(s.notes?'\n   발표자 노트: '+lnClip(s.notes,160):''));
+  });
+  return {digest:lnClip0(h+lines.join('\n'),38000),slides:slides.length,ratio};
+}
+const lnClip0=(s,n)=>s.length>n?s.slice(0,n)+'\n… (이하 생략)':s;
+
+/* ── AI 에게 시키는 글 ── */
+const LN_SYS=per=>'당신은 영상 제작 노하우를 모으는 선임 PD 이자 영상 분석가입니다. 사용자는 \'주식 시황 브리핑\' 유튜브 영상을 AI 로 만듭니다 — 나레이션 스크립트 → 스토리보드 → 화면(인포그래픽·자막·AI 이미지/영상·카드) → 음성 합성 → MP4. 아래 자료(영상·문서·이미지·글)를 살피고, 이 제작에 그대로 가져다 쓸 수 있는 \'영상 표현력·제작 기법\'을 뽑아 JSON 하나로만 답하세요(설명·머리말·코드블록 표시 금지).\n\n'
+  +'형식:\n{"title":"자료 제목(알 수 있으면)","summary":"무엇을 어떻게 만든 자료인지 2~3문장","lessons":[{"cat":"hook","rule":"…","why":"…","use":["script","board"],"w":2,"same":"K3"}]}\n\n'
+  +'cat 은 아래 중 하나:\nhook 오프닝·훅(첫 5~10초에 시선을 잡는 법) / story 구성·화법(전개 순서·스크립트 문체·설명 방식) / pace 리듬·전환(장면 길이·컷 속도·전환) / visual 화면 연출(구도·카메라·움직임·화면 구성) / info 인포그래픽(차트·도표·수치 강조) / text 자막·글자(자막·타이틀·타이포) / color 색·분위기(색 조합·톤·조명) / audio 소리(말투·BGM·효과음·침묵) / thumb 제목·썸네일 / prod 제작 노하우(제작 순서·품질 점검·도구 활용)\n'
+  +'use 는 이 규칙을 쓸 곳(1~3개): script 스크립트·나레이션 / board 스토리보드·AI 영상 장면 묘사 / info 인포그래픽 구성 / sub 자막 / scene 장면 편집·전환\n\n'
+  +'규칙:\n1. 자료에 실제로 보이거나 들리거나 쓰여 있는 것만 쓴다. 지어내지 않는다. 확실하지 않으면 w(확신: 1 낮음 · 2 보통 · 3 높음)를 낮춘다.\n'
+  +'2. rule 은 \'무엇을 어떻게 하라\'는 구체적인 명령문 한 문장(40~140자). \'좋은 영상을 만든다\' 같은 일반론은 금지. 가능하면 숫자(초·개수·비율·크기)·위치·색·순서를 넣는다.\n'
+  +'3. 자료의 \'내용\'(주제·종목·주장·문장)이 아니라 \'표현·제작 방식\'을 뽑는다. 브랜드·고유명사·저작물의 문장을 그대로 옮기지 않는다. 주식 시황 영상에 옮겨 쓸 수 있게 일반화한다. 자료가 외국어여도 rule 은 한국어로 쓴다.\n'
+  +'4. why 는 그 규칙을 어디서(어느 장면·쪽·대목) 봤고 왜 효과적인지 50자 안팎으로.\n'
+  +'5. [이미 아는 노하우]와 같은 뜻이면 새로 쓰지 말고 같은 항목에 same 으로 번호(K숫자)만 적는다(rule 은 비워도 된다). 비슷해도 더 구체적이거나 새 조건이 있으면 새 항목으로 쓴다.\n'
+  +'6. lessons 는 최대 '+per+'개. 서로 다른 관점으로, 중요한 것부터. 자료가 빈약하면 적게(0개도 가능).\n7. [배우고 싶은 점]이 있으면 그쪽을 우선한다.';
+const LN_LOOK={
+  youtube:'영상을 보고 들으며 살피세요 — 오프닝 구성과 첫 몇 초의 훅, 장면(컷) 길이와 전환 리듬, 화면 구성·카메라·움직임, 인포그래픽·차트·자막·타이틀의 모양과 등장 타이밍, 색·분위기, 나레이션 말투와 속도·BGM·효과음, 전체 전개 순서.',
+  pdf:'문서의 쪽을 훑으며 살피세요 — 전개 순서, 쪽 디자인과 시각 요소(도표·차트·이미지)의 배치, 글의 양과 크기·강조 방식, 색 사용, 제목·요약 문구를 만드는 법.',
+  image:'이미지를 보고 살피세요 — 구도와 시선 흐름, 글자 디자인(크기·굵기·색·위치), 색 조합과 대비, 정보 배치와 위계, 인포그래픽·차트 표현. 여러 장이면 공통된 패턴을 우선하세요.',
+  pptx:'슬라이드 구성 자료를 읽고 살피세요 — 전개 순서와 슬라이드당 글의 양, 제목 문장을 만드는 법, 시각 요소의 비율, 강조 수치·색 사용, 전환·애니메이션. (실제 그림은 보지 못했으니 보이는 모양을 단정하지 마세요)',
+  text:'글을 읽고 살피세요 — 전개 순서(훅→전개→마무리), 문장 길이와 말투, 설명하는 방식, 시청자를 붙잡는 장치, 숫자·비유를 쓰는 법. (화면 표현은 글에 적힌 만큼만)'
+};
+const LN_TIDY_SYS='당신은 영상 제작 노하우 목록을 정리하는 편집자입니다. 같은 분류의 노하우 목록(번호 K숫자·확인된 횟수·문장)을 받아, \'뜻이 같거나 거의 같아서 하나로 합쳐도 되는 것\'끼리 묶어 JSON 하나로만 답하세요(설명·코드블록 표시 금지).\n형식: {"groups":[{"ids":["K1","K4"],"rule":"합친 문장"}]}\n규칙:\n1. 묶음은 2개 이상의 번호로. 뜻이 다르거나 조건·수치가 다른 것은 묶지 않는다(애매하면 묶지 않는다). 한 번호는 한 묶음에만 쓴다.\n2. rule 은 묶은 항목들의 핵심을 모두 살린 구체적인 명령문 한 문장(40~140자). 수치·조건은 가장 구체적인 것을 남긴다.\n3. 묶을 것이 없으면 {"groups":[]}.';
+
+/* ── AI 답 읽기 ── */
+function lnJson(txt){
+  const s=String(txt||'').replace(/^﻿/,'').replace(/```(?:json)?/gi,'').trim(); if(!s) throw new Error('AI 가 빈 답을 줬어요');
+  if(s[0]==='['){ try{ const a=JSON.parse(s); if(Array.isArray(a)) return {lessons:a}; }catch(e){} }   /* 배열로만 온 답 — 항목이 하나여도 목록으로 */
+  try{ return parseJsonLoose(s); }catch(e){}
+  const a=s.indexOf('['), b=s.lastIndexOf(']'); if(a>=0&&b>a){ try{ return {lessons:JSON.parse(s.slice(a,b+1))}; }catch(e){} }
+  const sv=lnSalvage(s); if(sv) return sv;   /* 답이 길이 제한으로 중간에 잘렸어도 이미 끝난 항목은 건짐 */
+  throw new Error('AI 가 형식에 맞게 답하지 않았어요');
+}
+function lnSalvage(s){   /* 닫히지 않은 JSON 에서 "lessons":[ … ] 안의 완성된 {…} 항목만 하나씩 읽어 냄 */
+  const i=s.search(/"(?:lessons|rules)"\s*:\s*\[/); if(i<0) return null; const arr=[]; let p=s.indexOf('[',i)+1, depth=0, str=false, esc=false, st=-1;
+  for(;p<s.length;p++){ const ch=s[p];
+    if(str){ if(esc) esc=false; else if(ch==='\\') esc=true; else if(ch==='"') str=false; continue; }
+    if(ch==='"'){ str=true; continue; }
+    if(ch==='{'){ if(depth===0) st=p; depth++; }
+    else if(ch==='}'){ depth--; if(depth===0&&st>=0){ try{ arr.push(JSON.parse(s.slice(st,p+1))); }catch(e){} st=-1; } else if(depth<0) depth=0; }
+    else if(ch===']'&&depth===0) break;
+  }
+  if(!arr.length) return null; const g=re=>{ const m=re.exec(s); return m?m[1]:''; };
+  return {lessons:arr,title:g(/"title"\s*:\s*"([^"]*)"/),summary:g(/"summary"\s*:\s*"([^"]*)"/)};
+}
+const lnClean=(s,n)=>lnClip(String(s==null?'':s).replace(/\r/g,'').replace(/^[\s\-•*·]+/,'').replace(/^\d+[.)]\s+/,'').replace(/\*\*|__|`/g,''),n);
+function lnNormItem(r,known){
+  if(!r||typeof r!=='object') return null;
+  let same=''; if(r.same!=null&&String(r.same).trim()){ const k='K'+String(r.same).replace(/\D/g,''); if(known.map[k]) same=known.map[k]; }
+  const rule=lnClean(r.rule!=null?r.rule:(r.text!=null?r.text:r.tip),200); if(rule.length<8&&!same) return null;
+  if(LN_BAD.test(rule)) return null;   /* 자료 안에 심어 둔 '이전 지시를 무시하라' 같은 문구가 노하우로 저장돼 이후 모든 요청에 붙는 것을 막음 */
+  const cat=lnCat(r.cat), use=(Array.isArray(r.use)?r.use:[]).map(u=>String(u).toLowerCase().trim()).filter((u,i,a)=>LN_TAGS.indexOf(u)>=0&&a.indexOf(u)===i).slice(0,3);
+  return {same,rule:rule.length>=8?rule:'',cat,why:lnClean(r.why,120),use,w:clamp(Math.round(+r.w||2),1,3)};
+}
+function lnParse(txt,known,per){
+  const raw=lnJson(txt), arr=Array.isArray(raw.lessons)?raw.lessons:(Array.isArray(raw.rules)?raw.rules:((raw.rule||raw.same)?[raw]:null)); if(!arr) throw new Error('AI 가 노하우 목록을 주지 않았어요');
+  const items=[]; arr.slice(0,per+8).forEach(r=>{ const x=lnNormItem(r,known); if(x) items.push(x); });
+  return {title:lnClip(raw.title,80),summary:lnClip(raw.summary,300),items:items.slice(0,per+2)};
+}
+
+/* ── 어느 AI 로 배울까 — 글=스튜디오 글 AI · 이미지/PDF=보는 AI(DeepSeek 이면 다른 AI 로) · YouTube=Gemini ── */
+function lrAiFor(kind){
+  const ai=studioAi(), gk=geminiKey(), ck=lsGet('BTMClaudeApiKey'), ok=lsGet('BTMOpenAIApiKey');
+  if(kind==='text') return ai.key?{mapKey:ai.mapKey,name:ai.name}:{err:ai.name+' API Key 가 없어요 — 머리의 🤖 AI 에서 다른 AI 를 고르거나 관리 메뉴 › 🧩 AI 공급자에서 키를 넣어 주세요'};
+  if(kind==='youtube'){
+    if(!gk) return {err:'YouTube 영상은 Gemini 가 영상을 직접 보고 배워요 — 관리 메뉴 › 🧩 AI 공급자에서 Gemini 키를 넣어 주세요(키가 없으면 [글 붙여넣기]로 대본을 넣어 배울 수 있어요)'};
+    return {mapKey:ai.mapKey,provider:ai.provider==='gemini-pro'?'gemini-pro':'gemini-flash',name:'Gemini'};
+  }
+  if(ai.key&&ai.provider.indexOf('deepseek')!==0) return {mapKey:ai.mapKey,name:ai.name};
+  const alt=[['gemini-flash','Gemini',gk],['claude','Claude',ck],['chatgpt-flash','ChatGPT',ok]].find(x=>x[2]);
+  if(alt) return {mapKey:ai.mapKey,provider:alt[0],name:alt[1],note:(ai.provider.indexOf('deepseek')===0?ai.name+' 는 이미지·PDF 를 못 봐서 ':'글 AI 키가 없어서 ')+alt[1]+' 로 배워요'};
+  return {err:'이미지·PDF 는 Claude·Gemini·ChatGPT 중 하나의 키가 있어야 배울 수 있어요 — 관리 메뉴 › 🧩 AI 공급자에서 키를 넣어 주세요'};
+}
+function lrErr(e){
+  const m=String((e&&e.message)||e||'알 수 없는 오류'); if(/[가-힣]/.test(m)) return lnClip(m,170);   /* 한글 문구는 우리 앱이 직접 쓴 안내(키 없음·형식 오류 등)라 그대로 — 아래는 AI 서버가 돌려준 영어 오류를 풀어 쓰는 것 */
+  if(/API key not valid|invalid.*api.?key|incorrect api key|authentication|unauthorized|permission/i.test(m)) return 'AI 키가 맞지 않거나 권한이 없어요 — '+lnClip(m,80);
+  if(/quota|resource.?exhausted|429|rate.?limit|overloaded|high demand/i.test(m)) return '요청이 몰렸거나 사용 한도를 넘었어요 — 잠시 뒤 다시 해 보세요 ('+lnClip(m,60)+')';
+  if(/youtube|video|file_uri|fileuri|unsupported.*url|Failed to (?:extract|download)/i.test(m)) return '이 영상을 AI 가 볼 수 없어요(비공개·일부 공개·연령 제한·길이 제한일 수 있어요) — '+lnClip(m,90);
+  if(/too large|too long|exceed|payload|request entity|413|page/i.test(m)&&/pdf|file|request|page|size|token/i.test(m)) return '파일이 너무 크거나 길어요(PDF 는 약 100쪽·15MB 이하) — '+lnClip(m,80);
+  return lnClip(m,140);
+}
+
+/* ── 자료 하나 배우기 — 읽기 → AI → 합치기 → 저장. 결과 {add,rein} ── */
+function lrStep(q,t){ q.step=t; const el=document.querySelector('#lrQ [data-q="'+q.id+'"] .sp2'); if(el) el.textContent=t; const s=document.querySelector('#lrSum .run'); if(s&&LUI.run&&LUI.run.id===q.id) s.textContent='⏳ '+LUI.run.i+'/'+LUI.run.n+' · '+lnClip(q.title,24)+' — '+t; }
+async function lrLearnOne(q,signal){
+  const kind=q.type==='youtube'?'youtube':(q.type==='pdf'||q.type==='image')?'media':'text', ai=lrAiFor(kind); if(ai.err) throw new Error(ai.err);
+  const per=LRN.cfg.per, kn=lnKnown(80); let blocks=[], digest=q.digest||'', thumb=q.thumb||'', meta=Object.assign({},q.meta||{}), head='';
+  lrStep(q,ai.note||(ai.name+' 에게 보낼 준비 중…'));
+  if(q.type==='youtube'){ blocks=[{type:'youtube',url:q.url,end:(q.min||0)*60}]; meta.min=q.min||0; head='YouTube 영상 — '+q.url+(q.min?' (처음 '+q.min+'분 구간만 보여 줌)':''); }
+  else if(q.type==='pdf'){ lrStep(q,'PDF 읽는 중…'); blocks=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:await lrB64(q.file)}}]; meta.size=q.size; head='PDF 문서 — '+q.name; }
+  else if(q.type==='image'){ const im=[]; for(let i=0;i<q.files.length;i++){ lrStep(q,'이미지 줄이는 중 '+(i+1)+'/'+q.files.length); im.push(await lrImg(q.files[i])); } blocks=im.map(x=>({type:'image',source:{type:'base64',media_type:'image/jpeg',data:x.data}})); thumb=im[0].thumb; meta.count=im.length; head='이미지 '+im.length+'장 — '+q.files.map(f=>f.name).join(', '); }
+  else if(q.type==='pptx'){ if(!digest){ lrStep(q,'PPT 열어서 읽는 중…'); const r=await lrPptx(q.file,t=>lrStep(q,t)); digest=r.digest; meta.slides=r.slides; meta.ratio=r.ratio; q.digest=digest; } head='파워포인트 — '+(q.name||q.title); }
+  else{ head='글 — '+q.title; }
+  if(signal.aborted) throw new DOMException('Aborted','AbortError');
+  const body=(q.type==='pptx'||q.type==='text')?'\n\n[본문]\n'+lnClip0(digest,40000):'';
+  const user='[자료] '+head+'\n[배우고 싶은 점] '+(q.focus||'(따로 없음 — 영상 표현력과 제작 방식 전반)')+'\n[살필 것] '+LN_LOOK[q.type]+'\n[이미 아는 노하우 — 같은 뜻이면 same 에 번호만]\n'+(kn.txt||'(아직 없음)')+body+'\n\n위 자료에서 노하우를 JSON 으로 답하세요.';
+  let last=0; const onDelta=t=>{ const n=performance.now(); if(n-last<300) return; last=n; lrStep(q,ai.name+' 가 정리하는 중… ('+t.length+'자)'); };
+  const onRetry=(a,m)=>lrStep(q,'AI 서버가 혼잡해요 — 잠시 뒤 다시 시도('+a+'/'+m+')');
+  const call=bl=>bl.length?window._runMediaPrompt(ai.mapKey,LN_SYS(per),bl,user,{provider:ai.provider,signal,onDelta,onRetry}):window._runTextPrompt(ai.mapKey,LN_SYS(per),user,{signal,onDelta,onRetry});
+  lrStep(q,q.type==='youtube'?'Gemini 가 영상을 보고 있어요(영상 길이에 따라 수 분 걸려요)…':ai.name+' 가 살펴보는 중…');
+  let txt; try{ txt=await call(blocks); }
+  catch(e){ if(q.type==='youtube'&&q.min&&!signal.aborted&&/offset|duration|metadata|range|clip/i.test(String((e&&e.message)||e))){ lrStep(q,'구간 지정이 안 돼서 영상 전체로 다시 시도…'); txt=await call([{type:'youtube',url:q.url}]); } else throw e; }
+  if(signal.aborted) throw new DOMException('Aborted','AbortError');
+  const r=lnParse(txt,kn,per), sid=q.redo||uid('s'), old=LRN.sources.find(s=>s.id===sid), m=lnMerge(r.items,sid);
+  const rec={id:sid,type:q.type,ref:q.type==='youtube'?q.ytid:(q.name||q.title||''),url:q.url||'',title:r.title||q.title||'(제목 없음)',at:Date.now(),by:ai.name,summary:r.summary,focus:q.focus||'',n:r.items.length,add:m.add+(old?old.add||0:0),rein:m.rein+(old?old.rein||0:0),digest:(q.type==='pptx'||q.type==='text')?lnClip0(digest,60000):'',thumb,meta};
+  if(old) LRN.sources[LRN.sources.indexOf(old)]=rec; else LRN.sources.unshift(rec);
+  lrStep(q,'저장하는 중…'); await lnSave({pl:m.list,ps:[rec]});
+  return {add:m.add,rein:m.rein,got:r.items.length};
+}
+async function lrStart(){
+  if(LUI.run||LUI.tidy) return; const todo=LUI.queue.filter(q=>q.state==='queued'||q.state==='err');
+  if(!todo.length){ toast('배울 자료를 먼저 추가해 주세요'); return; }
+  const ctl=new AbortController(); LUI.run={ctl,i:0,n:todo.length,id:''}; let ok=0, fail=0, add=0, rein=0, stopped=false;
+  paintLearnBtn(); lrPaintAll();
+  for(const q of todo){
+    if(ctl.signal.aborted){ stopped=true; break; }
+    LUI.run.i++; LUI.run.id=q.id; q.state='run'; q.err=''; q.step='준비 중…'; lrPaintQ(); lrPaintSum(); paintLearnBtn();
+    try{ const r=await lrLearnOne(q,ctl.signal); ok++; add+=r.add; rein+=r.rein; q.state='done'; }
+    catch(e){ if(ctl.signal.aborted||(e&&e.name==='AbortError')){ q.state='queued'; q.step=''; stopped=true; break; } fail++; q.state='err'; q.err=lrErr(e); }
+    lrPaintQ(); lrPaintAll();
+  }
+  LUI.queue=LUI.queue.filter(q=>q.state!=='done'); LUI.run=null; paintLearnBtn(); lrPaintAll();
+  toast(stopped?'학습을 멈췄어요'+(ok?' — '+ok+'개는 배웠어요':''):ok?'🎓 자료 '+ok+'개에서 배웠어요 — 새 노하우 '+add+'개 · 겹쳐서 강화 '+rein+'개'+(fail?' · 실패 '+fail+'개':''):'🎓 배우지 못했어요 — 대기열의 오류 내용을 확인해 주세요');
+}
+function lrStop(){ if(LUI.run) LUI.run.ctl.abort(); if(LUI.tidy) LUI.tidy.ctl.abort(); }
+
+/* ── 자료 넣기 ── */
+function lrKind(f){ const n=(f.name||'').toLowerCase(), t=(f.type||'').toLowerCase(); if(/\.pdf$/.test(n)||t==='application/pdf') return 'pdf'; if(/\.pptx$/.test(n)||t==='application/vnd.openxmlformats-officedocument.presentationml.presentation') return 'pptx'; if(/\.(ppt|key|odp)$/.test(n)) return 'ppt'; if(/^image\//.test(t)||/\.(png|jpe?g|webp|gif|bmp)$/.test(n)) return 'image'; return ''; }
+const lrMB=n=>(n/1048576).toFixed(1)+'MB';
+function lrAddFiles(files){
+  files=Array.prototype.slice.call(files||[]); if(!files.length) return; LUI.tab='add'; const imgs=[]; let n=0;
+  files.forEach(f=>{
+    const k=lrKind(f);
+    if(k==='ppt'){ toast('“'+f.name+'” — 옛 형식(.ppt 등)은 읽을 수 없어요. .pptx 나 PDF 로 저장해서 올려 주세요'); return; }
+    if(!k){ toast('“'+f.name+'” — 지원하지 않는 형식이에요(PDF·PPTX·이미지만)'); return; }
+    if(k==='image'){ if(f.size>LN_MAX.image){ toast('“'+f.name+'” 이미지가 너무 커요('+lrMB(f.size)+' — '+lrMB(LN_MAX.image)+' 이하)'); return; } imgs.push(f); return; }
+    if(f.size>LN_MAX[k]){ toast('“'+f.name+'” 이(가) 너무 커요('+lrMB(f.size)+') — '+lrMB(LN_MAX[k])+' 이하만 배울 수 있어요'); return; }
+    LUI.queue.push({id:uid('q'),type:k,name:f.name,file:f,size:f.size,title:f.name.replace(/\.[^.]+$/,''),focus:LUI.draft.focus||'',state:'queued'}); n++;
+  });
+  for(let i=0;i<imgs.length;i+=LN_MAX.imgN){ const g=imgs.slice(i,i+LN_MAX.imgN); LUI.queue.push({id:uid('q'),type:'image',files:g,name:g.map(f=>f.name).join(', '),size:g.reduce((a,f)=>a+f.size,0),title:g[0].name.replace(/\.[^.]+$/,'')+(g.length>1?' 외 '+(g.length-1)+'장':''),focus:LUI.draft.focus||'',state:'queued'}); n++; }
+  if(n){ toast('대기열에 '+n+'개 넣었어요 — [🎓 학습 시작]을 누르면 배워요'); lrPaintAll(); }
+}
+async function lrAddYt(){
+  const lines=String(LUI.draft.yt||'').split(/[\s,]+/).map(s=>s.trim()).filter(Boolean); if(!lines.length){ toast('YouTube 주소를 먼저 붙여 넣어 주세요'); return; }
+  const min=clamp(Math.round(+LUI.draft.min||0),0,60); let n=0; const added=[];
+  lines.forEach(u=>{
+    const id=ytId(u); if(!id){ toast('“'+lnClip(u,40)+'” — YouTube 주소가 아니에요'); return; }
+    const had=LRN.sources.find(s=>s.type==='youtube'&&s.ref===id); if(had){ toast('이미 배운 영상이에요(“'+lnClip(had.title,30)+'”) — [배운 자료]의 🔁 로 다시 배울 수 있어요'); return; }
+    if(LUI.queue.some(q=>q.ytid===id)){ toast('이미 대기열에 있어요'); return; }
+    const q={id:uid('q'),type:'youtube',ytid:id,url:'https://www.youtube.com/watch?v='+id,title:'YouTube 영상 '+id,min,focus:LUI.draft.focus||'',state:'queued'}; LUI.queue.push(q); added.push(q); n++;
+  });
+  if(!n) return; LUI.draft.yt=''; const el=$('lrYt'); if(el) el.value=''; toast('대기열에 '+n+'개 넣었어요'+(geminiKey()?'':' — 단, Gemini 키가 없으면 영상을 볼 수 없어요')); lrPaintAll();
+  added.forEach(q=>{ lrYtMeta(q.ytid).then(m=>{ if(m&&m.title&&LUI.queue.indexOf(q)>=0){ q.title=m.title; q.by=m.by; lrPaintQ(); } }); });
+}
+function lrAddTxt(){
+  const t=String(LUI.draft.txt||'').replace(/\r/g,'').trim(); if(t.length<60){ toast('글이 너무 짧아요 — 대본·자막·기획안을 60자 이상 붙여 넣어 주세요'); return; }
+  const title=lnClip(LUI.draft.ttl,60)||lnClip(t,28);
+  LUI.queue.push({id:uid('q'),type:'text',title,digest:t.slice(0,LN_MAX.text),size:t.length,focus:LUI.draft.focus||'',state:'queued'});
+  if(t.length>LN_MAX.text) toast('글이 길어서 앞 '+LN_MAX.text.toLocaleString()+'자만 써요');
+  LUI.draft.txt=''; LUI.draft.ttl=''; lrPaintAll();
+}
+
+/* ── 노하우 고치기·내보내기·정리 ── */
+function lnAddUser(cat,rule){
+  rule=lnClean(rule,200); if(rule.length<8){ toast('노하우는 8자 이상으로 적어 주세요'); return false; }
+  const sim=LRN.lessons.find(l=>lnSim(l.rule,rule)>=LN_SIM); if(sim){ toast('이미 비슷한 노하우가 있어요 — “'+lnClip(sim.rule,40)+'”'); return false; }
+  const now=Date.now(), l={id:uid('l'),cat:LN_CAT[cat]?cat:'prod',rule,why:'',use:LN_CAT[LN_CAT[cat]?cat:'prod'].use.slice(),w:3,n:1,src:[],on:true,pin:false,user:true,at:now,upd:now};
+  LRN.lessons.push(l); lnSave({pl:[l]}).catch(()=>{}); return true;
+}
+function lnExport(){
+  if(!LRN.lessons.length&&!LRN.sources.length){ toast('내보낼 내용이 아직 없어요'); return; }
+  const d=new Date(), z=n=>String(n).padStart(2,'0'), name='AI학습_노하우_'+d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'.json';
+  download(new Blob([JSON.stringify({app:'BTMLearn',v:1,at:d.toISOString(),cfg:LRN.cfg,sources:LRN.sources.map(lnSrcRec),lessons:LRN.lessons},null,1)],{type:'application/json'}),name); toast('백업 파일을 저장했어요 — '+name);
+}
+async function lnImport(file){
+  let j; try{ j=JSON.parse(await file.text()); }catch(e){ toast('JSON 파일을 읽지 못했어요'); return; }
+  if(!j||j.app!=='BTMLearn'||!Array.isArray(j.lessons)){ toast('AI학습 백업 파일이 아니에요'); return; }
+  const pl=new Map(), ps=[]; let add=0, mer=0;
+  (Array.isArray(j.sources)?j.sources:[]).forEach(s=>{ if(s&&s.id&&!LRN.sources.some(x=>x.id===s.id)){ if(!/^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/.test(s.url||'')) s.url=''; if(!/^data:image\//.test(s.thumb||'')) s.thumb=''; LRN.sources.push(s); ps.push(s); } });
+  j.lessons.map(lnFix).filter(Boolean).forEach(l=>{
+    let ex=LRN.lessons.find(x=>x.id===l.id); if(!ex){ let best=null, bs=0; LRN.lessons.forEach(x=>{ const s=lnSim(x.rule,l.rule); if(s>bs){ bs=s; best=x; } }); if(best&&bs>=LN_SIM) ex=best; }
+    if(ex){ l.src.forEach(s=>{ if(ex.src.indexOf(s)<0){ ex.src.push(s); } }); ex.n=Math.max(ex.n,l.n,ex.src.length); l.use.forEach(u=>{ if(ex.use.indexOf(u)<0) ex.use.push(u); }); ex.w=Math.max(ex.w,l.w); ex.pin=ex.pin||l.pin; ex.upd=Math.max(ex.upd,l.upd); pl.set(ex.id,ex); mer++; }
+    else{ LRN.lessons.push(l); pl.set(l.id,l); add++; }
+  });
+  try{ await lnSave({pl:Array.from(pl.values()),ps}); }catch(e){ return; }
+  toast('가져왔어요 — 새 노하우 '+add+'개 · 기존과 합침 '+mer+'개 · 자료 '+ps.length+'개'); lrPaintAll(); paintLearnBtn();
+}
+async function lrTidy(){
+  if(LUI.run||LUI.tidy) return; if(LRN.lessons.length<6){ toast('정리할 만큼 노하우가 쌓이지 않았어요(6개 이상부터)'); return; }
+  const ai=lrAiFor('text'); if(ai.err){ toast(ai.err); return; }
+  if(!confirm('AI 가 겹치거나 거의 같은 노하우를 찾아 하나로 합쳐요.\n합친 결과는 바로 반영되고, 이 창의 [↩ 방금 정리 되돌리기]로 되돌릴 수 있어요.\n(AI 호출 분류마다 1번)\n\n계속할까요?')) return;
+  const ctl=new AbortController(); LUI.tidy={ctl,step:'준비 중…'}; lrPaintSum(); const snap=clone(LRN.lessons); let merged=0, fail='';
+  try{
+    for(const cat of LN_CATS){
+      const L=LRN.lessons.filter(l=>l.cat===cat).sort((a,b)=>b.n-a.n).slice(0,70); if(L.length<4) continue;
+      LUI.tidy.step=LN_CAT[cat].ic+' '+LN_CAT[cat].n+' 정리하는 중…'; lrPaintSum(); const map={};
+      const lines=L.map((l,i)=>{ map['K'+(i+1)]=l; return 'K'+(i+1)+' (×'+l.n+') '+lnClip(l.rule,130); });
+      let raw; try{ raw=lnJson(await window._runTextPrompt(ai.mapKey,LN_TIDY_SYS,'[분류] '+LN_CAT[cat].n+' ('+cat+')\n'+lines.join('\n'),{signal:ctl.signal})); }catch(e){ if(ctl.signal.aborted||(e&&e.name==='AbortError')) throw e; fail=lrErr(e); continue; }
+      const used=new Set(), pl=[], dl=[];
+      (Array.isArray(raw.groups)?raw.groups:[]).forEach(g=>{
+        const ids=(Array.isArray(g&&g.ids)?g.ids:[]).map(k=>String(k).trim().toUpperCase()).filter((k,i,a)=>map[k]&&!used.has(k)&&a.indexOf(k)===i); if(ids.length<2) return; ids.forEach(k=>used.add(k));
+        const ms=ids.map(k=>map[k]), keep=ms.slice().sort((a,b)=>(b.pin?1:0)-(a.pin?1:0)||b.n-a.n||b.rule.length-a.rule.length)[0], nr=lnClean(g.rule,200);
+        if(nr.length>=8) keep.rule=nr;
+        ms.forEach(x=>{ if(x===keep) return; x.src.forEach(s=>{ if(keep.src.indexOf(s)<0) keep.src.push(s); }); x.use.forEach(u=>{ if(keep.use.indexOf(u)<0) keep.use.push(u); }); keep.w=Math.max(keep.w,x.w); keep.pin=keep.pin||x.pin; keep.on=keep.on||x.on; keep.user=keep.user||x.user; if(!keep.why&&x.why) keep.why=x.why; dl.push(x.id); });
+        keep.n=Math.max(keep.n,keep.src.length+(keep.user?1:0)); keep.upd=Date.now(); pl.push(keep); merged+=ids.length-1;
+      });
+      if(dl.length){ LRN.lessons=LRN.lessons.filter(l=>dl.indexOf(l.id)<0); await lnSave({pl,dl}); }
+    }
+    if(merged){ LRN.undo={at:Date.now(),lessons:snap}; toast('🧹 겹치는 노하우 '+merged+'개를 합쳤어요 — 마음에 안 들면 [↩ 방금 정리 되돌리기]'); }
+    else toast(fail?'정리하지 못했어요 — '+fail:'🧹 합칠 만큼 겹치는 노하우가 없어요');
+  }catch(e){ if(!(ctl.signal.aborted||(e&&e.name==='AbortError'))) toast('정리하지 못했어요 — '+lrErr(e)); else{ if(merged) LRN.undo={at:Date.now(),lessons:snap}; toast('정리를 멈췄어요'+(merged?' — '+merged+'개는 합쳤어요':'')); } }
+  finally{ LUI.tidy=null; lrPaintAll(); paintLearnBtn(); }
+}
+async function lrTidyUndo(){
+  if(!LRN.undo) return; const snap=LRN.undo.lessons.map(lnFix).filter(Boolean), keep=new Set(snap.map(l=>l.id)), dl=LRN.lessons.filter(l=>!keep.has(l.id)).map(l=>l.id);
+  LRN.lessons=snap; LRN.undo=null; try{ await lnSave({pl:snap,dl}); toast('정리하기 전으로 되돌렸어요'); }catch(e){} lrPaintAll(); paintLearnBtn();
+}
+async function lrWipe(){
+  if(!LRN.lessons.length&&!LRN.sources.length){ toast('지울 내용이 없어요'); return; }
+  if(!confirm('배운 노하우 '+LRN.lessons.length+'개와 배운 자료 '+LRN.sources.length+'개를 모두 지울까요?\n되돌릴 수 없어요 — 먼저 [⬇ 내보내기]로 백업해 두는 걸 권해요.')) return;
+  try{ await lnTx(['lessons','sources'],t=>{ t.objectStore('lessons').clear(); t.objectStore('sources').clear(); }); LRN.lessons=[]; LRN.sources=[]; LRN.undo=null; toast('모두 지웠어요'); }catch(e){ toast('지우지 못했어요 — '+lnClip((e&&e.message)||e,60)); }
+  lrPaintAll(); paintLearnBtn();
+}
+
+/* ── 화면 ── */
+function paintLearnBtn(){
+  const b=$('vsLearnBtn'); if(!b) return; const n=LRN.lessons.length, on=!LRN.cfg||LRN.cfg.on, r=LUI.run, t=LUI.tidy;
+  b.innerHTML='🎓 AI학습'+((r||t)?' <i>⏳'+(r?' '+r.i+'/'+r.n:'')+'</i>':(n?' <b>'+n+'</b>':''))+((n&&!on)?' <span class="bad">꺼짐</span>':'');
+  b.title='참고 영상·문서·이미지에서 영상 표현력과 제작 노하우를 배워 쌓아 두고 다음 영상을 만들 때 적용해요'+(n?' — 지금 노하우 '+n+'개'+(on?' 적용 중':' (적용 꺼짐)'):'');
+  b.classList.toggle('run',!!(r||t));
+}
+function lrOpen(tab){
+  if(tab) LUI.tab=tab; LUI.edit=''; LUI.adding=false;
+  dlg('🎓 AI학습 <span class="hint">영상 표현력·제작 노하우를 배워 계속 쌓고, 다음 영상을 만들 때 적용해요</span>','<div id="lrRoot" class="lr-root"><div id="lrSum" class="lr-sum"></div><div id="lrTabs" class="lr-tabs"></div><div id="lrPane" class="lr-pane"></div></div>',[{t:'닫기',a:'dlgClose',c:'pri'}],'wide lr');
+  lrBind(); lrPaintAll();
+}
+function lrBind(){
+  const d=$('vsDlg'); if(!d||d._lr) return; d._lr=1;
+  d.addEventListener('input',e=>{ const t=e.target; if(t&&t.dataset&&t.dataset.lr) lrInput(t,false); });
+  d.addEventListener('change',e=>{ const t=e.target; if(t&&t.dataset&&t.dataset.lr) lrInput(t,true); });
+  const zone=e=>e.target&&e.target.closest&&e.target.closest('#lrRoot'), hasF=e=>!!(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0);
+  d.addEventListener('dragover',e=>{ if(!hasF(e)) return; e.preventDefault(); const z=$('lrDrop'); if(z&&zone(e)) z.classList.add('on'); });
+  d.addEventListener('dragleave',e=>{ const z=$('lrDrop'); if(z&&(!e.relatedTarget||!d.contains(e.relatedTarget))) z.classList.remove('on'); });
+  d.addEventListener('drop',e=>{ if(!hasF(e)) return; e.preventDefault(); const z=$('lrDrop'); if(z) z.classList.remove('on'); if(zone(e)) lrAddFiles(e.dataTransfer.files); });
+}
+function lrInput(t,fin){
+  const k=t.dataset.lr, id=t.dataset.id, v=t.type==='checkbox'?t.checked:t.value;
+  if(k.indexOf('draft:')===0){ LUI.draft[k.slice(6)]=(k==='draft:min')?num(v,10):v; return; }
+  if(k==='q'){ LUI.q=v; lrPaintLessons(); return; }
+  if(k==='ed:rule'||k==='ed:cat'){ LUI.ed=LUI.ed||{}; LUI.ed[k.slice(3)]=v; return; }
+  if(!fin) return;
+  if(k==='sort'){ LUI.sort=v; lrPaintPane(); return; }
+  if(k==='on'){ const l=LRN.lessons.find(x=>x.id===id); if(l){ l.on=!!v; l.upd=Date.now(); lnSave({pl:[l]}).catch(()=>{}); lrPaintSum(); const c=t.closest('.lr-ls'); if(c) c.classList.toggle('off',!l.on); } return; }
+  if(k==='file'){ const fs=Array.prototype.slice.call(t.files||[]); t.value=''; lrAddFiles(fs); return; }
+  if(k==='import'){ const f=t.files&&t.files[0]; t.value=''; if(f) lnImport(f); return; }
+  if(k==='cfg:on'){ LRN.cfg.on=!!v; lnCfgSave(); paintLearnBtn(); lrPaintAll(); return; }
+  if(k.indexOf('cfg:use:')===0){ LRN.cfg.use[k.slice(8)]=!!v; lnCfgSave(); lrPaintPrev(); return; }
+  if(k==='cfg:max'||k==='cfg:per'){ LRN.cfg[k.slice(4)]=clamp(Math.round(num(v,12)),3,k==='cfg:max'?40:30); lnCfgSave(); lrPaintPrev(); return; }
+  if(k==='prev'){ LUI.prev=v; lrPaintPrev(); return; }
+}
+function lrPaintAll(){ if(!$('lrRoot')) return; lrPaintSum(); lrPaintTabs(); lrPaintPane(); }
+function lrPaintSum(){
+  const el=$('lrSum'); if(!el) return; const n=LRN.lessons.length, on=LRN.lessons.filter(l=>l.on).length, C=LRN.cfg||LN_DEF, r=LUI.run, t=LUI.tidy, q=r?LUI.queue.find(x=>x.id===r.id):null;
+  let h='<span>🎓 노하우 <b>'+n+'</b>개 <span class="mut">(켜진 것 '+on+')</span></span><span>📚 배운 자료 <b>'+LRN.sources.length+'</b>개</span><span>'+(C.on?'<span class="ok">✓ 다음 영상부터 적용 중</span>':'<span class="bad">✗ 적용 꺼짐</span> <span class="mut">(적용 설정 탭)</span>')+'</span>';
+  if(r) h+='<span class="run">⏳ '+r.i+'/'+r.n+' · '+esc(lnClip(q?q.title:'',24))+' — '+esc(q&&q.step||'')+'</span><button class="vs-mb dng mobile-keep" data-a="lrStop">⏹ 중단</button>';
+  else if(t) h+='<span class="run">⏳ '+esc(t.step)+'</span><button class="vs-mb dng mobile-keep" data-a="lrStop">⏹ 중단</button>';
+  if(LRN.err) h+='<span class="bad">저장소 오류: '+esc(LRN.err)+' — 이번에만 쓰고 저장은 안 돼요</span>';
+  el.innerHTML=h;
+}
+function lrPaintTabs(){
+  const el=$('lrTabs'); if(!el) return; const T=[['add','① 자료 추가',LUI.queue.length],['ls','② 학습한 노하우',LRN.lessons.length],['src','③ 배운 자료',LRN.sources.length],['cfg','④ 적용 설정','']];
+  el.innerHTML=T.map(x=>'<button class="lr-tab mobile-keep'+(LUI.tab===x[0]?' on':'')+'" data-a="lrTab" data-id="'+x[0]+'">'+x[1]+(x[2]!==''?'<i>'+x[2]+'</i>':'')+'</button>').join('');
+}
+function lrPaintPane(){
+  const el=$('lrPane'); if(!el) return; const t=LUI.tab;
+  el.innerHTML=t==='add'?lrHtmlAdd():t==='ls'?lrHtmlLs():t==='src'?lrHtmlSrc():lrHtmlCfg();
+  if(t==='add') lrPaintQ(); else if(t==='ls') lrPaintLessons(); else if(t==='cfg') lrPaintPrev();
+}
+function lrHtmlAdd(){
+  const D=LUI.draft, gk=!!geminiKey(), ai=studioAi(), busy=!!LUI.run;
+  return '<div class="lr-note"><b>이렇게 배워요</b> — 자료를 대기열에 넣고 [🎓 학습 시작]을 누르면 AI 가 자료마다 영상 표현력·제작 기법을 뽑아 <b>노하우</b>로 쌓아요. 같은 뜻은 합쳐서 <b>확인된 곳 수</b>만 늘어나고, 쌓인 노하우는 이 브라우저에 계속 보관돼요. 다음 영상을 만들 때(스크립트·스토리보드·인포그래픽·자막·장면 수정) AI 요청에 자동으로 덧붙어요.'
+    +'<br><span class="mut">글 AI: <b>'+esc(ai.name)+'</b> '+(ai.key?'<span class="ok">✓</span>':'<span class="bad">✗ 키 없음</span>')+' · YouTube 를 직접 보는 Gemini '+(gk?'<span class="ok">✓</span>':'<span class="bad">✗ 키 없음</span>')+' · 이미지·PDF 는 Claude·Gemini·ChatGPT 가 볼 수 있어요.</span></div>'
+    +'<div class="lr-grid">'
+    +'<div class="lr-box"><h4>▶ YouTube 주소</h4><textarea id="lrYt" class="vs-ta mobile-keep" rows="3" data-lr="draft:yt" placeholder="https://www.youtube.com/watch?v=…\n(여러 개는 줄을 바꿔 넣어요)">'+esc(D.yt)+'</textarea>'
+    +'<div class="lr-row"><label>처음 <input type="number" class="vs-in mobile-keep" data-lr="draft:min" min="0" max="60" step="1" value="'+esc(D.min)+'"> 분만 보기</label><span class="sp"></span><button class="vs-mb pri mobile-keep" data-a="lrAddYt">＋ 대기열에 넣기</button></div>'
+    +'<div class="hint pad">Gemini 가 영상을 직접 보고 들어요(컷·자막·인포그래픽·색·소리까지). <b>공개 영상만</b> 돼요. 0 = 영상 전체(길면 오래 걸리고 요금이 커요).</div></div>'
+    +'<div class="lr-box"><h4>📎 파일 — PDF · PPTX · 이미지</h4><div id="lrDrop" class="lr-drop" data-a="lrPick"><b>여기에 끌어다 놓거나 눌러서 고르기</b><span class="hint">PDF(15MB 이하) · PPTX · PNG/JPG/WebP — 이미지는 여러 장을 한 번에 고르면 한 묶음으로(8장까지) 배워요</span></div>'
+    +'<input type="file" id="lrFile" data-lr="file" multiple accept=".pdf,.pptx,.png,.jpg,.jpeg,.webp,.gif,image/*,application/pdf" style="display:none">'
+    +'<div class="hint pad">PPT 는 글·구조·색·글꼴을 읽어요. 화면 디자인까지 배우려면 PDF 로 저장해서 올리세요(옛 .ppt 는 .pptx 로 저장).</div></div>'
+    +'<div class="lr-box wide"><h4>📝 글 붙여넣기 — 대본·자막·기획안·기사</h4><input type="text" class="vs-in mobile-keep" data-lr="draft:ttl" maxlength="60" placeholder="제목(선택)" value="'+esc(D.ttl)+'" style="margin-bottom:6px"><textarea class="vs-ta mobile-keep" rows="4" data-lr="draft:txt" placeholder="영상의 자막(대본)이나 참고하고 싶은 글을 붙여 넣으세요(60자 이상)">'+esc(D.txt)+'</textarea>'
+    +'<div class="lr-row"><span class="sp"></span><button class="vs-mb pri mobile-keep" data-a="lrAddTxt">＋ 대기열에 넣기</button></div></div></div>'
+    +'<div class="lr-focus"><label>🎯 배우고 싶은 점</label><input type="text" class="vs-in mobile-keep" data-lr="draft:focus" maxlength="120" placeholder="(선택) 예) 오프닝 훅과 자막 연출을 중점으로 — 지금부터 넣는 자료에 붙어요" value="'+esc(D.focus)+'"></div>'
+    +'<div class="lr-qh"><b>대기열 <span id="lrQn"></span></b><span class="sp"></span><button class="vs-mb mobile-keep" data-a="lrQClear">비우기</button>'+(busy?'<button class="vs-mb dng mobile-keep" data-a="lrStop">⏹ 중단</button>':'<button class="vs-mb pri mobile-keep" data-a="lrStart" id="lrGo">🎓 학습 시작</button>')+'</div>'
+    +'<div class="hint" style="margin:-2px 0 6px">자료 1개당 AI 를 1번 불러요. YouTube 는 영상 길이만큼 시간(수 분)과 사용량 요금이 들 수 있어요.</div><div id="lrQ" class="lr-q"></div>';
+}
+function lrPaintQ(){
+  const el=$('lrQ'); if(!el) return; const n=$('lrQn'); if(n) n.textContent='('+LUI.queue.length+')';
+  const go=$('lrGo'); if(go) go.textContent='🎓 학습 시작'+(LUI.queue.length?' ('+LUI.queue.filter(q=>q.state==='queued'||q.state==='err').length+'개)':'');
+  if(!LUI.queue.length){ el.innerHTML='<div class="lr-empty">아직 대기열이 비어 있어요<br><span class="hint">위에서 YouTube 주소·파일·글을 넣어 보세요</span></div>'; return; }
+  el.innerHTML=LUI.queue.map(q=>{
+    const ty=LN_TYPE[q.type]||['•',q.type], st={queued:'대기',run:'⏳ 배우는 중',err:'❌ 실패',done:'✅ 끝'}[q.state]||'';
+    const meta=[ty[1]].concat(q.type==='youtube'?[q.min?'처음 '+q.min+'분':'전체',q.by||'']:q.type==='image'?[q.files.length+'장',lrMB(q.size)]:q.type==='text'?[q.size.toLocaleString()+'자']:[lrMB(q.size||0)]).concat(q.focus?['🎯 '+lnClip(q.focus,30)]:[]).filter(Boolean).join(' · ');
+    return '<div class="lr-qi st-'+q.state+'" data-q="'+q.id+'"><div class="lr-qic">'+ty[0]+'</div><div class="lr-qm"><b title="'+esc(q.title)+'">'+esc(q.title)+'</b><span><em class="st">'+st+'</em>'+esc(meta)+'</span>'
+      +(q.state==='run'?'<span class="sp2">'+esc(q.step||'')+'</span>':'')+(q.state==='err'?'<span class="er">'+esc(q.err)+'</span>':'')+'</div><button class="lr-x mobile-keep" data-a="lrQDel" data-id="'+q.id+'" title="대기열에서 빼기"'+(q.state==='run'?' disabled':'')+'>✕</button></div>';
+  }).join('');
+}
+function lrSorted(){
+  const a=LRN.lessons.slice(), by={rein:(x,y)=>(y.pin?1:0)-(x.pin?1:0)||(y.n-x.n)||(y.upd-x.upd),'new':(x,y)=>y.at-x.at,cat:(x,y)=>LN_CATS.indexOf(x.cat)-LN_CATS.indexOf(y.cat)||(y.n-x.n)};
+  return a.sort(by[LUI.sort]||by.rein);
+}
+function lrHtmlLs(){
+  const cnt={}; LRN.lessons.forEach(l=>{ cnt[l.cat]=(cnt[l.cat]||0)+1; });
+  const chips='<button class="lr-chip mobile-keep'+(!LUI.cat?' on':'')+'" data-a="lrCat" data-id="">전체<i>'+LRN.lessons.length+'</i></button>'+LN_CATS.filter(c=>cnt[c]).map(c=>'<button class="lr-chip mobile-keep'+(LUI.cat===c?' on':'')+'" data-a="lrCat" data-id="'+c+'" title="'+esc(LN_CAT[c].d)+'">'+LN_CAT[c].ic+' '+LN_CAT[c].n+'<i>'+cnt[c]+'</i></button>').join('');
+  return '<div class="lr-tb"><input type="text" class="vs-in q mobile-keep" data-lr="q" placeholder="노하우 검색…" value="'+esc(LUI.q)+'"><select class="vs-in mobile-keep" data-lr="sort"><option value="rein"'+(LUI.sort==='rein'?' selected':'')+'>많이 확인된 순</option><option value="new"'+(LUI.sort==='new'?' selected':'')+'>최근에 배운 순</option><option value="cat"'+(LUI.sort==='cat'?' selected':'')+'>분류별</option></select>'
+    +'<button class="vs-mb mobile-keep" data-a="lrNewL">＋ 직접 쓰기</button><button class="vs-mb mobile-keep" data-a="lrTidy" title="AI 가 겹치는 노하우를 합쳐요">🧹 AI로 정리</button>'+(LRN.undo?'<button class="vs-mb mobile-keep" data-a="lrTidyUndo">↩ 방금 정리 되돌리기</button>':'')+'</div>'
+    +'<div class="lr-chips">'+chips+'</div>'
+    +(LUI.adding?'<div class="lr-add"><div class="lr-ed"><select class="vs-in mobile-keep" data-lr="ed:cat">'+LN_CATS.map(c=>'<option value="'+c+'"'+((LUI.ed&&LUI.ed.cat||'hook')===c?' selected':'')+'>'+LN_CAT[c].ic+' '+LN_CAT[c].n+'</option>').join('')+'</select><textarea class="vs-ta mobile-keep" rows="2" data-lr="ed:rule" placeholder="내가 아는 노하우를 명령문으로 — 예) 오프닝 5초 안에 가장 큰 수치를 화면 가득 보여 준다">'+esc(LUI.ed&&LUI.ed.rule||'')+'</textarea><div class="lr-row"><span class="sp"></span><button class="vs-mb mobile-keep" data-a="lrCancelEdit">취소</button><button class="vs-mb pri mobile-keep" data-a="lrSaveNew">추가</button></div></div></div>':'')
+    +'<div id="lrLL" class="lr-list"></div>';
+}
+function lrPaintLessons(){
+  const el=$('lrLL'); if(!el) return; const q=String(LUI.q||'').trim().toLowerCase();
+  let L=lrSorted().filter(l=>(!LUI.cat||l.cat===LUI.cat)&&(!q||(l.rule+' '+l.why+' '+LN_CAT[l.cat].n).toLowerCase().indexOf(q)>=0)); const tot=L.length; L=L.slice(0,300);
+  if(!LRN.lessons.length){ el.innerHTML='<div class="lr-empty">아직 배운 노하우가 없어요<br><span class="hint">① 자료 추가 탭에서 영상·문서·이미지를 넣고 학습을 시작하거나, [＋ 직접 쓰기]로 직접 적어 두세요</span></div>'; return; }
+  if(!L.length){ el.innerHTML='<div class="lr-empty">조건에 맞는 노하우가 없어요</div>'; return; }
+  el.innerHTML=L.map(l=>{
+    const C=LN_CAT[l.cat], srcN=l.src.length, uses=l.use.map(u=>LN_USE[u]?LN_USE[u].n.replace(' 만들기','').replace(' 다듬기','').replace(' 구성',''):u).join('·');
+    if(LUI.edit===l.id){ const e=LUI.ed||{cat:l.cat,rule:l.rule}; return '<div class="lr-ls" style="'+lnCv(C)+'"><div class="lr-lb"><div class="lr-ed"><select class="vs-in mobile-keep" data-lr="ed:cat">'+LN_CATS.map(c=>'<option value="'+c+'"'+(e.cat===c?' selected':'')+'>'+LN_CAT[c].ic+' '+LN_CAT[c].n+'</option>').join('')+'</select><textarea class="vs-ta mobile-keep" rows="3" data-lr="ed:rule">'+esc(e.rule)+'</textarea><div class="lr-row"><span class="sp"></span><button class="vs-mb mobile-keep" data-a="lrCancelEdit">취소</button><button class="vs-mb pri mobile-keep" data-a="lrSaveEdit" data-id="'+l.id+'">저장</button></div></div></div></div>'; }
+    return '<div class="lr-ls'+(l.on?'':' off')+(l.pin?' pin':'')+'" style="'+lnCv(C)+'" data-id="'+l.id+'"><input type="checkbox" class="on mobile-keep" data-lr="on" data-id="'+l.id+'"'+(l.on?' checked':'')+' title="끄면 AI 요청에 안 붙어요"><div class="lr-lb"><div class="lr-lh"><span class="lr-cat">'+C.ic+' '+C.n+'</span><span class="lr-n" title="여러 자료에서 확인될수록 먼저 적용돼요">×'+l.n+'</span><span>'+(l.user?'✍ 직접 씀':'자료 '+srcN+'개')+(uses?' · '+esc(uses):'')+'</span><span class="sp"></span>'
+      +'<button class="lr-x mobile-keep" data-a="lrPin" data-id="'+l.id+'" title="'+(l.pin?'고정 해제':'먼저 적용되게 고정')+'">'+(l.pin?'📌':'📍')+'</button><button class="lr-x mobile-keep" data-a="lrEdit" data-id="'+l.id+'" title="고치기">✏️</button><button class="lr-x mobile-keep" data-a="lrDelL" data-id="'+l.id+'" title="지우기">🗑</button></div>'
+      +'<div class="lr-rule">'+esc(l.rule)+'</div>'+(l.why?'<div class="lr-why">↳ '+esc(l.why)+'</div>':'')+'</div></div>';
+  }).join('')+(tot>300?'<div class="lr-empty">… 외 '+(tot-300)+'개 — 검색·분류로 좁혀 보세요</div>':'');
+}
+function lrHtmlSrc(){
+  if(!LRN.sources.length) return '<div class="lr-empty">아직 배운 자료가 없어요<br><span class="hint">① 자료 추가 탭에서 넣고 학습을 시작해 보세요</span></div>';
+  return LRN.sources.slice().sort((a,b)=>b.at-a.at).map(s=>{
+    const ty=LN_TYPE[s.type]||['•',s.type], op=!!LUI.open[s.id], redo=(s.type==='youtube'||s.digest);
+    const okRef=/^[\w-]{11}$/.test(s.ref||''), okUrl=/^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/.test(s.url||'');   /* 가져온 JSON 이 심어 둔 주소(javascript: 등)는 링크·그림으로 안 씀 */
+    const th=s.type==='youtube'?(okRef?'<img src="https://i.ytimg.com/vi/'+esc(s.ref)+'/mqdefault.jpg" alt="" onerror="this.style.display=\'none\'">':ty[0]):(/^data:image\//.test(s.thumb||'')?'<img src="'+esc(s.thumb)+'" alt="">':ty[0]);
+    const meta=[ty[1],s.by?'배운 AI '+s.by:'',lnWhen(s.at),s.meta&&s.meta.slides?'슬라이드 '+s.meta.slides+'장':'',s.meta&&s.meta.min?'처음 '+s.meta.min+'분':'',s.meta&&s.meta.count?s.meta.count+'장':''].filter(Boolean);
+    return '<div class="lr-sr"><div class="th">'+th+'</div><div class="m"><b>'+esc(s.title)+'</b><span>'+meta.map(esc).join(' · ')+'</span><span>노하우 '+(s.n||0)+'개 뽑음 (새 '+(s.add||0)+' · 겹침 '+(s.rein||0)+')</span>'
+      +(okUrl?'<span><a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer" style="color:#7dd3fc">원본 ↗</a></span>':'')+(s.focus?'<span>🎯 '+esc(lnClip(s.focus,40))+'</span>':'')
+      +(op&&s.summary?'<div class="sm">'+esc(s.summary)+'</div>':'')+'</div><div class="bt"><button class="vs-mb mobile-keep" data-a="lrSumS" data-id="'+s.id+'">'+(op?'접기':'요약')+'</button><button class="vs-mb mobile-keep" data-a="lrRedoS" data-id="'+s.id+'"'+(redo?'':' disabled')+' title="'+(redo?'다시 읽고 배워요(같은 뜻은 합쳐져요)':'원본 파일은 보관하지 않아서 다시 올려야 해요')+'">🔁</button><button class="vs-mb dng mobile-keep" data-a="lrDelS" data-id="'+s.id+'" title="이 자료와 여기서만 배운 노하우를 지워요">🗑</button></div></div>';
+  }).join('');
+}
+function lrHtmlCfg(){
+  const C=LRN.cfg||LN_DEF;
+  return '<div class="lr-cf"><div class="lr-box"><label class="vs-ck" style="font-size:12.5px"><input type="checkbox" class="mobile-keep" data-lr="cfg:on"'+(C.on?' checked':'')+'><span><b>배운 노하우를 영상 만들 때 적용</b></span></label>'
+    +'<div class="d">끄면 AI 요청이 AI학습 없던 때와 똑같아져요(배운 내용은 그대로 보관돼요).</div></div>'
+    +'<div class="lr-box"><h4>적용할 곳</h4><div class="lr-use">'+LN_TARGETS.map(t=>'<label><input type="checkbox" class="mobile-keep" data-lr="cfg:use:'+t+'"'+(C.use[t]?' checked':'')+'><span>'+LN_USE[t].n+'<em>'+LN_USE[t].d+'</em></span></label>').join('')+'</div>'
+    +'<div class="hint pad">음성(TTS)·AI 이미지·AI 영상을 만드는 요청과 번역에는 붙이지 않아요(비용·품질 위험). 스토리보드에 반영된 내용이 AI 이미지·영상 장면 묘사에 간접적으로 이어져요.</div></div>'
+    +'<div class="lr-box"><h4>양 조절</h4><div class="lr-row"><label>AI 요청 하나에 붙일 노하우 최대 <input type="number" class="vs-in mobile-keep" data-lr="cfg:max" min="3" max="40" step="1" value="'+C.max+'"> 개</label><label>자료 하나에서 뽑을 노하우 최대 <input type="number" class="vs-in mobile-keep" data-lr="cfg:per" min="3" max="30" step="1" value="'+C.per+'"> 개</label></div>'
+    +'<div class="hint pad">많이 붙일수록 요청이 길어져 느려지고 AI 가 요청의 다른 조건을 놓칠 수 있어요. 요청에 맞는 것 중 <b>여러 자료에서 확인된 것·고정(📌)한 것</b>을 먼저 골라요.</div></div>'
+    +'<div class="lr-box"><h4>미리 보기 <span class="hint">실제로 AI 요청 끝에 붙는 글</span></h4><div class="lr-row"><select class="vs-in mobile-keep" data-lr="prev">'+LN_TARGETS.map(t=>'<option value="'+t+'"'+(LUI.prev===t?' selected':'')+'>'+LN_USE[t].n+'</option>').join('')+'</select></div><pre id="lrPrev" class="lr-pre"></pre></div>'
+    +'<div class="lr-box"><h4>보관·백업</h4><div class="hint pad" style="margin:0 0 6px">노하우는 이 브라우저(IndexedDB)에 보관돼요. 브라우저 데이터를 지우거나 다른 PC 에서 쓰려면 내보내기·가져오기로 옮기세요. 가져오기는 기존 것과 합쳐요.</div>'
+    +'<div class="vs-btns" style="margin:0"><button class="vs-mb mobile-keep" data-a="lrExport">⬇ 내보내기(JSON)</button><button class="vs-mb mobile-keep" data-a="lrImpPick">⬆ 가져오기</button><button class="vs-mb dng mobile-keep" data-a="lrWipe">🗑 모두 지우기</button></div>'
+    +'<input type="file" id="lrImp" data-lr="import" accept=".json,application/json" style="display:none"></div></div>';
+}
+function lrPaintPrev(){
+  const el=$('lrPrev'); if(!el) return; const s=lnBlock(LUI.prev,{lang:'ko'}).replace(/^\n+/,'').replace(/\n+$/,'');
+  el.textContent=s||(LRN.cfg&&!LRN.cfg.on?'(적용이 꺼져 있어요)':LRN.cfg&&!LRN.cfg.use[LUI.prev]?'(이 곳은 꺼져 있어요)':'(지금은 이 곳에 덧붙일 노하우가 없어요 — 배우거나 켜진 노하우가 필요해요)');
+}
+async function lrAct(a,id,btn){
+  switch(a){
+    case 'lrOpen': lrOpen(); break;
+    case 'lrTab': LUI.tab=id; LUI.edit=''; LUI.adding=false; lrPaintTabs(); lrPaintPane(); break;
+    case 'lrAddYt': await lrAddYt(); break;
+    case 'lrPick': { const f=$('lrFile'); if(f) f.click(); break; }
+    case 'lrAddTxt': lrAddTxt(); break;
+    case 'lrQDel': { const q=LUI.queue.find(x=>x.id===id); if(q&&q.state!=='run'){ LUI.queue=LUI.queue.filter(x=>x!==q); lrPaintQ(); lrPaintTabs(); } break; }
+    case 'lrQClear': LUI.queue=LUI.queue.filter(q=>q.state==='run'); lrPaintQ(); lrPaintTabs(); break;
+    case 'lrStart': await lrStart(); break;
+    case 'lrStop': lrStop(); break;
+    case 'lrCat': LUI.cat=id||''; lrPaintPane(); break;
+    case 'lrPin': { const l=LRN.lessons.find(x=>x.id===id); if(l){ l.pin=!l.pin; l.upd=Date.now(); lnSave({pl:[l]}).catch(()=>{}); lrPaintLessons(); } break; }
+    case 'lrEdit': { const l=LRN.lessons.find(x=>x.id===id); if(l){ LUI.edit=id; LUI.ed={cat:l.cat,rule:l.rule}; LUI.adding=false; lrPaintPane(); } break; }
+    case 'lrNewL': LUI.adding=true; LUI.edit=''; LUI.ed={cat:LUI.cat||'hook',rule:''}; lrPaintPane(); break;
+    case 'lrCancelEdit': LUI.edit=''; LUI.adding=false; LUI.ed=null; lrPaintPane(); break;
+    case 'lrSaveEdit': { const l=LRN.lessons.find(x=>x.id===id), e=LUI.ed; if(!l||!e) break; const r=lnClean(e.rule,200); if(r.length<8){ toast('노하우는 8자 이상으로 적어 주세요'); break; } const cat=LN_CAT[e.cat]?e.cat:l.cat; if(cat!==l.cat) l.use=LN_CAT[cat].use.slice(); l.cat=cat; l.rule=r; l.upd=Date.now(); LUI.edit=''; LUI.ed=null; lnSave({pl:[l]}).catch(()=>{}); lrPaintAll(); break; }
+    case 'lrSaveNew': { const e=LUI.ed||{}; if(lnAddUser(e.cat||'hook',e.rule)){ LUI.adding=false; LUI.ed=null; lrPaintAll(); paintLearnBtn(); } break; }
+    case 'lrDelL': { const l=LRN.lessons.find(x=>x.id===id); if(l&&confirm('이 노하우를 지울까요?\n“'+lnClip(l.rule,60)+'”')){ LRN.lessons=LRN.lessons.filter(x=>x!==l); lnSave({dl:[l.id]}).catch(()=>{}); lrPaintAll(); paintLearnBtn(); } break; }
+    case 'lrSumS': LUI.open[id]=!LUI.open[id]; lrPaintPane(); break;
+    case 'lrRedoS': { const s=LRN.sources.find(x=>x.id===id); if(!s) break; if(LUI.run){ toast('지금 배우는 중이에요 — 끝난 뒤에 해 주세요'); break; }
+      if(s.type==='youtube') LUI.queue.push({id:uid('q'),type:'youtube',ytid:s.ref,url:s.url,title:s.title,min:(s.meta&&s.meta.min)||0,focus:s.focus||'',redo:s.id,state:'queued'});
+      else if(s.digest) LUI.queue.push({id:uid('q'),type:s.type,name:s.ref,title:s.title,digest:s.digest,size:s.digest.length,meta:s.meta,thumb:s.thumb,focus:s.focus||'',redo:s.id,state:'queued'});
+      else{ toast('원본 파일은 보관하지 않아서 다시 올려 주세요'); break; }
+      LUI.tab='add'; toast('대기열에 넣었어요 — [🎓 학습 시작]을 눌러 주세요'); lrPaintAll(); break; }
+    case 'lrDelS': { const s=LRN.sources.find(x=>x.id===id); if(s&&confirm('이 자료를 지울까요?\n“'+lnClip(s.title,50)+'”\n여기서만 배운 노하우도 함께 지워져요(다른 자료에서도 확인된 노하우는 남아요).')){ await lnDropSource(id).catch(()=>{}); lrPaintAll(); paintLearnBtn(); } break; }
+    case 'lrTidy': await lrTidy(); break;
+    case 'lrTidyUndo': await lrTidyUndo(); break;
+    case 'lrExport': lnExport(); break;
+    case 'lrImpPick': { const f=$('lrImp'); if(f) f.click(); break; }
+    case 'lrWipe': await lrWipe(); break;
+  }
+}
+lnLoad();
+window.BTMLearn={block:lnBlock,open:lrOpen,count:()=>LRN.lessons.length,get ready(){ return LRN.ready; },
+  _dbg:{LRN,LUI,LN_CAT,LN_USE,LN_SYS,LN_TIDY_SYS,LN_DEF,lnBlock,lnPick,lnSim,lnMerge,lnParse,lnJson,lnNormItem,lnCat,lnKnown,lnLoad,lnSave,lnDropSource,lnAddUser,lnExport,lnImport,lnFix,ytId,zipRead,zipFile,zipText,lrPptx,lrImg,lrB64,lrAiFor,lrErr,lrLearnOne,lrStart,lrStop,lrTidy,lrTidyUndo,lrWipe,lrAddFiles,lrAddYt,lrAddTxt,lrOpen,lrPaintAll,lrAct,lrKind,paintLearnBtn,lnCfgLoad}};
+/* ══ /v121 ══ */
+
 async function autoGo(){
   const d=UI.dd; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
   dlgClose(); UI.aborted=false; applyTitle(d.ttl,d.tdur);   /* 챕터 타이틀부터 정해야 뒤의 음성·화면이 최종 시간표로 만들어짐 */
@@ -50606,7 +51380,7 @@ function bindEvents(el){
 function ensureModal(){
   if(_ov) return _ov;
   const el=document.createElement('div'); el.id='vsModal'; el.className='vs-ov no-print'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','영상 스튜디오');
-  el.innerHTML=modalHtml(); document.body.appendChild(el); _ov=el; bindEvents(el); return el;
+  el.innerHTML=modalHtml(); document.body.appendChild(el); _ov=el; bindEvents(el); paintLearnBtn(); return el;
 }
 const NL_OK=/^(ig:|igp:|tt:|sc\.ctitle$)/;   /* 줄바꿈 표시를 넣을 수 있는 글 칸 — 인포그래픽(제목·윗글·블록·항목)·챕터 타이틀·카드 큰 글자 */
 function nlKey(e){   /* v116: 글 칸에서 Shift+Enter — 커서 자리에 줄바꿈 표시(↵)를 넣고 미리보기에 바로 반영. 넣었으면 true */
