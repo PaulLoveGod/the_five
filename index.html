@@ -50805,7 +50805,7 @@ function refresh(){   /* 버튼 표시(값·색·비활성)를 지금 박스 상
   const viz=!!cur.closest('.vz-wrap.vz-on'), T=window.BTMBoxTools, bf=pill.querySelector('.lh-fit'), bd=pill.querySelector('.lh-del');
   pill.classList.toggle('viz',viz);   /* 인포그래픽 보기 — 행간 조절은 빼고 두 아이콘만 */
   if(bf){ bf.disabled=!T; bf.title=viz?'인포그래픽에 맞게 높이 자동 조절':'내용에 맞게 높이 자동 조절 — 짧으면 줄이고 넘치면 늘려요'; }
-  if(bd){ const why=T?T.whyNot(cur.id):'삭제 기능을 불러오지 못했어요'; bd.disabled=!!why; bd.title=why||'이 텍스트박스 삭제 — 지금 작성 중인 리포트에만 적용돼요(Create New 하면 원래 형식으로 돌아와요)'; }
+  if(bd){ const why=T?T.whyNot(cur.id):'삭제 기능을 불러오지 못했어요', tip=(!why&&T&&T.tip)?T.tip(cur.id):''; bd.disabled=!!why; bd.title=why||('이 텍스트박스 삭제'+(tip?' ('+tip+')':'')+' — 지금 작성 중인 리포트에만 적용돼요(Create New 하면 원래 형식으로 돌아와요)'); }
   pill.title=(NAME[cur.id]||'텍스트박스')+' 본문 행간격 — 한 번 정하면 Create New·다시 로그인해도 유지돼요';
 }
 function eligible(el){
@@ -50887,7 +50887,9 @@ window.BTMBoxLH={IDS,apply,snapshot,set,has,hide:hideNow,get:id=>{ const el=$(id
          같은 열에서 바로 위(없으면 바로 아래) 텍스트박스가 '열 높이가 줄어든 만큼' 늘어나 빈자리를 씀(BTMSecDrag.removeItem). 열 밑변이 그대로라 반대 열과의 밑단 싱크도 유지.
          맨 아래 박스를 지우면 그 위 박스가 새 맨 아래 박스가 되어 좌우 밑단 싱크를 그대로 이어받음(엔진의 participants 가 숨긴 섹션을 빼고 계산). 열 안의 섹션을 모두 지우면 그 열을 접어(.bd-empty) 이웃 열이 폭을 씀.
        - 섹션 안의 메모(Snowball 위/아래 메모·관심 종목 메모·Investor Status 메모)는 그 메모만 숨김(표·카드는 남음) — Snowball 메모는 flex 라 남은 메모·표가 자리를 씀.
-       - 기술적 분석은 차트와 한 섹션이라 삭제 불가(버튼 비활성, 안내 문구).
+       - 기술적 분석(2026-10-29 열림, v120): 제목줄+차트+텍스트박스가 한 섹션(#mkTechSection)이라 다른 섹션처럼 통째로 숨김. 이 텍스트박스는 차트를 조회하면 숨겨지고(tsQueryChart) 차트가 없을 때만 보이므로 알약·삭제도 그때만 가능.
+         숨기기 직전 DEF.hide 가 섹션 밖(열 안)에 떠 있는 Chart Note 팝업을 닫음(setHidden·del 이 부름). 복원하면 차트는 캔버스 부모의 ResizeObserver 가 알아서 제 폭으로 다시 그림. 알약 툴팁·알림창에는 DEF.tip(차트·그래프 조회 도구도 함께 숨겨져요)을 덧붙임.
+         ※ 알려진 한계(v83부터 — 이번 변경과 무관): 차트가 떠 있어 이 텍스트박스가 숨겨진 상태에서 바로 위·아래 섹션(AI Stock Radar·매매 전략)을 지우면, 엔진(removeItem·lastBoxIn)이 숨겨진 박스를 '위 박스'·'맨 아래 박스'로 골라 그 높이가 몰래 부풀고 좌우 밑변이 어긋남.
    · 저장 — '이 리포트에만': collectData().boxDeleted = {v:1,list:[{id,h:{박스id:높이 변화 px}}]}(지운 순서). h = 삭제 앞뒤로 높이가 달라진 박스들(빈자리를 받은 박스 + 밑단 싱크로 따라 바뀐 짝 박스)의 차이 —
        삭제 직전·직후 보이는 박스 높이를 재서 구함(엔진이 같은 자리에서 동기식으로 밑변을 맞춘 뒤라 비동기 싱크의 중간 상태가 섞이지 않음). 로그인·기록 열기·자동저장 복원·게스트 화면 모두 applyData → apply(d).
        복원: 숨김을 풀고 h 를 도로 뺌 → 삭제 전 높이 그대로. Create New: confirmNewReport 가 applyData(fresh) 앞에서 prepareNew(fresh) — h 를 거꾸로 빼서 boxHeights 를 삭제 전 높이로 돌리고 boxDeleted 를 지워 삭제 전 형식(모든 박스·높이)으로 시작.
@@ -50899,7 +50901,8 @@ if(window.BTMBoxTools) return;
 const $=id=>document.getElementById(id);
 const E=()=>window.BTMSecDrag;
 const MINPX=40;
-/* id → {n:이름, k:'item'(섹션 한 덩어리 — 엔진 섹션 key=it) | 'memo'(섹션 안의 메모), fit:높이를 정하는 요소 id(기본=자기 자신), hold:숨길 요소를 찾는 함수, no:삭제 못 하는 이유} */
+/* id → {n:이름, k:'item'(섹션 한 덩어리 — 엔진 섹션 key=it) | 'memo'(섹션 안의 메모), fit:높이를 정하는 요소 id(기본=자기 자신), hold:숨길 요소를 찾는 함수, no:삭제 못 하는 이유,
+          tip:삭제 아이콘 툴팁·알림창에 덧붙일 말, hide:숨기기 직전에 부르는 정리 함수} */
 const DEF={
   qtBibleDisplay:{n:'오늘의 말씀',k:'item',it:'bible'},
   qtMemo:{n:'나의 묵상 노트',k:'item',it:'meditation'},
@@ -50916,7 +50919,7 @@ const DEF={
   sectorAnalysis:{n:'테마 분석',k:'item',it:'theme'},
   warrenKim:{n:'The Whispers of Warren Kim',k:'item',it:'warren'},
   aiStockRadar:{n:'AI Stock Radar',k:'item',it:'radar'},
-  technicalAnalysis:{n:'기술적 분석',k:'item',it:'tech',no:'기술적 분석은 차트와 한 섹션이라 삭제할 수 없어요'},
+  technicalAnalysis:{n:'기술적 분석',k:'item',it:'tech',tip:'차트·그래프 조회 도구도 함께 숨겨져요',hide:()=>{ if(typeof _tsChartNoteClose==='function') _tsChartNoteClose(); }},   /* 제목줄+차트+텍스트박스가 한 섹션(#mkTechSection)이라 통째로 숨김 — 섹션 밖(열 안)에 떠 있는 Chart Note 팝업은 따로 닫음 */
   tradingStrategy:{n:'매매 전략',k:'item',it:'trading'}
 };
 const IDS=Object.keys(DEF);
@@ -50939,8 +50942,10 @@ function toast(msg,btns){ const e=E(); if(e&&e.toast) e.toast(msg,false,btns||[]
 
 /* ───────── 화면에서 숨기기/보이기 (높이는 건드리지 않음) ───────── */
 function holdOf(id){ const el=$(id), d=DEF[id]; return el?(d.hold?d.hold(el):el):null; }
+function onHide(id){ const d=DEF[id]; if(d&&d.hide){ try{ d.hide(); }catch(e){ console.warn('[BTMBoxTools.hide]',id,e); } } }   /* 숨기기 직전 정리 — 섹션 밖에 떠 있는 것(기술적 분석의 Chart Note 팝업)은 같이 안 숨겨지므로 */
 function setHidden(id,on){
   const d=DEF[id]; if(!d) return false;
+  if(on) onHide(id);
   if(d.k==='item'){ const e=E(); return !!(e&&e.setGone&&e.setGone(d.it,on)); }
   const h=holdOf(id); if(!h) return false;
   h.classList.toggle('bd-gone',!!on); return true;
@@ -50956,13 +50961,14 @@ function changed(){   /* 삭제·복원 뒤 공통 마무리: 알약 숨김 → 
 function del(id){
   const why=whyNot(id); if(why){ if(DEF[id]&&!REC.has(id)) toast(why); return false; }
   const d=DEF[id], b0=hmap();
+  onHide(id);
   if(d.k==='item'){ if(!E().removeItem(d.it)) return false; }   /* 위(없으면 아래) 박스가 빈 높이를 받고 짝 열 박스가 밑변을 맞춤 — 모두 이 자리에서 동기식 */
   else if(!setHidden(id,true)) return false;
   const b1=hmap(), h={};
   Object.keys(b1).forEach(k=>{ if(b0[k]>0&&b1[k]!==b0[k]) h[k]=b1[k]-b0[k]; });   /* 삭제 앞뒤로 높이가 달라진 박스(받은 박스 + 따라서 바뀐 짝 박스) */
   REC.set(id,{id,h});
   changed();
-  toast('"'+d.n+'" 텍스트박스를 삭제했어요 · 이 리포트에만 적용돼요',[['되돌리기',()=>restore(id)]]);
+  toast('"'+d.n+'" 텍스트박스를 삭제했어요'+(d.tip?' ('+d.tip+')':'')+' · 이 리포트에만 적용돼요',[['되돌리기',()=>restore(id)]]);
   return true;
 }
 function restore(id,o){
@@ -51053,7 +51059,7 @@ function renderAdmin(){
   }
 }
 
-window.BTMBoxTools={IDS,NAME:Object.fromEntries(IDS.map(id=>[id,DEF[id].n])),fit,del,restore,restoreAll,whyNot,isGone:id=>REC.has(id),
+window.BTMBoxTools={IDS,NAME:Object.fromEntries(IDS.map(id=>[id,DEF[id].n])),fit,del,restore,restoreAll,whyNot,tip:id=>(DEF[id]&&DEF[id].tip)||'',isGone:id=>REC.has(id),
   list:()=>[...REC.values()].map(r=>({id:r.id,name:DEF[r.id].n,h:r.h})),snapshot,apply,prepareNew,renderAdmin,_dbg:{DEF,REC,measure,setHidden,hmap}};
 })();
 /* ═══ BTMBOXTOOLS-JS-END ═══ */
