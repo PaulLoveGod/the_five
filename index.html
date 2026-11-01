@@ -3188,6 +3188,15 @@ body.guest-mode #lhPill{display:none!important}
 .bd-gone{display:none!important}                                  /* 삭제(숨김)한 텍스트박스 — 글·높이는 데이터에 그대로 */
 .sd-col.bd-empty,.sd-row.bd-empty{display:none!important}         /* 안의 박스를 모두 삭제한 열(행) — 접어서 이웃 열이 폭을 씀 */
 .sd-row.bd-onecol{grid-template-columns:1fr!important}
+/* ── 삭제한 텍스트박스 알약 (2026-11-02, BTMBOXTOOLS-JS renderPills) — '■ 성장 Routine'·'■ 시장 분석' 제목 오른쪽에 삭제한 박스를 약어 알약으로 표기, 누르면 복원. 게스트·잠금(게시)·모바일(<680)·인쇄·PDF/이미지에서는 숨김 ── */
+.bd-pills{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;flex:0 1 auto;min-width:0}
+.bd-pills:empty{display:none}
+.card-header .bd-pill{flex:0 0 auto;height:18px!important;padding:0 8px!important;border-radius:9px;font-family:inherit;font-size:10px!important;font-weight:600;line-height:16px!important;letter-spacing:0;white-space:nowrap;color:#fff;background:rgba(255,255,255,.14);border:1px dashed rgba(255,255,255,.62);cursor:pointer}
+.card-header .bd-pill:hover{background:rgba(255,255,255,.32);border-style:solid}
+.card-header .bd-pill:focus-visible{outline:2px solid #fde68a;outline-offset:1px}
+body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!important}
+@media print{.bd-pills{display:none!important}}
+@media(max-width:679px){.bd-pills{display:none!important}}
 </style>
 <!-- BTMLH-CSS-END -->
 <!-- BTMIMGED-CSS-BEGIN -->
@@ -3826,7 +3835,7 @@ body.guest-mode #lhPill{display:none!important}
           <div id="sdAdminStatus" style="font-size:10.5px;color:#16a34a;min-height:14px"></div>
           <div style="height:1px;background:#e2e8f0;margin:8px 0 2px"></div>
           <div style="font-size:12px;font-weight:700;color:#1e293b">🗑 삭제한 텍스트박스</div>
-          <div style="font-size:11px;color:#64748b;line-height:1.6">텍스트박스에 마우스를 올리면 나오는 <b>휴지통 아이콘</b>으로 지운 박스는 <b>지금 작성 중인 리포트에서만</b> 사라져요(글은 그대로 보관). 여기서 되살릴 수 있고, <b>Create New</b> 를 하면 삭제 전 형식 그대로 새 리포트가 시작됩니다.</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6">텍스트박스에 마우스를 올리면 나오는 <b>휴지통 아이콘</b>으로 지운 박스는 <b>지금 작성 중인 리포트에서만</b> 사라져요(글은 그대로 보관). 여기서 되살릴 수 있고(<b>성장 Routine·시장 분석 제목 오른쪽의 알약</b>을 눌러도 돼요), <b>Create New</b> 를 하면 삭제 전 형식 그대로 새 리포트가 시작됩니다.</div>
           <div id="bdAdminList" style="display:flex;flex-direction:column;gap:6px"></div>
         </div>
 
@@ -5008,7 +5017,7 @@ body.guest-mode #lhPill{display:none!important}
 <!-- ═══════════════ PERSONAL SECTION ═══════════════ -->
 <div class="card">
   <div class="card-header dark" style="flex-wrap:wrap;gap:3px 10px;padding:6px 10px;align-items:center">
-    <span id="stid-growth" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="white-space:nowrap;flex-shrink:0;font-size:13px">■ 성장 Routine</span>
+    <span id="stid-growth" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="white-space:nowrap;flex-shrink:0;font-size:13px">■ 성장 Routine</span><span class="bd-pills pdf-export-hide" id="bdPills-growth" role="group" aria-label="삭제한 텍스트박스 — 누르면 복원"></span>
     <!-- ── 목표 달성률 바 (우측 정렬) ── -->
     <span style="display:flex;align-items:center;flex-wrap:wrap;gap:1px 4px;font-size:9.5px;font-weight:400;color:#94a3b8;line-height:1.8;min-width:0;flex:1;justify-content:flex-end">
       <span style="color:#7dd3fc;font-weight:700">●</span>
@@ -5585,7 +5594,7 @@ body.guest-mode #lhPill{display:none!important}
 <!-- ═══════════════ MARKET ANALYSIS ═══════════════ -->
 <div class="card">
   <div class="card-header red" style="gap:8px">
-    <span id="stid-market" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="white-space:nowrap;flex-shrink:0">■ 시장 분석</span>
+    <span id="stid-market" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="white-space:nowrap;flex-shrink:0">■ 시장 분석</span><span class="bd-pills pdf-export-hide" id="bdPills-market" role="group" aria-label="삭제한 텍스트박스 — 누르면 복원"></span>
     <span id="wallStreetQuoteHeader" style="font-size:10px;font-weight:400;color:#fde68a;text-align:right;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.92;letter-spacing:0;line-height:1.4;"></span>
   </div>
   <div class="card-body" style="padding:12px">
@@ -29196,7 +29205,7 @@ window.BTMSecDrag=(()=>{   /* 클래식 스크립트의 const 는 window 속성�
     if(/^0 0 auto/.test(d.style.flex||'')&&d.style.width){ w.style.flex='0 0 auto'; w.style.width=d.style.width; }
     else{ w.style.flex=''; w.style.width=''; }
   }
-  function relayout(){ markClasses(); mirrorDib(); syncRefresh(); }
+  function relayout(){ markClasses(); mirrorDib(); syncRefresh(); try{ if(window.BTMBoxTools&&BTMBoxTools.pills) BTMBoxTools.pills(); }catch(_){ } }   /* 삭제(숨김)한 박스가 '처음 배치로'·되돌리기로 다른 카드에 가 있을 수 있어 제목 옆 알약(BTMBoxTools)도 다시 맞춤 — 바뀐 게 없으면 바로 끝남 */
   function notify(){   /* 폭·높이가 달라진 차트·마인드맵 등이 다시 그리도록 */
     try{ window.dispatchEvent(new Event('resize')); }catch(_){ }
     requestAnimationFrame(()=>{
@@ -51667,6 +51676,10 @@ window.BTMBoxLH={IDS,apply,snapshot,set,has,hide:hideNow,get:id=>{ const el=$(id
    · 저장 — '이 리포트에만': collectData().boxDeleted = {v:1,list:[{id,h:{박스id:높이 변화 px}}]}(지운 순서). h = 삭제 앞뒤로 높이가 달라진 박스들(빈자리를 받은 박스 + 밑단 싱크로 따라 바뀐 짝 박스)의 차이 —
        삭제 직전·직후 보이는 박스 높이를 재서 구함(엔진이 같은 자리에서 동기식으로 밑변을 맞춘 뒤라 비동기 싱크의 중간 상태가 섞이지 않음). 로그인·기록 열기·자동저장 복원·게스트 화면 모두 applyData → apply(d).
        복원: 숨김을 풀고 h 를 도로 뺌 → 삭제 전 높이 그대로. Create New: confirmNewReport 가 applyData(fresh) 앞에서 prepareNew(fresh) — h 를 거꾸로 빼서 boxHeights 를 삭제 전 높이로 돌리고 boxDeleted 를 지워 삭제 전 형식(모든 박스·높이)으로 시작.
+   · 제목 옆 알약(2026-11-02, v122): 삭제한 박스를 '■ 성장 Routine'·'■ 시장 분석' 제목 오른쪽(#bdPills-growth / #bdPills-market)에 약어 알약으로도 보임 — 말씀·묵상·감사·생각·독서 / 시황·테마·Radar·Warren·Chart·Note
+       (+ Inbody·Key-Word·Snow 위/아래: 같은 성장 Routine 카드 안의 박스). 약어·순서는 PILL 표에서 고침. 알약을 누르면 restore(id) — 알림창 [되돌리기]·관리 패널 [↩ 복원]과 같은 길이라 높이 복원도 똑같음.
+       알약이 붙는 카드는 숨긴 박스의 DOM 위치로 정함(섹션을 성장 Routine ↔ 시장 분석 사이로 옮겨 뒀으면 옮긴 카드). 두 카드 밖 메모(관심 종목·Investor Status)는 알약 없이 관리 패널 목록으로만. 게스트·잠금(게시)·모바일·인쇄·PDF/이미지에서는 숨김(CSS).
+       그림은 renderPills(renderAdmin 맨 앞 + SECDRAG relayout 이 부름) — 목록이 같으면 DOM 을 안 건드림.
    수정 요령: 이 블록(표식 BTMBOXTOOLS-JS-BEGIN~END)과 BTMLH(알약 버튼)·SECDRAG(removeItem/addItem/setGone, markClasses 의 .bd-empty) 블록만 고치면 됨
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
@@ -51813,8 +51826,50 @@ function prepareNew(f){   /* Create New — 삭제 전 형식으로: 삭제 때 
   return f;
 }
 
+/* ───────── '■ 성장 Routine'·'■ 시장 분석' 제목 오른쪽 알약 (2026-11-02) ─────────
+   삭제한 텍스트박스를 그 박스가 들어 있는 카드의 제목 오른쪽에 약어 알약으로 보임 — 누르면 restore(id). 관리 패널 목록(renderAdmin)은 그대로 둠.
+   카드는 숨긴 박스의 DOM 위치로 정함(숨겨도 DOM 에는 남아 있음). 두 카드 밖 메모(관심 종목·Investor Status)는 알약 없음. */
+const PILL={   /* id → {a:알약에 쓰는 약어, t:섹션 제목 요소 id(툴팁에 지금 제목을 씀)} — 이 순서대로 늘어섬 */
+  qtBibleDisplay:{a:'말씀',t:'stid-bible'},
+  qtMemo:{a:'묵상',t:'stid-meditation'},
+  prayerContent:{a:'감사',t:'stid-gratitude'},
+  myLifeContent:{a:'생각',t:'stid-mylife'},
+  footprintContent:{a:'독서',t:'stid-books'},
+  dibContent:{a:'Inbody',t:'stid-dib'},
+  keyWord:{a:'Key-Word',t:'stid-keyword'},
+  'sb-above':{a:'Snow 위'},
+  'sb-below':{a:'Snow 아래'},
+  marketAnalysis:{a:'시황',t:'stid-mkt-sit'},
+  sectorAnalysis:{a:'테마',t:'stid-theme'},
+  aiStockRadar:{a:'Radar',t:'stid-ai-stock-radar'},
+  warrenKim:{a:'Warren',t:'stid-warren-kim'},
+  technicalAnalysis:{a:'Chart',t:'stid-tech-analysis'},
+  tradingStrategy:{a:'Note',t:'stid-trading-stg'}
+};
+const PILLBOX={growth:{box:'bdPills-growth',head:'stid-growth'},market:{box:'bdPills-market',head:'stid-market'}};   /* 카드 → 알약 자리 · 제목 요소(그 제목이 든 .card 가 이 카드) */
+let pillSig=null;
+function cardKeyOf(id){ const el=holdOf(id), c=el&&el.closest&&el.closest('.card'); if(!c) return null; return Object.keys(PILLBOX).find(k=>{ const t=$(PILLBOX[k].head); return !!t&&t.closest('.card')===c; })||null; }
+function pillTip(id){ const p=PILL[id], t=p.t&&$(p.t), nm=((t&&t.textContent)||'').replace(/\s+/g,' ').trim()||DEF[id].n; return '삭제한 "'+nm+'" 텍스트박스 — 클릭하면 복원돼요'; }
+function renderPills(){
+  const groups={}; Object.keys(PILLBOX).forEach(k=>{ groups[k]=[]; });
+  Object.keys(PILL).forEach(id=>{ if(!REC.has(id)) return; const k=cardKeyOf(id); if(k) groups[k].push(id); });
+  const sig=Object.keys(groups).map(k=>k+':'+groups[k].join(',')).join('|');
+  if(sig===pillSig) return; pillSig=sig;   /* 알약 목록이 같으면 DOM 을 안 건드림(엔진 relayout 이 자주 부름) */
+  Object.keys(PILLBOX).forEach(k=>{
+    const box=$(PILLBOX[k].box); if(!box) return;
+    box.textContent='';
+    groups[k].forEach(id=>{
+      const b=document.createElement('button'); b.type='button'; b.className='bd-pill'; b.dataset.id=id; b.textContent=PILL[id].a; b.title=pillTip(id);
+      const tip=()=>{ b.title=pillTip(id); }; b.addEventListener('pointerenter',tip); b.addEventListener('focus',tip);   /* 제목을 고쳤거나 언어를 바꿨어도 툴팁은 그때의 제목으로 */
+      b.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); if(canEdit()) restore(id); });
+      box.appendChild(b);
+    });
+  });
+}
+
 /* ───────── 관리 패널(섹션 탭) '삭제한 텍스트박스' 목록 ───────── */
 function renderAdmin(){
+  renderPills();   /* 삭제·복원·불러오기(changed·apply)와 관리 패널 열기가 모두 거치는 길목 — 제목 옆 알약도 여기서 함께 새로 그림 */
   const box=$('bdAdminList'); if(!box) return;
   box.textContent='';
   if(!REC.size){ const s=document.createElement('div'); s.style.cssText='font-size:11px;color:#94a3b8'; s.textContent='지금 리포트에서 삭제한 텍스트박스가 없어요.'; box.appendChild(s); return; }
@@ -51834,7 +51889,7 @@ function renderAdmin(){
 }
 
 window.BTMBoxTools={IDS,NAME:Object.fromEntries(IDS.map(id=>[id,DEF[id].n])),fit,del,restore,restoreAll,whyNot,tip:id=>(DEF[id]&&DEF[id].tip)||'',isGone:id=>REC.has(id),
-  list:()=>[...REC.values()].map(r=>({id:r.id,name:DEF[r.id].n,h:r.h})),snapshot,apply,prepareNew,renderAdmin,_dbg:{DEF,REC,measure,setHidden,hmap}};
+  list:()=>[...REC.values()].map(r=>({id:r.id,name:DEF[r.id].n,h:r.h})),snapshot,apply,prepareNew,renderAdmin,pills:renderPills,PILL,_dbg:{DEF,REC,measure,setHidden,hmap,cardKeyOf}};
 })();
 /* ═══ BTMBOXTOOLS-JS-END ═══ */
 </script>
