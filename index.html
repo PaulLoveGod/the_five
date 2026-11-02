@@ -44779,7 +44779,7 @@ const DEF_CFG={
   sub:{on:true,font:FONTS[0][0],size:46,color:'#ffffff',stroke:'#000000',strokeW:7,bg:'#000000',bgA:0,pos:'bottom',off:7,maxW:84,lines:2,bold:true,anim:'fade'},
   look:{trans:'fade',transDur:0.35,fit:'auto',motion:'kenburns',clipVol:0,filter:{b:1,c:1,s:1}},
   bgm:{bid:'',name:'',vol:0.16,duck:0.35,fadeIn:1.5,fadeOut:3,loop:true},
-  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false,rich:true,ltpl:true,detail:true},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false,alearn:true},title:{on:true,dur:2.5,keepBgm:false,user:false}
+  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false,rich:true,ltpl:true,detail:true,bal:true},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false,alearn:true},title:{on:true,dur:2.5,keepBgm:false,user:false}
 };
 function loadPref(lang){ let p={}; try{ p=JSON.parse(localStorage.getItem(LS_PREF)||'{}')||{}; }catch(e){} const cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); return (lang&&lang!=='ko')?langOverlay(cfg,lang,true):cfg; }
 function savePref(cfg){
@@ -46129,7 +46129,7 @@ function drawClip(g,w,h,ig,t,o){
   o=o||{}; const lt=t-ig.s; let al=1;
   if(!o.all){ al=Math.min(rv(lt,0.45),clamp((ig.e-t)/0.32,0,1)); if(al<=0.004) return; }
   const s0=sentById(P,ig.a&&ig.a.sid), ci=s0?s0.ci:0, L=igLay(g,w,h,ig), sty=L.sty, sk=ISTY[sty], pal0=infoPal(ci,sty), pal=ig.ovt?Object.assign({},pal0,{text:'#f8fafc',mute:'rgba(226,232,240,.82)',dark:true}):pal0, cf=P.cfg.info, B=L.B, font=L.font;   /* 겹쳐 얹은 타이틀(ovt)은 어두운 막 위라 글을 밝게 */
-  const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all,sty,sk};
+  const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all,sty,sk,cells:L.cells};
   E.sinceAt=tm=>{ if(E.all) return 99; if(tm==null) return t-ig.s; return tm<ig.s-0.05?99:t-Math.max(tm,ig.s); };
   E.sinceBlock=it=>E.sinceAt(blockT0(P,it));
   g.save(); g.globalAlpha*=al; g.drawImage(igBack(w,h,ig,L,pal,ci),0,0);
@@ -46346,7 +46346,7 @@ function mergeSpecs(specs){   /* 단계가 여럿인 결과를 한 clip 으로 �
 }
 function ruleSpecs(ss,ctx,o){
   const sty=(o&&o.style)||ctx.style||(P.cfg.info&&P.cfg.info.style)||'news', sk=ISTY[sty]||ISTY.news; ctx.style=sty;
-  const tmp={items:(ctx.sbp&&ctx.cs&&!ctx.cs.length)?[]:klDetailItems(ruleBlocks(ss,ctx),ss,ctx,true)}; if(ctx.sbp) tmp.items=klDetailItems(sbRuleItems(ctx,ss,tmp.items),ss,ctx,false);   /* 인사·진행 멘트뿐인 장면은 그 멘트에서 요점을 뽑지 않고 스토리보드의 화면 글자만 */ sortItems(tmp); if(klRich()){ try{ tmp.items=kindUpgrade(tmp.items,ctx); sortItems(tmp); }catch(e){ if(window.__klStrict) throw e; } } const cap=sty==='dash'?6:4; let items=tmp.items.slice(0,sty==='dash'?12:10);
+  const tmp={items:(ctx.sbp&&ctx.cs&&!ctx.cs.length)?[]:klDetailItems(ruleBlocks(ss,ctx),ss,ctx,true)}; if(ctx.sbp) tmp.items=klDetailItems(sbRuleItems(ctx,ss,tmp.items),ss,ctx,false);   /* 인사·진행 멘트뿐인 장면은 그 멘트에서 요점을 뽑지 않고 스토리보드의 화면 글자만 */ sortItems(tmp); if(klBal()){ try{ tmp.items=klShortCompose(tmp.items,ctx); sortItems(tmp); }catch(e){ if(window.__klStrict) throw e; } } if(klRich()){ try{ tmp.items=kindUpgrade(tmp.items,ctx); sortItems(tmp); }catch(e){ if(window.__klStrict) throw e; } } const cap=sty==='dash'?6:4; let items=tmp.items.slice(0,sty==='dash'?12:10);
   if(!items.length&&ss.length){ const si=ss.findIndex(s=>hasSubstance(s.text)); if(si>=0){ const k=keyClause(ss[si].text); if(k.clause) items=klDetailItems([Object.assign({id:uid('i'),type:'point',at:{sid:ss[si].id,f:0},dt:0},ptFrom(k))],ss,ctx,true); } }
   if(!items.length) return [];   /* 화면에 올릴 핵심이 없는 장면 */
   const groups=stageSplit(items,cap), st0=groups.map((g,k)=>k?Math.min.apply(null,g.map(it=>itemSi(ss,it))):0);   /* 블록이 많으면 말하는 흐름대로 단계별 clip 으로 */
@@ -46420,7 +46420,7 @@ function igCtx(sc,o){   /* ss = 화면에 옮길 '내용 있는' 문장만(인�
 }
 function infoUser(ctx){
   const hv=ctx.vk==='image'||ctx.vk==='video', up=String((P.cfg.prompts&&P.cfg.prompts.info)||'').trim();
-  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터'+(klDetailOn()?'(참고용 — 이 제목·주제를 구성요소에 되풀이하지 말 것)':'')+'] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장'+(klDetailOn()?'(= 화면 아래에 자막으로도 나오는 글)':'')+']\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
+  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n'+klOnlyLine()+'[챕터'+(klDetailOn()?'(참고용 — 이 제목·주제를 구성요소에 되풀이하지 말 것)':'')+'] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장'+(klDetailOn()?'(= 화면 아래에 자막으로도 나오는 글)':'')+']\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
 }
 const toneOK=t=>{ t=String(t||'').toLowerCase(); return /^(up|down|flat|acc|cur)$/.test(t)?t:''; };
 function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체·글자 길이 제한·형식 점검·문장 번호와 글로 시각 계산). 쓸 수 없으면 null */
@@ -46489,7 +46489,7 @@ async function aiSpecs(ss,ctx,o,signal){
   const ai=studioAi();
   if(!ai.key) throw new Error(ai.name+' API Key 가 없어요(영상 스튜디오 🤖 AI 에서 연결된 다른 AI 를 고르거나, 관리 메뉴 › 🧩 AI 공급자에서 키를 넣으세요)');
   const txt=await window._runTextPrompt(ai.mapKey,sysInfo(),infoUser(ctx),{signal});
-  const _kd=klDropN(); const specs=await klFinalAi(sbEnsureTexts(normSpecs(parseJsonLoose(txt),ss,ctx),ctx,ss),ss,ctx,signal);   /* v130: 보충이 끝난 뒤 마지막 거름 + AI 뜻 판정 */
+  const _kd=klDropN(); const specs=klBalAi(await klFinalAi(sbEnsureTexts(normSpecs(parseJsonLoose(txt),ss,ctx),ctx,ss),ss,ctx,signal),ctx);   /* v130: 보충이 끝난 뒤 마지막 거름 + AI 뜻 판정 */
   if(!specs.length&&!specs.skip&&klDropN()>_kd){ specs.skip=true; specs.dedupe=true; specs.reason='자막·제목과 같은 내용뿐'; }   /* v128 */
   if(!specs.length&&!specs.skip) throw new Error('AI 가 쓸 만한 블록을 주지 않았어요');
   return specs;
@@ -46924,7 +46924,7 @@ async function charFromFile(file){
 function infoTextAi(){ try{ return !!studioAi().key; }catch(e){ return false; } }   /* 글 AI(영상 스튜디오 🤖 AI 에서 고른 것)에 키가 있나 */
 function infoOptRows(d){
   const ch=P.char?(P.char.src==='ai'?'AI 캐릭터':'내 그림'):'기본 캐릭터', ai=studioAi(), has=!!ai.key, nf=P.scenes.filter(c=>!contentOf(sentsOf(P,c)).length).length;
-  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false;
+  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false; if(d.ionly==null) d.ionly=P.cfg.info.only||''; if(d.ibal==null) d.ibal=P.cfg.info.bal!==false; if(d.ibalm==null) d.ibalm=P.cfg.info.balm||'auto';
   return styleGallery(d)+D_('구성',dsel('ilay',d.ilay,[['auto','자동 — 내용·장면 화면에 맞춰 형태를 골라 섞어요(권장)'],['left','왼쪽 70% 패널 + 오른쪽 캐릭터'],['right','오른쪽 70% 패널 + 왼쪽 캐릭터'],['full','전체 화면 패널'],['hero','큰 수치 위주(화면 가득)'],['over','겹치기 — 장면 화면 위 띠·카드']]))
     +D_('내용',dsel('imode',d.imode,[['ai','AI 가 나레이션을 보고 설계(권장)'],['rule','규칙으로 추출(무료·즉시)']]))
     +D_('구성요소',klRowHtml(d))
@@ -47548,7 +47548,7 @@ const DLG_PREF={
   vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
   avoice:v=>{ P.cfg.dlg.avoice=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
   ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; },
-  istyle:v=>{ if(ISTY[v]) P.cfg.info.style=v; }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; },
+  istyle:v=>{ if(ISTY[v]) P.cfg.info.style=v; }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; }, ionly:v=>{ P.cfg.info.only=String(v==null?'':v).slice(0,300); }, ibal:v=>{ P.cfg.info.bal=!!v; }, ibalm:v=>{ P.cfg.info.balm=(v==='tile'||v==='type')?v:'auto'; },
   asb:v=>{ P.sb=P.sb||{}; P.sb.on=(v==='on'); commit('스토리보드 적용 '+(v==='on'?'켬':'끔')); }   /* v107: 스토리보드대로 / AI 가 알아서 — 프로젝트에 저장(AI 수정 패널과 같은 값) */
 };
 function resetPref(gid){
@@ -48076,7 +48076,7 @@ function sbTopUpInfo(sc){
   const hay=sbNorm(sbHay(sc,gs)), miss=sp.texts.filter(t=>hay.indexOf(sbNorm(t))<0&&!klGoneHas(sc,t)).slice(0,3); if(!miss.length) return 0;
   const all=sentsOf(P,sc), g=gs[0], inClip=all.filter(s=>s.vs>=g.s-0.1&&s.vs<g.e), ss=inClip.length?inClip:all;
   miss.forEach((t,k)=>{ let si=ss.findIndex(s=>sbNorm(s.text).indexOf(sbNorm(t))>=0); if(si<0) si=Math.min(ss.length-1,k); const f=anchorOf(ss[si],t); g.items.push(Object.assign({id:uid('i')},klSbBlock(t),{at:{sid:ss[si].id,f:f>=0?r3(f):0},dt:0})); });
-  sortItems(g); layout(P); return miss.length;
+  sortItems(g); if(klBal()) klShortComposeClip(g); layout(P); return miss.length;
 }
 /* ── 요청 글 만들기 ── */
 function sbFullPrompt(p,sc,kind,suf){   /* AI 이미지·영상 요청 — 스타일 + 분위기 + 장면 묘사 전체(+글자, 이미지는 피할 것). 한국어가 아니면 라벨을 영어로 */
@@ -50069,6 +50069,35 @@ function xText(E,txt,hl,R,fs0,wt,col,al,va,mode,hcol,maxL,minK){   /* R 안에 �
   lines.forEach((l,i)=>xRichLine(E,l,ax,y0+i*L+(L-fs)*0.4,fs,wt,col,al,hl,mode,hcol)); return th;
 }
 function xFrame(E,c,it,bk,s0,box,col){ popBegin(E,c,s0,bk,0.4); const ink=klBox(E,c,bk,box||'glass',col||E.pal.accent), pad=Math.min(0.034*bk,c.h*0.14); return {ink,R:{x:ink.x+pad,y:ink.y+pad*0.8,w:Math.max(10,ink.w-pad*2),h:Math.max(10,ink.h-pad*1.6)},pad}; }
+/* ── v133: 단어 타일 — 짧은 글(한두 낱말) 여러 개를 가로로 긴 목록·띠 대신 정사각형에 가까운 칸 여러 개로 놓을 때 쓰는 글 6가지. 글이 칸을 가득 채우게 가장 크게(줄바꿈 3줄까지) 줄여 맞춰 가운데에 그림 ── */
+function xTileFit(E,txt,R,maxL,wt,cap){
+  const g=E.g; txt=String(txt==null?'':txt); let fs=Math.max(6,Math.min(R.h*0.62,R.w*0.36,cap||1e9)), lines=[txt]; const nrm=s=>String(s).replace(/\s+/g,' ').trim(), want=nrm(txt), chk=!hasNL(txt);
+  for(let q=0;q<34;q++){ g.font=wt+' '+fs.toFixed(1)+'px '+E.font; lines=wrapLines(g,txt,Math.max(10,R.w)); if(lines.length<=maxL&&lines.length*fs*1.18<=R.h+1&&lines.every(l=>g.measureText(l).width<=R.w+1)&&(!chk||nrm(lines.join(' '))===want)) break; fs*=0.92; }   /* 낱말 한가운데서 끊지 않음(끊어야 하면 글자를 더 줄임) */
+  return {fs,lines};
+}
+function xTileCommon(E,wt){   /* 같은 clip 의 타일들이 크기가 들쭉날쭉하지 않게 — 가장 긴 글에 맞춘 크기를 기준으로, 가장 크게 맞춘 것의 72% 아래로는 줄이지 않음 */
+  if(E._tfs!=null) return E._tfs; let mn=1e9, mx=0;
+  (E.cells||[]).forEach(c=>{ const it=E.items&&E.items[c.i]; if(!it) return; const d=klOf(it.type); if(!(d&&d.fid==='x'&&/^t(card|fill|out|top|num|dot)$/.test(d.id))) return;
+    const f=xTileFit(E,String(it.text||'').trim(),{x:0,y:0,w:c.w*0.84,h:c.h*0.7},3,wt,0.2*E.B*c.k); mn=Math.min(mn,f.fs); mx=Math.max(mx,f.fs); });
+  E._tfs=mx>0?Math.max(mn,0.72*mx):0; return E._tfs;
+}
+const klTileCol=(pal,i)=>i%2?klMix(pal.accent,pal.dark?'#ffffff':'#000000',0.16):pal.accent;   /* v134: 타일 색은 영상 전체가 같은 강조색(한 가지 색 + 살짝 밝고 어두운 변화) — 칸마다 무지개색으로 튀지 않게 */
+function klRad(E,bk){ const ck=(E.sk&&E.sk.card)||'glass'; return ck==='slide'?0.012*bk:ck==='dash'?0.010*bk:ck==='flat'?0.004*bk:0.024*bk; }   /* 스타일의 카드 모서리와 같게 */
+function xTile(E,c,it,bk,s0,kind){
+  const g=E.g, pal=E.pal, font=E.font, its=E.items||[], idx=Math.max(0,its.indexOf(it)), col=toneCol(pal,itemTone(it))||klTileCol(pal,idx), text=String(it.text||'').trim();
+  popBegin(E,c,s0,bk,0.4);
+  const rad=Math.min(klRad(E,bk),c.h/4); let R={x:c.x+c.w*0.07,y:c.y+c.h*0.1,w:c.w*0.86,h:c.h*0.8}, fg=pal.text;
+  switch(kind){
+    case 'tcard': { cardBox(E,c.x,c.y,c.w,c.h,bk); R={x:c.x+c.w*0.08,y:c.y+c.h*0.1,w:c.w*0.84,h:c.h*0.7}; g.fillStyle=col; roundRect(g,c.x+c.w*0.5-Math.min(c.w*0.1,0.06*bk),c.y+c.h*0.86,Math.min(c.w*0.2,0.12*bk),Math.max(3,0.007*bk),0.004*bk); g.fill(); break; }
+    case 'tfill': { const gr=g.createLinearGradient(c.x,c.y,c.x+c.w,c.y+c.h); gr.addColorStop(0,klMix(col,'#ffffff',0.1)); gr.addColorStop(1,klMix(col,'#000000',0.22)); roundRect(g,c.x,c.y,c.w,c.h,rad); g.fillStyle=gr; g.fill(); fg=klInk(col); break; }
+    case 'tout': { roundRect(g,c.x+1,c.y+1,c.w-2,c.h-2,rad); g.fillStyle=klA(col,pal.dark?0.10:0.07); g.fill(); g.lineWidth=Math.max(2,0.005*bk); g.strokeStyle=col; g.stroke(); break; }
+    case 'ttop': { cardBox(E,c.x,c.y,c.w,c.h,bk); const th=Math.min(c.h*0.12,0.03*bk); g.save(); roundRect(g,c.x,c.y,c.w,c.h,rad); g.clip(); g.fillStyle=col; g.fillRect(c.x,c.y,c.w,th); g.restore(); R={x:c.x+c.w*0.07,y:c.y+th+c.h*0.05,w:c.w*0.86,h:c.h-th-c.h*0.1}; break; }
+    case 'tnum': { cardBox(E,c.x,c.y,c.w,c.h,bk); dtx(g,String(idx+1).padStart(2,'0'),c.x+c.w*0.96,c.y+c.h*0.76,Math.min(c.h*0.5,c.w*0.24),'800',klA(pal.accent,0.22),font,'right','middle'); R={x:c.x+c.w*0.07,y:c.y+c.h*0.08,w:c.w*0.86,h:c.h*0.74}; break; }
+    case 'tdot': { cardBox(E,c.x,c.y,c.w,c.h,bk); klDot(g,c.x+c.w/2,c.y+c.h*0.17,Math.min(c.h*0.07,0.02*bk),col); R={x:c.x+c.w*0.07,y:c.y+c.h*0.28,w:c.w*0.86,h:c.h*0.62}; break; }
+  }
+  const cap0=0.2*bk*FZ(it,'text'), com=xTileCommon(E,'800'), f=xTileFit(E,text,R,3,'800',com>0?Math.min(cap0,com):cap0), L=f.fs*1.18, y0=R.y+(R.h-f.lines.length*L)/2+L/2;
+  f.lines.forEach((l,i)=>dtx(g,l,R.x+R.w/2,y0+i*L,f.fs,'800',fg,font,'center','middle'));
+}
 function drawX(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, T=D.t, tone=itemTone(it), tcol=toneCol(pal,tone)||pal.accent, ztx=FZ(it,'text'), zsb=FZ(it,'sub'), zby=FZ(it,'by'), zlb=FZ(it,'label');
   const text=String(it.text||''), sub=String(it.sub||'').trim(), by=String(it.by||'').trim(), label=String(it.label||'').trim(), hl=it.hl||[], k=T.kind, hm=T.hm||'color';
@@ -50076,6 +50105,7 @@ function drawX(E,c,it,D){
   const body=(R,o)=>xText(E,text,hl,R,o&&o.fs||fT,o&&o.wt||'800',o&&o.col||pal.text,o&&o.al||T.al||'l',o&&o.va||'m',o&&o.hm||hm,tcol,o&&o.maxL||4);
   const small=(s,x,y,w,fs,wt,col,al,bl)=>{ if(s) klT(E,s,x,y,w,fs,wt||'600',col||pal.mute,al||'l','top'===bl?'top':bl||'top',0.5); };
   switch(k){
+    case 'tcard': case 'tfill': case 'tout': case 'ttop': case 'tnum': case 'tdot': xTile(E,c,it,bk,s0,k); break;
     case 'bigq': { const F=xFrame(E,c,it,bk,s0,'glass',tcol), R=F.R, q=Math.min(R.h*0.7,0.2*bk); klT(E,'“',R.x-0.004*bk,R.y-q*0.1,q,q*1.5,'800',klA(tcol,0.9),'left','top',0.3); const tx=R.x+q*0.62, tw=R.w-q*0.62, hb=by?fB*1.7:0; body({x:tx,y:R.y+q*0.1,w:tw,h:R.h-hb-q*0.1},{va:'m'}); if(by) klT(E,'— '+by,R.x+R.w,R.y+R.h-fB*0.1,R.w*0.6,fB,'600',pal.mute,'right','bottom',0.5); break; }
     case 'banner': { const hh=Math.min(c.h*0.62,0.2*bk*(sub?1.2:1)), y0=c.y+(c.h-hh)/2; const tw=Math.min(c.w*0.2,0.2*bk), red=tone==='down'?pal.down:(tone==='up'?pal.up:'#e11d48'); roundRect(g,c.x,y0,c.w,hh,Math.min(0.012*bk,hh/4)); g.fillStyle=pal.dark?'#101a2e':'#111827'; g.fill(); g.save(); roundRect(g,c.x,y0,c.w,hh,Math.min(0.012*bk,hh/4)); g.clip(); g.fillStyle=red; g.fillRect(c.x,y0,tw,hh); g.restore(); klT(E,label||TX('brk','속보'),c.x+tw/2,y0+hh/2,tw*0.84,Math.min(fL*1.4,hh*0.4),'800','#ffffff','center','middle',0.4);
       const R={x:c.x+tw+0.024*bk,y:y0+hh*0.08,w:c.w-tw-0.04*bk,h:hh*(sub?0.56:0.84)}; xText(E,text,hl,R,Math.min(fT*0.92,hh*0.4),'800','#ffffff',T.al==='c'?'c':'l','m',hm,'#fbbf24',2); if(sub) klT(E,sub,R.x,y0+hh*0.78,R.w,Math.min(fS,hh*0.2),'600','rgba(255,255,255,.72)','left','middle',0.5); break; }
@@ -50151,16 +50181,79 @@ const XG='글·강조';
  ['under2','이중 밑줄 문장','이중밑줄',XG,2.6,0.22,0.6,{kind:'under2'}],
  ['plainbig','큰 글씨(배경 없음)','큰글씨',XG,2.4,0.28,0.6,{kind:'plainbig'}]
 ].forEach(a=>KLD('x',a[0],a[1],{s:a[2],g:a[3],ar:a[4],h:a[5],mw:a[6],t:a[7],sample:a[8]}));
+const XT='단어 타일';   /* v133 — 짧은 글 여러 개를 균형 있게 */
+[['tcard','단어 타일(카드)','타일카드',XT,1.5,0.27,0.3,{kind:'tcard'},{text:'짧은 글'}],
+ ['tfill','단어 타일(색 채움)','타일색',XT,1.5,0.27,0.3,{kind:'tfill'},{text:'짧은 글'}],
+ ['tout','단어 타일(윤곽)','타일윤곽',XT,1.5,0.27,0.3,{kind:'tout'},{text:'짧은 글'}],
+ ['ttop','단어 타일(위 띠)','타일띠',XT,1.5,0.27,0.3,{kind:'ttop'},{text:'짧은 글'}],
+ ['tnum','단어 타일(큰 번호)','타일번호',XT,1.5,0.27,0.3,{kind:'tnum'},{text:'짧은 글'}],
+ ['tdot','단어 타일(점)','타일점',XT,1.5,0.27,0.3,{kind:'tdot'},{text:'짧은 글'}]
+].forEach(a=>KLD('x',a[0],a[1],{s:a[2],g:a[3],ar:a[4],h:a[5],mw:a[6],t:a[7],sample:a[8]}));
 
 /* ── l 계열: 글 목록 ── */
 function lData(it,max){ return (it.parts||[]).slice(0,max).map((p,i)=>({p,i,t:String(p.t||'').trim(),s:String(p.sb||'').trim()})).filter(q=>q.t); }
+/* ── v134: 글자 크기형 — 타일(카드)을 쓰지 않고 글자 크기만 달리해 짧은 글 여러 개를 구성 ──
+   tsize 큰 글 하나 + 나머지 작은 글 · tstack 줄마다 글자 크기가 단계로 줄어드는 쌓기 · tcloud 크기가 다른 낱말을 모아 놓는 구름 · tcols 큰 번호 + 글 기둥.
+   색·굵기·밑줄·점은 타일과 같은 강조색·글꼴을 써서 영상 전체의 느낌이 이어지게 ── */
+const KL_TYK=/^t(size|stack|cloud|cols)$/;
+function drawLT(E,c,it,ds,bk,Pq,kind){
+  const g=E.g, pal=E.pal, font=E.font, acc=pal.accent, pad=0.03*bk, n=ds.length, R={x:c.x+pad,y:c.y+pad*0.8,w:Math.max(10,c.w-pad*2),h:Math.max(10,c.h-pad*1.6)};
+  const rule=(x0,y0,x1,y1,a)=>{ g.save(); g.strokeStyle=klA(pal.mute,a==null?0.3:a); g.lineWidth=Math.max(1,0.002*bk); g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke(); g.restore(); };
+  const bar=(x,y,w)=>{ g.fillStyle=acc; roundRect(g,x,y,w,Math.max(3,0.008*bk),0.004*bk); g.fill(); };
+  const show=(q,fn)=>{ const a=Pq(q); if(a<=0) return; g.save(); g.globalAlpha*=a; g.translate((1-a)*0.03*bk,0); fn(a); g.restore(); };
+  const ctr=(f,cx,cy,wt,col)=>{ const L=f.fs*1.15, y0=cy-(f.lines.length*L)/2+L/2; f.lines.forEach((l,i)=>dtx(g,l,cx,y0+i*L,f.fs,wt,col,font,'center','middle')); };
+  if(kind==='tsize'){
+    const hero=ds[0], rest=ds.slice(1), wide=R.w/R.h>=1.25&&rest.length>0;
+    const hb=wide?{x:R.x,y:R.y,w:R.w*0.5,h:R.h}:{x:R.x,y:R.y,w:R.w,h:rest.length?R.h*0.52:R.h}, rb=wide?{x:R.x+R.w*0.57,y:R.y,w:R.w*0.43,h:R.h}:{x:R.x,y:R.y+R.h*0.58,w:R.w,h:R.h*0.42};
+    const hf=xTileFit(E,hero.t,{x:hb.x,y:hb.y,w:hb.w,h:hb.h*0.78},3,'800',0.3*bk), sK=hf.fs*0.6;
+    show(hero,()=>{ const f=hf, L=f.fs*1.12, th=f.lines.length*L, y0=hb.y+(hb.h-th-0.03*bk)/2; f.lines.forEach((l,i)=>dtx(g,l,hb.x,y0+i*L+L/2,f.fs,'800',pal.text,font,'left','middle')); bar(hb.x,y0+th+0.012*bk,Math.min(hb.w*0.4,0.22*bk)); });
+    if(rest.length){
+      if(wide){
+        const rh=Math.min(rb.h/rest.length,Math.max(0.17*bk,sK*1.7)), y0=rb.y+(rb.h-rh*rest.length)/2, r=Math.min(rh*0.11,0.011*bk), fs0=Math.min(rh*0.5,Math.max(0.075*bk,sK)), rw=Math.max(10,rb.w-r*3.4), rfit=(q,cap)=>xTileFit(E,q.t,{x:0,y:0,w:rw,h:rh*0.92},2,'700',cap), fsU=Math.min.apply(null,rest.map(q=>rfit(q,fs0).fs));
+        rule(rb.x-R.w*0.03,R.y+R.h*0.1,rb.x-R.w*0.03,R.y+R.h*0.9);
+        rest.forEach((q,i)=>show(q,()=>{ const cy=y0+i*rh+rh/2, f=rfit(q,fsU), L=f.fs*1.12; klDot(g,rb.x+r,cy,r,acc); f.lines.forEach((l,k)=>dtx(g,l,rb.x+r*3.2,cy-(f.lines.length*L)/2+L/2+k*L,f.fs,'700',pal.text,font,'left','middle')); if(i<rest.length-1) rule(rb.x,y0+(i+1)*rh,rb.x+rb.w,y0+(i+1)*rh,0.2); }));
+      }else{
+        const cw=rb.w/rest.length, fits=rest.map(q=>xTileFit(E,q.t,{x:0,y:0,w:cw*0.84,h:rb.h*0.8},2,'700',Math.max(0.1*bk,sK))), fsU=Math.min.apply(null,fits.map(f=>f.fs));
+        rule(rb.x,rb.y-R.h*0.03,rb.x+rb.w,rb.y-R.h*0.03,0.25);
+        rest.forEach((q,i)=>show(q,()=>{ const f=xTileFit(E,q.t,{x:0,y:0,w:cw*0.84,h:rb.h*0.8},2,'700',fsU); ctr(f,rb.x+cw*(i+0.5),rb.y+rb.h/2,'700',pal.text); if(i>0) rule(rb.x+cw*i,rb.y+rb.h*0.15,rb.x+cw*i,rb.y+rb.h*0.85,0.22); }));
+      }
+    }
+  }else if(kind==='tstack'){
+    const sz=ds.map((q,i)=>Math.max(0.55,1-0.14*i)), bw=0.012*bk, tx=R.x+bw+0.034*bk, tw=Math.max(10,R.w-bw-0.034*bk), sum=sz.reduce((a,s)=>a+s*1.3,0);
+    let F=Math.min(R.h/sum,0.24*bk), fl=[], hs=[], th=0;
+    for(let k=0;k<30;k++,F*=0.94){
+      fl=[]; ds.forEach((q,i)=>{ fl.push(xTileFit(E,q.t,{x:0,y:0,w:tw,h:1e6},2,i===0?'800':'700',Math.min(F*sz[i],i?fl[i-1].fs*0.94:1e9))); });
+      hs=fl.map(f=>f.lines.length*f.fs*1.15+f.fs*0.15); th=hs.reduce((a,h)=>a+h,0); if(th<=R.h) break;
+    }
+    const y0=R.y+(R.h-th)/2; g.fillStyle=acc; roundRect(g,R.x,y0,bw,th,bw/2); g.fill();
+    let y=y0; ds.forEach((q,i)=>{ const f=fl[i], L=f.fs*1.15, yy=y; y+=hs[i]; show(q,()=>{ g.globalAlpha*=1-0.06*i; f.lines.forEach((l,k)=>dtx(g,l,tx,yy+L/2+k*L,f.fs,i===0?'800':'700',pal.text,font,'left','middle')); }); });
+  }else if(kind==='tcloud'){
+    const sc=ds.map((q,i)=>i===0?1:i<3?0.74:0.54), nrm=s=>String(s).replace(/\s+/g,' ').trim(); let best=null; const capK=n<=3?1.4:n<=5?1.18:1; let F=Math.min(R.h*0.5*capK,R.w*0.2*capK,0.22*bk*capK);
+    for(let k=0;k<44;k++,F*=0.93){
+      const maxW=R.w*0.62, bxs=ds.map((q,i)=>{ const f1=F*sc[i]; g.font='800 '+f1.toFixed(1)+'px '+font; const ls=wrapLines(g,q.t,maxW), w=Math.max.apply(null,ls.map(l=>g.measureText(l).width)); return {q,i,fs:f1,ls,w,h:ls.length*f1*1.15,bad:nrm(ls.join(' '))!==nrm(q.t)||w>R.w}; });
+      const gap=F*0.4, rows=[]; let cur=[], cw=0;
+      bxs.forEach(o=>{ if(cur.length&&cw+gap+o.w>R.w){ rows.push(cur); cur=[]; cw=0; } cw+=(cur.length?gap:0)+o.w; cur.push(o); }); if(cur.length) rows.push(cur);
+      const hts=rows.map(r=>Math.max.apply(null,r.map(o=>o.h))), th=hts.reduce((a,b2)=>a+b2,0)+F*0.2*(rows.length-1); best={rows,hts,th,gap,rg:F*0.2};
+      if(th<=R.h&&!bxs.some(o=>o.bad)) break;
+    }
+    let y=R.y+(R.h-best.th)/2; best.rows.forEach((r,ri)=>{ const tw=r.reduce((a,o)=>a+o.w,0)+best.gap*(r.length-1); let x=R.x+(R.w-tw)/2; const hh=best.hts[ri];
+      r.forEach(o=>{ const bx0=x, cy=y+hh/2, L=o.fs*1.15; show(o.q,()=>{ o.ls.forEach((l,i)=>dtx(g,l,bx0+o.w/2,cy-(o.ls.length*L)/2+L/2+i*L,o.fs,'800',o.i===0?acc:pal.text,font,'center','middle')); }); x+=o.w+best.gap; }); y+=hh+best.rg; });
+  }else{   /* tcols */
+    const cols=n<=4?n:Math.ceil(n/2), rows=Math.ceil(n/cols), cw=R.w/cols, rh=R.h/rows, fits=ds.map(q=>xTileFit(E,q.t,{x:0,y:0,w:cw*0.86,h:rh*0.5},3,'800',(n<=3?0.19:0.14)*bk)), mn=Math.min.apply(null,fits.map(f=>f.fs)), mx=Math.max.apply(null,fits.map(f=>f.fs)), fsU=Math.max(mn,0.75*mx);
+    ds.forEach((q,i)=>{ const col=i%cols, row=Math.floor(i/cols), x0=R.x+col*cw, y0=R.y+row*rh;
+      show(q,()=>{ const nf=Math.min(rh*0.28,cw*0.3,0.09*bk); dtx(g,String(i+1).padStart(2,'0'),x0+cw/2,y0+rh*0.22,nf,'800',acc,font,'center','middle'); bar(x0+cw/2-Math.min(cw*0.09,0.045*bk),y0+rh*0.22+nf*0.72,Math.min(cw*0.18,0.09*bk));
+        const f=xTileFit(E,q.t,{x:0,y:0,w:cw*0.86,h:rh*0.5},3,'800',fsU); ctr(f,x0+cw/2,y0+rh*0.68,'800',pal.text); if(col>0) rule(x0,y0+rh*0.08,x0,y0+rh*0.92,0.22); if(row>0) rule(x0+cw*0.06,y0,x0+cw*0.94,y0,0.18); });
+    });
+  }
+}
 function drawL(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return; const bk=E.B*c.k, T=D.t, ds=lData(it,T.kind==='cards3'?4:8); if(!ds.length) return;
-  const n=ds.length; popBegin(E,c,s0,bk,0.35); if(T.kind!=='keywords'&&T.kind!=='notes') cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk);
+  const n=ds.length, TY=KL_TYK.test(T.kind); popBegin(E,c,s0,bk,0.35); if(!TY&&T.kind!=='keywords'&&T.kind!=='notes') cardBox(E,c.x,c.y,c.w,c.h,bk); if(!TY) hdrDraw(E,c,it,bk);
   const top=c.y+(it.label?HDR*hzL(it)*bk:0)+0.012*bk, R={x:c.x+0.034*bk,y:top,w:Math.max(10,c.w-0.068*bk),h:Math.max(10,c.y+c.h-0.014*bk-top)}, zt=FZP(it,'t'), ft=0.034*bk*zt, acc=pal.accent, gap=0.012*bk;
   const P=q=>{ const sp=klPtS(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.45); };
   const rowsLay=()=>{ const rh=Math.min(R.h/n,0.13*bk), y0=R.y+(R.h-rh*n)/2; return {rh,y0}; };
   switch(T.kind){
+    case 'tsize': case 'tstack': case 'tcloud': case 'tcols': drawLT(E,c,it,ds,bk,P,T.kind); break;
     case 'check': case 'bullets': case 'numbered': {
       const {rh,y0}=rowsLay(), r=Math.min(rh*0.3,0.026*bk);
       ds.forEach((q,i)=>{ const a=P(q); if(a<=0) return; const cy=y0+i*rh+rh/2; g.save(); g.globalAlpha*=a; g.translate((1-a)*0.03*bk,0);
@@ -50214,6 +50307,12 @@ const LG0='글 목록';
  ['dots2','두 열 불릿','두열불릿',LG0,2.0,0.18,0.07,0.8,{kind:'dots2'}],
  ['bignums','큰 번호 목록','큰번호목록',LG0,1.8,0.10,0.12,0.7,{kind:'bignums'}],
  ['quotes','따옴표 목록','따옴표목록',LG0,1.8,0.10,0.12,0.7,{kind:'quotes'}]
+].forEach(a=>KLD('l',a[0],a[1],{s:a[2],g:a[3],ar:a[4],h:a[5],hp:a[6],mw:a[7],t:a[8],sample:a[9]}));
+const LT0='글자 크기형';   /* v134 — 타일 없이 글자 크기만 달리 */
+[['tsize','글자 크기형(큰 글 + 작은 글)','큰글작은글',LT0,2.2,0.27,0,0.5,{kind:'tsize'},{label:'',parts:[{t:'MACRO',sb:''},{t:'INDEX',sb:''},{t:'EARNINGS',sb:''}]}],
+ ['tstack','글자 크기형(단계별 쌓기)','크기쌓기',LT0,1.4,0.27,0,0.4,{kind:'tstack'},{label:'',parts:[{t:'MACRO',sb:''},{t:'INDEX',sb:''},{t:'EARNINGS',sb:''}]}],
+ ['tcloud','글자 크기형(낱말 구름)','낱말구름',LT0,2.0,0.27,0,0.5,{kind:'tcloud'},{label:'',parts:[{t:'MACRO',sb:''},{t:'INDEX',sb:''},{t:'EARNINGS',sb:''},{t:'FOMC',sb:''}]}],
+ ['tcols','글자 크기형(번호 기둥)','번호기둥',LT0,2.4,0.27,0,0.5,{kind:'tcols'},{label:'',parts:[{t:'MACRO',sb:''},{t:'INDEX',sb:''},{t:'EARNINGS',sb:''}]}]
 ].forEach(a=>KLD('l',a[0],a[1],{s:a[2],g:a[3],ar:a[4],h:a[5],hp:a[6],mw:a[7],t:a[8],sample:a[9]}));
 
 /* ── g 계열: 게이지·지표 — 값 하나(최소~최대·구간·목표)를 온도계·속도계·막대·신호등·배터리 등 20가지 계기로 ── */
@@ -50498,13 +50597,27 @@ const KL_IMP={hero:1,stat:0.55,move:0.6,bar:0.6,row:0.55,heat:0.75,donut:0.7,gau
 const KL_HIST=[];   /* 이번 만들기에서 쓴 템플릿(최근 것부터, 최대 60개) — 같은 템플릿이 연달아 나오거나 한 가지로 쏠리지 않게 */
 let _klCtx=null;
 function klCtx(){ if(CG&&CG.canvas) return CG; if(!_klCtx){ const c=document.createElement('canvas'); c.width=16; c.height=16; _klCtx=c.getContext('2d'); } return _klCtx; }
+const klBal=()=>!!(klRich()&&klLtpl()&&P&&P.cfg&&P.cfg.info&&P.cfg.info.bal!==false);   /* v133: 짧은 글은 타일로 균형 있게 — 끄면 v132 와 같음 */
+function klW(s){ let w=0; String(s==null?'':s).split('').forEach(ch=>{ const c=ch.charCodeAt(0); w+=c>=0x1100?1:/[A-Z0-9]/.test(ch)?0.66:/[a-z]/.test(ch)?0.54:/\s/.test(ch)?0.3:0.4; }); return w; }   /* 글 폭(한글·한자 1, 영문 대문자·숫자 0.66, 소문자 0.54, 공백 0.3) */
+const KL_TILEK=/^t(card|fill|out|top|num|dot)$/;
+function klTextUnit(it,d){   /* 글만 있는 단위의 글 길이에 맞춘 이상적 비율 — {ar, tile} 또는 null */
+  if(d&&d.fid==='x'&&KL_TILEK.test(d.id)) return {ar:1.5,tile:true};
+  const txt=(it.type==='point'||it.type==='quote'||(d&&d.fid==='x'))?String(it.text||'').trim():'';
+  if(txt&&!(it.sub&&String(it.sub).trim())) return {ar:clamp(1.15+0.14*klW(txt),1.5,4.2),tile:false,txt:true};
+  if(d&&d.fid==='l'&&/^(check|bullets|numbered|ticks|bignums|quotes)$/.test(d.id)){
+    const ps=(it.parts||[]).filter(p=>p&&String(p.t||'').trim()); if(!ps.length) return null; const wm=Math.max.apply(null,ps.map(p=>klW(p.t)));
+    return {ar:clamp((0.16+0.036*wm)/(0.13*ps.length+0.04+(it.label?0.1:0)),0.9,2.6),tile:false};
+  }
+  return null;
+}
 function klUnit(its,u){   /* 배치 단위의 이상적 가로세로 비율(ar)과 중요도(imp 0~1) */
-  const it=its[u.i], d=klOf(it.type), f=d&&KL.fam[d.fid]; let ar, imp;
+  const it=its[u.i], d=klOf(it.type), f=d&&KL.fam[d.fid]; let ar, imp, tile=false, txt=false;
   if(u.n>1) ar=clamp(1/(0.066*u.n+0.05),1.2,5.5); else ar=d?d.ar:(KL_AR[it.type]||2);
   imp=d?(d.imp!=null?d.imp:(f.imp!=null?f.imp:0.6)):(KL_IMP[it.type]!=null?KL_IMP[it.type]:0.55);
   if(u.n>1) imp=Math.min(1,imp+0.05*u.n); const np=(it.parts||[]).length; if(np>=6) imp=Math.min(1,imp+0.08);
+  if(klBal()&&u.n===1){ const t=klTextUnit(it,d); if(t){ ar=t.tile?t.ar:Math.min(ar,t.ar); tile=!!t.tile; txt=!!t.txt; if(t.txt||t.tile) imp=Math.max(imp,0.5); } }   /* v133: 짧은 글은 가로로 긴 칸이 아니라 정사각형에 가까운 칸, 중요도도 너무 낮지 않게(작은 띠로 밀리지 않게) */
   const w=it._w!=null?+it._w:0; if(w>=1&&w<=3) imp=[0.3,0.6,1.0][Math.round(w)-1];
-  return {ar,imp};
+  return {ar,imp,tile,txt};
 }
 function klHash(s){ let h=2166136261; s=String(s); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)/4294967296; }
 function layoutPick(ig,opt){
@@ -50521,7 +50634,9 @@ function layoutPick(ig,opt){
     let k=1; try{ const cs=igCustomCells(E,sub,cr); k=cs.length?cs[0].k:1; }catch(e){ k=1; } cache.set(key,k); return k;
   };
   const cost=(ui,s,aMax)=>{
-    const q=info[ui], k=cell(ui,s), sar=(s.w*cr.w)/Math.max(1,s.h*cr.h), arc=Math.abs(Math.log(sar/q.ar))*0.9;
+    const q=info[ui], k=cell(ui,s), sar=(s.w*cr.w)/Math.max(1,s.h*cr.h); let arc=Math.abs(Math.log(sar/q.ar))*0.9;
+    if(q.tile) arc=sar<1.0?Math.log(1.0/sar)*2.0:sar>2.7?Math.log(sar/2.7)*1.1:0;   /* v133: 타일은 가로세로 1~2.7 사이면 어느 비율이든 괜찮음(글이 칸을 채워 그려짐) */
+    else if(q.txt){ if(sar<1.15) arc+=Math.log(1.15/sar)*1.6; else if(sar>3.6) arc+=Math.log(sar/3.6)*1.4; }   /* 짧은 글 블록이 좁고 긴 칸(낱말이 끊김)이나 화면 폭만큼 늘어난 띠에 놓이는 일을 막음 */
     const kSmall=k<0.55?Math.pow(0.55/k,2)*1.6:k<0.8?(0.8/k-1)*1.2:0, kBig=k>2.6?(k/2.6-1)*0.8:0, kt=0.9+1.1*q.imp, kp=Math.abs(Math.log(k/kt))*0.5;
     const area=(s.w*s.h)/aMax, ip=Math.abs(q.imp/mxImp-area)*0.9;   /* 중요한 단위는 큰 칸, 비슷하면 비슷한 크기의 칸 */
     return arc+kSmall+kBig+kp+ip;
@@ -50535,7 +50650,8 @@ function layoutPick(ig,opt){
     const perm=new Array(M); let mk=N-1; for(let i=M-1;i>=0;i--){ perm[i]=pr[mk]; mk&=~(1<<pr[mk]); }
     const cov=sl.reduce((a,s)=>a+s.w*s.h,0)||1e-6, cx=sl.reduce((a,s)=>a+(s.x+s.w/2)*s.w*s.h,0)/cov, cy=sl.reduce((a,s)=>a+(s.y+s.h/2)*s.w*s.h,0)/cov, unb=Math.abs(cx-0.5)+Math.abs(cy-0.5);
     let kmin=9; us.forEach((_,i)=>{ kmin=Math.min(kmin,cell(i,sl[perm[i]])); });
-    return {t,slots:sl,perm,kmin,cost:dp[N-1]/M+Math.max(0,0.8-cov)*0.6+unb*(M===1?2.6:0.4)};   /* 화면이 휑하게 비거나(덮는 넓이) 한쪽으로 쏠리는 템플릿은 감점 — 한 칸짜리가 '왼쪽 크게'로 반만 차는 일을 막음 */
+    let spread=0; if(klBal()&&M>=2&&info.every(q=>q.tile)){ const ar2=sl.map(s=>s.w*s.h); spread=Math.log(Math.max.apply(null,ar2)/Math.max(1e-6,Math.min.apply(null,ar2)))*0.6+Math.max(0,0.93-cov)*3.0; }   /* v133: 타일뿐이면 칸 크기가 고르고 화면을 넉넉히 채우게(가운데 작게 모인 배치는 감점) */
+    return {t,slots:sl,perm,kmin,cost:dp[N-1]/M+Math.max(0,0.8-cov)*0.6+unb*(M===1?2.6:0.4)+spread};   /* 화면이 휑하게 비거나(덮는 넓이) 한쪽으로 쏠리는 템플릿은 감점 — 한 칸짜리가 '왼쪽 크게'로 반만 차는 일을 막음 */
   };
   let cands=LTPL.filter(t=>t.n===M); if(opt.tpl){ const w=LTPL.find(t=>t.id===opt.tpl); if(w&&w.n===M) cands=[w]; }
   const seed=String(ig.id||'')+'|'+its.map(x=>x.type).join(','), all=[];
@@ -50547,7 +50663,7 @@ function layoutPick(ig,opt){
   all.sort((a,b)=>a.total-b.total);
   let best=all[0]||null;
   if(best&&all.length>1&&!opt.tpl){   /* 거의 같은 점수(0.45 안)의 후보 중에서 장면마다 다르게 — 내용이 같으면 늘 같은 결과(해시)이고, 어색한 후보는 절대 안 고름 */
-    const pool=all.filter(r=>r.total<=best.total+0.45); if(pool.length>1) best=pool[Math.min(pool.length-1,Math.floor(klHash(seed)*pool.length))];
+    const pool=all.filter(r=>r.total<=best.total+(klBal()&&info.every(q=>q.tile)?0.2:0.45)); if(pool.length>1) best=pool[Math.min(pool.length-1,Math.floor(klHash(seed)*pool.length))];
   }
   if(opt.tpl&&best&&cands.length===1&&!opt.keep){   /* AI 가 고른 템플릿은 존중 — 디렉터가 고른 최선보다 크게 어색할 때(칸 모양이 안 맞거나 글이 훨씬 작아짐)만 대신 고름 */
     const alt=layoutPick(ig,Object.assign({},opt,{tpl:'',keep:1})); if(alt&&(best.cost>alt.cost+1.0||best.kmin<alt.kmin*0.7)) return alt; }
@@ -50573,6 +50689,92 @@ function leAiTpl(){   /* [📐 크기/배치 수정] 창의 '🤖 AI 추천 배�
   const g=leG(); if(!g||!UI.le) return; const pk=layoutPick(g,{}); if(!pk){ toast('이 인포그래픽에는 배치 템플릿을 쓸 수 없어요(구성요소 1~7개만)'); return; }
   igUnits(g.items).forEach((u,i)=>{ g.items[u.i].bx=boxOf(pk.slots[pk.perm[i]]); }); g.tpl=pk.t.id; UI.le.u=-1; KL_HIST.unshift(pk.t.id); if(KL_HIST.length>60) KL_HIST.length=60;
   leChanged('AI 추천 배치 — '+pk.t.nm,true); toast('"'+pk.t.nm+'" 배치를 골랐어요 — 마음에 안 들면 다시 눌러 다른 후보를 보세요');
+}
+/* ── v133: 짧은 글 구성 — 한두 낱말짜리 글이 여럿이면 '한 줄에 하나' 체크 목록이나 가로로 긴 띠 대신 균형 있는 구성으로 ──
+   · 대상: 짧은 요점·인용·글 모양(글 폭 11 이하: 한글 11자·영문 대문자 16자 안팎)과, 짧은 항목뿐인 목록(check·bullets·numbered·ticks·bignums·quotes·dots2·notes)의 항목들
+   · 쓰는 곳: 규칙 구성(ruleSpecs)·AI 결과(aiSpecs)·스토리보드 보충 뒤(sbTopUpInfo)
+   ── v134: 구성 방식을 한 가지로 정하지 않고 번갈아 쓰되, 영상 전체의 디자인 느낌은 같게 ──
+   · 방식: tile(단어 타일 — 카드 여러 칸) · type(글자 크기형 — 타일 없이 글자 크기만 달리: 큰 글+작은 글·단계별 쌓기·낱말 구름·번호 기둥) · cards3(번호 카드 한 줄) · keywords(칩)
+     자동(cfg.info.balm='auto')은 장면마다 번갈아(바로 앞 장면과 같은 방식은 덜 나오게) · 'tile'·'type' 은 그 방식만
+   · 느낌: 영상(프로젝트)+인포그래픽 스타일마다 '방언' 하나를 정해(KL_DIALECTS) 타일·글자 크기형 설계를 그 안에서만 씀 — 장면마다 설계가 달라 튀지 않게. 색도 영상 전체가 같은 강조색 ── */
+const KL_DIALECTS=[
+  {id:'glass',tile:['x.tcard','x.ttop'],typo:['l.tsize','l.tstack','l.tcloud']},
+  {id:'line',tile:['x.tout','x.tdot'],typo:['l.tstack','l.tcols','l.tsize']},
+  {id:'num',tile:['x.tnum','x.tcard'],typo:['l.tcols','l.tsize','l.tcloud']},
+  {id:'bold',tile:['x.tfill','x.ttop'],typo:['l.tsize','l.tstack','l.tcols']}
+];
+const KL_TYN={'l.tsize':[2,6],'l.tstack':[2,6],'l.tcloud':[3,8],'l.tcols':[3,6]};   /* 글자 크기형 설계마다 알맞은 항목 수 */
+const KL_MHIST=[];   /* 이번 만들기에서 쓴 구성 방식(최근 것부터) — 같은 방식이 연달아 나오지 않게 */
+function klDialect(){ const sty=(P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news'; return KL_DIALECTS[Math.floor(klHash(String((P&&(P.id||P.title))||'')+'|'+sty)*KL_DIALECTS.length)]; }
+function klShortOf(it){   /* 글 하나만 있는 짧은 블록의 글(아니면 '') */
+  if(!it||(it.parts&&it.parts.length)) return '';
+  const d=klOf(it.type), fid=d?d.fid:'';
+  if(!(it.type==='point'||(it.type==='quote'&&!it.by)||(fid==='x'&&!KL_TILEK.test(d.id)))) return '';
+  if(String(it.sub||'').trim()||String(it.by||'').trim()||String(it.label||'').trim()) return '';
+  const t=String(it.text||'').trim(); return t&&klW(t)<=11?t:'';
+}
+function klShortListOf(it){   /* 짧은 항목뿐인 목록의 항목들(아니면 null) */
+  const d=klOf(it.type); if(!d||d.fid!=='l'||!/^(check|bullets|numbered|ticks|bignums|quotes|dots2|notes)$/.test(d.id)) return null;
+  if(String(it.label||'').trim()) return null;
+  const ps=(it.parts||[]).filter(p=>p&&String(p.t||'').trim()); if(ps.length<2||ps.length>8) return null;
+  if(ps.some(p=>klW(p.t)>11||String(p.sb||'').trim())) return null;
+  return ps;
+}
+function klMethod(n,others,ctx,sd){   /* 구성 방식 고르기 — tile | type | cards3 | keywords */
+  const m=(P&&P.cfg&&P.cfg.info&&P.cfg.info.balm)||'auto', canTile=n<=6&&others+n<=7;
+  let w={tile:canTile?1:0,type:1.1,cards3:(n===3&&others===0)?0.35:0,keywords:0};
+  if(n>=7) w={tile:0,type:1,cards3:0,keywords:0.3};
+  if(m==='tile') w={tile:canTile?1:0,type:canTile?0:1,cards3:0,keywords:0};
+  else if(m==='type') w={tile:0,type:1,cards3:0,keywords:0};
+  else if(KL_MHIST[0]&&w[KL_MHIST[0]]>0) w[KL_MHIST[0]]*=0.4;
+  const ks=Object.keys(w).filter(k=>w[k]>0), tot=ks.reduce((a,k)=>a+w[k],0); let r=klHash(sd+'|m')*tot, pick=ks[ks.length-1];
+  for(let i=0;i<ks.length;i++){ if(r<w[ks[i]]){ pick=ks[i]; break; } r-=w[ks[i]]; }
+  KL_MHIST.unshift(pick); if(KL_MHIST.length>20) KL_MHIST.length=20; return pick;
+}
+function klTypoPick(n,dl,sd){ const ok=d=>{ const r=KL_TYN[d]; return !!r&&n>=r[0]&&n<=r[1]; }; let pool=dl.typo.filter(ok); if(!pool.length) pool=Object.keys(KL_TYN).filter(ok); return pool[Math.floor(klHash(sd+'|ty')*pool.length)]||'l.tsize'; }
+function klShortCompose(items,ctx){
+  if(!klBal()||!Array.isArray(items)||!items.length) return items;
+  const cand=[], keep=[], seen=new Set(); let first=-1;
+  const add=(t,at,dt,ld,id)=>{ const k=sbNorm(t); if(!k||seen.has(k)) return; seen.add(k); cand.push({t,at,dt:dt||0,ld,id}); };
+  items.forEach((it,i)=>{
+    const tx=klShortOf(it); if(tx){ add(tx,it.at,it.dt,it.ld,it.id); if(first<0) first=i; keep.push(null); return; }
+    const ps=klShortListOf(it); if(ps){ ps.forEach(p=>add(String(p.t).trim(),p.at||it.at,p.dt!=null?p.dt:(it.dt||0),it.ld)); if(first<0) first=i; keep.push(null); return; }
+    keep.push(it);
+  });
+  if(cand.length<2) return items;
+  const others=keep.filter(Boolean).length, n=cand.length, sd=((ctx&&ctx.j)||0)*17+'|'+cand.map(c=>c.t).join('|'), dl=klDialect(), meth=klMethod(n,others,ctx,sd), parts=cand.slice(0,8).map(c=>({t:c.t,sb:'',at:c.at,dt:c.dt}));
+  let blocks;
+  if(meth==='tile') blocks=cand.map((c,i)=>({id:c.id||uid('i'),type:dl.tile[i%dl.tile.length],text:clipS(c.t,40),sub:'',by:'',hl:[],label:'',tone:'',at:c.at,dt:c.dt,ld:c.ld,_w:2}));
+  else if(meth==='cards3') blocks=[{id:uid('i'),type:'l.cards3',label:'',parts:parts.slice(0,4),at:cand[0].at,dt:0}];
+  else if(meth==='keywords') blocks=[{id:uid('i'),type:'l.keywords',label:'',parts,at:cand[0].at,dt:0}];
+  else blocks=[{id:uid('i'),type:klTypoPick(parts.length,dl,sd),label:'',parts,at:cand[0].at,dt:0,_w:2}];
+  const out=[]; keep.forEach((it,i)=>{ if(it===null){ if(i===first) blocks.forEach(b=>out.push(b)); return; } out.push(it); });
+  return out;
+}
+function klDialectFix(items){   /* AI 가 고른 타일·글자 크기형 설계를 영상의 방언 안에서 쓰게 — 장면마다 설계가 달라 튀지 않게(이어지는 타일은 방언의 설계를 번갈아) */
+  if(!klBal()||!Array.isArray(items)) return items; const dl=klDialect(); let ti=0;
+  items.forEach(it=>{ const d=klOf(it.type); if(!d) return;
+    if(d.fid==='x'&&KL_TILEK.test(d.id)){ if(dl.tile.indexOf(it.type)<0) it.type=dl.tile[ti%dl.tile.length]; ti++; }
+    else if(d.fid==='l'&&KL_TYK.test(d.id)){
+      const ps=it.parts||[];
+      if(ps.some(p=>String(p&&p.sb||'').trim()||klW(p&&p.t)>16)) it.type='l.bullets';   /* 설명이 붙었거나 긴 글은 글자 크기형이 못 담음 — 일반 목록으로 */
+      else if(dl.typo.indexOf(it.type)<0){ const p=klTypoPick(ps.length,dl,String(it.id||'')); if(p) it.type=p; }
+    }
+  });
+  return items;
+}
+function klBalAi(specs,ctx){   /* AI 결과 — clip 마다 짧은 글 구성(시점 순서로 다시 정렬)하고 설계를 영상의 방언 안으로 */
+  if(!klBal()||!specs||specs.skip||!specs.length) return specs;
+  specs.forEach(sp=>{ if(!sp||sp.mode==='title'||!Array.isArray(sp.items)) return; const out=klShortCompose(sp.items,ctx); if(out!==sp.items){ const tmp={items:out}; sortItems(tmp); sp.items=tmp.items; } klDialectFix(sp.items); });
+  return specs;
+}
+function klShortComposeClip(g){   /* 이미 만든 클립에 글이 덧붙은 뒤(스토리보드 보충) — 짧은 글을 다시 구성하고, 상자가 모자란 클립은 배치 템플릿을 다시 고름 */
+  if(!klBal()||!g||g.src==='hand'||g.ov||g.mode==='title'||!Array.isArray(g.items)||!g.items.length) return false;
+  const sc=P.scenes[sceneIdx(g.s)], out=klShortCompose(g.items,{j:sc?P.scenes.indexOf(sc):0}); let ch=false;
+  if(out!==g.items){ g.items=out; sortItems(g); ch=true; }
+  klDialectFix(g.items);
+  if(ch||(g.items.some(it=>it.bx)&&!igBoxOK(g))){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; if(klLtpl()){ try{ layoutApply(g,{force:true}); }catch(e){ if(window.__klStrict) throw e; } } }
+  return ch;
 }
 /* ══ /v126 layout ══ */
 
@@ -50612,12 +50814,19 @@ const KL_LAYOUT_GUIDE=`[배치 템플릿 — clip 마다 "tpl" 에 아래 id 하
 - 칸 번호는 큰 칸부터 1, 2, 3…(크기가 비슷하면 위→아래·왼→오른쪽). 블록의 선택 필드 "slot"(칸 번호)·"w"(중요도 1~3)을 주면 그 칸에 놓고, 생략하면 코드가 가장 어울리는 칸에 놓는다.
 - 고르는 법: 핵심 블록이 하나 두드러지면 '큰 칸 + 작은 칸들'(왼쪽/오른쪽/위/아래 큰 칸), 비슷한 비중이면 등분·격자, 가로로 긴 차트·표는 위·아래로 쌓은 가로줄 구성, 수치 카드가 여럿이면 정사각형·격자, 큰 한마디는 '가운데 작게'. 연속된 clip 에서 같은 tpl 을 반복하지 않는다.`;
 function klCatalog(){
-  return klDetailDoc(KL.order.map(id=>{ const f=KL.fam[id]; return '['+id+' '+f.n+'] '+(f.ai||'')+'\n  설계: '+f.ds.map(d=>d.id+'='+d.s).join(' · '); }).join('\n'));
+  return klDetailDoc(KL.order.map(id=>{ const f=KL.fam[id]; return '['+id+' '+f.n+'] '+(f.ai||'')+'\n  설계: '+f.ds.filter(d=>klBal()||!((d.fid==='x'&&KL_TILEK.test(d.id))||(d.fid==='l'&&KL_TYK.test(d.id)))).map(d=>d.id+'='+d.s).join(' · '); }).join('\n'));
 }
+const KL_BAL_GUIDE=`[짧은 글 구성 — 화면 균형]
+- 항목마다 한두 낱말(한글 11자 이하)인 글 2~6개는 l.check·l.bullets·l.numbered 같은 한 줄 목록이나 가로로 긴 point·banner·ribbon·cap 으로 화면을 가로로 다 채우지 말고, 두 가지 방식 가운데 하나로 구성한다.
+  ① 타일: 각각 x.tcard·x.tfill·x.tout·x.ttop·x.tnum·x.tdot(단어 타일 — 글이 칸을 가득 채우는 카드) 블록으로 나눠 w 를 같게 주고 2×2·3칸·3×2 처럼 칸 크기가 고른 템플릿에 놓는다.
+  ② 글자 크기형(타일 없이 글자 크기만 달리): 한 블록 l.tsize(큰 글 하나 + 나머지 작은 글)·l.tstack(줄마다 글자 크기가 단계로 줄어드는 쌓기)·l.tcloud(크기가 다른 낱말 구름, 3~8개)·l.tcols(큰 번호 + 글 기둥, 3~6개) — parts 의 t 에 짧은 글을 중요한 것부터 순서대로.
+  장면마다 두 방식을 번갈아 쓰되(3개는 l.cards3 도 좋고 7개 이상이면 l.keywords), 영상 안에서 설계가 장면마다 크게 달라 튀지 않게 같은 계열 설계(타일은 한두 가지, 글자 크기형도 한두 가지)를 되풀이한다.
+- 문장 길이의 긴 요점·수치 설명만 목록·띠를 쓴다. 수치 카드·차트와 섞을 때도 칸 크기가 비슷하게 w 를 맞춘다.`;
 function klSys(base,lang){
   if(klDetailOn()) base=klDetailInsert(base);   /* v127: 세부 내용 위주 규칙 */
   let add=''; if(klRich()) add+='\n\n[확장 구성요소 — 위 [블록 종류]와 함께 쓸 수 있고 내용에 맞으면 확장 쪽을 우선한다. 종류 이름은 "계열.설계"(예: "m.ring"). 모든 블록(그리고 parts 항목)에 s·q 를 넣고, 선택 필드 w(중요도 1~3)·slot(칸 번호)을 더할 수 있다]\n'+klCatalog()+'\n\n'+klDetailDoc(KL_GUIDE);
   if(klLtpl()) add+='\n\n'+KL_LAYOUT_GUIDE+'\n'+layoutCatalog();
+  if(klBal()) add+='\n\n'+KL_BAL_GUIDE;   /* v133: 짧은 글은 타일로 균형 있게 */
   if(add&&klLtpl()) add+='\n\n[형식 추가] clip 에 "tpl"(템플릿 id)을 더할 수 있다: {"mode":"full","title":"…","tpl":"t3-05","items":[…]}';
   if(add&&lang&&!isKo(lang)){ const lg=V.get(lang); if(lg&&lg.ai) add+=['','','[출력 언어] 위 확장 구성요소·배치 설명의 예시 글(외국인 지분율·전일 대비 등)은 한국어 예시일 뿐입니다. 실제 화면 글(label·text·l·t·sb·note 등 모든 글 칸)은 반드시 '+lg.ai+'로 쓰세요.'].join(String.fromCharCode(10)); }
   return add?base+add:base;
@@ -50625,7 +50834,11 @@ function klSys(base,lang){
 function klRowHtml(d){   /* 대화상자 — 구성요소·배치 선택 줄 */
   return dchk('irich',d.irich,'새 구성요소 종류 쓰기 — 수치 카드·차트·타임라인·게이지·글 목록 등 '+KL.keys.length+'가지')+'<div class="hint">AI 가 내용에 맞는 종류를 골라요(규칙으로 만들 때도 다양하게 섞어요). 끄면 예전 기본 구성요소만 써요.</div>'
     +dchk('iltpl',d.iltpl,'배치 템플릿 자동 고르기 — 크기/배치 템플릿 '+LTPL.length+'개 중 장면에 가장 알맞은 것')+'<div class="hint">구성요소 개수·모양·중요도를 보고 칸 크기·위치를 정해요(AI 가 템플릿을 직접 고르기도 해요). 끄면 예전처럼 위에서 아래로 쌓아요. 만든 뒤 [📐 크기/배치 수정]에서 고칠 수 있어요.</div>'
-    +dchk('idetail',d.idetail,'세부 내용 위주 — 섹션 제목·분류, 자막·제목과 같은 뜻의 글은 구성요소에서 빼기')+'<div class="hint">구성요소에 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담아요. 챕터 이름을 되풀이한 이름·태그·한마디, "업종"·"일정" 같은 분류 머리말, 자막이나 제목을 줄여 쓴 요점·날짜·인사 문구는 빼요(구체적인 수치는 그대로 둬요). 자막이 알린 주제를 이름만 나열한 칩·카드("지수 흐름"·"빅테크 실적")와 제목을 다시 쓴 글도 빼요 — AI로 만들 때는 마지막에 AI가 뜻이 같은 글(번역·말바꿈 포함)을 한 번 더 가려요(장면마다 짧은 요청이 한 번 더 들어가요). 자막과 같은 내용뿐인 장면은 인포그래픽을 만들지 않아요. 스토리보드가 알려 준 글자도 같고(수치만 숫자 카드로 남아요), 예외 없이 적용돼요. 이미 만든 인포그래픽은 프로젝트를 열 때·내보내기 직전·[🚀 한 번에 만들기]나 [인포 만들기]를 다시 실행할 때 정리되고, 제목을 손으로 고쳐 본문 글과 똑같아지면 그 블록을 빼요. 끄면 예전처럼 만들어요.</div>';
+    +dchk('ibal',d.ibal,'짧은 글은 균형 있게 구성 — 한두 낱말짜리 글이 여럿이면 가로로 긴 목록·띠 대신 고른 구성으로')+'<div class="hint">한두 낱말(한글 11자 이하)짜리 글 2~6개를 "한 줄에 하나" 체크 목록이나 화면 폭만큼 늘어난 띠로 만들지 않고, <b>단어 타일</b>(카드·윤곽·위 띠·큰 번호·점·색 채움) 여러 칸이나 <b>글자 크기형</b>(타일 없이 큰 글+작은 글·단계별 쌓기·낱말 구름·번호 기둥)으로 구성해요. 글 길이에 맞춰 칸 모양도 고르고, 스토리보드 글자를 나중에 보충한 클립도 다시 구성해요. 영상 하나 안에서는 같은 계열 설계·같은 강조색을 써서 장면마다 디자인이 튀지 않아요. 끄면 예전처럼 만들어요.</div>'
+    +'<div class="hint" style="margin-top:4px">구성 방식</div>'+dsel('ibalm',d.ibalm,[['auto','자동 — 타일·글자 크기형 등을 장면마다 번갈아'],['tile','타일 위주'],['type','글자 크기형 위주(타일 없이 글자 크기만 달리)']])
+    +dchk('idetail',d.idetail,'세부 내용 위주 — 섹션 제목·분류, 자막·제목과 같은 뜻의 글은 구성요소에서 빼기')+'<div class="hint">구성요소에 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담아요. 챕터 이름을 되풀이한 이름·태그·한마디, "업종"·"일정" 같은 분류 머리말, 자막이나 제목을 줄여 쓴 요점·날짜·인사 문구는 빼요(구체적인 수치는 그대로 둬요). 자막이 알린 주제를 이름만 나열한 칩·카드("지수 흐름"·"빅테크 실적")와 제목을 다시 쓴 글도 빼요 — AI로 만들 때는 마지막에 AI가 뜻이 같은 글(번역·말바꿈 포함)을 한 번 더 가려요(장면마다 짧은 요청이 한 번 더 들어가요). 자막과 같은 내용뿐인 장면은 인포그래픽을 만들지 않아요. 스토리보드가 알려 준 글자도 같고(수치만 숫자 카드로 남아요), 예외 없이 적용돼요. 이미 만든 인포그래픽은 프로젝트를 열 때·내보내기 직전·[🚀 한 번에 만들기]나 [인포 만들기]를 다시 실행할 때 정리되고, 제목을 손으로 고쳐 본문 글과 똑같아지면 그 블록을 빼요. 끄면 예전처럼 만들어요.</div>'
+    +'<div class="hint" style="margin-top:6px"><b>본문에 쓰지 않을 글</b> — 영상 제목·시리즈명·브랜드는 머리말과 타이틀 화면에서만 써요. 영상 제목, 오프닝 챕터 이름, [타이틀] 탭에 적은 글, The FIVE, 스토리보드에서 장면마다 되풀이되는 로고 글은 자동으로 찾아 본문에서 빼요. 빠진 게 있으면 아래에 쉼표로 적어 주세요(다음 영상에도 기억해요).</div>'
+    +'<input type="text" class="vs-in mobile-keep" data-d="ionly" style="width:100%" maxlength="300" value="'+esc(d.ionly||'')+'" placeholder="예: Five Minute Market Brief, The FIVE" aria-label="본문에 쓰지 않을 글">';
 }
 /* ── 규칙(무료) 구성 — 기본 추출 결과(수치·막대·지수판·업종·일정·요점…)를 내용에 맞는 새 종류로 바꿔 줌. 고르는 건 장면·내용이 같으면 늘 같게(해시) ── */
 const KL_UP={
@@ -50719,6 +50932,7 @@ function klJac(a,b){ const A=klBg(a), B=klBg(b); if(!A.size||!B.size) return 0; 
 const KL_GENSUF=/(요약|현황|총정리|정리|개요|분석|동향|소개|안내|브리핑|리뷰|포인트)$/;
 function klEcho(text,keys){
   const a=klNK(text); if(a.length<2||!keys.length) return false;
+  if(keys.words&&klWordSub(text,keys.words)) return true;   /* v132: 제목을 이루는 낱말 가운데 이어진 두 낱말 이상(예: 'The FIVE Five Minute Market Brief' 속 'The FIVE') */
   return keys.some(k=>{
     if(a===k) return true;
     { const ac=a.replace(KL_GENSUF,''), kc=k.replace(KL_GENSUF,''); if(ac.length>=3&&ac===kc) return true; }
@@ -50731,13 +50945,17 @@ function klEcho(text,keys){
 const KL_HEAD_RE=/^(개요|요약|정리|총정리|핵심요약|핵심정리|오늘의포인트|오늘의요약|오늘의이슈|오늘의뉴스|포인트|핵심포인트|이슈|핵심이슈|주요이슈|체크포인트|시장동향|시장현황|시장개황|시장분석|시장전망|시황|증시마감|마감시황|글로벌시장|해외시장|국내시장|주요지수|주요시세|시세|주요일정|이번주일정|주간일정|경제일정|일정|업종|업종별|섹터|테마|분류|카테고리|제목|주제|뉴스|주요뉴스|키워드|핵심키워드|핵심수치|주요수치|수치|지표|주요지표|현황|동향|전망|분석|증시|시장|마감|글로벌|주식|주가|환율|금리|유가|원자재|미국증시|한국증시|국내증시|해외증시|미국|한국|일본|중국|유럽|summary|overview|highlights?|recap|outlook|market|markets|news|schedule|sector|sectors|issues?|points?|keypoints?|topic|category|today)$/;
 const KL_HEADSUF_RE=/(동향|현황|개요|요약|정리|분석|시황|뉴스|이슈|포인트|일정|전망|마감|리뷰|브리핑)$/;
 const KL_CUE_RE=/(상승|하락|급등|급락|강세|약세|확대|축소|증가|감소|인상|인하|동결|발표|결정|우려|기대|돌파|반등|하회|상회|사상|최고|최저|순매수|순매도|호조|부진|악화|개선|경신|둔화|가속|충격|리스크|위험|부담|수혜|타격|폭락|폭등|랠리|조정|회복|하향|상향|논란|합의|협상|제재|관세|규제|승인|취소|연기|지연|흑자|적자)/;
-function klHead(s){ const raw=String(s==null?'':s); if(/\d/.test(raw)) return false; const k=klNK(raw); if(k.length<2||k.length>12) return false; if(KL_CUE_RE.test(k)) return false; return KL_HEAD_RE.test(k)||(k.length<=8&&KL_HEADSUF_RE.test(k)); }
+const KL_HEADW=new Set(['sector','sectors','market','markets','analysis','summary','overview','outlook','news','report','reports','update','updates','review','theme','themes','focus','brief','briefing','daily','weekly','monthly','today','global','highlights','recap','topic','topics','category','section','chapter','part','intro','introduction','conclusion','closing','opening','key','points','point','issue','issues','watch','preview','wrap','wrapup','scenario','scenarios','strategy','calendar','schedule','agenda','insight','insights','checkpoint','checkpoints','the','and','of','this','next','week']);
+function klHeadEn(raw){ if(/[가-힣぀-ヿ一-鿿]/.test(raw)) return false; const w=raw.toLowerCase().match(/[a-z]+/g); return !!w&&w.length>=1&&w.length<=4&&w.every(x=>KL_HEADW.has(x)); }   /* v132: 'SECTOR ANALYSIS'·'Market Overview' 처럼 영어 분류어뿐인 글 */
+function klHead(s){ const raw=String(s==null?'':s); if(/\d/.test(raw)) return false; const k=klNK(raw); if(k.length<2) return false; if(klHeadEn(raw)) return true; if(k.length>12) return false; if(KL_CUE_RE.test(k)) return false; return KL_HEAD_RE.test(k)||(k.length<=8&&KL_HEADSUF_RE.test(k)); }
 const KL_HEADLIKE=new Set(['x.kicker','x.ribbon','x.cap','x.tag','x.headline']);   /* 모양 자체가 머리말·딱지라 분류어뿐이면 블록을 뺌 */
 function klSecKeys(ss,ctx,c){   /* 되풀이하면 안 되는 글: 이 clip 의 제목(AI 가 쓴 것)·챕터 제목·영상 제목 */
   const raw=[]; if(c&&c.title) raw.push(c.title);
   if(ctx){ raw.push(ctx.ch,ctx.chFull); } else if(ss&&ss[0]&&P&&P.chap&&ss[0].ci!=null) raw.push(P.chap[ss[0].ci]);
-  raw.push(P&&P.title); const out=[];
-  raw.forEach(t=>{ const k=klNK(cleanChap(t)); if(k.length>=2&&out.indexOf(k)<0) out.push(k); }); return out;
+  raw.push(P&&P.title); const out=[]; out.words=[];
+  raw.forEach(t=>{ const k=klNK(cleanChap(t)); if(k.length>=2&&out.indexOf(k)<0) out.push(k); const w=klWords(cleanChap(t)); if(w.length>=2) out.words.push(w); });
+  const ow=klOnly(); ow.keys.forEach(k=>{ if(out.indexOf(k)<0) out.push(k); }); ow.words.forEach(w=>{ if(w.length>=2) out.words.push(w); });   /* v132: 영상 제목 조각·오프닝 타이틀 글·브랜드·사용자가 적은 글·화면 틀 글 */
+  return out;
 }
 function klRelabel(it,ss,keys){   /* 이름이 챕터 제목으로 채워진 수치 블록 — 나레이션에서 수치 앞의 '무엇의'를 다시 찾고, 못 찾으면 빈 글 */
   const sid=it.at&&it.at.sid, s=sid?(ss||[]).find(x=>x.id===sid):null; if(!s||!it.value) return '';
@@ -50776,6 +50994,7 @@ function klRefs(ss,ctx,c){   /* 이 장면의 자막(모든 나레이션 문장)
   const list=(ctx&&ctx.all&&ctx.all.length)?ctx.all:(ss||[]), sent=[], md=new Set(), wd=new Set(), titles=[];
   list.forEach(s=>{ const tx=s&&s.text; if(!tx) return; sent.push(klUnits(tx)); const g=klDateSig(tx); g.md.forEach(x=>md.add(x)); g.wd.forEach(x=>wd.add(x)); });
   [c&&c.title,ctx&&ctx.ch,ctx&&ctx.chFull,P&&P.title].forEach(t=>{ const u=klUnits(cleanChap(t)); if(u.size>=2) titles.push(u); });
+  klOnly().show.forEach(t=>{ const u=klUnits(cleanChap(t)); if(u.size>=2) titles.push(u); });   /* v132: 제목 전용 글도 '같은 뜻' 비교 대상 */
   const union=new Set(); sent.concat(titles).forEach(u=>u.forEach(x=>union.add(x)));   /* v130: 이 장면의 자막·제목에 나온 모든 낱말 조각 */
   return {sent,titles,dates:{md,wd},union};
 }
@@ -50789,7 +51008,7 @@ function klDetailFix(it,keys,ss,refs){
   if(!it||it.type==='agenda') return it;
   const t=it.type, d=klOf(t), fid=d?d.fid:'', E=s=>klEcho(s,keys), H=s=>klHead(s), grp=Array.isArray(it.parts)&&it.parts.length>0;
   if(t==='point'||t==='quote'||t==='title'||fid==='x'){   /* 한마디·요점 — 챕터·clip 제목을 되풀이했거나 자막과 같은 뜻이면 블록을 뺌(머리말·딱지 모양은 분류어뿐이어도 뺌, 출처(by)가 있는 인용은 남김) */
-    const bad=E(it.text)||(KL_HEADLIKE.has(t)&&H(it.text))||(!(t==='quote'&&it.by)&&klRestates(it.text,refs))||!!it._klSame;
+    const bad=E(it.text)||((KL_HEADLIKE.has(t)||!(t==='quote'&&it.by))&&H(it.text))||(!(t==='quote'&&it.by)&&klRestates(it.text,refs))||!!it._klSame;   /* v132: 분류어뿐인 글은 어떤 모양이든(출처 있는 인용 빼고) 뺌 */
     if(bad){ if(refs&&refs.lost) refs.lost.push({text:it.text,at:it.at}); return null; }   /* 지워도 그 글 속 수치는 아래에서 숫자 카드로 남김 */
     if(t==='x.def'&&it.label&&(E(it.label)||H(it.label))) return null;
     if(fid==='x'&&it.label&&(E(it.label)||H(it.label))) it.label='';
@@ -50864,12 +51083,12 @@ function klDetailItems(items,ss,ctx,rule,c){
 }
 /* 스토리보드가 화면에 나오게 한 글자 — 자막·제목과 같은 뜻(날짜·제목·인사 포함)이면 빼고, 그 안의 수치만 숫자로 남김. 인포그래픽 쪽(igCtx·sbTopUpInfo·sbCheck·sbDemands)만 이걸 씀 — 카드·AI 이미지 글자는 그대로 */
 const KL_SBSEEN=new Set(); let KL_DROP0=0;
-function klDropMark(){ KL_DROP0=KL_DROP.n; KL_SBSEEN.clear(); KL_GONE.clear(); }
+function klDropMark(){ KL_DROP0=KL_DROP.n; KL_SBSEEN.clear(); KL_GONE.clear(); KL_MHIST.length=0; }
 const klDropSince=()=>KL_DROP.n-KL_DROP0+KL_SBSEEN.size;
 function klSbInfo(sc,all,gs){
   const sp=sbParse(sc); if(!klDetailOn()||!sp||!sp.texts.length) return sp;
   const ch=chapOf(P,sc), ctx={ch:cleanChap(ch),chFull:ch,all:all}, keys=klSecKeys(all,ctx,null), refs=klRefs(all,ctx,null);
-  (gs||[]).forEach(g=>{ const k=klNK(cleanChap(g.title)); if(k.length>=2&&keys.indexOf(k)<0) keys.push(k); const u=klUnits(cleanChap(g.title)); if(u.size>=2){ refs.titles.push(u); u.forEach(x=>refs.union.add(x)); } });
+  (gs||[]).forEach(g=>{ const k=klNK(cleanChap(g.title)); if(k.length>=2&&keys.indexOf(k)<0) keys.push(k); const u=klUnits(cleanChap(g.title)); if(u.size>=2){ refs.titles.push(u); u.forEach(x=>refs.union.add(x)); } const w=klWords(cleanChap(g.title)); if(w.length>=2&&keys.words) keys.words.push(w); });
   const kept=[], info=sp.texts.map(t=>{ const figs=klFigsOf(t); return {t,figs,dup:!!(klEcho(t,keys)||klHead(t)||klRestates(t,refs)||(figs.length>0&&klUnits(t).size<3))}; });
   klSbFrag(info,refs);   /* v130: 이름·주제만 나열한 조각 목록 판정 */
   info.forEach(x=>{
@@ -50914,6 +51133,7 @@ const KL_DETAIL=`[구성요소에 담을 내용 — 세부 내용 위주]
 - 구성요소(블록)에는 세부 내용만 담는다: ① 수치와 그 변화(값·등락률·증감폭·이전→지금·순위 변화·전일/전주 대비) ② 주요 이슈(정책·실적·발표·사건·결정의 구체적 내용과 영향) ③ 변동 내용(무엇이 얼마나·왜 바뀌었는지: 원인·수급·전망의 변화).
 - 이 챕터(섹션)의 제목·주제·분류(예: "미국 증시 마감", "환율과 원자재", "이번 주 일정", "시황")와 영상 제목, 그리고 clip 의 title 은 이미 화면 머리말로 보이므로, 구성요소의 label·text·note·parts 항목·키워드 칩·태그·머리말·한마디에 되풀이하지 않는다. 제목·주제·분류만 있고 값이나 내용이 없는 블록, 챕터 이름을 풀어 쓴 소개·요약 문구("~ 요약", "~ 현황", "오늘의 포인트")는 만들지 않는다.
 - 자막(화면 아래에 나오는 나레이션 문장)도 이미 화면에 보인다. 자막과 같은 뜻인 글은 구성요소로 만들지 않는다 — 문장을 줄이거나 말만 바꾼(동의어·번역 포함) 요점·한마디·목록 항목, 제목을 풀어 쓴 문구, 날짜·요일·인사·소개 문구가 해당한다(예: 자막이 "11월 2일 월요일 증시 브리핑입니다"일 때 "11월 2일 월요일 증시 브리핑"·"Five Minute Market Brief"·"2026.11.02 MON" 같은 항목). 자막이 다룰 주제를 알리는 문장("A와 B, C를 점검하겠습니다")일 때 그 주제들을 이름만 나열한 칩·카드·목록 항목(영어 이름 "INDEX"와 한글 설명 "지수 흐름"이 짝인 것 포함)도 같은 뜻이고, clip 의 title 과 같은 글을 items 에 다시 넣는 것도 마찬가지다. 올리는 것은 구체적인 수치(값·등락·비교)와, 자막 한 줄로는 안 보이는 것(여러 문장을 묶은 결론·원인→결과·순위·일정·구조화된 비교)뿐이다. 자막·제목에 나온 내용 중에는 수치만 숫자 카드(stat·bar 등)로 올리고, 같은 내용을 문장으로 풀어 쓰지 않는다. 스토리보드가 알려 준 글자·숫자도 마찬가지다. 올릴 내용이 없는 장면은 {"clips":[],"skip":true,"reason":"자막과 같은 내용뿐"} 로 답한다.
+- 요청 글에 [본문에 쓰지 않는 글]로 알려 준 글(영상 제목·시리즈명·브랜드 — 예: "Five Minute Market Brief", "The FIVE")은 머리말과 타이틀 화면에서만 쓰인다. 스토리보드가 로고·워터마크·고정 라벨로 화면에 나온다고 적어 두었어도 구성요소의 어떤 칸(label·text·note·항목)에도 넣지 않는다. "SECTOR ANALYSIS"처럼 분류·구역 이름만 영어로 적은 라벨도 마찬가지다.
 - label 은 그 수치·항목이 무엇인지 알려 주는 이름("S&P 500", "기준금리", "외국인 순매수")으로만 쓴다. 여러 항목을 묶은 블록의 머리말(label)은 그 값들이 무엇을 재는지 알려 줄 때만("업종별 등락률") 쓰고, "업종"·"일정"·"시황" 같은 분류어이거나 챕터 이름이면 빈 문자열("")로 둔다.
 - 태그·머리말(label)이 붙는 한마디 모양(x.tag·x.split·x.kicker 등)은 label 이 내용의 성격(속보·주의·전망·리스크)일 때만 쓰고, "POINT"·"요약" 같은 분류 딱지는 붙이지 않는다.`;
 const KL_DETAIL_EX=[['"type":"heat","label":"업종",','"type":"heat","label":"업종별 등락률",'],['"type":"map","label":"주요국 증시",','"type":"map","label":"주요국 증시 등락률",'],['"type":"donut","label":"수급",','"type":"donut","label":"투자자별 수급 비중",'],['"type":"line","label":"지수 흐름",','"type":"line","label":"S&P 500 주간 흐름",'],['"type":"event","label":"이번 주 일정",','"type":"event","label":"",'],['"type":"level","label":"주요 가격대",','"type":"level","label":"",'],['숫자가 거의 없는 장면은 point 2~4개나 quote.','숫자가 거의 없는 장면은 자막에 없는 내용(원인·영향·결론)이 있을 때만 point·quote 로 올리고, 자막을 되풀이할 뿐이면 skip 한다.']];
@@ -50990,8 +51210,8 @@ function klSbFrag(info,refs){   /* 스토리보드 글자 중 이름·주제만 
     const nb=[info[i-1],info[i+1]].filter(Boolean); if(nb.some(y=>y.dup&&isFrag(y)&&hang(y))) x.dup=true; });
 }
 /* AI 모드의 마지막 단계 — ① 보충이 끝난 뒤 clip 제목·자막 기준으로 한 번 더 거르고 ② 짧은 판정 요청 한 번으로 번역·말바꿈·주제 나열까지 뜻으로 가림(실패하면 건너뜀) */
-const KL_JUDGE_SYS='당신은 영상 화면 검수자입니다. 화면 본문에 올리려는 글 중에서 화면 제목이나 자막(나레이션 문장)과 "뜻이 같은" 글을 가려내는 일만 합니다. JSON 하나로만 답하고 설명은 쓰지 않습니다.\n'
-  +'뜻이 같은 경우(고른다): 제목이나 자막을 그대로·줄여서·말만 바꿔서·번역해서 쓴 글 / 자막이 다룰 주제를 알리는 문장("A와 B, C를 점검합니다")일 때 그 주제들을 이름만 나열한 칩·카드·목록 항목(영어 이름 "INDEX"와 한글 설명 "지수 흐름"이 짝으로 붙은 것 포함) / 제목·날짜·요일·인사 문구를 다시 쓴 글.\n'
+const KL_JUDGE_SYS='당신은 영상 화면 검수자입니다. 화면 본문에 올리려는 글 중에서 화면 제목·자막(나레이션 문장)·[본문에 쓰지 않는 글](영상 제목·시리즈명·브랜드)과 "뜻이 같은" 글을 가려내는 일만 합니다. JSON 하나로만 답하고 설명은 쓰지 않습니다.\n'
+  +'뜻이 같은 경우(고른다): 제목·자막·[본문에 쓰지 않는 글]을 그대로·줄여서·말만 바꿔서·번역해서 쓴 글 / 챕터 이름의 번역이나 분류·구역 이름만 적은 라벨(예: "SECTOR ANALYSIS") / 자막이 다룰 주제를 알리는 문장("A와 B, C를 점검합니다")일 때 그 주제들을 이름만 나열한 칩·카드·목록 항목(영어 이름 "INDEX"와 한글 설명 "지수 흐름"이 짝으로 붙은 것 포함) / 제목·날짜·요일·인사 문구를 다시 쓴 글.\n'
   +'뜻이 다른 경우(고르지 않는다): 자막에 없는 새 사실·원인·결과·전망·평가·비교·순위를 담은 글.\n'
   +'답 형식: {"same":[후보 번호,…]} — 해당이 없으면 {"same":[]}';
 function klJudgeCands(specs){
@@ -51005,7 +51225,7 @@ function klJudgeCands(specs){
 }
 function klJudgeUser(specs,cand,ss,ctx){
   const titles=[]; specs.forEach(sp=>{ if(sp.title&&titles.indexOf(sp.title)<0) titles.push(sp.title); });
-  return '[중복 판정]\n[영상] '+P.title+'\n[챕터] '+ctx.chFull+'\n[화면 제목] '+titles.join(' / ')+(ctx.ch&&titles.indexOf(ctx.ch)<0?'\n[작은 제목] '+ctx.ch:'')+'\n[자막 — 이 장면의 나레이션 문장]\n'+(ctx.all||ss).map((s,i)=>(i+1)+'. '+s.text).join('\n')+'\n[후보 — 본문에 올리려는 글]\n'+cand.map((c,i)=>(i+1)+'. '+c.show).join('\n');
+  return '[중복 판정]\n[영상] '+P.title+'\n[챕터] '+ctx.chFull+'\n[화면 제목] '+titles.join(' / ')+(ctx.ch&&titles.indexOf(ctx.ch)<0?'\n[작은 제목] '+ctx.ch:'')+(klOnlyLine()?'\n'+klOnlyLine().replace(/\n$/,''):'')+'\n[자막 — 이 장면의 나레이션 문장]\n'+(ctx.all||ss).map((s,i)=>(i+1)+'. '+s.text).join('\n')+'\n[후보 — 본문에 올리려는 글]\n'+cand.map((c,i)=>(i+1)+'. '+c.show).join('\n');
 }
 async function klFinalAi(specs,ss,ctx,signal){
   if(!klDetailOn()||!specs||specs.skip) return specs;
@@ -51024,7 +51244,51 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v131';
+const KL_BUILD='v134';
+/* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
+   원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
+   다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
+const KL_BRAND=['The FIVE'];   /* 이 프로그램(【The FIVE】)의 이름 */
+function klWords(s){ return String(s==null?'':s).toLowerCase().match(/[a-zㄱ-ㆎ가-힣぀-ヿ一-鿿]+/g)||[]; }
+function klWordSub(text,list){   /* 글이 제목 낱말 가운데 이어진 두 낱말 이상(여섯 글자 이상)이면 제목의 한 부분을 되풀이한 것 */
+  const w=klWords(text); if(w.length<2||!list||!list.length||klNK(text).length<6) return false;
+  return list.some(tw=>{ if(tw.length<w.length) return false; for(let i=0;i+w.length<=tw.length;i++){ let ok=true; for(let j=0;j<w.length;j++){ if(tw[i+j]!==w[j]){ ok=false; break; } } if(ok) return true; } return false; });
+}
+function klTitleBits(t){   /* 제목 하나에 날짜·브랜드·시리즈 이름이 섞여 있어도 각각을 제목 전용 글로 — 구분 기호로 나누고, 브랜드 이름은 따로 떼어 냄 */
+  const s=String(t==null?'':t).replace(/\s+/g,' ').trim(), out=[]; if(!s) return out;
+  const add=x=>{ x=String(x||'').replace(/\s+/g,' ').trim(); if(klNK(x).length>=4&&out.indexOf(x)<0) out.push(x); };
+  add(s); s.split(/\s+[-–—]+\s+|[|｜·・•_:：\/／\\\[\]【】()（）「」『』<>《》~,，、;；]+/).forEach(add);   /* 낱말 안의 붙임표('Five-Minute')는 나누지 않음 */
+  KL_BRAND.forEach(b=>{ const pat=b.replace(/\s+/g,'\\s*'); if(new RegExp(pat,'i').test(s)){ add(b); add(s.replace(new RegExp(pat,'ig'),' ').replace(/[|｜·・•_\-–—:：\/／\\\[\]【】()（）<>《》~,，、;；]+/g,' ')); } });
+  return out;
+}
+function klFrameTexts(){   /* 스토리보드 따옴표 글 가운데 장면 대부분에 되풀이되고 나레이션에는 한 번도 안 나오는 글 = 화면 틀(로고·워터마크·고정 라벨) */
+  const N=(P.scenes||[]).length; if(N<4) return [];
+  const cnt=new Map(), disp=new Map();
+  P.scenes.forEach(sc=>{ const seen=new Set(); sbParse(sc).texts.forEach(t=>{ const k=sbNorm(t); if(!k||seen.has(k)) return; seen.add(k); cnt.set(k,(cnt.get(k)||0)+1); if(!disp.has(k)) disp.set(k,t); }); });
+  const need=Math.max(4,Math.ceil(N*0.6)), narr=sbNorm((P.sents||[]).map(s=>s.text).join(' ')), out=[];
+  cnt.forEach((n,k)=>{ if(n<need) return; const t=disp.get(k); if(/\d/.test(t)||klNK(t).length<3||narr.indexOf(k)>=0) return; out.push(t); });
+  return out;
+}
+let KL_ONLY_MEMO={sig:'',v:null};
+function klOnly(){   /* {keys(글자만), words(낱말 목록), show(보여 줄 글)} — 본문에 쓰지 않는 글: 영상 제목 조각·오프닝 챕터 이름·타이틀 화면에 적은 글·브랜드·사용자가 적은 글·화면 틀 글 */
+  const o={keys:[],words:[],show:[]}; if(!P) return o;
+  const info=(P.cfg&&P.cfg.info)||{}, ttl=P.ttl||{}, N=(P.scenes||[]).length;
+  let dsum=0; (P.scenes||[]).forEach(c=>{ dsum+=String(c.desc||'').length+((c.alt||[]).join('').length); });
+  const sig=[P.id,P.title,P.base,(P.chap||[]).join('|'),JSON.stringify(ttl),info.only||'',N,dsum,(P.sents||[]).length].join('§');
+  if(KL_ONLY_MEMO.sig===sig&&KL_ONLY_MEMO.v) return KL_ONLY_MEMO.v;
+  const add=(raw,min)=>{ const s=String(raw==null?'':raw).replace(/\s+/g,' ').trim(); if(!s) return; const k=klNK(cleanChap(s)); if(k.length<(min||4)||/^chapter$/.test(k)||klDateOnly(s)||o.keys.indexOf(k)>=0) return; o.keys.push(k); o.words.push(klWords(cleanChap(s))); o.show.push(s); };
+  klTitleBits(P.title).forEach(x=>add(x));
+  add(P.base);
+  (P.chap||[]).forEach((c,ci)=>{ let open=false; try{ open=isOpenChap(P,ci); }catch(e){ open=false; } if(open) add(cleanChap(c)); const t=ttl[ci]||{}; ['t','k','s'].forEach(x=>{ if(t[x]) add(t[x]); }); });
+  KL_BRAND.forEach(x=>add(x));
+  String(info.only||'').split(/[,，\n|]+/).forEach(x=>add(x,2));
+  try{ klFrameTexts().forEach(x=>add(x)); }catch(e){ if(window.__klStrict) throw e; }
+  KL_ONLY_MEMO={sig,v:o}; return o;
+}
+function klOnlyLine(){   /* AI 요청 글 — 본문에 쓰지 않는 글 목록(끄면 빈 글) */
+  if(!klDetailOn()) return ''; const o=klOnly(); if(!o.show.length) return '';
+  return '[본문에 쓰지 않는 글 — 영상 제목·시리즈명·브랜드(머리말·타이틀 화면에만 쓰임)] '+o.show.slice(0,12).map(x=>'"'+clipS(x,40)+'"').join(' · ')+'\n';
+}
 let KL_BC=false;
 async function klBuildCheck(){   /* 옛 파일이 열려 있으면 알려 줌 — 탭을 새로 고치지 않았거나 브라우저가 옛 파일을 다시 쓰면 고친 코드가 안 돌고 옛 결과가 그대로 나오기 때문. 같은 주소의 최신 index.html 에서 빌드 번호를 읽어 견줌(한 번만) */
   if(KL_BC) return; KL_BC=true;
@@ -53962,7 +54226,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
