@@ -44778,7 +44778,7 @@ const DEF_CFG={
   sub:{on:true,font:FONTS[0][0],size:46,color:'#ffffff',stroke:'#000000',strokeW:7,bg:'#000000',bgA:0,pos:'bottom',off:7,maxW:84,lines:2,bold:true,anim:'fade'},
   look:{trans:'fade',transDur:0.35,fit:'auto',motion:'kenburns',clipVol:0,filter:{b:1,c:1,s:1}},
   bgm:{bid:'',name:'',vol:0.16,duck:0.35,fadeIn:1.5,fadeOut:3,loop:true},
-  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false,rich:true,ltpl:true},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false,alearn:true},title:{on:true,dur:2.5,keepBgm:false,user:false}
+  mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'news',nochar:false,rich:true,ltpl:true,detail:true},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false,alearn:true},title:{on:true,dur:2.5,keepBgm:false,user:false}
 };
 function loadPref(lang){ let p={}; try{ p=JSON.parse(localStorage.getItem(LS_PREF)||'{}')||{}; }catch(e){} const cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); return (lang&&lang!=='ko')?langOverlay(cfg,lang,true):cfg; }
 function savePref(cfg){
@@ -46245,7 +46245,7 @@ function stripP(w){   /* 낱말 끝의 조사 떼기 — '주가'처럼 낱말 �
   return m?m[1]:w;
 }
 function labelBefore(text,idx){   /* 수치 앞의 '무엇의'에 해당하는 말 — 앞 수치·접속어·연결어미('…고','…며')에서 끊고 주어(은·는·이·가)까지만. 없으면 '' */
-  const pre=text.slice(0,idx).split(/[,，;]/).pop().replace(/[「」"'“”‘’()\[\]]/g,' ').trim();
+  const pre=text.slice(0,idx).split(/[,，;]/).pop().replace(/[「」"'“”‘’()\[\]]/g,' ').replace(klDetailOn()?IDX_NAME_RE:/(?!)/g,'$1$2').trim();   /* v127: 'S&P 500' 같은 지수 이름은 한 낱말로(세부 내용 위주가 켜졌을 때만) */
   const tok=pre.split(/\s+/).filter(Boolean); let b=-1;
   tok.forEach((w,i)=>{ if(NUMTOK.test(w)||CONJ.test(w)||/(고|며|면서|지만|는데|으나|으며|다가)$/.test(w)) b=i; });
   let seg=tok.slice(b+1); if(!seg.length) return '';
@@ -46253,8 +46253,9 @@ function labelBefore(text,idx){   /* 수치 앞의 '무엇의'에 해당하는 �
   seg=si>=0?seg.slice(0,si+1):seg.slice(-2);
   seg[seg.length-1]=stripP(seg[seg.length-1]);
   let lab=seg.join(' ').trim(); if(lab.length>16){ lab=lab.slice(lab.length-16); const i=lab.indexOf(' '); if(i>0&&i<8) lab=lab.slice(i+1); }
-  return lab;
+  return lab.replace(//g,' ');
 }
+const IDX_NAME_RE=/(S&P|SP|다우|나스닥|코스피|닛케이|FTSE|DAX|CAC|러셀|MSCI|Dow|Nasdaq|KOSPI)\s+(500|100|30|200|225|40|50|400|600|1000|2000|150)(?=(?:은|는|이|가|도|의|\s|$))/gi;
 function keyClause(text){
   const parts=text.split(/(?<=[,，])\s*/).filter(Boolean); let best=null, off=0, pos=0;
   parts.forEach(c=>{ const i=text.indexOf(c,pos); pos=i+c.length; if(!best&&R_CUE.test(c)) { best=c; off=i; } });
@@ -46344,7 +46345,7 @@ function mergeSpecs(specs){   /* 단계가 여럿인 결과를 한 clip 으로 �
 }
 function ruleSpecs(ss,ctx,o){
   const sty=(o&&o.style)||ctx.style||(P.cfg.info&&P.cfg.info.style)||'news', sk=ISTY[sty]||ISTY.news; ctx.style=sty;
-  const tmp={items:(ctx.sbp&&ctx.cs&&!ctx.cs.length)?[]:ruleBlocks(ss,ctx)}; if(ctx.sbp) tmp.items=sbRuleItems(ctx,ss,tmp.items);   /* 인사·진행 멘트뿐인 장면은 그 멘트에서 요점을 뽑지 않고 스토리보드의 화면 글자만 */ sortItems(tmp); if(klRich()){ try{ tmp.items=kindUpgrade(tmp.items,ctx); sortItems(tmp); }catch(e){ if(window.__klStrict) throw e; } } const cap=sty==='dash'?6:4; let items=tmp.items.slice(0,sty==='dash'?12:10);
+  const tmp={items:(ctx.sbp&&ctx.cs&&!ctx.cs.length)?[]:klDetailItems(ruleBlocks(ss,ctx),ss,ctx,true)}; if(ctx.sbp) tmp.items=sbRuleItems(ctx,ss,tmp.items);   /* 인사·진행 멘트뿐인 장면은 그 멘트에서 요점을 뽑지 않고 스토리보드의 화면 글자만 */ sortItems(tmp); if(klRich()){ try{ tmp.items=kindUpgrade(tmp.items,ctx); sortItems(tmp); }catch(e){ if(window.__klStrict) throw e; } } const cap=sty==='dash'?6:4; let items=tmp.items.slice(0,sty==='dash'?12:10);
   if(!items.length&&ss.length){ const si=ss.findIndex(s=>hasSubstance(s.text)); if(si>=0){ const k=keyClause(ss[si].text); if(k.clause) items=[Object.assign({id:uid('i'),type:'point',at:{sid:ss[si].id,f:0},dt:0},ptFrom(k))]; } }
   if(!items.length) return [];   /* 화면에 올릴 핵심이 없는 장면 */
   const groups=stageSplit(items,cap), st0=groups.map((g,k)=>k?Math.min.apply(null,g.map(it=>itemSi(ss,it))):0);   /* 블록이 많으면 말하는 흐름대로 단계별 clip 으로 */
@@ -46418,7 +46419,7 @@ function igCtx(sc,o){   /* ss = 화면에 옮길 '내용 있는' 문장만(인�
 }
 function infoUser(ctx){
   const hv=ctx.vk==='image'||ctx.vk==='video', up=String((P.cfg.prompts&&P.cfg.prompts.info)||'').trim();
-  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
+  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터'+(klDetailOn()?'(참고용 — 이 제목·주제를 구성요소에 되풀이하지 말 것)':'')+'] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
 }
 const toneOK=t=>{ t=String(t||'').toLowerCase(); return /^(up|down|flat|acc|cur)$/.test(t)?t:''; };
 function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체·글자 길이 제한·형식 점검·문장 번호와 글로 시각 계산). 쓸 수 없으면 null */
@@ -46476,7 +46477,7 @@ function normSpecs(raw,ss,ctx){
   arr.slice(0,4).forEach((c,k)=>{
     if(!c||typeof c!=='object') return; const items=[], seen=new Set();
     (Array.isArray(c.items)?c.items:[]).forEach(r=>{ if(items.length>=6||tot>=12) return; const b=normBlock(r,ss); if(!b) return; const key=b.type+'|'+(b.label||'')+'|'+(b.value||b.text||b.from||'')+'|'+((b.parts||[]).map(p=>p.l||p.t||p.d).join(',')); if(seen.has(key)) return; seen.add(key); items.push(b); tot++; });
-    if(!items.length) return; const tmp={items}; sortItems(tmp);
+    if(!items.length) return; const tmp={items:klDetailItems(items,ss,ctx)}; if(!tmp.items.length) return; sortItems(tmp);
     const i0=nz(c.from)!=null?clamp(Math.round(nz(c.from))-1,0,ss.length-1):0, i1=nz(c.to)!=null?clamp(Math.round(nz(c.to))-1,i0,ss.length-1):ss.length-1;
     const title=clipS(newsT(c.title),KW(26))||ctx.ch; out.push({mode:MODE_OF[c.mode]?c.mode:'auto',auto:(ctx.j||0)%2===0?'left':'right',title,kicker:(title&&ctx.ch&&title!==ctx.ch)?ctx.ch:'',i0,i1,items:tmp.items,tpl:klTplOf(c.tpl)});
   });
@@ -46920,7 +46921,7 @@ async function charFromFile(file){
 function infoTextAi(){ try{ return !!studioAi().key; }catch(e){ return false; } }   /* 글 AI(영상 스튜디오 🤖 AI 에서 고른 것)에 키가 있나 */
 function infoOptRows(d){
   const ch=P.char?(P.char.src==='ai'?'AI 캐릭터':'내 그림'):'기본 캐릭터', ai=studioAi(), has=!!ai.key, nf=P.scenes.filter(c=>!contentOf(sentsOf(P,c)).length).length;
-  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false;
+  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false;
   return styleGallery(d)+D_('구성',dsel('ilay',d.ilay,[['auto','자동 — 내용·장면 화면에 맞춰 형태를 골라 섞어요(권장)'],['left','왼쪽 70% 패널 + 오른쪽 캐릭터'],['right','오른쪽 70% 패널 + 왼쪽 캐릭터'],['full','전체 화면 패널'],['hero','큰 수치 위주(화면 가득)'],['over','겹치기 — 장면 화면 위 띠·카드']]))
     +D_('내용',dsel('imode',d.imode,[['ai','AI 가 나레이션을 보고 설계(권장)'],['rule','규칙으로 추출(무료·즉시)']]))
     +D_('구성요소',klRowHtml(d))
@@ -47544,7 +47545,7 @@ const DLG_PREF={
   vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
   avoice:v=>{ P.cfg.dlg.avoice=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
   ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; },
-  istyle:v=>{ if(ISTY[v]) P.cfg.info.style=v; }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; },
+  istyle:v=>{ if(ISTY[v]) P.cfg.info.style=v; }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; },
   asb:v=>{ P.sb=P.sb||{}; P.sb.on=(v==='on'); commit('스토리보드 적용 '+(v==='on'?'켬':'끔')); }   /* v107: 스토리보드대로 / AI 가 알아서 — 프로젝트에 저장(AI 수정 패널과 같은 값) */
 };
 function resetPref(gid){
@@ -47835,7 +47836,7 @@ function applyInfoEdit(sc,raw,all){   /* 장면의 인포그래픽을 AI 가 돌
   if(!clipsRaw&&sty){ old.forEach(g=>{ g.sty=sty; }); return old.length?'인포그래픽 스타일 → '+ISTY[sty].n:''; }   /* 스타일만 바꾸는 요청 */
   if(raw.remove===true||(clipsRaw&&clipsRaw.length===0)){ if(!old.length) return ''; P.igs=P.igs.filter(g=>old.indexOf(g)<0); return '인포그래픽 '+old.length+'개 뺌'; }
   if(!clipsRaw) return '';
-  const ctx=igCtx(sc); ctx.ss=all; ctx.all=all;   /* 장면의 모든 문장에 번호를 붙여 보여 줬으니 같은 번호로 맞춤 */
+  const ctx=igCtx(sc); ctx.ss=all; ctx.all=all; ctx.keepEcho=true;   /* 장면의 모든 문장에 번호를 붙여 보여 줬으니 같은 번호로 맞춤 */
   const specs=normSpecs({clips:clipsRaw},all,ctx); if(!specs.length) return '';
   const oldItems=[]; old.forEach(g=>g.items.forEach(it=>oldItems.push({it,t:mentionT0(P,it)}))); const used=new Set(); let kept=0, nb=0;
   specs.forEach(sp=>{ sp.items=sp.items.map(nw=>{ const key=itemSig(nw), m0=mentionT0(P,nw), f=oldItems.find(o=>!used.has(o.it)&&itemSig(o.it)===key&&(m0==null||o.t==null||Math.abs(o.t-m0)<0.8)); nb++; if(!f) return nw; used.add(f.it); kept++; if(nw.ld!=null) f.it.ld=nw.ld; return f.it; }); });
@@ -48288,7 +48289,8 @@ function sysInfo0(lang){
   s=s.replace(/l 은 이 이름만: [^)]*\)/,'l 은 이 이름만: '+Object.keys(V.GEO_N).map(n=>V.geoName(n,lang)).join('·')+')');
   return OUT_LANG(lg)+'\n\n'+s+'\n7. 모든 화면 글은 '+lg.ai+'로 쓴다(숫자·티커 제외).';
 }
-function sysEditBase(){
+function sysEditBase(){ return klEditSys(sysEditBase0()); }
+function sysEditBase0(){
   if(isKo()) return SYS_EDIT;
   const lg=LG(), si=sysInfo(), a=si.indexOf('[글 쓰는 방식'), b=si.indexOf('[규칙]');
   return OUT_LANG(lg)+'\n\n'+SYS_EDIT_HEAD.replace('한국어 증시','증시')+si.slice(a,b)+SYS_EDIT_TAIL+'\n5. 새로 쓰거나 고치는 화면 글(카드 글·자막·인포그래픽)은 모두 '+lg.ai+'로 쓴다(수정 요청이 한국어로 와도 결과물은 '+lg.ai+').';
@@ -50077,12 +50079,12 @@ function drawX(E,c,it,D){
       g.translate(-0,0); const sv=E.g; sv.save(); xText({g,font,pal:Object.assign({},pal,{text:'#3b2f00'}),cf:E.cf,sk:E.sk},text,hl,R,fT*0.9,'800','#3b2f00',T.al==='c'?'c':'l','m',hm,'#b45309',5); if(by) klT(E,by,R.x+R.w,R.y+R.h+fB*0.2,R.w*0.7,fB,'700','rgba(59,47,0,.65)','right','top',0.5); sv.restore(); g.restore(); break; }
     case 'tag': case 'hlbox': case 'alert': case 'tip': case 'fact': case 'split': {
       const preset={alert:{c:'#f59e0b',ic:'warn',lb:TX('warn','주의')},tip:{c:'#22c55e',ic:'bulb',lb:'TIP'},fact:{c:pal.accent,ic:'info',lb:'FACT'}}[k]; const col=preset?preset.c:tcol, F=xFrame(E,c,it,bk,s0,k==='hlbox'?'edge-l':(preset?'out':(k==='split'?'none':'glass')),col), R=F.R;
-      if(k==='split'){ const bw=Math.min(c.w*0.28,0.3*bk); roundRect(g,c.x,c.y,c.w,c.h,Math.min(0.024*bk,c.h/4)); g.fillStyle=pal.card; g.fill(); g.save(); roundRect(g,c.x,c.y,c.w,c.h,Math.min(0.024*bk,c.h/4)); g.clip(); g.fillStyle=col; g.fillRect(c.x,c.y,bw,c.h); g.restore(); klT(E,label||'POINT',c.x+bw/2,c.y+c.h/2,bw*0.86,Math.min(fL*1.5,c.h*0.2),'800',klInk(col),'center','middle',0.4); body({x:c.x+bw+0.03*bk,y:c.y+c.h*0.1,w:c.w-bw-0.06*bk,h:c.h*0.8}); break; }
+      if(k==='split'){ const bw=Math.min(c.w*0.28,0.3*bk); roundRect(g,c.x,c.y,c.w,c.h,Math.min(0.024*bk,c.h/4)); g.fillStyle=pal.card; g.fill(); g.save(); roundRect(g,c.x,c.y,c.w,c.h,Math.min(0.024*bk,c.h/4)); g.clip(); g.fillStyle=col; g.fillRect(c.x,c.y,bw,c.h); g.restore(); { const lb=label||(klDetailOn()?'':'POINT'); if(lb) klT(E,lb,c.x+bw/2,c.y+c.h/2,bw*0.86,Math.min(fL*1.5,c.h*0.2),'800',klInk(col),'center','middle',0.4); } body({x:c.x+bw+0.03*bk,y:c.y+c.h*0.1,w:c.w-bw-0.06*bk,h:c.h*0.8}); break; }
       let tx=R.x, tw=R.w; if(preset){ const r=Math.min(R.h*0.34,0.05*bk); klIcon(g,preset.ic,R.x+r,R.y+R.h/2,r,col,Math.max(2,r*0.2)); tx=R.x+r*2.6; tw=R.w-r*2.6; const lb=label||preset.lb; klT(E,lb,tx,R.y+0.004*bk,tw,fL,'800',col,'left','top',0.5); body({x:tx,y:R.y+fL*1.5,w:tw,h:R.h-fL*1.5},{va:'t'}); }
-      else if(k==='tag'){ const lb=label||'POINT', pw=klTW(E,lb,fL,'800')+fL*1.4; roundRect(g,R.x,R.y,pw,fL*1.8,fL*0.9); g.fillStyle=col; g.fill(); klT(E,lb,R.x+pw/2,R.y+fL*0.9,pw,fL,'800',klInk(col),'center','middle',0.5); body({x:R.x,y:R.y+fL*2.2,w:R.w,h:R.h-fL*2.2},{va:'t'}); }
+      else if(k==='tag'&&(label||!klDetailOn())){ const lb=label||'POINT', pw=klTW(E,lb,fL,'800')+fL*1.4; roundRect(g,R.x,R.y,pw,fL*1.8,fL*0.9); g.fillStyle=col; g.fill(); klT(E,lb,R.x+pw/2,R.y+fL*0.9,pw,fL,'800',klInk(col),'center','middle',0.5); body({x:R.x,y:R.y+fL*2.2,w:R.w,h:R.h-fL*2.2},{va:'t'}); }
       else body(R);
-      if(sub&&k!=='tag') small(sub,tx,R.y+R.h-fS*1.2,tw,fS,'600',pal.mute); break; }
-    case 'def': { const F=xFrame(E,c,it,bk,s0,'glass',tcol), R=F.R, fh=Math.min(0.074*bk*zlb,R.h*0.3); klT(E,label||text,R.x,R.y+fh*0.55,R.w,fh,'800',tcol,'left','middle',0.4); g.fillStyle=klA(tcol,0.5); g.fillRect(R.x,R.y+fh*1.2,Math.min(R.w*0.3,0.2*bk),Math.max(2,0.005*bk)); xText(E,label?text:sub,hl,{x:R.x,y:R.y+fh*1.5,w:R.w,h:R.h-fh*1.5},fT*0.72,'600',pal.text,'l','t',hm,tcol,4); break; }
+      if(sub&&(k!=='tag'||!(label||!klDetailOn()))) small(sub,tx,R.y+R.h-fS*1.2,tw,fS,'600',pal.mute); break; }
+    case 'def': { const F=xFrame(E,c,it,bk,s0,'glass',tcol), R=F.R, fh=Math.min(0.074*bk*zlb,R.h*0.3); if(!label){ xText(E,text,hl,R,fT*0.9,'700',pal.text,'l','m',hm,tcol,4); break; } klT(E,label||text,R.x,R.y+fh*0.55,R.w,fh,'800',tcol,'left','middle',0.4); g.fillStyle=klA(tcol,0.5); g.fillRect(R.x,R.y+fh*1.2,Math.min(R.w*0.3,0.2*bk),Math.max(2,0.005*bk)); xText(E,label?text:sub,hl,{x:R.x,y:R.y+fh*1.5,w:R.w,h:R.h-fh*1.5},fT*0.72,'600',pal.text,'l','t',hm,tcol,4); break; }
     case 'qa': { const F=xFrame(E,c,it,bk,s0,'glass',tcol), R=F.R, rr=Math.min(R.h*0.22,0.04*bk), hh=R.h/2; [['Q',tcol,text,0],['A',pal.accent2||klMix(tcol,pal.dark?'#ffffff':'#000000',0.35),sub||by,1]].forEach(([lt,cc,tx,i])=>{ const y=R.y+i*hh; klDot(g,R.x+rr,y+hh/2,rr,cc); klT(E,lt,R.x+rr,y+hh/2,rr*1.5,rr*1.2,'800',klInk(cc),'center','middle',0.4); xText(E,tx,i?[]:hl,{x:R.x+rr*2.5,y:y+hh*0.05,w:R.w-rr*2.5,h:hh*0.9},fT*0.74,i?'600':'800',pal.text,'l','m',hm,tcol,2); }); if(hh>0) klLine(g,R.x,R.y+hh,R.x+R.w,R.y+hh,klA(pal.mute,0.3),1); break; }
     case 'bignum': { const F=xFrame(E,c,it,bk,s0,'glass',tcol), R=F.R, nw=Math.min(R.w*0.34,R.h*1.2); klT(E,label||'1',R.x+nw/2,R.y+R.h/2,nw,Math.min(R.h*0.9,0.2*bk*zlb),'800',tcol,'center','middle',0.3); g.fillStyle=klA(tcol,0.4); g.fillRect(R.x+nw+0.01*bk,R.y+R.h*0.15,Math.max(2,0.004*bk),R.h*0.7); body({x:R.x+nw+0.034*bk,y:R.y,w:R.w-nw-0.034*bk,h:R.h-(sub?fS*1.6:0)},{va:sub?'t':'m'}); if(sub) small(sub,R.x+nw+0.034*bk,R.y+R.h-fS*1.3,R.w-nw-0.034*bk,fS,'600',pal.mute); break; }
     case 'stat': case 'under': case 'mark': case 'headline': case 'kicker': case 'outline': case 'bracket': case 'bare': {
@@ -50606,9 +50608,10 @@ const KL_LAYOUT_GUIDE=`[배치 템플릿 — clip 마다 "tpl" 에 아래 id 하
 - 칸 번호는 큰 칸부터 1, 2, 3…(크기가 비슷하면 위→아래·왼→오른쪽). 블록의 선택 필드 "slot"(칸 번호)·"w"(중요도 1~3)을 주면 그 칸에 놓고, 생략하면 코드가 가장 어울리는 칸에 놓는다.
 - 고르는 법: 핵심 블록이 하나 두드러지면 '큰 칸 + 작은 칸들'(왼쪽/오른쪽/위/아래 큰 칸), 비슷한 비중이면 등분·격자, 가로로 긴 차트·표는 위·아래로 쌓은 가로줄 구성, 수치 카드가 여럿이면 정사각형·격자, 큰 한마디는 '가운데 작게'. 연속된 clip 에서 같은 tpl 을 반복하지 않는다.`;
 function klCatalog(){
-  return KL.order.map(id=>{ const f=KL.fam[id]; return '['+id+' '+f.n+'] '+(f.ai||'')+'\n  설계: '+f.ds.map(d=>d.id+'='+d.s).join(' · '); }).join('\n');
+  return klDetailDoc(KL.order.map(id=>{ const f=KL.fam[id]; return '['+id+' '+f.n+'] '+(f.ai||'')+'\n  설계: '+f.ds.map(d=>d.id+'='+d.s).join(' · '); }).join('\n'));
 }
 function klSys(base,lang){
+  if(klDetailOn()) base=klDetailInsert(base);   /* v127: 세부 내용 위주 규칙 */
   let add=''; if(klRich()) add+='\n\n[확장 구성요소 — 위 [블록 종류]와 함께 쓸 수 있고 내용에 맞으면 확장 쪽을 우선한다. 종류 이름은 "계열.설계"(예: "m.ring"). 모든 블록(그리고 parts 항목)에 s·q 를 넣고, 선택 필드 w(중요도 1~3)·slot(칸 번호)을 더할 수 있다]\n'+klCatalog()+'\n\n'+KL_GUIDE;
   if(klLtpl()) add+='\n\n'+KL_LAYOUT_GUIDE+'\n'+layoutCatalog();
   if(add&&klLtpl()) add+='\n\n[형식 추가] clip 에 "tpl"(템플릿 id)을 더할 수 있다: {"mode":"full","title":"…","tpl":"t3-05","items":[…]}';
@@ -50617,7 +50620,8 @@ function klSys(base,lang){
 }
 function klRowHtml(d){   /* 대화상자 — 구성요소·배치 선택 줄 */
   return dchk('irich',d.irich,'새 구성요소 종류 쓰기 — 수치 카드·차트·타임라인·게이지·글 목록 등 '+KL.keys.length+'가지')+'<div class="hint">AI 가 내용에 맞는 종류를 골라요(규칙으로 만들 때도 다양하게 섞어요). 끄면 예전 기본 구성요소만 써요.</div>'
-    +dchk('iltpl',d.iltpl,'배치 템플릿 자동 고르기 — 크기/배치 템플릿 '+LTPL.length+'개 중 장면에 가장 알맞은 것')+'<div class="hint">구성요소 개수·모양·중요도를 보고 칸 크기·위치를 정해요(AI 가 템플릿을 직접 고르기도 해요). 끄면 예전처럼 위에서 아래로 쌓아요. 만든 뒤 [📐 크기/배치 수정]에서 고칠 수 있어요.</div>';
+    +dchk('iltpl',d.iltpl,'배치 템플릿 자동 고르기 — 크기/배치 템플릿 '+LTPL.length+'개 중 장면에 가장 알맞은 것')+'<div class="hint">구성요소 개수·모양·중요도를 보고 칸 크기·위치를 정해요(AI 가 템플릿을 직접 고르기도 해요). 끄면 예전처럼 위에서 아래로 쌓아요. 만든 뒤 [📐 크기/배치 수정]에서 고칠 수 있어요.</div>'
+    +dchk('idetail',d.idetail,'세부 내용 위주 — 섹션 제목·주제·분류는 구성요소에서 빼기')+'<div class="hint">구성요소에 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담아요(챕터 이름을 되풀이한 이름·태그·한마디나 "업종"·"일정" 같은 분류 머리말은 빼요). 직접 쓴 추가 요청·스토리보드 글은 그대로 둬요. 끄면 예전처럼 만들어요.</div>';
 }
 /* ── 규칙(무료) 구성 — 기본 추출 결과(수치·막대·지수판·업종·일정·요점…)를 내용에 맞는 새 종류로 바꿔 줌. 고르는 건 장면·내용이 같으면 늘 같게(해시) ── */
 const KL_UP={
@@ -50650,14 +50654,14 @@ function kindUpgrade(items,ctx){
         if(it.type==='bar'){ const t=klPickDesign(sl(KL_UP.bars),sd,used);
           if(t){ out.push({id:mkId(),type:take(t),label:TX('chg','등락률'),unit:'%',note:'',cm:'sign',base:null,parts:run.map(b=>({l:b.label,v:nz(b.v),t:b.value||'',at:b.at,dt:b.dt||0})),at:run[0].at,dt:0}); i+=run.length; continue; } }
         else{ const t=klPickDesign(KL_UP.rows,sd,used);
-          if(t){ const isK=t.indexOf('k.')===0; out.push({id:mkId(),type:take(t),label:TX('mk','주요 시세'),unit:'%',note:'',cm:'sign',parts:run.map(b=>isK?({l:b.label,v:String(b.value||''),d:String(b.delta||''),at:b.at,dt:b.dt||0}):({l:b.label,v:nz(String(b.delta||'').replace('%','')),t:String(b.value||''),d:String(b.delta||''),at:b.at,dt:b.dt||0})),at:run[0].at,dt:0}); i+=run.length; continue; } }
+          if(t){ const isK=t.indexOf('k.')===0; out.push({id:mkId(),type:take(t),label:klDetailOn()?'':TX('mk','주요 시세'),unit:'%',note:'',cm:'sign',parts:run.map(b=>isK?({l:b.label,v:String(b.value||''),d:String(b.delta||''),at:b.at,dt:b.dt||0}):({l:b.label,v:nz(String(b.delta||'').replace('%','')),t:String(b.value||''),d:String(b.delta||''),at:b.at,dt:b.dt||0})),at:run[0].at,dt:0}); i+=run.length; continue; } }
       }
       out.push(it); i++; continue;
     }
     if(it.type==='point'){   /* 요점이 3개 이상 이어지면 한 목록으로 */
       let n=0; while(i+n<items.length&&items[i+n].type==='point') n++;
       if(n>=3){ const run=items.slice(i,i+Math.min(n,6)), t=klPickDesign(sty==='slide'?['l.numbered']:KL_UP.plist,sd,used); if(t){ out.push({id:mkId(),type:take(t),label:'',parts:run.map(p=>({t:p.text,sb:'',at:p.at,dt:p.dt||0})),at:run[0].at,dt:0}); i+=run.length; continue; } }
-      if(sty!=='slide'&&klHash(sd)<0.8){ const t=klPickDesign(KL_UP.point,sd,used); if(t){ out.push({id:it.id,type:take(t),text:it.text,sub:'',by:'',hl:it.hl||[],label:'',tone:'',at:it.at,dt:it.dt||0,ld:it.ld}); i++; continue; } }
+      if(sty!=='slide'&&klHash(sd)<0.8){ const t=klPickDesign(klDetailOn()?KL_UP.point.filter(x=>x!=='x.tag'&&x!=='x.kicker'):KL_UP.point,sd,used); if(t){ out.push({id:it.id,type:take(t),text:it.text,sub:'',by:'',hl:it.hl||[],label:'',tone:'',at:it.at,dt:it.dt||0,ld:it.ld}); i++; continue; } }
       out.push(it); i++; continue;
     }
     let rep=null;
@@ -50698,6 +50702,102 @@ const KL_TX={
 };
 try{ Object.keys(KL_TX).forEach(id=>{ const l=V.get(id); if(l&&l.tx) Object.keys(KL_TX[id]).forEach(k=>{ if(l.tx[k]==null) l.tx[k]=KL_TX[id][k]; }); }); }catch(e){ console.warn('새 구성요소 번역 글을 못 넣었어요',e); }
 /* ══ /v126 ai ══
+
+/* ── v127: 구성요소는 세부 내용(수치 변화·주요 이슈·변동 내용) 위주 — 챕터(섹션)의 제목·주제·분류는 구성요소에 넣지 않음 ──
+   · AI 요청 글에 규칙을 더하고(klDetailInsert), AI·규칙이 만든 블록에서 챕터·영상 제목을 되풀이한 이름·글·항목과 분류어뿐인 머리말을 걸러 냄(klDetailItems)
+   · 끄면(cfg.info.detail=false) 예전(v126)과 같음 · 사용자가 직접 요청한 글(스토리보드·AI 수정·제목을 넣으라는 추가 요청)은 건드리지 않음 ── */
+const klDetailOn=()=>!!(P&&P.cfg&&P.cfg.info&&P.cfg.info.detail!==false);
+const klNK=s=>String(s==null?'':s).toLowerCase().replace(/[^a-zㄱ-ㆎ가-힣぀-ヿ一-鿿]/g,'');   /* 글자만(숫자·기호·띄어쓰기 뺌) */
+function klBg(s){ const o=new Set(); for(let i=0;i<s.length-1;i++) o.add(s.slice(i,i+2)); return o; }
+function klJac(a,b){ const A=klBg(a), B=klBg(b); if(!A.size||!B.size) return 0; let n=0; A.forEach(x=>{ if(B.has(x)) n++; }); return n/(A.size+B.size-n); }
+/* 챕터·영상 제목을 그대로(또는 '요약'·'현황' 한두 낱말만 붙여) 되풀이한 글인지 */
+const KL_GENSUF=/(요약|현황|총정리|정리|개요|분석|동향|소개|안내|브리핑|리뷰|포인트)$/;
+function klEcho(text,keys){
+  const a=klNK(text); if(a.length<2||!keys.length) return false;
+  return keys.some(k=>{
+    if(a===k) return true;
+    { const ac=a.replace(KL_GENSUF,''), kc=k.replace(KL_GENSUF,''); if(ac.length>=3&&ac===kc) return true; }
+    if(a.length>k.length&&a.indexOf(k)>=0) return a.length-k.length<=Math.max(1,Math.floor(k.length*0.35));
+    if(k.length>a.length&&k.indexOf(a)>=0) return a.length>=Math.max(4,k.length*0.75);
+    return a.length>=4&&k.length>=4&&klJac(a,k)>=0.72;
+  });
+}
+/* 분류어뿐인 글인지('업종'·'일정'·'시황'·'핵심 요약'…) — 숫자가 있거나 오르내림·발표 같은 내용 말이 있으면 아님 */
+const KL_HEAD_RE=/^(개요|요약|정리|총정리|핵심요약|핵심정리|오늘의포인트|오늘의요약|오늘의이슈|오늘의뉴스|포인트|핵심포인트|이슈|핵심이슈|주요이슈|체크포인트|시장동향|시장현황|시장개황|시장분석|시장전망|시황|증시마감|마감시황|글로벌시장|해외시장|국내시장|주요지수|주요시세|시세|주요일정|이번주일정|주간일정|경제일정|일정|업종|업종별|섹터|테마|분류|카테고리|제목|주제|뉴스|주요뉴스|키워드|핵심키워드|핵심수치|주요수치|수치|지표|주요지표|현황|동향|전망|분석|증시|시장|마감|글로벌|주식|주가|환율|금리|유가|원자재|미국증시|한국증시|국내증시|해외증시|미국|한국|일본|중국|유럽|summary|overview|highlights?|recap|outlook|market|markets|news|schedule|sector|sectors|issues?|points?|keypoints?|topic|category|today)$/;
+const KL_HEADSUF_RE=/(동향|현황|개요|요약|정리|분석|시황|뉴스|이슈|포인트|일정|전망|마감|리뷰|브리핑)$/;
+const KL_CUE_RE=/(상승|하락|급등|급락|강세|약세|확대|축소|증가|감소|인상|인하|동결|발표|결정|우려|기대|돌파|반등|하회|상회|사상|최고|최저|순매수|순매도|호조|부진|악화|개선|경신|둔화|가속|충격|리스크|위험|부담|수혜|타격|폭락|폭등|랠리|조정|회복|하향|상향|논란|합의|협상|제재|관세|규제|승인|취소|연기|지연|흑자|적자)/;
+function klHead(s){ const raw=String(s==null?'':s); if(/\d/.test(raw)) return false; const k=klNK(raw); if(k.length<2||k.length>12) return false; if(KL_CUE_RE.test(k)) return false; return KL_HEAD_RE.test(k)||(k.length<=8&&KL_HEADSUF_RE.test(k)); }
+const KL_HEADLIKE=new Set(['x.kicker','x.ribbon','x.cap','x.tag','x.headline']);   /* 모양 자체가 머리말·딱지라 분류어뿐이면 블록을 뺌 */
+function klSecKeys(ss,ctx){   /* 되풀이하면 안 되는 글: 이 챕터의 제목과 영상 제목 */
+  const raw=[]; if(ctx){ raw.push(ctx.ch,ctx.chFull); } else if(ss&&ss[0]&&P&&P.chap&&ss[0].ci!=null) raw.push(P.chap[ss[0].ci]);
+  raw.push(P&&P.title); const out=[];
+  raw.forEach(t=>{ const k=klNK(cleanChap(t)); if(k.length>=2&&out.indexOf(k)<0) out.push(k); }); return out;
+}
+function klRelabel(it,ss,keys){   /* 이름이 챕터 제목으로 채워진 수치 블록 — 나레이션에서 수치 앞의 '무엇의'를 다시 찾고, 못 찾으면 빈 글 */
+  const sid=it.at&&it.at.sid, s=sid?(ss||[]).find(x=>x.id===sid):null; if(!s||!it.value) return '';
+  const core=String(it.value).replace(/^[+\-−–]\s?/,'').trim(), i=core?s.text.indexOf(core):-1; if(i<0) return '';
+  const masked=s.text.replace(IDX_NAME_RE,m=>m.replace(/\d/g,'x')), okLab=l=>!!l&&!klEcho(l,keys)&&!klHead(l)&&!KL_DIRW.test(l);
+  let pos=i; for(let n=0;n<3&&pos>0;n++){
+    let lab=''; try{ lab=newsT(isKo()?labelBefore(s.text,pos):labelBeforeX(s.text,pos)); }catch(e){ lab=''; }
+    lab=clipS(lab,KW(18)); if(okLab(lab)) return lab;
+    const re=/[+\-−–$₩]?\d[\d,]*(?:\.\d+)?/g; let m, last=-1; const pre=masked.slice(0,pos); while((m=re.exec(pre))) last=m.index; if(last<0) break; pos=last;
+  }
+  return '';
+}
+function klDetailFix(it,keys,ss){
+  if(!it||it.type==='agenda'||it.type==='title') return it;
+  const t=it.type, d=klOf(t), fid=d?d.fid:'', E=s=>klEcho(s,keys), H=s=>klHead(s), grp=Array.isArray(it.parts)&&it.parts.length>0;
+  if(t==='point'||t==='quote'||fid==='x'){   /* 한마디·요점 — 챕터 제목을 되풀이한 글이면 블록을 뺌(머리말·딱지 모양은 분류어뿐이어도 뺌) */
+    if(E(it.text)||(KL_HEADLIKE.has(t)&&H(it.text))) return null;
+    if(t==='x.def'&&it.label&&(E(it.label)||H(it.label))) return null;
+    if(fid==='x'&&it.label&&(E(it.label)||H(it.label))) it.label='';
+    if(it.sub&&E(it.sub)) it.sub='';
+    return it;
+  }
+  if(grp){   /* 여러 항목 — 머리말이 챕터 제목이거나 분류어뿐이면 비우고, 항목 글이 챕터 제목이면 그 항목을 뺌 */
+    if(it.label&&(E(it.label)||H(it.label))) it.label='';
+    if(it.note&&E(it.note)) it.note='';
+    if(t==='event'||t==='flow'||t==='scenario'||fid==='t'||fid==='l'){
+      const kw=t==='l.keywords', keep=it.parts.filter(p=>!(p&&p.t&&(E(p.t)||(kw&&H(p.t)))));
+      if(keep.length!==it.parts.length){ if(!keep.length) return null; it.parts=keep; }
+    }
+    return it;
+  }
+  if(it.label&&E(it.label)){ const lb=klRelabel(it,ss,keys); it.label=lb; if(!lb&&(t==='bar'||t==='row')) return null; }   /* 값 하나짜리 — 이름 칸에 챕터 제목이 들어갔으면 고쳐 쓰거나 비움 */
+  if(it.note&&E(it.note)) it.note='';
+  return it;
+}
+const klUserWantsHeads=()=>/제목|타이틀|챕터|섹션|머리말|헤드라인|주제|분류|카테고리|title|heading|headline/i.test(String((P&&P.cfg&&P.cfg.prompts&&P.cfg.prompts.info)||''));   /* 추가 요청이 제목류를 넣으라는 뜻이면 그대로 둠 */
+const KL_DIRW=/^(상승|하락|상승세|하락세|급등|급락|반등|돌파|하회|상회|마감|기록|오른|내린|올라|내려)$/;
+function klMergeLevel(items){   /* 규칙: '…은 1.2% 오른 5,412포인트' — 이름 자리에 오르내림 말만 붙은 수준 값은 앞의 등락률 카드에 합쳐 '5,412포인트 ▲1.2%' 한 장으로 */
+  const out=[];
+  items.forEach(it=>{ const p=out[out.length-1];
+    if(p&&it.type==='stat'&&p.type==='stat'&&KL_DIRW.test(String(it.label||''))&&p.at&&it.at&&p.at.sid===it.at.sid&&/^[+\-−–]?\d[\d.,]*%$/.test(String(p.value||'').trim())&&!p.delta&&!/%$/.test(String(it.value||'').trim())){ p.delta=p.value; p.value=it.value; return; }
+    out.push(it); });
+  return out;
+}
+function klDetailItems(items,ss,ctx,rule){
+  if(!klDetailOn()||!items||!items.length||(ctx&&ctx.keepEcho)||klUserWantsHeads()) return items;
+  if(rule) items=klMergeLevel(items);
+  const keys=klSecKeys(ss,ctx), out=[]; items.forEach(it=>{ const r=klDetailFix(it,keys,ss); if(r) out.push(r); }); return out;
+}
+/* AI 요청 글 — [표기 판단] 뒤에 '세부 내용 위주' 규칙을 끼우고, 분류어로 보이는 예시 머리말은 설명형으로 바꿔 줌 */
+const KL_DETAIL=`[구성요소에 담을 내용 — 세부 내용 위주]
+- 구성요소(블록)에는 세부 내용만 담는다: ① 수치와 그 변화(값·등락률·증감폭·이전→지금·순위 변화·전일/전주 대비) ② 주요 이슈(정책·실적·발표·사건·결정의 구체적 내용과 영향) ③ 변동 내용(무엇이 얼마나·왜 바뀌었는지: 원인·수급·전망의 변화).
+- 이 챕터(섹션)의 제목·주제·분류(예: "미국 증시 마감", "환율과 원자재", "이번 주 일정", "시황")와 영상 제목은 이미 화면 머리말과 챕터 제목 카드로 보이므로, 구성요소의 label·text·note·parts 항목·키워드 칩·태그·머리말·한마디에 되풀이하지 않는다. 제목·주제·분류만 있고 값이나 내용이 없는 블록, 챕터 이름을 풀어 쓴 소개·요약 문구("~ 요약", "~ 현황", "오늘의 포인트")는 만들지 않는다.
+- label 은 그 수치·항목이 무엇인지 알려 주는 이름("S&P 500", "기준금리", "외국인 순매수")으로만 쓴다. 여러 항목을 묶은 블록의 머리말(label)은 그 값들이 무엇을 재는지 알려 줄 때만("업종별 등락률") 쓰고, "업종"·"일정"·"시황" 같은 분류어이거나 챕터 이름이면 빈 문자열("")로 둔다.
+- 태그·머리말(label)이 붙는 한마디 모양(x.tag·x.split·x.kicker 등)은 label 이 내용의 성격(속보·주의·전망·리스크)일 때만 쓰고, "POINT"·"요약" 같은 분류 딱지는 붙이지 않는다.`;
+const KL_DETAIL_EX=[['"type":"heat","label":"업종",','"type":"heat","label":"업종별 등락률",'],['"type":"map","label":"주요국 증시",','"type":"map","label":"주요국 증시 등락률",'],['"type":"donut","label":"수급",','"type":"donut","label":"투자자별 수급 비중",'],['"type":"line","label":"지수 흐름",','"type":"line","label":"S&P 500 주간 흐름",'],['"type":"event","label":"이번 주 일정",','"type":"event","label":"",'],['"type":"level","label":"주요 가격대",','"type":"level","label":"",']];
+function klDetailInsert(base){
+  if(!klDetailOn()) return base;
+  KL_DETAIL_EX.forEach(p=>{ base=base.split(p[0]).join(p[1]); });
+  const i=base.indexOf('[글 쓰는 방식'); return i>=0?base.slice(0,i)+KL_DETAIL+'\n\n'+base.slice(i):base+'\n\n'+KL_DETAIL;
+}
+const KL_DOC_FIX=[['headline·kicker·ribbon·cap=제목류.','headline·ribbon·cap=핵심 사실 한마디를 크게(챕터 제목·분류 표기용이 아님), kicker·tag·split=label 이 내용의 성격(속보·주의·전망·리스크)일 때만.'],['keywords=키워드 칩,','keywords=이슈 키워드 칩(구체적 사건어 — 시황·증시 같은 분류어 금지),'],['{"type":"t.hline","label":"이번 주 일정","parts":','{"type":"t.hline","label":"","parts":'],['{"type":"l.check","label":"체크포인트","parts":','{"type":"l.check","label":"","parts":']];
+function klDetailDoc(doc){ if(!klDetailOn()) return doc; KL_DOC_FIX.forEach(p=>{ doc=doc.split(p[0]).join(p[1]); }); return doc; }
+const KL_DETAIL_EDIT='\n- 인포그래픽 구성요소에는 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담고, 챕터(섹션)의 제목·주제·분류를 이름·글·태그·키워드로 되풀이하지 않습니다(사용자가 요청하면 요청대로).';
+function klEditSys(s){ return klDetailOn()?s+KL_DETAIL_EDIT:s; }
+/* ══ /v127 detail ══ */
 
 /* ══ /v126 ══ */
 /* ── 개요 문장·챕터 찾기 ── */
@@ -53603,7 +53703,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
