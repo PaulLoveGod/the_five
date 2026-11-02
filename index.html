@@ -46346,7 +46346,7 @@ function mergeSpecs(specs){   /* 단계가 여럿인 결과를 한 clip 으로 �
 function ruleSpecs(ss,ctx,o){
   const sty=(o&&o.style)||ctx.style||(P.cfg.info&&P.cfg.info.style)||'news', sk=ISTY[sty]||ISTY.news; ctx.style=sty;
   const tmp={items:(ctx.sbp&&ctx.cs&&!ctx.cs.length)?[]:klDetailItems(ruleBlocks(ss,ctx),ss,ctx,true)}; if(ctx.sbp) tmp.items=sbRuleItems(ctx,ss,tmp.items);   /* 인사·진행 멘트뿐인 장면은 그 멘트에서 요점을 뽑지 않고 스토리보드의 화면 글자만 */ sortItems(tmp); if(klRich()){ try{ tmp.items=kindUpgrade(tmp.items,ctx); sortItems(tmp); }catch(e){ if(window.__klStrict) throw e; } } const cap=sty==='dash'?6:4; let items=tmp.items.slice(0,sty==='dash'?12:10);
-  if(!items.length&&ss.length){ const si=ss.findIndex(s=>hasSubstance(s.text)); if(si>=0){ const k=keyClause(ss[si].text); if(k.clause) items=[Object.assign({id:uid('i'),type:'point',at:{sid:ss[si].id,f:0},dt:0},ptFrom(k))]; } }
+  if(!items.length&&ss.length){ const si=ss.findIndex(s=>hasSubstance(s.text)); if(si>=0){ const k=keyClause(ss[si].text); if(k.clause) items=klDetailItems([Object.assign({id:uid('i'),type:'point',at:{sid:ss[si].id,f:0},dt:0},ptFrom(k))],ss,ctx,true); } }
   if(!items.length) return [];   /* 화면에 올릴 핵심이 없는 장면 */
   const groups=stageSplit(items,cap), st0=groups.map((g,k)=>k?Math.min.apply(null,g.map(it=>itemSi(ss,it))):0);   /* 블록이 많으면 말하는 흐름대로 단계별 clip 으로 */
   return groups.map((grp,k)=>{
@@ -46419,7 +46419,7 @@ function igCtx(sc,o){   /* ss = 화면에 옮길 '내용 있는' 문장만(인�
 }
 function infoUser(ctx){
   const hv=ctx.vk==='image'||ctx.vk==='video', up=String((P.cfg.prompts&&P.cfg.prompts.info)||'').trim();
-  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터'+(klDetailOn()?'(참고용 — 이 제목·주제를 구성요소에 되풀이하지 말 것)':'')+'] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장]\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
+  return (isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[챕터'+(klDetailOn()?'(참고용 — 이 제목·주제를 구성요소에 되풀이하지 말 것)':'')+'] '+ctx.chFull+' (이 챕터의 '+ctx.nth+'/'+ctx.total+'번째 장면)\n[장면 위치] '+(ctx.pos==='first'?'영상의 첫 장면 — 오프닝 인사·소개뿐이면 skip':ctx.pos==='last'?'영상의 마지막 장면 — 마무리 인사·구독 안내뿐이면 skip':'중간 장면')+'\n'+styleLine(ctx)+(ctx.cue?'[화면 지시] '+ctx.cue+'\n':'')+'[장면 화면] '+(hv?'AI '+(ctx.vk==='video'?'영상':'이미지')+'가 깔려 있음 → 그 위에 겹치는 형태(cardR·cardL·lower·ticker·corner)를 우선 고려':'비어 있음 → 전체 틀 형태(left·right·full·hero)를 우선 고려')+'\n[나레이션 문장'+(klDetailOn()?'(= 화면 아래에 자막으로도 나오는 글)':'')+']\n'+ctx.ss.map((s,i)=>(i+1)+'. '+s.text).join('\n')+(up?'\n\n[사용자 추가 요청] '+up:'')+sbInfoBlock(ctx)+slBlock('info')+lnBlock('info');
 }
 const toneOK=t=>{ t=String(t||'').toLowerCase(); return /^(up|down|flat|acc|cur)$/.test(t)?t:''; };
 function normBlock(r,ss){   /* AI 가 준 블록 → 안전한 블록(뉴스체·글자 길이 제한·형식 점검·문장 번호와 글로 시각 계산). 쓸 수 없으면 null */
@@ -46477,7 +46477,7 @@ function normSpecs(raw,ss,ctx){
   arr.slice(0,4).forEach((c,k)=>{
     if(!c||typeof c!=='object') return; const items=[], seen=new Set();
     (Array.isArray(c.items)?c.items:[]).forEach(r=>{ if(items.length>=6||tot>=12) return; const b=normBlock(r,ss); if(!b) return; const key=b.type+'|'+(b.label||'')+'|'+(b.value||b.text||b.from||'')+'|'+((b.parts||[]).map(p=>p.l||p.t||p.d).join(',')); if(seen.has(key)) return; seen.add(key); items.push(b); tot++; });
-    if(!items.length) return; const tmp={items:klDetailItems(items,ss,ctx)}; if(!tmp.items.length) return; sortItems(tmp);
+    if(!items.length) return; const tmp={items:klDetailItems(items,ss,ctx,false,c)}; if(!tmp.items.length) return; sortItems(tmp);
     const i0=nz(c.from)!=null?clamp(Math.round(nz(c.from))-1,0,ss.length-1):0, i1=nz(c.to)!=null?clamp(Math.round(nz(c.to))-1,i0,ss.length-1):ss.length-1;
     const title=clipS(newsT(c.title),KW(26))||ctx.ch; out.push({mode:MODE_OF[c.mode]?c.mode:'auto',auto:(ctx.j||0)%2===0?'left':'right',title,kicker:(title&&ctx.ch&&title!==ctx.ch)?ctx.ch:'',i0,i1,items:tmp.items,tpl:klTplOf(c.tpl)});
   });
@@ -46488,7 +46488,8 @@ async function aiSpecs(ss,ctx,o,signal){
   const ai=studioAi();
   if(!ai.key) throw new Error(ai.name+' API Key 가 없어요(영상 스튜디오 🤖 AI 에서 연결된 다른 AI 를 고르거나, 관리 메뉴 › 🧩 AI 공급자에서 키를 넣으세요)');
   const txt=await window._runTextPrompt(ai.mapKey,sysInfo(),infoUser(ctx),{signal});
-  const specs=sbEnsureTexts(normSpecs(parseJsonLoose(txt),ss,ctx),ctx,ss);
+  const _kd=klDropN(); const specs=sbEnsureTexts(normSpecs(parseJsonLoose(txt),ss,ctx),ctx,ss);
+  if(!specs.length&&!specs.skip&&klDropN()>_kd){ specs.skip=true; specs.reason='자막·제목과 같은 내용뿐'; }   /* v128 */
   if(!specs.length&&!specs.skip) throw new Error('AI 가 쓸 만한 블록을 주지 않았어요');
   return specs;
 }
@@ -46576,7 +46577,7 @@ async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐�
   if(P.cfg.info.ltpl!==false){ try{ run.lt=layoutAll(run.made); }catch(e){ if(window.__klStrict) throw e; } }   /* v126: AI 가 정한/디렉터가 고른 배치 템플릿 적용 */
   sortClips(P); layout(P); igPostersAll(true); commit('인포그래픽'); renderAll();
   if(!items.length) progress(ovg?1:0,ovg?'오프닝 개요 인포그래픽을 만들었어요':'개요 인포그래픽은 만들지 않았어요');   /* 개요만 만든 경우 — '설계 중…' 표시를 마무리 */
-  const note=[]; if(run.lt) note.push('🧩 배치 템플릿 '+run.lt+'곳 적용(구성요소 개수·모양·중요도에 맞춰 골랐어요)'); if(run.skipped.length) note.push('인사·마무리·진행 멘트처럼 화면에 옮길 핵심이 없는 장면 '+run.skipped.length+'개는 원래 화면 그대로 음성·자막만 나가요'); if(run.fails) note.push('AI 요약이 실패한 장면은 규칙으로 만들었어요('+run.fails+'건) — '+String(run.err||'').slice(0,60));
+  const note=[]; if(run.lt) note.push('🧩 배치 템플릿 '+run.lt+'곳 적용(구성요소 개수·모양·중요도에 맞춰 골랐어요)'); if(run.skipped.length) note.push('인사·마무리·진행 멘트'+(klDetailOn()?'·자막과 같은 내용':'')+'처럼 화면에 옮길 핵심이 없는 장면 '+run.skipped.length+'개는 원래 화면 그대로 음성·자막만 나가요'); if(run.fails) note.push('AI 요약이 실패한 장면은 규칙으로 만들었어요('+run.fails+'건) — '+String(run.err||'').slice(0,60));
   if(ovg) note.push('오프닝에 개요(오늘의 안내) 인포그래픽을 올렸어요 — 항목 '+ovg.items[0].parts.length+'개'+(ovg.src==='ai'?'(AI)':'(규칙)')); else if(ovr&&ovr.why) note.push(ovr.why);
   if(note.length) toast(note.join(' · '));
   return true;
@@ -50612,7 +50613,7 @@ function klCatalog(){
 }
 function klSys(base,lang){
   if(klDetailOn()) base=klDetailInsert(base);   /* v127: 세부 내용 위주 규칙 */
-  let add=''; if(klRich()) add+='\n\n[확장 구성요소 — 위 [블록 종류]와 함께 쓸 수 있고 내용에 맞으면 확장 쪽을 우선한다. 종류 이름은 "계열.설계"(예: "m.ring"). 모든 블록(그리고 parts 항목)에 s·q 를 넣고, 선택 필드 w(중요도 1~3)·slot(칸 번호)을 더할 수 있다]\n'+klCatalog()+'\n\n'+KL_GUIDE;
+  let add=''; if(klRich()) add+='\n\n[확장 구성요소 — 위 [블록 종류]와 함께 쓸 수 있고 내용에 맞으면 확장 쪽을 우선한다. 종류 이름은 "계열.설계"(예: "m.ring"). 모든 블록(그리고 parts 항목)에 s·q 를 넣고, 선택 필드 w(중요도 1~3)·slot(칸 번호)을 더할 수 있다]\n'+klCatalog()+'\n\n'+klDetailDoc(KL_GUIDE);
   if(klLtpl()) add+='\n\n'+KL_LAYOUT_GUIDE+'\n'+layoutCatalog();
   if(add&&klLtpl()) add+='\n\n[형식 추가] clip 에 "tpl"(템플릿 id)을 더할 수 있다: {"mode":"full","title":"…","tpl":"t3-05","items":[…]}';
   if(add&&lang&&!isKo(lang)){ const lg=V.get(lang); if(lg&&lg.ai) add+=['','','[출력 언어] 위 확장 구성요소·배치 설명의 예시 글(외국인 지분율·전일 대비 등)은 한국어 예시일 뿐입니다. 실제 화면 글(label·text·l·t·sb·note 등 모든 글 칸)은 반드시 '+lg.ai+'로 쓰세요.'].join(String.fromCharCode(10)); }
@@ -50621,7 +50622,7 @@ function klSys(base,lang){
 function klRowHtml(d){   /* 대화상자 — 구성요소·배치 선택 줄 */
   return dchk('irich',d.irich,'새 구성요소 종류 쓰기 — 수치 카드·차트·타임라인·게이지·글 목록 등 '+KL.keys.length+'가지')+'<div class="hint">AI 가 내용에 맞는 종류를 골라요(규칙으로 만들 때도 다양하게 섞어요). 끄면 예전 기본 구성요소만 써요.</div>'
     +dchk('iltpl',d.iltpl,'배치 템플릿 자동 고르기 — 크기/배치 템플릿 '+LTPL.length+'개 중 장면에 가장 알맞은 것')+'<div class="hint">구성요소 개수·모양·중요도를 보고 칸 크기·위치를 정해요(AI 가 템플릿을 직접 고르기도 해요). 끄면 예전처럼 위에서 아래로 쌓아요. 만든 뒤 [📐 크기/배치 수정]에서 고칠 수 있어요.</div>'
-    +dchk('idetail',d.idetail,'세부 내용 위주 — 섹션 제목·주제·분류는 구성요소에서 빼기')+'<div class="hint">구성요소에 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담아요(챕터 이름을 되풀이한 이름·태그·한마디나 "업종"·"일정" 같은 분류 머리말은 빼요). 직접 쓴 추가 요청·스토리보드 글은 그대로 둬요. 끄면 예전처럼 만들어요.</div>';
+    +dchk('idetail',d.idetail,'세부 내용 위주 — 섹션 제목·분류, 자막·제목과 같은 뜻의 글은 구성요소에서 빼기')+'<div class="hint">구성요소에 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담아요. 챕터 이름을 되풀이한 이름·태그·한마디, "업종"·"일정" 같은 분류 머리말, 자막이나 제목을 줄여 쓴 요점·날짜·인사 문구는 빼요(구체적인 수치는 그대로 둬요). 자막과 같은 내용뿐인 장면은 인포그래픽을 만들지 않아요. 직접 쓴 추가 요청·스토리보드 글은 그대로 둬요. 끄면 예전처럼 만들어요.</div>';
 }
 /* ── 규칙(무료) 구성 — 기본 추출 결과(수치·막대·지수판·업종·일정·요점…)를 내용에 맞는 새 종류로 바꿔 줌. 고르는 건 장면·내용이 같으면 늘 같게(해시) ── */
 const KL_UP={
@@ -50705,6 +50706,7 @@ try{ Object.keys(KL_TX).forEach(id=>{ const l=V.get(id); if(l&&l.tx) Object.keys
 
 /* ── v127: 구성요소는 세부 내용(수치 변화·주요 이슈·변동 내용) 위주 — 챕터(섹션)의 제목·주제·분류는 구성요소에 넣지 않음 ──
    · AI 요청 글에 규칙을 더하고(klDetailInsert), AI·규칙이 만든 블록에서 챕터·영상 제목을 되풀이한 이름·글·항목과 분류어뿐인 머리말을 걸러 냄(klDetailItems)
+   · v128: 자막(나레이션 문장)·clip 제목과 같은 뜻의 글(줄여 쓴 요점·날짜·요일·인사·소개)도 뺌 — 구체적인 수치가 든 것은 그대로
    · 끄면(cfg.info.detail=false) 예전(v126)과 같음 · 사용자가 직접 요청한 글(스토리보드·AI 수정·제목을 넣으라는 추가 요청)은 건드리지 않음 ── */
 const klDetailOn=()=>!!(P&&P.cfg&&P.cfg.info&&P.cfg.info.detail!==false);
 const klNK=s=>String(s==null?'':s).toLowerCase().replace(/[^a-zㄱ-ㆎ가-힣぀-ヿ一-鿿]/g,'');   /* 글자만(숫자·기호·띄어쓰기 뺌) */
@@ -50728,8 +50730,9 @@ const KL_HEADSUF_RE=/(동향|현황|개요|요약|정리|분석|시황|뉴스|�
 const KL_CUE_RE=/(상승|하락|급등|급락|강세|약세|확대|축소|증가|감소|인상|인하|동결|발표|결정|우려|기대|돌파|반등|하회|상회|사상|최고|최저|순매수|순매도|호조|부진|악화|개선|경신|둔화|가속|충격|리스크|위험|부담|수혜|타격|폭락|폭등|랠리|조정|회복|하향|상향|논란|합의|협상|제재|관세|규제|승인|취소|연기|지연|흑자|적자)/;
 function klHead(s){ const raw=String(s==null?'':s); if(/\d/.test(raw)) return false; const k=klNK(raw); if(k.length<2||k.length>12) return false; if(KL_CUE_RE.test(k)) return false; return KL_HEAD_RE.test(k)||(k.length<=8&&KL_HEADSUF_RE.test(k)); }
 const KL_HEADLIKE=new Set(['x.kicker','x.ribbon','x.cap','x.tag','x.headline']);   /* 모양 자체가 머리말·딱지라 분류어뿐이면 블록을 뺌 */
-function klSecKeys(ss,ctx){   /* 되풀이하면 안 되는 글: 이 챕터의 제목과 영상 제목 */
-  const raw=[]; if(ctx){ raw.push(ctx.ch,ctx.chFull); } else if(ss&&ss[0]&&P&&P.chap&&ss[0].ci!=null) raw.push(P.chap[ss[0].ci]);
+function klSecKeys(ss,ctx,c){   /* 되풀이하면 안 되는 글: 이 clip 의 제목(AI 가 쓴 것)·챕터 제목·영상 제목 */
+  const raw=[]; if(c&&c.title) raw.push(c.title);
+  if(ctx){ raw.push(ctx.ch,ctx.chFull); } else if(ss&&ss[0]&&P&&P.chap&&ss[0].ci!=null) raw.push(P.chap[ss[0].ci]);
   raw.push(P&&P.title); const out=[];
   raw.forEach(t=>{ const k=klNK(cleanChap(t)); if(k.length>=2&&out.indexOf(k)<0) out.push(k); }); return out;
 }
@@ -50744,25 +50747,58 @@ function klRelabel(it,ss,keys){   /* 이름이 챕터 제목으로 채워진 수
   }
   return '';
 }
-function klDetailFix(it,keys,ss){
+/* ── v128: 자막·clip 제목과 '뜻이 같은' 글 찾기 — 낱말(어절 안 두 글자 조각)이 거의 다 자막·제목 안에 들어 있으면 같은 뜻의 줄임·되풀이로 봄.
+   날짜는 '2026.11.02 MON' = '11월 2일 월요일' 처럼 같은 날이면 같은 글. 구체적인 수치(날짜 말고 숫자)가 든 글은 늘 남김 ── */
+const KL_DROP={n:0}, klDropN=()=>KL_DROP.n;
+const KL_WDK={'월':1,'화':2,'수':3,'목':4,'금':5,'토':6,'일':0}, KL_WDN={mon:1,tue:2,wed:3,thu:4,fri:5,sat:6,sun:0}, KL_MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+function klDateSig(s){   /* 글 속 날짜(월-일)·요일을 뽑고, 그것들을 뺀 나머지 글을 rest 로 */
+  s=String(s==null?'':s); const md=[], wd=[], push=(a,x)=>{ if(a.indexOf(x)<0) a.push(x); }; let rest=s;
+  rest=rest.replace(/(?:19|20)\d{2}\s*[.\/\-년]\s*(\d{1,2})\s*[.\/\-월]\s*(\d{1,2})\s*일?/g,(a,mo,d)=>{ push(md,(+mo)+'-'+(+d)); return ' '; });
+  rest=rest.replace(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/g,(a,mo,d)=>{ push(md,(+mo)+'-'+(+d)); return ' '; });
+  rest=rest.replace(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s*(\d{1,2})(?:st|nd|rd|th)?\b/gi,(a,mo,d)=>{ push(md,KL_MON[mo.slice(0,3).toLowerCase()]+'-'+(+d)); return ' '; });
+  rest=rest.replace(/\(\s*([월화수목금토일])\s*\)/g,(a,w)=>{ push(wd,KL_WDK[w]); return ' '; });
+  rest=rest.replace(/([월화수목금토일])요일/g,(a,w)=>{ push(wd,KL_WDK[w]); return ' '; });
+  rest=rest.replace(/\b(mon(?:day)?|tue(?:s(?:day)?)?|wed(?:nesday)?|thu(?:r(?:s(?:day)?)?)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)\b\.?/gi,(a,w)=>{ push(wd,KL_WDN[w.slice(0,3).toLowerCase()]); return ' '; });
+  return {md,wd,rest};
+}
+const KL_DATELIKE=/^(?:19|20)\d{2}\s*[.\/\-]\s*\d{1,2}(?:\s*[.\/\-]\s*\d{1,2})?$/;
+const klHasFig=s=>/\d/.test(klDateSig(s).rest.replace(IDX_NAME_RE,' '));   /* 날짜·지수 이름의 숫자('S&P 500')를 뺀 뒤에도 숫자가 남으면 '구체적인 수치' */
+function klDateOnly(s){ const g=klDateSig(s); if(!g.md.length&&!g.wd.length) return false; return klNK(g.rest.replace(/오늘|현재|기준|날짜|일자|today|date|[년월일]/gi,'')).length===0; }
+function klUnits(s){ const u=new Set(); String(s==null?'':s).toLowerCase().replace(/[^a-zㄱ-ㆎ가-힣぀-ヿ一-鿿]+/g,' ').split(' ').forEach(w=>{ if(!w) return; if(w.length===1) u.add(w); else for(let i=0;i<w.length-1;i++) u.add(w.slice(i,i+2)); }); return u; }
+function klCover(a,b){ if(!a.size) return 0; let n=0; a.forEach(x=>{ if(b.has(x)) n++; }); return n/a.size; }
+function klRefs(ss,ctx,c){   /* 이 장면의 자막(모든 나레이션 문장)과 제목들 */
+  const list=(ctx&&ctx.all&&ctx.all.length)?ctx.all:(ss||[]), sent=[], md=new Set(), wd=new Set(), titles=[];
+  list.forEach(s=>{ const tx=s&&s.text; if(!tx) return; sent.push(klUnits(tx)); const g=klDateSig(tx); g.md.forEach(x=>md.add(x)); g.wd.forEach(x=>wd.add(x)); });
+  [c&&c.title,ctx&&ctx.ch,ctx&&ctx.chFull,P&&P.title].forEach(t=>{ const u=klUnits(cleanChap(t)); if(u.size>=2) titles.push(u); });
+  return {sent,titles,dates:{md,wd}};
+}
+function klRestates(text,refs,kw){   /* 글이 자막·제목과 같은 뜻인지(구체적인 수치가 든 글은 아님) */
+  if(!refs) return false; const s=String(text==null?'':text).trim(); if(!s||klHasFig(s)) return false;
+  if(klDateOnly(s)){ const g=klDateSig(s); return g.md.length?g.md.some(x=>refs.dates.md.has(x)):g.wd.some(x=>refs.dates.wd.has(x)); }   /* 날짜가 있으면 같은 날일 때만, 요일만 있으면 같은 요일일 때 */
+  const u=klUnits(s); if(u.size<(kw?4:3)) return false;
+  return refs.sent.some(r=>klCover(u,r)>=0.75)||refs.titles.some(r=>klCover(u,r)>=0.75);
+}
+function klDetailFix(it,keys,ss,refs){
   if(!it||it.type==='agenda'||it.type==='title') return it;
   const t=it.type, d=klOf(t), fid=d?d.fid:'', E=s=>klEcho(s,keys), H=s=>klHead(s), grp=Array.isArray(it.parts)&&it.parts.length>0;
-  if(t==='point'||t==='quote'||fid==='x'){   /* 한마디·요점 — 챕터 제목을 되풀이한 글이면 블록을 뺌(머리말·딱지 모양은 분류어뿐이어도 뺌) */
+  if(t==='point'||t==='quote'||fid==='x'){   /* 한마디·요점 — 챕터·clip 제목을 되풀이했거나 자막과 같은 뜻이면 블록을 뺌(머리말·딱지 모양은 분류어뿐이어도 뺌, 출처(by)가 있는 인용은 남김) */
     if(E(it.text)||(KL_HEADLIKE.has(t)&&H(it.text))) return null;
+    if(!(t==='quote'&&it.by)&&klRestates(it.text,refs)) return null;
     if(t==='x.def'&&it.label&&(E(it.label)||H(it.label))) return null;
     if(fid==='x'&&it.label&&(E(it.label)||H(it.label))) it.label='';
     if(it.sub&&E(it.sub)) it.sub='';
     return it;
   }
-  if(grp){   /* 여러 항목 — 머리말이 챕터 제목이거나 분류어뿐이면 비우고, 항목 글이 챕터 제목이면 그 항목을 뺌 */
+  if(grp){   /* 여러 항목 — 머리말이 챕터 제목이거나 분류어뿐이면 비우고, 항목 글이 챕터 제목·자막과 같으면 그 항목을 뺌 */
     if(it.label&&(E(it.label)||H(it.label))) it.label='';
     if(it.note&&E(it.note)) it.note='';
     if(t==='event'||t==='flow'||t==='scenario'||fid==='t'||fid==='l'){
-      const kw=t==='l.keywords', keep=it.parts.filter(p=>!(p&&p.t&&(E(p.t)||(kw&&H(p.t)))));
+      const kw=t==='l.keywords', keep=it.parts.filter(p=>!(p&&p.t&&(E(p.t)||(kw&&H(p.t))||(fid==='l'&&klRestates(p.t,refs,kw)))));
       if(keep.length!==it.parts.length){ if(!keep.length) return null; it.parts=keep; }
     }
     return it;
   }
+  if(it.value!=null&&KL_DATELIKE.test(String(it.value).trim())) return null;   /* 값 하나짜리인데 값이 '2026.11.02' 같은 날짜 — 시세·수치가 아니라 날짜를 수치 카드로 읽은 것 */
   if(it.label&&E(it.label)){ const lb=klRelabel(it,ss,keys); it.label=lb; if(!lb&&(t==='bar'||t==='row')) return null; }   /* 값 하나짜리 — 이름 칸에 챕터 제목이 들어갔으면 고쳐 쓰거나 비움 */
   if(it.note&&E(it.note)) it.note='';
   return it;
@@ -50776,26 +50812,29 @@ function klMergeLevel(items){   /* 규칙: '…은 1.2% 오른 5,412포인트' �
     out.push(it); });
   return out;
 }
-function klDetailItems(items,ss,ctx,rule){
+function klDetailItems(items,ss,ctx,rule,c){
   if(!klDetailOn()||!items||!items.length||(ctx&&ctx.keepEcho)||klUserWantsHeads()) return items;
   if(rule) items=klMergeLevel(items);
-  const keys=klSecKeys(ss,ctx), out=[]; items.forEach(it=>{ const r=klDetailFix(it,keys,ss); if(r) out.push(r); }); return out;
+  const keys=klSecKeys(ss,ctx,c), refs=klRefs(ss,ctx,c), out=[];
+  items.forEach(it=>{ const r=klDetailFix(it,keys,ss,refs); if(r) out.push(r); else KL_DROP.n++; });
+  return out;
 }
 /* AI 요청 글 — [표기 판단] 뒤에 '세부 내용 위주' 규칙을 끼우고, 분류어로 보이는 예시 머리말은 설명형으로 바꿔 줌 */
 const KL_DETAIL=`[구성요소에 담을 내용 — 세부 내용 위주]
 - 구성요소(블록)에는 세부 내용만 담는다: ① 수치와 그 변화(값·등락률·증감폭·이전→지금·순위 변화·전일/전주 대비) ② 주요 이슈(정책·실적·발표·사건·결정의 구체적 내용과 영향) ③ 변동 내용(무엇이 얼마나·왜 바뀌었는지: 원인·수급·전망의 변화).
-- 이 챕터(섹션)의 제목·주제·분류(예: "미국 증시 마감", "환율과 원자재", "이번 주 일정", "시황")와 영상 제목은 이미 화면 머리말과 챕터 제목 카드로 보이므로, 구성요소의 label·text·note·parts 항목·키워드 칩·태그·머리말·한마디에 되풀이하지 않는다. 제목·주제·분류만 있고 값이나 내용이 없는 블록, 챕터 이름을 풀어 쓴 소개·요약 문구("~ 요약", "~ 현황", "오늘의 포인트")는 만들지 않는다.
+- 이 챕터(섹션)의 제목·주제·분류(예: "미국 증시 마감", "환율과 원자재", "이번 주 일정", "시황")와 영상 제목, 그리고 clip 의 title 은 이미 화면 머리말로 보이므로, 구성요소의 label·text·note·parts 항목·키워드 칩·태그·머리말·한마디에 되풀이하지 않는다. 제목·주제·분류만 있고 값이나 내용이 없는 블록, 챕터 이름을 풀어 쓴 소개·요약 문구("~ 요약", "~ 현황", "오늘의 포인트")는 만들지 않는다.
+- 자막(화면 아래에 나오는 나레이션 문장)도 이미 화면에 보인다. 자막과 같은 뜻인 글은 구성요소로 만들지 않는다 — 문장을 줄이거나 말만 바꾼(동의어·번역 포함) 요점·한마디·목록 항목, 제목을 풀어 쓴 문구, 날짜·요일·인사·소개 문구가 해당한다(예: 자막이 "11월 2일 월요일 증시 브리핑입니다"일 때 "11월 2일 월요일 증시 브리핑"·"Five Minute Market Brief"·"2026.11.02 MON" 같은 항목). 올리는 것은 구체적인 수치(값·등락·비교)와, 자막 한 줄로는 안 보이는 것(여러 문장을 묶은 결론·원인→결과·순위·일정·구조화된 비교)뿐이다. 그런 내용이 없는 장면은 {"clips":[],"skip":true,"reason":"자막과 같은 내용뿐"} 로 답한다.
 - label 은 그 수치·항목이 무엇인지 알려 주는 이름("S&P 500", "기준금리", "외국인 순매수")으로만 쓴다. 여러 항목을 묶은 블록의 머리말(label)은 그 값들이 무엇을 재는지 알려 줄 때만("업종별 등락률") 쓰고, "업종"·"일정"·"시황" 같은 분류어이거나 챕터 이름이면 빈 문자열("")로 둔다.
 - 태그·머리말(label)이 붙는 한마디 모양(x.tag·x.split·x.kicker 등)은 label 이 내용의 성격(속보·주의·전망·리스크)일 때만 쓰고, "POINT"·"요약" 같은 분류 딱지는 붙이지 않는다.`;
-const KL_DETAIL_EX=[['"type":"heat","label":"업종",','"type":"heat","label":"업종별 등락률",'],['"type":"map","label":"주요국 증시",','"type":"map","label":"주요국 증시 등락률",'],['"type":"donut","label":"수급",','"type":"donut","label":"투자자별 수급 비중",'],['"type":"line","label":"지수 흐름",','"type":"line","label":"S&P 500 주간 흐름",'],['"type":"event","label":"이번 주 일정",','"type":"event","label":"",'],['"type":"level","label":"주요 가격대",','"type":"level","label":"",']];
+const KL_DETAIL_EX=[['"type":"heat","label":"업종",','"type":"heat","label":"업종별 등락률",'],['"type":"map","label":"주요국 증시",','"type":"map","label":"주요국 증시 등락률",'],['"type":"donut","label":"수급",','"type":"donut","label":"투자자별 수급 비중",'],['"type":"line","label":"지수 흐름",','"type":"line","label":"S&P 500 주간 흐름",'],['"type":"event","label":"이번 주 일정",','"type":"event","label":"",'],['"type":"level","label":"주요 가격대",','"type":"level","label":"",'],['숫자가 거의 없는 장면은 point 2~4개나 quote.','숫자가 거의 없는 장면은 자막에 없는 내용(원인·영향·결론)이 있을 때만 point·quote 로 올리고, 자막을 되풀이할 뿐이면 skip 한다.']];
 function klDetailInsert(base){
   if(!klDetailOn()) return base;
   KL_DETAIL_EX.forEach(p=>{ base=base.split(p[0]).join(p[1]); });
   const i=base.indexOf('[글 쓰는 방식'); return i>=0?base.slice(0,i)+KL_DETAIL+'\n\n'+base.slice(i):base+'\n\n'+KL_DETAIL;
 }
-const KL_DOC_FIX=[['headline·kicker·ribbon·cap=제목류.','headline·ribbon·cap=핵심 사실 한마디를 크게(챕터 제목·분류 표기용이 아님), kicker·tag·split=label 이 내용의 성격(속보·주의·전망·리스크)일 때만.'],['keywords=키워드 칩,','keywords=이슈 키워드 칩(구체적 사건어 — 시황·증시 같은 분류어 금지),'],['{"type":"t.hline","label":"이번 주 일정","parts":','{"type":"t.hline","label":"","parts":'],['{"type":"l.check","label":"체크포인트","parts":','{"type":"l.check","label":"","parts":']];
+const KL_DOC_FIX=[['headline·kicker·ribbon·cap=제목류.','headline·ribbon·cap=핵심 사실 한마디를 크게(챕터 제목·분류 표기용이 아님), kicker·tag·split=label 이 내용의 성격(속보·주의·전망·리스크)일 때만.'],['keywords=키워드 칩,','keywords=이슈 키워드 칩(구체적 사건어 — 시황·증시 같은 분류어 금지),'],['{"type":"t.hline","label":"이번 주 일정","parts":','{"type":"t.hline","label":"","parts":'],['{"type":"l.check","label":"체크포인트","parts":','{"type":"l.check","label":"","parts":'],['요점 여러 개는 l.check·l.numbered·l.cards3.','요점 여러 개(자막에 없는 결론·정리일 때만)는 l.check·l.numbered·l.cards3.']];
 function klDetailDoc(doc){ if(!klDetailOn()) return doc; KL_DOC_FIX.forEach(p=>{ doc=doc.split(p[0]).join(p[1]); }); return doc; }
-const KL_DETAIL_EDIT='\n- 인포그래픽 구성요소에는 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담고, 챕터(섹션)의 제목·주제·분류를 이름·글·태그·키워드로 되풀이하지 않습니다(사용자가 요청하면 요청대로).';
+const KL_DETAIL_EDIT='\n- 인포그래픽 구성요소에는 수치 변화·주요 이슈·변동 내용 같은 세부 내용만 담고, 챕터(섹션)의 제목·주제·분류와 자막·clip 제목과 같은 뜻의 글을 이름·글·태그·키워드로 되풀이하지 않습니다(사용자가 요청하면 요청대로).';
 function klEditSys(s){ return klDetailOn()?s+KL_DETAIL_EDIT:s; }
 /* ══ /v127 detail ══ */
 
@@ -53703,7 +53742,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
