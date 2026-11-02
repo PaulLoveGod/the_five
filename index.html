@@ -1420,7 +1420,7 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
 #aiNewChatBtn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;flex-shrink:0;transition:background .15s}
 #aiNewChatBtn:hover{background:rgba(255,255,255,.32)}
 #aiModalBody{display:flex;flex:1;min-height:0}
-#aiLeftPanel{width:38%;display:flex;flex-direction:column;background:#f8fafc;min-height:0;flex-shrink:0}
+#aiLeftPanel{width:38%;display:flex;flex-direction:column;background:#f8fafc;min-height:0;flex-shrink:0;position:relative}
 #aiPanelDivider{width:8px;min-width:8px;cursor:col-resize;background:#e8edf3;display:flex;align-items:center;justify-content:center;flex-shrink:0;user-select:none;transition:background .12s}
 #aiPanelDivider:hover,#aiPanelDivider.dragging{background:#c7d2fe}
 #aiPanelDivider::after{content:'';display:block;width:2px;height:40px;background:#94a3b8;border-radius:2px;transition:background .12s}
@@ -1538,8 +1538,33 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
 #aiFileAppendBtn:hover{background:#059669}
 #aiFileCancelBtn{background:#e2e8f0;color:#475569}
 #aiFileCancelBtn:hover{background:#cbd5e1}
-#aiFileDownloadBtn{align-self:flex-start;border:1px solid #15803d;border-radius:6px;cursor:pointer;font-size:10.5px;font-weight:700;padding:4px 10px;background:#dcfce7;color:#15803d}
-#aiFileDownloadBtn:hover{background:#bbf7d0}
+/* ── 첨부 파일 표시줄 (v123 이미지·PDF → v124 음성·문서·이미지 모두) — 어느 탭에서도 보임. [TEXT 추출] 버튼·상태줄·덮어쓰기/이어쓰기 확인 줄 포함.
+   첫 줄 = 아이콘·이름·크기·[TEXT 추출]·💾·✕, 둘째 줄 = 상태(진행·결과·오류), 셋째 줄 = 확인 줄. 첨부해도 아래 왼쪽 칼럼은 그대로 쓸 수 있고 둘이 함께 분석됨 ── */
+#aiAttachBar{display:none;flex-wrap:wrap;align-items:center;gap:4px 6px;padding:5px 11px;border-bottom:1px solid #bbf7d0;background:#ecfdf5;font-size:10.5px;color:#166534;flex-shrink:0;min-width:0}
+#aiAttachBar .aab-ic{flex-shrink:0;font-size:12px;line-height:1}
+#aiAttachBar .aab-nm{flex:0 1 auto;max-width:52%;min-width:48px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#aiAttachBar .aab-sz{flex-shrink:0;opacity:.7;white-space:nowrap}
+#aiAttachExtract{margin-left:auto;flex-shrink:0;height:22px;padding:0 10px;border:none;border-radius:6px;background:#15803d;color:#fff;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+#aiAttachExtract:hover{background:#166534}
+#aiAttachExtract.run{background:#b91c1c}
+#aiAttachExtract:disabled{background:#94a3b8;cursor:default}
+#aiAttachSaveWrap{flex-shrink:0}
+#aiAttachSave{height:22px;padding:0 7px;border:1px solid #86efac;border-radius:6px;background:#fff;color:#15803d;font-size:11px;cursor:pointer}
+#aiAttachSave:hover{background:#dcfce7}
+#aiAttachDel{flex-shrink:0;width:20px;height:20px;padding:0;border:none;border-radius:5px;background:transparent;color:#166534;cursor:pointer;font-size:12px;line-height:20px;text-align:center}
+#aiAttachDel:hover{background:#fee2e2;color:#dc2626}
+#aiAttachBar .aab-hint{flex:1 1 100%;min-width:0;font-size:10px;line-height:1.5;opacity:.85;word-break:break-word}
+#aiAttachBar .aab-hint.warn{color:#b45309;opacity:1;font-weight:700}
+#aiAttachBar .aab-hint.err{color:#b91c1c;opacity:1;font-weight:700}
+/* ── 파일 끌어다 놓기 (v125) — 왼쪽 패널에 파일을 끌고 오면 안내 틀이 뜨고(이벤트는 통과), 놓으면 첨부됨 ── */
+#aiDropOverlay{display:none;position:absolute;top:6px;left:6px;right:6px;bottom:6px;z-index:600;pointer-events:none;align-items:center;justify-content:center;text-align:center;background:rgba(236,253,245,.93);border:3px dashed #22c55e;border-radius:14px;color:#166534}
+#aiDropOverlay div{display:flex;flex-direction:column;gap:6px;padding:0 18px}
+#aiDropOverlay b{font-size:14px;font-weight:800}
+#aiDropOverlay small{font-size:11px;opacity:.85;line-height:1.5}
+#aiLeftPanel.dz-on #aiDropOverlay{display:flex}
+#aiFileDropZone.dz-on{background:#dcfce7;border-color:#16a34a}
+#aiAttachBar #aiFileAppendDlg{flex:1 1 100%;flex-wrap:wrap}
+#aiAttachBar #aiFileAppendDlg span{flex:1 1 auto;min-width:150px}   /* 좁은 칼럼에선 글자는 한 줄을 지키고 버튼이 다음 줄로 */
 #aiLeftContent{flex:1;overflow:auto;padding:13px;font-size:12px;line-height:1.75;color:#334155;word-break:break-word;white-space:pre-wrap;outline:none}
 #aiLeftContent[contenteditable=true]:empty::before{content:attr(placeholder);color:#94a3b8;pointer-events:none}
 #aiRightPanel{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0;position:relative}
@@ -31115,10 +31140,11 @@ async function _fetchClaudeBalance(){
   let _eid='',_hist=[],_busy=false,_editPIdx=-1;
   let _provider='claude'; /* 'claude' | 'deepseek-flash' | 'deepseek-pro' | 'gemini-flash' | 'gemini-pro' | 'chatgpt-flash' | 'chatgpt-pro' — 이번에 열린 채팅이 쓸 AI */
   let _mode='text'; /* 'text'|'url'|'file' */
-  let _attachedFile=null; /* {type,data,mimeType,name} */
+  let _attachedFile=null; /* 왼쪽 '문서/음성파일'에서 첨부한 파일 하나 {type:'image'|'pdf'|'audio'|'doc',kind,name,size,file,ex:{state,msg,n}, + 이미지·PDF 만 data(base64)·mimeType·sent}.
+     이미지·PDF 는 왼쪽 칼럼 글과 따로 보관돼 둘 다 AI 에 전달됨(v123 — sent=현재 대화에 이미 실어 보냈는지). 음성·문서(v124)는 [TEXT 추출]로 글을 뽑아 왼쪽 칼럼에 넣어야 AI 에 들어감. ex=TEXT 추출 상태(state 'idle'|'run'|'done'|'err') */
+  let _leftSrcFile=''; /* 왼쪽 칼럼에 글을 불러온 텍스트 파일 이름 — 왼쪽 이력(🕘)의 '📎 파일명' 표시용 */
   let _pendingImages=[]; /* [{data,mimeType,name,url}] — 입력창에 붙여넣기/첨부한 이미지 */
   let _pendingRefs=[]; /* [{k:'r'|'a',part,no,label,src,h,prev}] — 결과물·답변의 '↪ 참조'로 입력창 위에 가져온 내용(보낼 때 AI 에게 함께 전달) */
-  let _pendingAudioFile=null; /* File — 왼쪽 패널에 기존 내용이 있을 때 덮어쓰기/이어쓰기 확인 대기 중인 음성 파일 */
   let _lastReply='', _lastResult='';
   let _abortCtrl=null;
   const _chatStore={}; /* editorId별 채팅 기록 저장 */
@@ -31133,6 +31159,7 @@ async function _fetchClaudeBalance(){
   /* 팝업 안에서 직접 공급자 변경 → 즉시 반영 + 이 섹션에 영구 저장 */
   window._switchAiProvider=function(value){
     _provider=value;
+    _renderAttachBar();   /* 첨부 표시줄의 '이 AI 는 이미지·PDF 를 못 읽어요' 경고를 새 공급자에 맞춤 */
     let map={}; try{ map=JSON.parse(localStorage.getItem('BTMAiProviderMap')||'{}'); }catch(e){}
     map[_eid??'']=value;
     localStorage.setItem('BTMAiProviderMap', JSON.stringify(map));
@@ -31589,6 +31616,23 @@ Rules:
     setTimeout(()=>{toast.style.opacity='0';setTimeout(()=>toast.remove(),350);},2500);
   }
 
+  /* 왼쪽 칼럼 글을 줄바꿈 그대로 읽음 — textContent 는 직접 친 줄바꿈(<div>·<br>)을 지워 닫았다 열면 참고 글이 한 줄로 붙고, innerText 는 빈 줄(<div><br></div>)을 한 줄 더 세서 늘어나므로 DOM 을 직접 걷음 */
+  function _lcPlain(el){
+    let out='';
+    const nl=()=>{ if(out&&!out.endsWith('\n')) out+='\n'; };
+    const walk=n=>{
+      if(n.nodeType===3){ out+=n.nodeValue; return; }
+      if(n.nodeType!==1) return;
+      if(n.tagName==='BR'){ out+='\n'; return; }
+      const blk=/^(DIV|P|LI|UL|OL|H[1-6]|PRE|BLOCKQUOTE|TR)$/.test(n.tagName);
+      if(blk) nl();
+      n.childNodes.forEach(walk);
+      if(blk) nl();
+    };
+    el.childNodes.forEach(walk);
+    return out.replace(/\n+$/,'');
+  }
+
   /* 현재 채팅 세션을 editorId별로 저장 (왼쪽 패널 포함) */
   function _saveChatSession(){
     _vizCloseMenus();   /* 열려 있던 붙여넣기 위치 메뉴가 저장본에 남지 않게 */
@@ -31601,7 +31645,7 @@ Rules:
       applyVisible:g('aiApplyBtnWrap').style.display!=='none',
       applyDlgVisible:g('aiApplyDlg').style.display==='flex',
       mode:_mode,
-      leftContent:g('aiLeftContent').textContent||'',
+      leftContent:_lcPlain(g('aiLeftContent')),
       urlInput:g('aiUrlInput')?.value||'',
       urlStatus:g('aiUrlStatus')?.textContent||'',
       attachedFile:_attachedFile,
@@ -31610,6 +31654,7 @@ Rules:
   }
 
   window.openAIChat=function(editorId,label){
+    try{ _dzInit(); }catch(e){ console.warn('[AI 팝업] 파일 끌어다 놓기를 켜지 못했어요:',e&&e.message||e); }   /* 파일 끌어다 놓기(v125) — 처음 열 때 한 번 붙음(실패해도 팝업은 열려야 함) */
     _saveChatSession(); /* 이전 세션 저장 */
     _ahInit(); _aiHistClose(); _ahLeftReset();   /* 다른 섹션 팝업으로 열릴 때 이전 기록 조회 패널·왼쪽 이력 드롭다운이 남아 있지 않게 */
     _eid=editorId;_busy=false;_abortCtrl=null;
@@ -31659,7 +31704,7 @@ Rules:
       const us=g('aiUrlStatus'); if(us) us.textContent=saved.urlStatus||'';
       if(saved.mode==='file'&&saved.attachedFile){
         const fs=g('aiFileStatus');
-        if(fs) fs.textContent=`✅ ${saved.attachedFile.name||'파일'} 로드됨`;
+        if(fs) fs.textContent=`✅ ${saved.attachedFile.name||'파일'} 첨부됨`;
       }
     } else {
       /* ── 새 세션: 빈 상태로 초기화 ── */
@@ -31698,6 +31743,7 @@ Rules:
   /* ↺ 채팅만 초기화 (왼쪽 패널 유지) */
   window._clearChatHistory=function(){
     _hist=[];_lastReply='';_lastResult='';_pendingImages=[];_renderImgStrip();_pendingRefs=[];_renderRefStrip();
+    if(_attachedFile){ _attachedFile.sent=false; _renderAttachBar(); }   /* 비운 대화엔 첨부가 없으니 첨부는 다음 전송 때 다시 실어 보냄 */
     g('aiMessages').innerHTML='';
     g('aiApplyBtnWrap').style.display='none';
     const key=_eid??'';
@@ -31709,6 +31755,7 @@ Rules:
 
   /* + 새 대화: 왼쪽 패널 + 채팅 모두 초기화 */
   window._createNewChat=function(){
+    _xtAbort(true);   /* 이 팝업에서 글을 뽑는 중이던 추출은 멈춤(결과가 새 대화 칼럼에 들어가 버리지 않게) */
     _hist=[];_lastReply='';_lastResult='';_attachedFile=null;_pendingImages=[];_renderImgStrip();_pendingRefs=[];_renderRefStrip();
     g('aiMessages').innerHTML='';
     g('aiApplyBtnWrap').style.display='none';
@@ -31731,10 +31778,11 @@ Rules:
     if(_abortCtrl) _abortCtrl.abort();
   };
 
-  /* ── 왼쪽 패널 모드 전환 ── */
+  /* ── 왼쪽 패널 모드 전환 ──
+     (v123) 탭을 바꿔도 첨부 파일(이미지·PDF)은 그대로 두고, 파일 탭에서도 왼쪽 칼럼을 잠그지 않음 — 첨부와 왼쪽 칼럼 글이 둘 다 AI 분석에 들어가게.
+     예전엔 다른 탭으로 가면 첨부가 지워지고, 파일 탭에선 칼럼이 잠기고 안내 문구로 바뀌어 둘 중 하나만 쓸 수 있었음 */
   window._setLeftMode=function(mode){
-    _mode=mode;
-    if(mode!=='file') _attachedFile=null;
+    _mode=mode; _leftSrcFile='';
     ['Text','Url','File'].forEach(m=>{
       const btn=g('aiTab'+m);
       if(btn) btn.classList.toggle('active',m.toLowerCase()===mode);
@@ -31753,11 +31801,51 @@ Rules:
       setTimeout(()=>{ const ui=g('aiUrlInput'); if(ui) ui.focus(); }, 50);
     } else {
       urlA.style.display='none'; fileA.style.display='flex';
-      lc.contentEditable='false'; lc.style.background='#f8fffe';
+      lc.contentEditable='true'; lc.style.background='';   /* 파일 탭에서도 왼쪽 칼럼을 계속 쓸 수 있음 — 첨부 파일과 함께 분석됨 */
       g('aiFileStatus').textContent=''; g('aiFileInput').value='';
-      _pendingAudioFile=null; g('aiFileAppendDlg').style.display='none';
-      g('aiFileDownloadBtn').style.display='none';
     }
+    _renderAttachBar();
+  };
+
+  /* ── 첨부 파일 표시줄 (v123 이미지·PDF → v124 음성·문서·이미지 모두) — 어느 탭에서도 보이며 [TEXT 추출]·💾·✕ 가 있음.
+     이미지·PDF 는 왼쪽 칼럼 글과 따로 보관돼 둘 다 AI 에 전달됨(v123). 음성·문서는 [TEXT 추출]로 글을 뽑아 칼럼에 넣어야 AI 에 들어감(v124) ── */
+  const _XT_ICON={image:'🖼',pdf:'📄',audio:'🎵',doc:'📝'};
+  const _XT_TIP={
+    audio:'음성을 글로 바꿔(이 PC 의 자막 서버 · Whisper) 아래 왼쪽 칼럼에 넣어요',
+    image:'이미지 속 글자를 AI 로 읽어(OCR) 아래 왼쪽 칼럼에 넣어요 — 선택한 AI 의 사용량이 들어요',
+    pdf:'PDF 의 글을 뽑아 아래 왼쪽 칼럼에 넣어요 — 글자 정보가 없는 스캔본이면 AI 로 읽어요',
+    doc:'문서의 글을 뽑아 아래 왼쪽 칼럼에 넣어요'
+  };
+  function _renderAttachBar(){
+    const bar=g('aiAttachBar'); if(!bar) return;
+    const a=_attachedFile;
+    if(!a){ bar.style.display='none'; _xtAsk(false); return; }
+    const run=!!(_xtRun&&_xtRun.a===a), other=!!(_xtRun&&_xtRun.a!==a);
+    const noRead=_sendable(a)&&String(_provider||'').startsWith('deepseek');   /* DeepSeek 은 이미지·PDF 를 못 읽음(_histToOpenAIMsgs 가 빼 버림) */
+    let hint, cls='';
+    if(run) hint=_xtRun.msg||'⌛ 글을 뽑는 중...';
+    else if(a.ex&&a.ex.msg){ hint=a.ex.msg; if(a.ex.state==='err') cls='err'; }
+    else if(_sendable(a)){ if(noRead){ hint='⚠ DeepSeek 은 이미지·PDF 를 읽지 못해요'; cls='warn'; } else hint=a.sent?'대화에 전달됨 · 아래 참고 내용과 함께 분석':'다음 전송 때 아래 참고 내용과 함께 분석'; }
+    else hint='[TEXT 추출]을 누르면 글로 뽑아 아래 칼럼에 넣어요 — AI 에는 그 글이 전달돼요';
+    g('aiAttachIc').textContent=_XT_ICON[a.type]||'📎';
+    g('aiAttachNm').textContent=a.name||'첨부파일';
+    g('aiAttachSz').textContent=a.size?'('+_fmtSz(a.size)+')':'';
+    const hn=g('aiAttachHint'); hn.textContent=hint; hn.classList.toggle('warn',cls==='warn'); hn.classList.toggle('err',cls==='err');
+    const bt=g('aiAttachExtract');
+    bt.textContent=run?'⏹ 중단':'TEXT 추출'; bt.classList.toggle('run',run); bt.disabled=other;
+    bt.title=other?'다른 파일의 TEXT 추출이 진행 중이에요':(run?'눌러서 TEXT 추출을 멈춰요':(_XT_TIP[a.type]||''));
+    const sw=g('aiAttachSaveWrap'); if(sw) sw.style.display=(!run&&a.ex&&a.ex.state==='done')?'':'none';   /* 💾 는 뽑은 뒤에만 */
+    bar.title=(a.name||'첨부파일')+' — '+hint;
+    bar.style.display='flex';
+  }
+  window._removeAttachedFile=function(){
+    if(!_attachedFile) return;
+    const was=_attachedFile;
+    if(_xtRun&&_xtRun.a===was) _xtAbort();   /* 글을 뽑던 파일이면 추출도 멈춤 */
+    _attachedFile=null; _xtAsk(false);
+    _renderAttachBar();
+    const fs=g('aiFileStatus'); if(fs) fs.textContent='';
+    _showToast('_ahToast',(_sendable(was)&&was.sent)?'📎 첨부를 해제했어요 — 이미 보낸 대화에는 그대로 남아 있어요':'📎 첨부를 해제했어요');
   };
 
   /* ── 서버 상태 표시 ── */
@@ -31884,117 +31972,390 @@ Rules:
     return html.replace(/\n{3,}/g,'\n\n').replace(/[ \t]+/g,' ').trim();
   }
 
-  /* ── 파일 첨부 ── */
-  window._handleFileSelect=async function(input){
-    const file=input.files[0]; if(!file) return;
-    const ext=file.name.split('.').pop().toLowerCase();
-    const isAudio=['mp3','wav','m4a','ogg','oga','aac','flac','wma','webm'].includes(ext)||file.type.startsWith('audio/');
-    input.value='';
-    if(isAudio){ await _handleAudioFile(file); return; }
-    const status=g('aiFileStatus'), lc=g('aiLeftContent');
+  /* ── 파일 첨부 → [TEXT 추출] (v124) ──────────────────────────────────────────────────────────────────────
+     음성·문서·이미지 어느 파일이든 먼저 '첨부된 상태'가 되고(왼쪽 패널의 칩 #aiAttachBar), 칩의 [TEXT 추출]을 누르면 글을 뽑아 아래 왼쪽 칼럼(#aiLeftContent)에 넣음.
+     · 음성: 이 PC 의 자막 서버(/audio-transcript, faster-whisper)가 글로 바꿈
+     · 이미지: AI 가 글자를 읽음(OCR) — 섹션에서 고른 AI 로(DeepSeek 은 이미지를 못 읽어서 키가 있는 Gemini·ChatGPT·Claude 로 대신)
+     · PDF: pdf.js 로 글을 뽑음(처음 쓸 때 CDN 에서 불러옴) — 글자 정보가 없는 스캔본이면 확인 후 AI 가 읽음
+     · 문서: txt·md·csv·json(UTF-8, 아니면 EUC-KR)·html·xlsx/xls(SheetJS)·docx·pptx(ZIP 을 직접 열어 XML 에서 글을 뽑음)
+     이미지·PDF 는 추출과 별개로 AI 에 첨부(이미지·PDF 블록)로도 전달됨 — 글만 쓰려면 ✕. 음성·문서는 뽑은 글만 AI 에 전달됨. 칼럼에 이미 글이 있으면 덮어쓰기/이어쓰기를 물음.
+     (v123 까지는 파일을 고르는 즉시 음성은 변환하고 텍스트는 불러왔으며, 이미지·PDF 만 첨부로 남았음) */
+  const _AUDIO_EXT=['mp3','wav','m4a','ogg','oga','aac','flac','wma','webm'];
+  const _IMG_EXT=['jpg','jpeg','png','gif','webp'];
+  const _sendable=a=>!!a&&(a.type==='image'||a.type==='pdf');   /* AI 에 첨부(이미지·PDF 블록)로 보낼 수 있는 것 — 음성·문서는 글로 뽑아야 AI 에 들어감 */
+  function _xtKind(file){   /* 'audio'|'image'|'pdf'|'docx'|'pptx'|'xlsx'|'html'|'text' — 읽을 수 없는 형식이면 'bad:안내문' */
+    const ext=String((file&&file.name)||'').split('.').pop().toLowerCase(), t=String((file&&file.type)||'').toLowerCase();
+    if(_AUDIO_EXT.includes(ext)||t.startsWith('audio/')) return 'audio';
+    if(_IMG_EXT.includes(ext)||/^image\/(jpeg|png|gif|webp)$/.test(t)) return 'image';
+    if(t.startsWith('image/')||/^(bmp|tif|tiff|heic|heif|svg|ico)$/.test(ext)) return 'bad:이미지는 JPG·PNG·GIF·WEBP 만 읽을 수 있어요';
+    if(ext==='pdf'||t==='application/pdf') return 'pdf';
+    if(ext==='docx') return 'docx';
+    if(ext==='pptx') return 'pptx';
+    if(/^(xlsx|xlsm|xls)$/.test(ext)) return 'xlsx';
+    if(ext==='html'||ext==='htm') return 'html';
+    if(/^(doc|ppt|rtf|odt|odp|pages|key)$/.test(ext)) return 'bad:옛 형식(.'+ext+')은 읽을 수 없어요 — .docx·.pptx 나 PDF 로 저장해서 올려 주세요';
+    if(/^(hwp|hwpx)$/.test(ext)) return 'bad:한글(.'+ext+') 파일은 읽을 수 없어요 — PDF 나 .txt 로 저장해서 올려 주세요';
+    return 'text';
+  }
+  let _xtRun=null;   /* 지금 돌고 있는 TEXT 추출 {a,eid,append,ctrl,cancelled,msg,t0} — 한 번에 하나만 */
+  const _xtHere=c=>{ const m=g('aiChatModal'); return !!c&&!!m&&m.style.display!=='none'&&(_eid??'')===c.eid&&_attachedFile===c.a; };   /* 추출을 시작한 팝업·첨부가 지금 화면에 그대로 있는지 */
+  function _xtStatus(c,msg){   /* 진행 문구 — 칩의 상태줄에(진행·결과·오류는 칩 한 곳에만 보여 줌) */
+    c.msg=msg; if(!_xtHere(c)) return;
+    const h=g('aiAttachHint'); if(h){ h.textContent=msg; h.classList.remove('warn','err'); }
+  }
+  function _xtAsk(on){ const d=g('aiFileAppendDlg'); if(d) d.style.display=on?'flex':'none'; }   /* 칼럼에 글이 있을 때의 덮어쓰기/이어쓰기/취소 줄(칩 안) */
+  window._xtConfirm=function(mode){ _xtAsk(false); window._extractAttachedText(mode); };
+  window._xtCancelAsk=function(){ _xtAsk(false); };
+  function _xtAbort(onlyCur){   /* 돌고 있는 추출을 멈춤(onlyCur=true 면 지금 열려 있는 팝업의 것만) */
+    const c=_xtRun; if(!c) return;
+    if(onlyCur&&c.eid!==(_eid??'')) return;
+    c.cancelled=true; try{ c.ctrl.abort(); }catch(e){}
+    _xtRun=null; c.a.ex={state:'idle',msg:'⏹ TEXT 추출을 중단했어요'};
+    _renderAttachBar();
+  }
+
+  /* 파일 하나를 '첨부된 상태'로만 둠 — 파일 선택(_handleFileSelect)과 끌어다 놓기(_dzDrop)가 같이 씀. 글 뽑기는 칩의 [TEXT 추출] 버튼. note=상태 문구 끝에 덧붙일 말 */
+  async function _attachFile(file,note){
+    const status=g('aiFileStatus'), kind=_xtKind(file);
+    if(kind.startsWith('bad:')){ status.textContent='❌ '+file.name+' — '+kind.slice(4); return; }
     status.textContent=`⌛ ${file.name} 로딩 중...`;
-    const isImg=['jpg','jpeg','png','gif','webp'].includes(ext);
-    const isPdf=ext==='pdf';
     try{
-      if(isImg){
-        const b64=await _readB64(file);
-        _attachedFile={type:'image',data:b64,mimeType:file.type||'image/jpeg',name:file.name};
-        lc.textContent=`[이미지 첨부: ${file.name}  ${_fmtSz(file.size)}]\n\n오른쪽 채팅창에서 이미지 분석을 요청하세요.`;
-        status.textContent=`✅ ${file.name}  (${_fmtSz(file.size)})`;
-      } else if(isPdf){
-        const b64=await _readB64(file);
-        _attachedFile={type:'pdf',data:b64,mimeType:'application/pdf',name:file.name};
-        lc.textContent=`[PDF 첨부: ${file.name}  ${_fmtSz(file.size)}]\n\n오른쪽 채팅창에서 PDF 분석을 요청하세요.`;
-        status.textContent=`✅ ${file.name}  (${_fmtSz(file.size)})`;
-      } else {
-        const txt=await _readTxt(file);
-        _attachedFile={type:'text',data:txt,mimeType:'text/plain',name:file.name};
-        lc.textContent=txt;
-        lc.contentEditable='true';
-        status.textContent=`✅ ${file.name}  (${txt.length.toLocaleString()}자)`;
+      if(kind==='text'){   /* 확장자를 모르는 파일(끌어다 놓으면 무엇이든 올 수 있음)은 앞부분을 살짝 읽어 이진 파일이면 첨부 전에 거절 — 폴더도 여기서 걸림 */
+        let head;
+        try{ head=new Uint8Array(await file.slice(0,4096).arrayBuffer()); }
+        catch(e){ status.textContent='❌ '+file.name+' — 읽을 수 없는 파일이에요(폴더는 올릴 수 없어요)'; return; }
+        const bom16=head.length>=2&&((head[0]===0xFF&&head[1]===0xFE)||(head[0]===0xFE&&head[1]===0xFF));
+        if(!bom16&&head.indexOf(0)>=0){ status.textContent='❌ '+file.name+' — 문서·이미지·음성·텍스트 파일만 첨부할 수 있어요'; return; }
       }
+      let a;
+      if(kind==='image'||kind==='pdf'){   /* AI 에 첨부로 보낼 수 있는 것은 base64 로 읽어 둠 */
+        const b64=await _readB64(file);
+        a={type:kind,kind,data:b64,mimeType:kind==='image'?(file.type||'image/jpeg'):'application/pdf',name:file.name,size:file.size,file,sent:false,ex:{state:'idle',msg:''}};
+      } else {
+        a={type:kind==='audio'?'audio':'doc',kind,name:file.name,size:file.size,file,ex:{state:'idle',msg:''}};
+      }
+      const prev=_attachedFile;
+      if(_xtRun&&prev&&_xtRun.a===prev) _xtAbort();   /* 글을 뽑던 파일을 다른 파일로 바꿔 붙이면 그 추출은 멈춤 */
+      _attachedFile=a; _xtAsk(false); _renderAttachBar();
+      status.textContent=`✅ 첨부했어요`+(prev?` — 첨부가 ‘${prev.name||'파일'}’ 에서 이 파일로 바뀌었어요`:'')+(note||'');
     }catch(e){ status.textContent=`❌ 파일 읽기 오류: ${e.message}`; }
+  }
+  window._handleFileSelect=async function(input){   /* 파일 선택 창에서 고른 파일 */
+    const file=input.files[0]; if(!file) return;
+    input.value='';
+    await _attachFile(file);
   };
+
+  /* ── 파일 끌어다 놓기 (v125) — 왼쪽 패널 어디에 놓아도 '클릭해서 파일 선택'과 똑같이 첨부됨(한 번에 하나, 폴더는 안 됨).
+     파일을 끌고 오면 패널 위에 안내 틀(#aiDropOverlay)이 뜨고, 놓으면 파일 탭으로 옮겨 첨부함. 글을 끌어다 놓는 것처럼 파일이 아닌 드래그는 건드리지 않음.
+     팝업의 다른 곳(오른쪽 채팅 쪽·바깥)에 놓으면 브라우저가 그 파일을 열어 앱을 떠나게 되므로 놓을 수 없게 막음 ── */
+  const _dzHasFiles=e=>{ const t=e.dataTransfer&&e.dataTransfer.types; return !!t&&Array.prototype.indexOf.call(t,'Files')>=0; };
+  let _dzTm=0;
+  function _dzOff(){ clearTimeout(_dzTm); const p=g('aiLeftPanel'), z=g('aiFileDropZone'); if(p) p.classList.remove('dz-on'); if(z) z.classList.remove('dz-on'); }
+  function _dzOn(){   /* 안내 틀 켜기 — 드래그가 취소돼(Esc·창 밖) dragleave 가 안 와도 틀이 남지 않게 1.2초 뒤 끔(끌고 있는 동안은 dragover 가 계속 와서 다시 건다) */
+    const p=g('aiLeftPanel'), z=g('aiFileDropZone'); if(p) p.classList.add('dz-on'); if(z) z.classList.add('dz-on');
+    clearTimeout(_dzTm); _dzTm=setTimeout(_dzOff,1200);
+  }
+  function _dzDrop(dt){
+    /* 폴더 여부는 drop 이벤트 안에서 동기로 읽어야 함(items 는 이벤트가 끝나면 쓸 수 없음) */
+    const its=Array.prototype.slice.call(dt.items||[]).filter(it=>it.kind==='file');
+    const list=its.length
+      ?its.map(it=>{ let dir=false; try{ const en=it.webkitGetAsEntry&&it.webkitGetAsEntry(); dir=!!(en&&en.isDirectory); }catch(e){} return {f:it.getAsFile(),dir}; })
+      :Array.prototype.slice.call(dt.files||[]).map(f=>({f,dir:false}));
+    const files=list.filter(x=>x.f&&!x.dir).map(x=>x.f), dirs=list.filter(x=>x.dir).length;
+    if(_mode!=='file') _setLeftMode('file');   /* 첨부 영역(파일 탭)으로 — 상태 문구가 보이는 곳 */
+    if(!files.length){ const st=g('aiFileStatus'); if(st) st.textContent=dirs?'❌ 폴더는 올릴 수 없어요 — 파일을 끌어다 놓아 주세요':'❌ 파일을 읽지 못했어요'; return; }
+    const n=files.length+dirs;
+    _attachFile(files[0],n>1?` (${n}개를 놓았지만 한 번에 하나만 첨부돼요 — ‘${files[0].name}’ 만 첨부했어요)`:'');
+  }
+  function _dzInit(){   /* 팝업 HTML 이 이 스크립트보다 뒤에 있어 처음 열 때 한 번 붙임 */
+    const p=g('aiLeftPanel'), m=g('aiChatModal'); if(!p||!m||p._dz) return; p._dz=1;
+    p.addEventListener('dragenter',e=>{ if(!_dzHasFiles(e)) return; e.preventDefault(); _dzOn(); });
+    p.addEventListener('dragover',e=>{ if(!_dzHasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect='copy'; _dzOn(); });
+    p.addEventListener('dragleave',e=>{   /* 패널 안의 다른 요소로 옮겨 가는 중이면 유지, 밖으로 나가면 곧 끔(바로 dragover 가 오면 다시 켜짐) */
+      if(!_dzHasFiles(e)) return; const rt=e.relatedTarget; if(rt&&p.contains(rt)) return;
+      clearTimeout(_dzTm); _dzTm=setTimeout(_dzOff,150);
+    });
+    p.addEventListener('drop',e=>{ if(!_dzHasFiles(e)) return; e.preventDefault(); _dzOff(); _dzDrop(e.dataTransfer); });
+    /* 팝업의 왼쪽 패널 밖 — 놓을 수 없는 곳으로 표시(🚫)하고, 혹시 놓여도 브라우저가 파일을 열지 않게 막음 */
+    m.addEventListener('dragover',e=>{ if(!_dzHasFiles(e)||p.contains(e.target)) return; e.preventDefault(); e.dataTransfer.dropEffect='none'; });
+    m.addEventListener('drop',e=>{ if(!_dzHasFiles(e)||p.contains(e.target)) return; e.preventDefault(); _showToast('_ahToast','파일은 왼쪽 칼럼에 끌어다 놓아 주세요','rgba(180,83,9,.93)'); });
+  }
 
   const _readB64=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});
-  const _readTxt=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsText(f,'utf-8');});
   const _fmtSz=b=>b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB';
 
-  /* ── 음성 파일 → 텍스트 변환 (로컬 Whisper 서버), 결과는 URL 불러오기와 동일하게 왼쪽 본문(aiLeftContent)에 반영 ── */
-  window._handleAudioFile=async function(file,mode){
-    if(!file) return;
-    const status=g('aiFileStatus'), lc=g('aiLeftContent');
-    if(!mode && (lc.textContent||'').trim()){
-      _pendingAudioFile=file;
-      g('aiFileAppendDlg').style.display='flex';
+  /* [TEXT 추출] 버튼 — 첨부한 파일에서 글을 뽑아 왼쪽 칼럼에 넣음. 돌고 있을 땐 [⏹ 중단]. mode: 'overwrite'|'append'(칼럼에 글이 있을 때 확인 줄의 선택) */
+  window._extractAttachedText=async function(mode){
+    const a=_attachedFile; if(!a) return;
+    if(_xtRun){
+      if(_xtRun.a!==a) _showToast('_ahToast','다른 파일의 TEXT 추출이 진행 중이에요 — 끝난 뒤에 눌러 주세요','rgba(180,83,9,.93)');
+      else if(Date.now()-_xtRun.t0>600) _xtAbort();   /* 더블클릭으로 시작하자마자 멈춰 버리지 않게 */
       return;
     }
-    g('aiFileAppendDlg').style.display='none';
-    g('aiFileDownloadBtn').style.display='none';
-    const append=(mode==='append');
+    const lc=g('aiLeftContent');
+    if(!mode&&String(lc.innerText||lc.textContent||'').trim()){ _xtAsk(true); return; }   /* 칼럼에 이미 글이 있으면 덮어쓰기/이어쓰기를 먼저 물음 — 직접 적은 참고 내용이 사라지지 않게 */
+    _xtAsk(false);
+    const c={a,eid:_eid??'',append:mode==='append',ctrl:new AbortController(),cancelled:false,msg:'',t0:Date.now()};
+    _xtRun=c; a.ex={state:'run',msg:''};
+    const _fs0=g('aiFileStatus'); if(_fs0) _fs0.textContent='';   /* 파일 영역의 '첨부됨' 문구는 비우고 진행·결과는 칩에서만 */
+    _xtStatus(c,'⌛ '+(a.name||'파일')+' 에서 글을 뽑는 중...'); _renderAttachBar();
+    let text='', err='';
+    try{ text=await _xtDo(a,c); }catch(e){ err=(e&&e.message)||String(e); }
+    if(_xtRun===c) _xtRun=null;
+    if(c.cancelled) return;   /* 사용자가 멈춤 — _xtAbort 가 상태를 이미 고쳐 둠 */
+    text=String(text||'').replace(/\r\n?/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+    if(!err&&!text) err='글자를 찾지 못했어요';
+    if(err){ a.ex={state:'err',msg:'❌ '+err}; _renderAttachBar(); return; }
+    _xtDeliver(c,text);
+  };
+  function _xtDeliver(c,text){   /* 뽑은 글을 왼쪽 칼럼에 — 그 사이 팝업이 닫혔거나 다른 섹션이 열렸으면 원래 섹션의 저장된 칼럼 내용에 */
+    const a=c.a, here=_xtHere(c), n=text.length;
+    let msg='✅ '+n.toLocaleString()+'자를 뽑았어요';
+    if(here){
+      const lc=g('aiLeftContent'), cur=_lcPlain(lc);
+      lc.textContent=(c.append&&cur.trim())?cur.replace(/\s+$/,'')+'\n\n'+text:text;
+      lc.contentEditable='true'; lc.scrollTop=0; _leftSrcFile=a.name||'';
+      lc.style.outline='2px solid #10b981'; lc.style.outlineOffset='-2px';
+      setTimeout(()=>{ lc.style.outline=''; lc.style.outlineOffset=''; },1200);
+      msg+=(c.append?' — 기존 내용 뒤에 이어 붙였어요':' — 아래 칼럼에 넣었어요');
+    } else {
+      const s=_chatStore[c.eid];
+      if(s){ const cur=String(s.leftContent||''); s.leftContent=(c.append&&cur.trim())?cur.replace(/\s+$/,'')+'\n\n'+text:text; msg+=' — 왼쪽 칼럼에 넣어 뒀어요'; }
+      else msg+=' — 넣을 팝업이 닫혀 있어 반영하지 못했어요';
+      if(typeof _showMainToast==='function') _showMainToast('📄 TEXT 추출이 끝났어요 ('+(a.name||'파일')+', '+n.toLocaleString()+'자) — 그 섹션의 AI 팝업을 다시 열면 왼쪽 칼럼에 있어요');
+    }
+    if(_sendable(a)) msg+=' · 첨부 원본도 AI 에 함께 가요(글만 쓰려면 ✕)';
+    a.ex={state:'done',n,msg};
+    _renderAttachBar();
+  }
+  function _xtDo(a,c){
+    switch(a.kind){
+      case 'audio': return _xtAudio(a,c);
+      case 'image': return _xtAI(a,c,'image');
+      case 'pdf':   return _xtPdf(a,c);
+      case 'docx':  return _xtDocx(a);
+      case 'pptx':  return _xtPptx(a,c);
+      case 'xlsx':  return _xtXlsx(a);
+      case 'html':  return _xtDecode(a.file).then(_html2txt);
+      default:      return _xtDecode(a.file);
+    }
+  }
+
+  /* ── 문서: 텍스트류 — UTF-8(BOM·UTF-16 도 알아봄), 아니면 한국어 윈도우 메모장·엑셀 'CSV' 가 많이 쓰는 CP949(EUC-KR) ── */
+  async function _xtDecode(file){
+    const u8=new Uint8Array(await file.arrayBuffer());
+    let s;
+    if(u8.length>=3&&u8[0]===0xEF&&u8[1]===0xBB&&u8[2]===0xBF) s=new TextDecoder('utf-8').decode(u8.subarray(3));
+    else if(u8.length>=2&&u8[0]===0xFF&&u8[1]===0xFE) s=new TextDecoder('utf-16le').decode(u8.subarray(2));
+    else if(u8.length>=2&&u8[0]===0xFE&&u8[1]===0xFF) s=new TextDecoder('utf-16be').decode(u8.subarray(2));
+    else{
+      try{ s=new TextDecoder('utf-8',{fatal:true}).decode(u8); }
+      catch(e){ try{ s=new TextDecoder('euc-kr').decode(u8); }catch(e2){ s=new TextDecoder('utf-8').decode(u8); } }
+    }
+    if(s.slice(0,4000).indexOf(String.fromCharCode(0))>=0) throw new Error('텍스트로 읽을 수 없는 파일이에요(바이너리 파일 같아요)');
+    return s;
+  }
+
+  /* ── 음성: 이 PC 의 자막 서버(faster-whisper) — 결과 머리줄 '[음성 변환 | 파일 | 언어]' 는 예전 그대로 ── */
+  async function _xtAudio(a,c){
+    const file=a.file;
     /* 'small' 모델 실측 처리속도 약 5~6배속(예: 8.6분 음성 → 91초) — 긴 녹음(설교 등)은 수십 분 걸릴 수 있어 넉넉한 타임아웃 + 경과시간 표시로 "멈춘 것처럼 보이는" 문제 방지 */
-    const _t0=Date.now();
-    const _tick=setInterval(()=>{
-      const sec=Math.round((Date.now()-_t0)/1000);
-      status.textContent=`⌛ ${file.name} 음성 인식 중... (${sec}초 경과 — 녹음이 길면 수십 분 걸릴 수 있습니다)`;
-    },5000);
-    status.textContent=`⌛ ${file.name} 음성 인식 중...`;
+    const tick=setInterval(()=>{ _xtStatus(c,`⌛ ${file.name} 음성 인식 중... (${Math.round((Date.now()-c.t0)/1000)}초 경과 — 녹음이 길면 수십 분 걸릴 수 있습니다)`); },5000);
+    const tid=setTimeout(()=>{ c.timedOut=true; c.ctrl.abort(); },3600000);
     try{
+      _xtStatus(c,`⌛ ${file.name} 음성 인식 중...`);
       const b64=await _readB64(file);
-      const ctrl=new AbortController(), tid=setTimeout(()=>ctrl.abort(),3600000);
       let res;
       try{
-        res=await fetch('http://localhost:15050/audio-transcript',{
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          body:JSON.stringify({filename:file.name,data:b64}),
-          signal:ctrl.signal,
-        });
+        res=await fetch('http://localhost:15050/audio-transcript',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({filename:file.name,data:b64}),signal:c.ctrl.signal});
       }catch(netErr){
-        throw new Error(netErr.name==='AbortError'?'응답 시간 초과(60분) — 파일이 너무 길거나 서버가 멈췄을 수 있습니다':`서버 연결 실패 — ${netErr.message}`);
-      }finally{ clearTimeout(tid); }
+        throw new Error(netErr.name==='AbortError'?'응답 시간 초과(60분) — 파일이 너무 길거나 서버가 멈췄을 수 있습니다':`서버 연결 실패 — ${netErr.message}  (로컬 서버가 꺼져 있다면 start_transcript_server.bat 실행 후 다시 눌러 주세요)`);
+      }
       let d;
-      try{
-        d=await res.json();
-      }catch(parseErr){
-        throw new Error(`서버 응답을 해석할 수 없습니다 (HTTP ${res.status})`);
+      try{ d=await res.json(); }catch(parseErr){ throw new Error(`서버 응답을 해석할 수 없습니다 (HTTP ${res.status})`); }
+      if(!res.ok&&!d.error) throw new Error(`서버 오류 (HTTP ${res.status})`);
+      if(d.transcript&&d.transcript.trim()) return `[음성 변환 | ${file.name}${d.lang?' | '+d.lang:''}]\n\n${d.transcript.trim()}`;
+      throw new Error(d.error||'변환된 텍스트가 없습니다');
+    }finally{ clearInterval(tick); clearTimeout(tid); }
+  }
+
+  /* ── 이미지(·글자 정보가 없는 PDF): AI 가 글자를 읽음 — _runMediaPrompt(공급자 지정·중단·혼잡 시 재시도). 선택한 AI 의 사용량이 듦 ── */
+  const _XT_AI_SYS='당신은 이미지·문서 속 글자를 그대로 옮겨 적는 OCR 도우미입니다. 보이는 글자만 정확히 옮기고, 요약·해석·번역·설명은 하지 않습니다.';
+  const _XT_AI_REQ='첨부한 파일에 보이는 모든 글자를 빠짐없이 그대로 옮겨 적어 주세요.\n- 읽는 순서(위→아래, 왼쪽→오른쪽)를 지키고, 줄바꿈과 단락 구분을 최대한 살리세요.\n- 표는 한 행을 한 줄로, 칸은 " | " 로 구분해 적으세요.\n- 머리말·꼬리말·설명·요약을 덧붙이지 말고, 마크다운 서식(**, #, ``` 등)도 쓰지 마세요. 글자만 출력하세요.\n- 글자가 전혀 없으면 "(글자 없음)" 한 줄만 출력하세요.';
+  async function _xtAI(a,c,kind){
+    const keyOf=pv=>pv.startsWith('deepseek')?localStorage.getItem(AK_DS):pv.startsWith('gemini')?localStorage.getItem(AK_GM):pv.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK);
+    const names={claude:'Claude','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'};
+    let pv=window._resolveAiProvider(c.eid).provider;
+    if(pv.startsWith('deepseek')){   /* DeepSeek 은 이미지·PDF 를 못 읽음 — 키가 있는 다른 AI 로 대신 */
+      pv=['gemini-flash','chatgpt-flash','claude'].find(p=>!!keyOf(p))||'';
+      if(!pv) throw new Error('이미지·PDF 의 글자를 읽으려면 Claude·Gemini·ChatGPT 중 하나의 API Key 가 필요해요 — 관리 메뉴 > 🧩 AI 공급자에서 설정해 주세요.');
+    } else if(!keyOf(pv)) throw new Error((names[pv]||'Claude')+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.');
+    const nm=names[pv]||'Claude', what=kind==='pdf'?'PDF':'이미지';
+    _xtStatus(c,`⌛ ${nm} 로 ${what}의 글자를 읽는 중...`);
+    const block=kind==='pdf'
+      ?{type:'document',source:{type:'base64',media_type:'application/pdf',data:a.data}}
+      :{type:'image',source:{type:'base64',media_type:a.mimeType||'image/png',data:a.data}};
+    const out=await window._runMediaPrompt(c.eid,_XT_AI_SYS,[block],_XT_AI_REQ,{
+      provider:pv, signal:c.ctrl.signal,
+      onDelta:t=>_xtStatus(c,`⌛ ${nm} 가 ${what}의 글자를 읽는 중... ${String(t||'').length.toLocaleString()}자`),
+      onRetry:(i,m)=>_xtStatus(c,`AI 서버가 혼잡해 다시 시도하는 중… (${i}/${m})`)
+    });
+    const t=String(out||'').trim().replace(/^```[a-z]*\n?/i,'').replace(/\n?```$/,'').trim();
+    return /^\(?\s*글자 없음\s*\)?\.?$/.test(t)?'':t;
+  }
+
+  /* ── PDF: pdf.js 로 글을 뽑음(처음 쓸 때만 CDN 에서 불러옴 — 앱의 다른 라이브러리들과 같은 방식). 글자 정보가 없으면 확인 후 AI ── */
+  let _xtPdfJs=null;
+  function _xtLoadScript(src){
+    return new Promise((res,rej)=>{
+      const s=document.createElement('script'), tm=setTimeout(()=>{ s.remove(); rej(new Error('불러오기 시간 초과')); },20000);
+      s.src=src; s.onload=()=>{ clearTimeout(tm); res(); }; s.onerror=()=>{ clearTimeout(tm); s.remove(); rej(new Error('불러오지 못했어요')); };
+      document.head.appendChild(s);
+    });
+  }
+  function _xtPdfLib(){
+    if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    if(_xtPdfJs) return _xtPdfJs;
+    const bases=['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/'];
+    _xtPdfJs=(async()=>{
+      for(const b of bases){
+        try{ await _xtLoadScript(b+'pdf.min.js'); if(window.pdfjsLib){ window.pdfjsLib.GlobalWorkerOptions.workerSrc=b+'pdf.worker.min.js'; return window.pdfjsLib; } }catch(e){}
       }
-      if(!res.ok && !d.error){
-        throw new Error(`서버 오류 (HTTP ${res.status})`);
-      }
-      if(d.transcript&&d.transcript.trim()){
-        const transcript=d.transcript.trim();
-        const newText=`[음성 변환 | ${file.name}${d.lang?' | '+d.lang:''}]\n\n${transcript}`;
-        if(append && (lc.textContent||'').trim()){
-          lc.textContent=lc.textContent.trimEnd()+'\n\n'+newText;
-        } else {
-          lc.textContent=newText;
-        }
-        lc.contentEditable='true';
-        status.textContent=`✅ 음성 변환 완료${d.lang?' ('+d.lang+')':''} — ${transcript.length.toLocaleString()}자`;
-        g('aiFileDownloadBtn').style.display='inline-block';
-      } else {
-        status.textContent=`❌ ${d.error||'변환된 텍스트가 없습니다'}`;
-      }
-    }catch(e){
-      status.textContent=`⚠️ 음성 변환 실패 — ${e.message||e}  (로컬 서버가 꺼져 있다면 start_transcript_server.bat 실행 후 재시도)`;
-    }finally{
-      clearInterval(_tick);
+      _xtPdfJs=null; throw new Error('PDF 해석 도구를 불러오지 못했어요');
+    })();
+    return _xtPdfJs;
+  }
+  function _xtPdfPage(tc){   /* 한 쪽의 글 조각들을 줄로 이음 — 줄 끝 표시(hasEOL)나 세로 위치가 바뀌면 줄바꿈 */
+    let out='', line='', lastY=null;
+    for(const it of tc.items){
+      if(typeof it.str!=='string') continue;
+      const y=it.transform?it.transform[5]:null;
+      if(lastY!==null&&y!==null&&line&&Math.abs(y-lastY)>Math.max(2,(it.height||10)*0.6)){ out+=line+'\n'; line=''; }
+      line+=it.str;
+      if(it.hasEOL){ out+=line+'\n'; line=''; lastY=null; } else lastY=y;
     }
-    _pendingAudioFile=null;
-  };
+    return (out+line).replace(/[ \t]+\n/g,'\n').trim();
+  }
+  async function _xtPdf(a,c){
+    let lib=null;
+    _xtStatus(c,'⌛ PDF 해석 도구를 준비하는 중...');
+    try{ lib=await _xtPdfLib(); }catch(e){ lib=null; }
+    if(c.cancelled) return '';
+    if(lib){
+      let doc;
+      try{ doc=await lib.getDocument({data:new Uint8Array(await a.file.arrayBuffer())}).promise; }
+      catch(e){ if(e&&e.name==='PasswordException') throw new Error('암호가 걸린 PDF 라 읽을 수 없어요'); throw new Error('PDF 를 열지 못했어요 — '+((e&&e.message)||e)); }
+      const N=doc.numPages, pages=[]; let chars=0;
+      try{
+        for(let p=1;p<=N&&!c.cancelled;p++){
+          _xtStatus(c,`⌛ PDF 글을 뽑는 중... ${p}/${N}쪽`);
+          const page=await doc.getPage(p), t=_xtPdfPage(await page.getTextContent());
+          chars+=t.replace(/\s/g,'').length; pages.push(t);
+          try{ page.cleanup(); }catch(e){}
+        }
+      } finally { try{ doc.destroy(); }catch(e){} }
+      if(c.cancelled) return '';
+      if(chars>=10) return pages.join('\n\n');
+    }
+    /* 글자 정보가 없는 PDF(스캔본)이거나 해석 도구를 못 불러옴 → AI 가 읽게 함(사용량이 드니 확인) */
+    if(!confirm((lib?'이 PDF 에는 글자 정보가 거의 없어요(스캔본·이미지 PDF 로 보여요).':'PDF 해석 도구를 불러오지 못했어요.')+'\nAI 에게 PDF 를 읽혀 글자를 뽑을까요?\n(선택한 AI 의 사용량이 들어요 — 쪽이 많으면 오래 걸리고 비쌀 수 있어요)')) throw new Error(lib?'PDF 에서 글자를 뽑지 못했어요(글자 정보가 없는 스캔본이에요)':'PDF 해석 도구를 불러오지 못해 글을 뽑지 못했어요 — 인터넷 연결을 확인하고 다시 눌러 주세요');
+    return _xtAI(a,c,'pdf');
+  }
 
-  window._confirmPendingAudioFile=function(mode){ _handleAudioFile(_pendingAudioFile,mode); };
-  window._cancelPendingAudioFile=function(){ _pendingAudioFile=null; g('aiFileAppendDlg').style.display='none'; };
+  /* ── Office 문서(docx·pptx): ZIP 을 라이브러리 없이 열어(DecompressionStream) XML 에서 글을 뽑음 ── */
+  function _xtZip(buf){
+    const u8=new Uint8Array(buf), dv=new DataView(buf), n=u8.length; let e=-1;
+    for(let i=n-22;i>=Math.max(0,n-22-65535);i--){ if(dv.getUint32(i,true)===0x06054b50){ e=i; break; } }
+    if(e<0) throw new Error('올바른 Office 파일(docx·pptx)이 아니에요');
+    const cnt=dv.getUint16(e+10,true), ents=new Map(); let p=dv.getUint32(e+16,true);
+    for(let i=0;i<cnt;i++){
+      if(p+46>n||dv.getUint32(p,true)!==0x02014b50) break;
+      const method=dv.getUint16(p+10,true), csz=dv.getUint32(p+20,true), nl=dv.getUint16(p+28,true), el=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), lo=dv.getUint32(p+42,true);
+      ents.set(new TextDecoder('utf-8').decode(u8.subarray(p+46,p+46+nl)),{method,csz,lo}); p+=46+nl+el+cl;
+    }
+    return {u8,dv,ents};
+  }
+  async function _xtZipGet(z,name){
+    const e=z.ents.get(name); if(!e) return null;
+    if(z.dv.getUint32(e.lo,true)!==0x04034b50) throw new Error('파일이 깨져 있어요');
+    const nl=z.dv.getUint16(e.lo+26,true), el=z.dv.getUint16(e.lo+28,true), st=e.lo+30+nl+el, raw=z.u8.subarray(st,st+e.csz);
+    if(e.method===0) return raw;
+    if(e.method!==8) throw new Error('지원하지 않는 압축 방식이에요');
+    if(typeof DecompressionStream==='undefined') throw new Error('이 브라우저는 Office 파일을 열 수 없어요 — PDF 로 저장해서 올려 주세요');
+    return new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  }
+  const _xtZipStr=async(z,name)=>{ const u=await _xtZipGet(z,name); return u?new TextDecoder('utf-8').decode(u):''; };
+  function _xtXml(s){ const d=new DOMParser().parseFromString(s,'application/xml'); if(d.getElementsByTagName('parsererror').length) throw new Error('파일 안의 XML 을 읽지 못했어요'); return d; }
+  function _xtZipPath(base,t){ if(!t) return ''; if(t[0]==='/') return t.slice(1); const seg=base.split('/'); seg.pop(); t.split('/').forEach(p=>{ if(p==='..') seg.pop(); else if(p&&p!=='.') seg.push(p); }); return seg.join('/'); }
+  async function _xtDocx(a){
+    const z=_xtZip(await a.file.arrayBuffer()), x=await _xtZipStr(z,'word/document.xml');
+    if(!x) throw new Error('올바른 Word(.docx) 파일이 아니에요');
+    const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main', d=_xtXml(x), out=[];
+    const para=p=>{ let s=''; (function walk(n){ for(const ch of n.childNodes){ if(ch.nodeType!==1) continue; const ln=ch.localName; if(ln==='t') s+=ch.textContent; else if(ln==='tab') s+='\t'; else if(ln==='br'||ln==='cr') s+='\n'; else walk(ch); } })(p); return s; };
+    const blocks=n=>{
+      for(const ch of n.childNodes){
+        if(ch.nodeType!==1) continue; const ln=ch.localName;
+        if(ln==='p') out.push(para(ch));
+        else if(ln==='tbl'){   /* 표 — 한 행을 한 줄로, 칸은 ' | ' */
+          for(const tr of ch.childNodes){ if(tr.nodeType!==1||tr.localName!=='tr') continue; out.push(Array.from(tr.childNodes).filter(tc=>tc.nodeType===1&&tc.localName==='tc').map(tc=>Array.from(tc.getElementsByTagNameNS(W,'p')).map(para).join(' ').trim()).join(' | ')); }
+          out.push('');
+        }
+        else if(ln==='sdt'){ const sc=Array.from(ch.childNodes).find(q=>q.nodeType===1&&q.localName==='sdtContent'); if(sc) blocks(sc); }
+      }
+    };
+    const body=d.getElementsByTagNameNS(W,'body')[0]; if(!body) throw new Error('본문을 찾지 못했어요');
+    blocks(body);
+    return out.join('\n');
+  }
+  async function _xtPptx(a,c){
+    const z=_xtZip(await a.file.arrayBuffer()), pres=await _xtZipStr(z,'ppt/presentation.xml');
+    if(!pres) throw new Error('올바른 PowerPoint(.pptx) 파일이 아니에요');
+    const A='http://schemas.openxmlformats.org/drawingml/2006/main', P='http://schemas.openxmlformats.org/presentationml/2006/main', R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const rels=async part=>{ const s=await _xtZipStr(z,part.replace(/([^\/]+)$/,'_rels/$1.rels')), o={}; if(s) Array.from(_xtXml(s).getElementsByTagName('Relationship')).forEach(r=>{ o[r.getAttribute('Id')]={type:(r.getAttribute('Type')||'').replace(/^.*\//,''),path:_xtZipPath(part,r.getAttribute('Target'))}; }); return o; };
+    const pr=await rels('ppt/presentation.xml');
+    const order=Array.from(_xtXml(pres).getElementsByTagNameNS(P,'sldId')).map(x=>pr[x.getAttributeNS(R,'id')]).filter(r=>r&&/slide$/.test(r.type)).map(r=>r.path);   /* 슬라이드 순서 = presentation.xml 의 목록 */
+    if(!order.length) throw new Error('슬라이드를 찾지 못했어요');
+    const aPara=p=>{ let s=''; (function walk(n){ for(const ch of n.childNodes){ if(ch.nodeType!==1) continue; const ln=ch.localName; if(ln==='t') s+=ch.textContent; else if(ln==='br') s+='\n'; else walk(ch); } })(p); return s.trim(); };
+    const shapes=(node,out)=>{
+      for(const ch of node.childNodes){
+        if(ch.nodeType!==1) continue; const ln=ch.localName;
+        if(ln==='sp'){
+          const ph=ch.getElementsByTagNameNS(P,'ph')[0], ty=ph?(ph.getAttribute('type')||''):''; if(/^(sldNum|dt|ftr)$/.test(ty)) continue;   /* 쪽 번호·날짜·바닥글은 뺌 */
+          const tb=ch.getElementsByTagNameNS(P,'txBody')[0]; if(tb) Array.from(tb.getElementsByTagNameNS(A,'p')).forEach(p=>out.push(aPara(p)));
+        }
+        else if(ln==='grpSp') shapes(ch,out);
+        else if(ln==='graphicFrame') Array.from(ch.getElementsByTagNameNS(A,'tr')).forEach(tr=>out.push(Array.from(tr.getElementsByTagNameNS(A,'tc')).map(tc=>Array.from(tc.getElementsByTagNameNS(A,'p')).map(aPara).join(' ').trim()).join(' | ')));
+      }
+    };
+    const parts=[];
+    for(let i=0;i<order.length;i++){
+      if(c&&c.cancelled) return '';
+      if(c) _xtStatus(c,`⌛ 슬라이드 글을 뽑는 중... ${i+1}/${order.length}`);
+      const sx=await _xtZipStr(z,order[i]); if(!sx) continue;
+      const lines=[], tree=_xtXml(sx).getElementsByTagNameNS(P,'spTree')[0]; if(tree) shapes(tree,lines);
+      let note=''; const nr=Object.values(await rels(order[i])).find(r=>/notesSlide$/.test(r.type));
+      if(nr){ const ns=await _xtZipStr(z,nr.path); if(ns) note=Array.from(_xtXml(ns).getElementsByTagNameNS(P,'sp')).filter(sp=>{ const ph=sp.getElementsByTagNameNS(P,'ph')[0]; return ph&&ph.getAttribute('type')==='body'; }).map(sp=>Array.from(sp.getElementsByTagNameNS(A,'p')).map(aPara).filter(Boolean).join(' ')).join(' ').trim(); }   /* 발표자 노트(본문 칸) */
+      const text=lines.filter(Boolean).join('\n');
+      if(text||note) parts.push('[슬라이드 '+(i+1)+']\n'+text+(note?'\n(발표자 노트) '+note:''));
+    }
+    return parts.join('\n\n');
+  }
+  async function _xtXlsx(a){   /* 엑셀 — 앱에 이미 불러 둔 SheetJS(XLSX). 시트마다 CSV 로 */
+    if(typeof XLSX==='undefined') throw new Error('엑셀 해석 도구(XLSX)를 불러오지 못했어요 — 인터넷 연결을 확인해 주세요');
+    const wb=XLSX.read(new Uint8Array(await a.file.arrayBuffer()),{type:'array'}), many=wb.SheetNames.length>1;
+    return wb.SheetNames.map(nm=>{ const csv=XLSX.utils.sheet_to_csv(wb.Sheets[nm],{blankrows:false}).trim(); return csv?((many?'[시트: '+nm+']\n':'')+csv):''; }).filter(Boolean).join('\n\n');
+  }
 
-  /* 음성 변환 결과(왼쪽 본문에 표시된 현재 텍스트)를 .txt 파일로 다운로드 */
+  /* 왼쪽 칼럼에 뽑아 넣은 글(현재 칼럼 내용)을 .txt 파일로 저장 */
   window._downloadTranscriptTxt=function(){
     const text=(g('aiLeftContent').innerText||g('aiLeftContent').textContent||'').trim();
     if(!text) return;
+    const base=(_attachedFile&&_attachedFile.name?String(_attachedFile.name).replace(/\.[^.]+$/,''):'')||'텍스트추출';
     const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url; a.download=`음성변환_${todayStr()}.txt`;
+    a.href=url; a.download=`${base}_TEXT_${todayStr()}.txt`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
@@ -32953,12 +33314,13 @@ Rules:
 
   /* ── 삭제 버튼: 왼쪽 참고자료 영역 초기화 ── */
   window._clearLeftContent=function(){
+    _xtAbort(true);   /* 글을 뽑는 중이던 추출도 멈춤 */
     const lc=g('aiLeftContent');
     lc.textContent='';
     _setLeftMode('text');
     const ui=g('aiUrlInput'); if(ui) ui.value='';
     const us=g('aiUrlStatus'); if(us) us.textContent='';
-    _attachedFile=null;
+    _attachedFile=null; _renderAttachBar();   /* [삭제]는 왼쪽 칼럼의 글과 첨부 파일을 모두 비움 */
     const fs=g('aiFileStatus'); if(fs) fs.textContent='';
   };
 
@@ -34857,7 +35219,7 @@ ${viz?'':`<RESULT>
     const inp=g('aiUserInput'), lc=g('aiLeftContent'); if(!inp) return;
     const mode=_vizRunMode();
     const clean=!(inp.innerText||'').trim()&&!inp.querySelector('img')&&!_pendingImages.length&&!_pendingRefs.length;   /* 쓰던 글·이미지·참조가 없을 때만 바로 보냄 */
-    const hasLeft=!!_attachedFile||!!(lc&&(lc.innerText||lc.textContent||'').trim());   /* 분석할 왼쪽 참고 자료가 있어야 바로 보냄 */
+    const hasLeft=_sendable(_attachedFile)||!!(lc&&(lc.innerText||lc.textContent||'').trim());   /* 분석할 왼쪽 참고 자료가 있어야 바로 보냄 — 첨부는 이미지·PDF 만(음성·문서는 글로 뽑아 칼럼에 넣어야 자료) */
     _vizPendAdd(r,mode);   /* 어느 유형을·어떤 범위로 골랐는지 기억 — 보낼 때 ‘마지막 유형’으로 기록하고 그 범위의 규칙을 붙임 */
     _vizPutLines(inp,_vizComposeLines(r,mode));
     _vizPanelClose();
@@ -35077,16 +35439,27 @@ ${viz?'':`<RESULT>
     const _provNames={claude:'Claude','deepseek-flash':'DeepSeek','deepseek-pro':'DeepSeek','gemini-flash':'Gemini','gemini-pro':'Gemini','chatgpt-flash':'ChatGPT','chatgpt-pro':'ChatGPT'};
     const key=_provider.startsWith('deepseek')?localStorage.getItem(AK_DS):_provider.startsWith('gemini')?localStorage.getItem(AK_GM):_provider.startsWith('chatgpt')?localStorage.getItem(AK_OA):localStorage.getItem(AK);
     if(!key){ _addBubble('error','❌ '+(_provNames[_provider]||'Claude')+' API Key가 없습니다. 관리 메뉴 > 🧩 AI 공급자에서 설정하세요.'); return; }
+    /* 음성·문서 첨부는 [TEXT 추출]로 글을 뽑아 왼쪽 칼럼에 넣어야 AI 에 들어감(v124) — 아직 안 뽑았거나 뽑는 중이면 알리고 확인해서 조용히 빠지지 않게 */
+    if(_attachedFile&&!_sendable(_attachedFile)&&!(_attachedFile.ex&&_attachedFile.ex.state==='done')){
+      const _xtRunning=!!(_xtRun&&_xtRun.a===_attachedFile);
+      if(!confirm(_xtRunning
+        ?'첨부한 파일에서 TEXT 를 뽑는 중이에요. 끝나기 전에 보내면 그 글은 이번 질문에 들어가지 않아요.\n그래도 보낼까요?'
+        :'첨부한 파일(“'+(_attachedFile.name||'파일')+'”)의 TEXT 를 아직 추출하지 않았어요.\n[TEXT 추출]을 누르지 않으면 이 파일의 내용은 AI 분석에 들어가지 않아요.\n그래도 보낼까요?')) return;
+    }
     input.innerHTML='';
     const refs=_pendingRefs; _pendingRefs=[]; _renderRefStrip();   /* 가져온 참조는 이 메시지에 실려 감 — 칩은 비우고 아래 말풍선의 인용 블록으로 남김 */
+    /* 첨부파일(이미지·PDF) — 아직 이 대화에 실어 보내지 않은 것이면 이번 메시지에 함께 보냄. 왼쪽 칼럼에 적은 글은 아래 시스템 프롬프트의 [현재 참고 자료]로 따로 가므로 둘 다 분석에 들어감(v123).
+       (예전엔 대화의 첫 메시지에만 붙어서, 대화 중간에 붙인 파일은 AI 에게 가지 않았음) */
+    const _sendAtt=(_sendable(_attachedFile)&&!_attachedFile.sent)?_attachedFile:null;   /* 이미지·PDF 만 첨부로 보냄 — 음성·문서는 뽑은 글이 칼럼으로 감 */
     /* AI 대화 기록(🕘): 보내는 순간의 섹션·세션·AI 와 질문(글·서식·이미지·첨부파일명·참조)을 확정해 둠 — 답변이 끝나면 _ahSave 로 한 쌍을 저장 */
-    const _ahU=_ahBegin({text:txt,html:_hasHtmlFmt?inputHtml:'',imgs:_pendingImages.map(i=>i.url),att:(_attachedFile&&_hist.length===0)?(_attachedFile.name||'첨부파일'):'',refs});
+    const _ahU=_ahBegin({text:txt,html:_hasHtmlFmt?inputHtml:'',imgs:_pendingImages.map(i=>i.url),att:_sendAtt?(_sendAtt.name||'첨부파일'):'',refs});
     /* 사용자 말풍선 — 이미지 썸네일 포함. ↩ 되돌리기(_restoreUserMsg)가 이 DOM에서 본문·이미지·참조를 읽어가므로 클래스로 구분해 둠 */
     let _bubbleHtml='<div class="ai-user-txt">'+inputHtml+'</div>';
     if(_pendingImages.length){
       const thumbs=_pendingImages.map(img=>`<img class="ai-user-img" src="${img.url}" style="max-height:60px;max-width:80px;border-radius:4px;margin:1px 3px 2px 0;vertical-align:middle;object-fit:cover">`).join('');
       _bubbleHtml=thumbs+(txt?'<div class="ai-user-txt" style="margin-top:4px">'+(inputHtml||txt)+'</div>':'');
     }
+    if(_sendAtt) _bubbleHtml='<div class="ah-note" style="display:block">📎 '+_ahEsc(_sendAtt.name||'첨부파일')+'</div>'+_bubbleHtml;   /* 이번 메시지에 첨부 파일이 함께 갔음을 표시([🕘 기록]의 말풍선과 같은 모양) */
     if(refs.length) _bubbleHtml=_refQuoteHtml(refs,true)+_bubbleHtml;   /* 참조한 결과물·답변은 글 위에 인용 블록으로 */
     _addBubble('user',txt||'[이미지]',_bubbleHtml).insertAdjacentHTML('afterend',_UNDO_ROW);
     g('aiApplyBtnWrap').style.display='none';
@@ -35157,6 +35530,18 @@ ${viz?'':`<RESULT>
     /* 이번 메시지에 참조한 AI 답변이 있으면 '기본 대상 = [현재 참고 자료]' 규칙보다 그 참조가 우선 */
     const _refRule=refs.length?'\n단, 이번 사용자 메시지에 [참조한 AI 답변]이 있으면 그 참조 내용이 요청의 처리 대상입니다. 이 경우 [현재 참고 자료]는 필요할 때만 보조로 쓰고, 참조한 결과물을 고쳐 쓰거나 이어 쓰라는 요청이면 본문에 반영될 최종 결과물을 아래 [답변 형식 규칙]대로 <RESULT>와 </RESULT> 사이에 작성하세요.':'';
 
+    /* 첨부파일(이미지·PDF)이 있으면 — 왼쪽 칼럼 글([현재 참고 자료])과 첨부파일을 한 묶음으로 보고 둘 다 분석하라고 알림(v123). 첨부가 없으면 빈 글이라 시스템 프롬프트는 예전과 똑같음.
+       DeepSeek 은 이미지·PDF 를 못 읽어 첨부가 빠지므로(_histToOpenAIMsgs) 안내하지 않음. 보내는 중에 첨부를 해제해도 이번에 실어 보내는 것(_sendAtt)은 안내 */
+    const _noteAtt=_sendAtt||(_sendable(_attachedFile)?_attachedFile:null);
+    let _attNote='';
+    if(_noteAtt&&!_provider.startsWith('deepseek')){
+      _attNote='\n\n[첨부파일]\n사용자가 '+(_noteAtt.type==='pdf'?'PDF':'이미지')+' 파일 “'+(_noteAtt.name||'첨부파일')+'”을(를) 첨부했습니다(대화 속 사용자 메시지에 들어 있음). '
+        +(leftTxt
+          ?'위 [현재 참고 자료]와 이 첨부파일은 한 묶음으로 제공된 자료입니다. 요청에서 다른 대상을 특별히 지정하지 않는 한 둘 다 분석 대상으로 삼아 서로 대조·보완하며 종합해 답하세요. 한쪽만 다루거나 다른 쪽을 빠뜨리지 마세요.'
+            +((_noteAtt.ex&&_noteAtt.ex.state==='done')?' (참고 자료에는 이 첨부파일에서 뽑은 글이 들어 있을 수 있으니, 같은 내용을 두 번 세거나 두 번 인용하지 마세요.)':'')
+          :'[현재 참고 자료]는 비어 있으니, 요청에서 다른 대상을 특별히 지정하지 않는 한 이 첨부파일을 요청의 기본 처리 대상으로 삼으세요.');
+    }
+
     const sys=`당신은 BTM 투자 리포트 작성을 돕는 AI 어시스턴트입니다.
 
 [오늘 날짜]
@@ -35166,7 +35551,7 @@ ${_todayForAI} — 반드시 이 날짜를 "현재 시점"으로 삼아 답변�
 ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${fmtCtx}
 
 [요청 처리 기본 원칙]
-사용자가 요청에서 다른 대상을 특별히 지정하지 않는 한, 위 [현재 참고 자료]를 요청의 기본 처리 대상으로 삼으세요. "요약해줘", "다듬어줘", "분석해줘", "이어서 써줘", "정리해줘" 처럼 대상을 명시하지 않은 요청은 모두 [현재 참고 자료]에 대한 요청으로 간주하고 그 내용을 바탕으로 답하세요. [현재 참고 자료]가 "(없음)"이 아닌 이상, 처리할 대상이 없다고 답하지 마세요.${_refRule}
+사용자가 요청에서 다른 대상을 특별히 지정하지 않는 한, 위 [현재 참고 자료]를 요청의 기본 처리 대상으로 삼으세요. "요약해줘", "다듬어줘", "분석해줘", "이어서 써줘", "정리해줘" 처럼 대상을 명시하지 않은 요청은 모두 [현재 참고 자료]에 대한 요청으로 간주하고 그 내용을 바탕으로 답하세요. [현재 참고 자료]가 "(없음)"이 아닌 이상, 처리할 대상이 없다고 답하지 마세요.${_refRule}${_attNote}
 
 [답변 형식 규칙]
 사용자가 본문에 직접 들어갈 결과물(문장, 분석 글 등)을 요청하면, 반드시 아래 형식을 따르세요.
@@ -35193,16 +35578,12 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     const imgParts=_pendingImages.map(img=>({type:'image',source:{type:'base64',media_type:img.mimeType,data:img.data}}));
     _pendingImages=[];_renderImgStrip();
     const aiTxt=_refCompose(refs,txt);   /* 참조한 AI 답변 블록 + 이번 요청 (참조가 없으면 txt 그대로) — 웹 검색어(txt)와 말풍선·기록엔 요청 글만 */
-    if(_attachedFile && _hist.length===0){
-      let filePart;
-      if(_attachedFile.type==='image'){
-        filePart={type:'image',source:{type:'base64',media_type:_attachedFile.mimeType,data:_attachedFile.data}};
-      } else if(_attachedFile.type==='pdf'){
-        filePart={type:'document',source:{type:'base64',media_type:'application/pdf',data:_attachedFile.data}};
-      } else {
-        filePart={type:'text',text:`[첨부파일: ${_attachedFile.name}]\n\n${_attachedFile.data}\n\n---\n`};
-      }
+    if(_sendAtt){
+      const filePart=_sendAtt.type==='image'
+        ?{type:'image',source:{type:'base64',media_type:_sendAtt.mimeType,data:_sendAtt.data}}
+        :{type:'document',source:{type:'base64',media_type:'application/pdf',data:_sendAtt.data}};
       userContent=[filePart,...imgParts,...(aiTxt?[{type:'text',text:aiTxt}]:[])];
+      _sendAtt.sent=true; _renderAttachBar();   /* 이 대화엔 이미 실었으니 다음 메시지부턴 다시 보내지 않음(문맥에 남아 있음) */
     } else if(imgParts.length){
       userContent=[...imgParts,...(aiTxt?[{type:'text',text:aiTxt}]:[])];
     } else {
@@ -35254,10 +35635,12 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
           aDiv.remove();
         }
         _hist.pop();
+        if(_sendAtt){ _sendAtt.sent=false; _renderAttachBar(); }   /* 보낸 메시지를 문맥에서 뺐으니 첨부도 '아직 안 보냄'으로 — 다음 전송 때 다시 실어 보냄 */
       } else {
         aDiv.className='ai-msg error';
         aDiv.textContent='❌ 오류: '+e.message;
         _hist.pop();
+        if(_sendAtt){ _sendAtt.sent=false; _renderAttachBar(); }
       }
     }finally{
       aDiv.classList.remove('ai-stream-cursor');
@@ -35812,6 +36195,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     if(id===_sessId){ _aiHistClose(); area.scrollTop=area.scrollHeight; g('aiUserInput').focus(); return; }   /* 이미 지금 채팅창에 있는 대화 */
     if(area.children.length&&!confirm('지금 화면의 대화를 이 기록으로 바꿀까요?\n(지금 대화도 [🕘 기록]에 저장돼 있어 나중에 다시 불러올 수 있어요)')) return;
     _hist=[]; area.innerHTML=''; let last='';
+    if(_attachedFile){ _attachedFile.sent=false; _renderAttachBar(); }   /* 불러온 대화 문맥엔 첨부 원본이 없으니(기록엔 파일명만) 지금 붙여 둔 첨부는 다음 전송 때 실어 보냄 */
     (o.body.msgs||[]).forEach(m=>{
       if(m.r==='u'){
         const notes=[]; if(m.att) notes.push('첨부파일: '+m.att); if(m.nimg) notes.push('이미지 '+m.nimg+'장');
@@ -35906,7 +36290,7 @@ ${leftTxt||'(없음)'}${principleCtx}${reportRangeCtx}${webSection}${extraSys}${
     const ui=g('aiUrlInput');
     return {text:raw.slice(0,_AHL_CHARS),cut:raw.length>_AHL_CHARS?1:0,n:raw.length,mode:_mode,
       url:(_mode==='url'&&ui)?String(ui.value||'').trim().slice(0,300):'',
-      file:(_mode==='file'&&_attachedFile)?String(_attachedFile.name||'').slice(0,120):''};
+      file:(_mode==='file')?String((_attachedFile&&_attachedFile.name)||_leftSrcFile||'').slice(0,120):''};   /* 파일 탭이면 첨부한 이미지·PDF 이름, 없으면 글을 불러온 텍스트 파일 이름 */
   }
   /* 반영 때 호출 — 왼쪽 칼럼 내용을 지금 대화(세션)의 기록에 함께 저장(저장을 시작했으면 true) */
   function _ahSaveLeft(){
@@ -41970,7 +42354,7 @@ window.BTMMmHist={open,close,onSave,refresh,mergeArchives,infoOf,keyOf,list:()=>
           <button class="ai-tab-btn" id="aiTabUrl" onclick="_setLeftMode('url')">URL</button>
           <button class="ai-tab-btn" id="aiTabFile" onclick="_setLeftMode('file')">문서/음성파일</button>
           <div style="position:relative;flex-shrink:0"><button id="aiTabBody" onclick="_toggleBodyDropdown(event)" title="섹션 본문 가져오기">본문</button><div id="aiBodyDropdown"><div id="aiBodyDropdownList"></div></div></div>
-          <div style="position:relative;flex-shrink:0"><button id="aiTabLeftHist" class="mobile-keep" onclick="_toggleLeftHist(event)" title="이 섹션에서 ‘본문에 반영’했던 왼쪽 칼럼 내용의 이력 — 골라서 왼쪽 칼럼에 다시 불러옵니다">이력</button><div id="aiLeftHistDD"><div class="alh-head"><b id="aiLeftHistTitle">🕘 왼쪽 칼럼 이력</b><select id="aiLeftHistScope" class="mobile-keep" title="어느 범위의 이력을 볼지"><option value="sec">이 섹션</option><option value="all">전체 섹션</option></select><input id="aiLeftHistSearch" class="mobile-keep" type="search" placeholder="🔍 검색" autocomplete="off" spellcheck="false"></div><div class="alh-list" id="aiLeftHistList"></div><div class="alh-foot" id="aiLeftHistFoot"></div></div></div><button id="aiTabClear" onclick="_clearLeftContent()" title="왼쪽 참고자료 영역을 비웁니다">삭제</button>
+          <div style="position:relative;flex-shrink:0"><button id="aiTabLeftHist" class="mobile-keep" onclick="_toggleLeftHist(event)" title="이 섹션에서 ‘본문에 반영’했던 왼쪽 칼럼 내용의 이력 — 골라서 왼쪽 칼럼에 다시 불러옵니다">이력</button><div id="aiLeftHistDD"><div class="alh-head"><b id="aiLeftHistTitle">🕘 왼쪽 칼럼 이력</b><select id="aiLeftHistScope" class="mobile-keep" title="어느 범위의 이력을 볼지"><option value="sec">이 섹션</option><option value="all">전체 섹션</option></select><input id="aiLeftHistSearch" class="mobile-keep" type="search" placeholder="🔍 검색" autocomplete="off" spellcheck="false"></div><div class="alh-list" id="aiLeftHistList"></div><div class="alh-foot" id="aiLeftHistFoot"></div></div></div><button id="aiTabClear" onclick="_clearLeftContent()" title="왼쪽 참고자료 영역(글 + 첨부 파일)을 비웁니다">삭제</button>
         </div>
         <!-- URL 입력 영역 -->
         <div id="aiUrlArea">
@@ -41990,21 +42374,15 @@ window.BTMMmHist={open,close,onSave,refresh,mergeArchives,infoOf,keyOf,list:()=>
         </div>
         <!-- 문서/음성파일 첨부 영역 -->
         <div id="aiFileArea">
-          <div id="aiFileDropZone" onclick="g('aiFileInput').click()">
-            📎 클릭하여 파일 선택<br>
-            <span style="font-size:10px;opacity:.65">텍스트 · 이미지(JPG/PNG) · PDF · 음성(MP3/WAV 등 → 텍스트 변환)</span>
+          <div id="aiFileDropZone" onclick="g('aiFileInput').click()" title="클릭해서 파일을 고르거나, 파일을 끌어다 놓아 첨부해요">
+            📎 클릭하여 파일 선택 — 또는 파일을 여기로 끌어다 놓으세요<br>
+            <span style="font-size:10px;opacity:.65">문서(TXT·PDF·Word·PPT·Excel·HTML) · 이미지(JPG/PNG/GIF/WEBP) · 음성(MP3/WAV 등)</span><br>
+            <span style="font-size:10px;opacity:.65">먼저 첨부된 뒤 [TEXT 추출]을 누르면 글을 뽑아 아래 칼럼에 넣어요 — 이미지·PDF 는 첨부로도 AI 에 전달돼요</span>
           </div>
           <input type="file" id="aiFileInput" style="display:none"
-            accept=".txt,.md,.csv,.json,.html,.pdf,.jpg,.jpeg,.png,.gif,.webp,audio/*,.mp3,.wav,.m4a,.ogg,.oga,.aac,.flac,.wma,.webm"
+            accept=".txt,.md,.csv,.json,.html,.htm,.pdf,.docx,.pptx,.xlsx,.xls,.jpg,.jpeg,.png,.gif,.webp,audio/*,.mp3,.wav,.m4a,.ogg,.oga,.aac,.flac,.wma,.webm"
             onchange="_handleFileSelect(this)">
           <div id="aiFileStatus"></div>
-          <button id="aiFileDownloadBtn" class="mobile-keep" onclick="_downloadTranscriptTxt()" style="display:none">💾 TXT로 다운로드</button>
-          <div id="aiFileAppendDlg">
-            <span>기존 내용이 있습니다</span>
-            <button id="aiFileOverwriteBtn" onclick="_confirmPendingAudioFile('overwrite')">덮어쓰기</button>
-            <button id="aiFileAppendBtn" onclick="_confirmPendingAudioFile('append')">이어쓰기</button>
-            <button id="aiFileCancelBtn" onclick="_cancelPendingAudioFile()">취소</button>
-          </div>
         </div>
         <!-- 성경 조회 영역 -->
         <div id="aiBibleArea">
@@ -42045,6 +42423,22 @@ window.BTMMmHist={open,close,onSave,refresh,mergeArchives,infoOf,keyOf,list:()=>
           <button id="aiBibleFetchBtn" onclick="_fetchBibleVerses()">🔍 조회</button>
           <div id="aiBibleStatus"></div>
         </div>
+        <!-- 첨부 파일 표시줄 — 음성·문서·이미지 어느 파일이든 먼저 여기에 '첨부된 상태'로 뜨고, [TEXT 추출]을 누르면 글을 뽑아 아래 왼쪽 칼럼에 넣음(v124). 이미지·PDF 는 아래 칼럼 글과 함께 AI 에 첨부로도 전달됨(v123). 내용은 JS(_renderAttachBar)가 채움 -->
+        <div id="aiAttachBar">
+          <span class="aab-ic" id="aiAttachIc">📎</span>
+          <span class="aab-nm" id="aiAttachNm"></span>
+          <span class="aab-sz" id="aiAttachSz"></span>
+          <button type="button" id="aiAttachExtract" class="mobile-keep" onclick="_extractAttachedText()">TEXT 추출</button>
+          <span id="aiAttachSaveWrap" style="display:none"><button type="button" id="aiAttachSave" class="mobile-keep" onclick="_downloadTranscriptTxt()" title="아래 칼럼의 글을 .txt 파일로 저장해요" aria-label="TXT 로 저장">💾</button></span>
+          <button type="button" id="aiAttachDel" class="mobile-keep" onclick="_removeAttachedFile()" title="첨부 해제" aria-label="첨부 해제">✕</button>
+          <span class="aab-hint" id="aiAttachHint"></span>
+          <div id="aiFileAppendDlg">
+            <span>아래 칼럼에 이미 내용이 있습니다</span>
+            <button type="button" id="aiFileOverwriteBtn" class="mobile-keep" onclick="_xtConfirm('overwrite')">덮어쓰기</button>
+            <button type="button" id="aiFileAppendBtn" class="mobile-keep" onclick="_xtConfirm('append')">이어쓰기</button>
+            <button type="button" id="aiFileCancelBtn" class="mobile-keep" onclick="_xtCancelAsk()">취소</button>
+          </div>
+        </div>
         <div id="aiLeftContent" contenteditable="true"
           placeholder="텍스트를 직접 입력하거나 붙여넣기 하세요."></div>
         <div id="aiLeftApplyBtnWrap">
@@ -42062,6 +42456,8 @@ window.BTMMmHist={open,close,onSave,refresh,mergeArchives,infoOf,keyOf,list:()=>
             <button id="aiLeftApplyCancelBtn" class="mobile-keep" onclick="_cancelLeftApplyDlg()">취소</button>
           </div>
         </div>
+        <!-- 파일을 이 패널 위로 끌고 오면 뜨는 안내 틀(v125) — 놓으면 파일이 첨부됨. 이벤트는 통과(pointer-events:none)하고 JS(_dzInit)가 .dz-on 으로 켬 -->
+        <div id="aiDropOverlay" aria-hidden="true"><div><b>📎 여기에 파일을 놓으면 첨부돼요</b><small>음성 · 문서(PDF·Word·PPT·Excel·TXT) · 이미지 — 한 번에 하나<br>놓은 뒤 [TEXT 추출]을 누르면 글을 뽑아 아래 칼럼에 넣어요</small></div></div>
       </div>
       <div id="aiPanelDivider" onmousedown="_startAIPanelResize(event)"></div>
       <!-- 오른쪽: AI 채팅 -->
