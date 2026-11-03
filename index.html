@@ -3010,6 +3010,11 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-cm button i{font-style:normal;display:inline-block;width:18px;text-align:center;color:#fbbf24}
 #vsTlHint{flex:0 1 auto;min-width:0;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#vsTlHint b{color:#fcd34d}#vsTlHint i{font-style:normal;color:#8da0bf}
 .vs-tlbar .vs-mb.dng:disabled{opacity:.4}
+/* v140 — 타임라인 복사·붙여넣기 · 오른쪽 버튼 끌기 범위 선택 */
+.vs-tli{user-select:none;-webkit-user-select:none}
+.vs-tlbar b{white-space:nowrap;flex:none}
+.tl-mq{position:absolute;z-index:9;box-sizing:border-box;border:1px dashed #38bdf8;background:rgba(56,189,248,.14);border-radius:2px;pointer-events:none}
+.tl-ic.tpre,.tl-ig.tpre{outline:2px dashed #38bdf8;outline-offset:1px;z-index:6}
 .vs-cm{position:fixed;z-index:40;min-width:190px;background:#101a2e;border:1px solid #2f4468;border-radius:9px;box-shadow:0 8px 30px rgba(0,0,0,.55);padding:4px}
 .vs-cm .t{padding:5px 9px 6px;font-size:10.5px;color:#9fb0c9;border-bottom:1px solid #243149;margin-bottom:3px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs-cm button{display:block;width:100%;text-align:left;padding:6px 10px;border:0;background:transparent;color:#e2e8f0;font-size:12px;border-radius:6px;cursor:pointer}
@@ -44748,6 +44753,13 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
        (v109) 타이틀마다 '겹쳐 얹기'(p.ttl[챕터].ov — 새 프로젝트 p.tv≥2 의 오프닝은 기본) / '끼워 넣기' 선택, 겹쳐 얹은 타이틀은 시간을 안 잡고 영상·음성·자막·BGM 위에 얹힘(자리 ofs). 오프닝 챕터가 있으면 CHAPTER 01 은 개요(오프닝) 뒤 첫 챕터부터, 오프닝의 '오늘 다룰 내용' 안내 문장에는 개요(agenda) 인포그래픽 — 자세히는 코드의 v109 블록(ov109) 머리말
    · 🎓 AI학습 (2026-10-29, v121) — 머리의 [🎓 AI학습]: YouTube 주소·PDF·PPTX·이미지·글에서 영상 표현력·제작 노하우를 AI 가 뽑아 IndexedDB 'BTM_LearnDB' 에 계속 쌓고(같은 뜻은 합쳐 확인 횟수만 올림),
        다음 영상을 만들 때 스크립트·스토리보드·인포그래픽·자막·장면 수정 AI 요청 끝에 '[학습한 영상 제작 노하우]' 로 덧붙임(lnBlock — 꺼져 있거나 없으면 빈 글이라 요청이 예전과 똑같음). 코드: 'v121' 표시 구역, 스타일 BTMLEARN-CSS, AI 호출 window._runMediaPrompt.
+   · 타임라인 복사·붙여넣기 + 오른쪽 버튼 끌기 범위 선택 (2026-11-03, v140) — [구성] 줄 구성요소 칩·[인포] 줄 인포그래픽 막대를 눌러 골라 Ctrl/⌘+C, 재생 위치를 다른 장면으로 옮겨 Ctrl/⌘+V(구성요소는 그 자리의 인포그래픽에 끼우거나 새 인포그래픽으로,
+       인포그래픽은 통째로 복제). 오른쪽 버튼을 누른 채 끌면 점선 상자에 걸린 요소가 모두 선택(Ctrl/Shift = 더하기, 끌지 않으면 예전 메뉴). 복사본은 문장 번호가 아니라 '말하는 시각(초)'로 적어 다른 프로젝트에도 붙음. 코드: 'v140' 표시 구역(cb*·mq*).
+   · 미니멀 글자 크기 체계 + 균형 줄바꿈 + 같은 수치 한 번만 (2026-11-03, v141) — 미니멀은 글자 배율 k 를 1 이하로 묶고(KLM_K) 글을 세 가지 크기(큰 수치 NUM · 강조 글 HEAD · 나머지 BODY, KLM_T)만 써서 모든 화면이 같은 크기,
+       글은 한 줄에 들어가면 한 줄·접어야 하면 균형 있게(klmFit·klmWrap — 낱말 하나만 남는 줄 없음), 내용은 칸 가운데에 모아 그림. 같은 수치는 한 구성요소(와 같은 문장에 걸린 블록)에서 한 번만(klNumClip — klDetailItems 가 부름 → 생성·열 때·내보내기 전). 코드: 'v141' 표시 구역(klm*·klNum*).
+   · 미니멀에 학습용 프레젠테이션(33장) 형식 학습 (2026-11-03, v142) — 레퍼런스 실측 팔레트(청록 #00dfff·보조 글 #8ea2ad)·글자 크기 역할(큰 수치 0.22·슬래시 키워드 0.12·큰 제목 0.10·한 구절 0.05, KLM_T)과 새 구성요소 8종
+       (l.mkey 슬래시 키워드 목록 · t.mtoc 번호 목차 · m.mhero 히어로 수치 · x.mhead 헤드라인(강조·밑줄·취소선) · g.mba 전후 막대 · g.mring 분할 링 · l.mfork 갈림길 · t.mtabs 진행 탭), AI 안내문 KL_REF_GUIDE(구성·단어·수치 규칙),
+       규칙 모드(이전→지금=전후 막대, 수치 하나뿐인 장면=히어로), 출처는 알약 없이 작은 글, 배치 디렉터는 글자가 줄어들지 않는 배치를 우선. 코드: 'v142' 표시 구역(klm*·KL_REF_GUIDE).
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
@@ -45893,7 +45905,7 @@ function charSprite(im,dw,dh){   /* 캐릭터 그림을 그릴 크기로 한 번
 
 /* ── 배치 — 블록들을 패널 안에 위에서 아래로(수치 카드는 가로로 나란히) 놓고, 모자라면 배율 k 를 줄이고 남으면 조금 키움 ── */
 const isBar0=it=>it.type==='bar';
-function igFlow(E,items,iw,ah,kMax,kMin){
+function igFlow(E,items,iw,ah,kMax,kMin){ if(E.sk&&E.sk.min) kMax=Math.min(kMax,KLM_K);   /* v141: 미니멀은 칸이 넓어도 글을 키우지 않음 */
   const B=E.B, grid=!!(E.sk&&E.sk.grid2), bg=bigf(E), isTile=it=>grid?!!TILEG[it.type]:it.type==='stat', place=k=>{   /* grid: 대시보드 스타일 — 수치·지표 블록을 3열 격자 타일로 */
     const gap=0.02*B*k, cells=[]; let y=0, i=0, numC=0;
     while(i<items.length){
@@ -45930,7 +45942,7 @@ function igFlow(E,items,iw,ah,kMax,kMin){
 function headMeasure(g,ig,iw,B,font,small,sk){   /* sk(스타일)를 주면 윗글이 비었을 때 스타일 이름이 윗글로 들어가고, 제목 크기도 스타일에 맞춤 */
   const fsK=(small?0.024:0.027)*B*FZ(ig,'kicker'), title=String(ig.title||'').trim(), kick=String(ig.kicker||(sk&&sk.kick)||'').trim(); let fsT=(small?0.044:0.060)*B*((sk&&sk.titleK)||1)*FZ(ig,'title'), tl=[];
   if(title){ for(let n=0;n<9;n++){ g.font='800 '+fsT.toFixed(1)+'px '+font; tl=wrapLines(g,title,iw); if(tl.length<=2||fsT<=0.030*B) break; fsT*=0.92; } tl=tl.slice(0,2); }
-  const srcH=(styOf(ig)==='minimal'&&String(ig.source||'').trim())?0.054*B:0;   /* v138: 미니멀의 출처 알약 자리 */
+  const srcH=(styOf(ig)==='minimal'&&String(ig.source||'').trim())?0.040*B:0;   /* v138: 미니멀의 출처 알약 자리 */
   return {kick,fsK,tl,fsT,srcH,h:srcH+(kick?fsK*1.55:0)+(tl.length?tl.length*fsT*1.2+0.018*B:0)};
 }
 function chipOf(it){   /* 겹치기 형태(띠·배지)에 쓸 한 줄 요약 — z: 글마다 크기 배율(l 이름·v 값·d 변화·t 글) */
@@ -45980,17 +45992,21 @@ function igCustomCells(E,items,cr,X){   /* 상자(bx)대로 칸 목록을 만듦
     if(u.t==='bar'||u.t==='row'){   /* 한 카드 안에 줄이 여럿 — 카드 높이에 맞는 배율로 줄 높이를 정함 */
       const isBar=u.t==='bar', bg=bigf(E); let zr=1, mxp=0, mxn=0;
       for(let q=0;q<u.n;q++){ const x=items[u.i+q]; zr=Math.max(zr,FZ(x,'label'),FZ(x,'value'),isBar?1:FZ(x,'delta')); if(isBar){ const v=+x.v||0; if(v>0) mxp=Math.max(mxp,v); else mxn=Math.max(mxn,-v); } }
-      const rowN=(isBar?0.066:0.072)*B*(isBar?bg:1)*(1+0.85*posz(zr)), rgN=(isBar?0.010:0.008)*B, gpN=0.018*B, totN=u.n*rowN+(u.n-1)*rgN+2*gpN, k=clamp(r.h/totN,0.2,3.2);
+      const rowN=(isBar?0.066:0.072)*B*(isBar?bg:1)*(1+0.85*posz(zr)), rgN=(isBar?0.010:0.008)*B, gpN=0.018*B, totN=u.n*rowN+(u.n-1)*rgN+2*gpN, k=clamp(r.h/totN,0.2,(E.sk&&E.sk.min)?KLM_K:3.2);
       const mkc=kq=>{ const gp=gpN*kq, rg=rgN*kq, rowH=Math.max(4,(r.h-2*gp-(u.n-1)*rg)/u.n), a=[]; for(let q=0;q<u.n;q++) a.push({t:u.t,i:u.i+q,x:r.x,y:r.y+gp+q*(rowH+rg),w:r.w,h:rowH,k:kq,gy:r.y,gh:r.h,first:q===0,last:q===u.n-1,n:u.n,mxp,mxn}); return a; };
       let kg=k, fgs=0; if(X&&X.fit&&klFxOn()){ const f=klFxG(E,items,mkc,k,r,X); kg=f.k; fgs=f.sc; }   /* v135: 줄이 여럿인 카드도 글이 넘치면 글자 배율을 줄임 */
       mkc(kg).forEach(c=>{ if(X&&X.fit){ c.k0=k; c.fsc=fgs; } cells.push(c); });
     }else{
-      const t=MEAS[it.type]?it.type:'point', mf=MEAS[t], m1=mf(E,it,r.w,1); let k=clamp(r.h/Math.max(1,m1.h),0.2,3.2); if(m1.mw) k=Math.min(k,Math.max(0.2,r.w/(m1.mw*E.B))); let m=mf(E,it,r.w,k);   /* v117: mw = 이 종류가 알맞게 보이는 최소 폭(bk 비율) — 상자가 더 좁으면 글자를 폭에 맞춰 줄임 */
-      for(let n=0;n<28&&m.h>r.h+0.5&&k>0.2;n++){ k=Math.max(0.2,k*0.95); m=mf(E,it,r.w,k); }   /* 글이 줄바꿈되는 블록은 높이가 배율에 정확히 비례하지 않아 조금씩 줄여 가며 맞춤 */
+      const t=MEAS[it.type]?it.type:'point', mf=MEAS[t], m1=mf(E,it,r.w,1); let k=clamp(r.h/Math.max(1,m1.hmin||m1.h),0.2,(E.sk&&E.sk.min)?KLM_K:3.2); if(m1.mw) k=Math.min(k,Math.max(0.2,r.w/(m1.mw*E.B))); let m=mf(E,it,r.w,k);   /* v117: mw = 이 종류가 알맞게 보이는 최소 폭(bk 비율) — 상자가 더 좁으면 글자를 폭에 맞춰 줄임 */
+      for(let n=0;n<28&&(m.hmin||m.h)>r.h+0.5&&k>0.2;n++){ k=Math.max(0.2,k*0.95); m=mf(E,it,r.w,k); }   /* 글이 줄바꿈되는 블록은 높이가 배율에 정확히 비례하지 않아 조금씩 줄여 가며 맞춤 */
       let k0=k, fsc=0; if(X&&X.fit&&klFxOn()){ const f=klFxK(E,it,r,k,mf,t,X); fsc=f.sc; if(f.k<k-1e-6){ k=f.k; m=mf(E,it,r.w,k); } }   /* v135: 글이 칸 밖으로 넘치면 글자 배율을 줄임 */
       const cell=Object.assign({t,i:u.i,x:r.x,y:r.y,w:r.w,k,m},m); cell.h=r.h; if(X&&X.fit){ cell.k0=k0; cell.fsc=fsc; } if(it.type==='point'&&it.style==='num') cell.num=++numC; cells.push(cell);
     }
   });
+  if(E.sk&&E.sk.min&&cells.length>1){   /* v141: 같은 종류의 칸은 한 화면에서 글자 크기가 같게 — 가장 작게 줄어든 칸에 맞춤(긴 수치 때문에 한 칸만 줄어 크기가 들쭉날쭉해지지 않게) */
+    const by={}; cells.forEach(c=>{ if(c.t!=='bar'&&c.t!=='row'&&MEAS[c.t]) (by[c.t]=by[c.t]||[]).push(c); });
+    Object.keys(by).forEach(t=>{ const gs=by[t]; if(gs.length<2) return; const kU=Math.min.apply(null,gs.map(c=>c.k)); gs.forEach(c=>{ if(c.k>kU+1e-6){ const h0=c.h, m=MEAS[t](E,items[c.i],c.w,kU); c.k=kU; Object.assign(c,m); c.h=h0; c.m=m; } }); });
+  }
   return cells;
 }
 function duLeft(it,t,all){   /* 표시 길이(it.du)가 정해진 블록이 사라질 때까지 남은 시간(초) — 안 정했거나 썸네일용이면 9(오래 남음) */
@@ -46522,7 +46538,7 @@ function resolveMode(sp,sc,o,ctx){
   return m;
 }
 function specToClip(sp,mode,sc,ctx){
-  const ss=ctx.ss, all=ctx.all||ss, items=sp.items; let ts=sc.s, te=sc.e; if(klMinCtx(ctx)) klPicFillItems(items);
+  const ss=ctx.ss, all=ctx.all||ss, items=sp.items; let ts=sc.s, te=sc.e; if(klMinCtx(ctx)){ klPicFillItems(items); klmCopyFix(items); }
   const i0=clamp(sp.i0|0,0,ss.length-1), i1=clamp(sp.i1==null?ss.length-1:(sp.i1|0),i0,ss.length-1), f0=ss[i0], f1=ss[i1];
   const t0=items.map(it=>blockT0(P,it)).filter(x=>x!=null), a=t0.length?Math.min.apply(null,t0):sc.s, b=t0.length?Math.max.apply(null,t0):sc.s;
   if(isOver(mode)){
@@ -47253,7 +47269,7 @@ const SPAL={
   map:{dark:true,accent:'#38bdf8',bg1:'#05111e',bg2:'#0a2236',blob:'rgba(56,189,248,.09)',blob0:'rgba(56,189,248,0)',panel:'rgba(9,26,43,.90)',panelLine:'#1b3d5e',card:'#0d2238',cardLine:'#1d405f',track:'#17324d',text:'#e8f2fb',mute:'#8fb0cc',cardSolid:'#0d2238',shadow:'rgba(0,0,0,.45)'},
   magazine:{dark:false,accent:'#b91c1c',bg1:'#efe9dc',bg2:'#e6dece',blob:'rgba(120,90,40,.06)',blob0:'rgba(120,90,40,0)',panel:'#fffdf8',panelLine:'#cfc5b2',card:'#fffdf8',cardLine:'#d9cfbc',track:'#e8e0d0',text:'#1c1917',mute:'#78716c',cardSolid:'#fffdf8',shadow:'rgba(60,40,10,.10)'},
   slide:{dark:false,accent:'#2563eb',bg1:'#e3e9f3',bg2:'#d8e1ef',blob:'rgba(37,99,235,.08)',blob0:'rgba(37,99,235,0)',panel:'#ffffff',panelLine:'#cdd7e8',card:'#f3f6fb',cardLine:'#dbe3f0',track:'#e3e9f3',text:'#0f172a',mute:'#5b6b84',cardSolid:'#f3f6fb',shadow:'rgba(15,23,42,.16)'},
-  minimal:{dark:true,accent:'#00e1ff',bg1:'#000000',bg2:'#000000',blob:'rgba(0,0,0,0)',blob0:'rgba(0,0,0,0)',panel:'rgba(0,0,0,0)',panelLine:'rgba(255,255,255,0)',card:'rgba(255,255,255,0)',cardLine:'rgba(255,255,255,.22)',track:'rgba(255,255,255,.16)',text:'#ffffff',mute:'#a7b3bf',cardSolid:'#0b0b0b',shadow:'rgba(0,0,0,0)'}
+  minimal:{dark:true,accent:'#00dfff',bg1:'#000000',bg2:'#000000',blob:'rgba(0,0,0,0)',blob0:'rgba(0,0,0,0)',panel:'rgba(0,0,0,0)',panelLine:'rgba(255,255,255,0)',card:'rgba(255,255,255,0)',cardLine:'rgba(255,255,255,.22)',track:'rgba(255,255,255,.16)',text:'#ffffff',mute:'#8ea2ad',cardSolid:'#0b0b0b',shadow:'rgba(0,0,0,0)'}
 };
 const styOf=ig=>{ const s=(ig&&ig.sty)||(P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news'; return ISTY[s]?s:'news'; };
 const TILEG={stat:1,move:1,gauge:1,donut:1,vs:1};   /* 대시보드 격자에 타일로 들어가는 블록 */
@@ -47452,7 +47468,7 @@ const STY_GUIDE={
   map:'지도 기반: 나라·지역별 등락을 map 블록 하나로(2곳 이상, parts 의 l 은 지원하는 지역 이름만, v 는 등락률). 다른 수치는 stat 1~2개만 곁들인다. mode 는 "full".',
   magazine:'매거진: 가장 중요한 수치 하나를 hero, 핵심 한마디를 quote, 나머지는 point 1~2개로. 제목은 잡지 기사 헤드라인처럼 짧고 인상적으로. mode 는 "full".',
   slide:'프레젠테이션: 슬라이드 한 장처럼 제목 하나와 요점 3~4개(point, style "num")·흐름(flow)·일정(event) 위주로 정리한다. mode 는 "full".',
-  minimal:'미니멀: 검정 바탕에 큰 글자·얇은 선·청록 강조색 하나 — 카드·타일 없이 간결하게. 핵심 수치는 m.mstat, 제목·한 줄 강조는 x.mtitle·x.mbar, 인용은 x.mquote, 요약은 l.msum, 옛것→새것은 l.mstrike, 질문·답은 r.mrows, 일정은 t.mline, 비율은 g.mdots·g.mcells, 질문 목차는 t.magenda, 과정은 l.mflow, 대비는 l.mvs, 사례 나열은 l.mpicts(픽토그램). 한 clip 에 블록 1~3개, 글은 짧게. mode 는 "full".'
+  minimal:'미니멀: 검정 바탕에 큰 글자·얇은 선·청록 강조색 하나 — 카드·타일 없이 간결하게. 핵심 수치는 m.mstat(한 화면의 주인공 숫자는 m.mhero), 제목·한 줄 강조는 x.mtitle·x.mbar·x.mhead, 구역 전환·요약은 l.mkey, 목차는 t.mtoc, 전·후는 g.mba, N개 중 M개는 g.mring, 양면은 l.mfork, 단계 판정은 t.mtabs, 인용은 x.mquote, 요약은 l.msum, 옛것→새것은 l.mstrike, 질문·답은 r.mrows, 일정은 t.mline, 비율은 g.mdots·g.mcells, 질문 목차는 t.magenda, 과정은 l.mflow, 대비는 l.mvs, 사례 나열은 l.mpicts(픽토그램). 한 clip 에 블록 1~3개, 글은 짧게. mode 는 "full".'
 };
 function styleLine(ctx){   /* AI 에게 보내는 사용자 메시지의 스타일·캐릭터 안내 */
   const sty=ctx.style||(P.cfg.info&&P.cfg.info.style)||'news', sk=ISTY[sty]||ISTY.news;
@@ -49135,7 +49151,7 @@ function klCleanField(fd,raw,H,f,key,it){
   if(fmt==='tone') return toneOK(raw);
   if(fmt==='spark'){ const a=Array.isArray(raw)?raw.join(' '):raw; return numList(a).slice(0,40).join(' '); }
   if(fmt.indexOf('sel:')===0){ const ok=fmt.slice(4).split('/').map(x=>x.split('=')[0]); raw=String(raw==null?'':raw).trim(); return ok.indexOf(raw)>=0?raw:''; }
-  const n=(f.lim&&f.lim[key])||KL_LIM[key]||16; return KL_NEWS[key]?H.LN(raw,n):H.L(raw,n);
+  const n=(f.lim&&f.lim[key])||KL_LIM[key]||16; return (KL_NEWS[key]&&!f.nonews)?H.LN(raw,n):H.L(raw,n);   /* v142: 새 미니멀 종류(f.nonews)는 한 구절의 조사를 떼지 않음 */
 }
 function klNorm(it,r,H){   /* AI 가 준 블록 r → it (계열 표대로). 쓸 수 없으면 false */
   const d=klOf(it.type), f0=d&&KL.fam[d.fid]; if(!f0) return false; const f=d.ov?Object.assign({},f0,d.ov):f0, bt=BT[it.type];
@@ -49939,7 +49955,7 @@ const RG1='순위·목록·표', RG2='카드·칩·타일';
 
 /* ── t 계열: 타임라인·절차 — 날짜(단계)+내용 목록을 가로·세로 타임라인, 쉐브론, 깔때기, 피라미드, 순환, 로드맵 등 26가지로 ── */
 function tData(it,max){ return (it.parts||[]).slice(0,max).map((p,i)=>({p,i,d:String(p.d==null?'':p.d).trim(),t:String(p.t||'').trim(),s:String(p.sb||'').trim(),lv:clamp(Math.round(nz(p.lv)||2),1,3)})).filter(q=>q.t||q.d); }
-function tLines(E,s,w,fs,wt,maxL){ E.g.font=(wt||'700')+' '+fs.toFixed(1)+'px '+E.font; return wrapLines(E.g,String(s||''),Math.max(10,w)).slice(0,maxL||3); }
+function tLines(E,s,w,fs,wt,maxL){ E.g.font=(wt||'700')+' '+fs.toFixed(1)+'px '+E.font; if(klmOn(E)) return klmWrap(E.g,String(s||''),Math.max(10,w)).slice(0,maxL||3); return wrapLines(E.g,String(s||''),Math.max(10,w)).slice(0,maxL||3); }   /* v141 */
 function tTxt(E,s,x,y,w,fs,wt,col,al,maxL){ const ls=tLines(E,s,w,fs,wt,maxL), L=1.22*fs; ls.forEach((l,i)=>dtx(E.g,l,x,y+i*L,fs,wt||'700',col,E.font,al||'left','top')); return ls.length*L; }
 function tFrame(E,c,it,bk,s0){ popBegin(E,c,s0,bk,0.35); cardBox(E,c.x,c.y,c.w,c.h,bk); hdrDraw(E,c,it,bk); const top=c.y+(it.label?HDR*hzL(it)*bk:0)+0.012*bk; return {x:c.x+0.034*bk,y:top,w:Math.max(10,c.w-0.068*bk),h:Math.max(10,c.y+c.h-0.014*bk-top)}; }
 const tPop=(E,it,q)=>{ const sp=klPtS(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.5); };
@@ -50082,7 +50098,7 @@ function xRichLine(E,line,x,y,fs,wt,col,al,hl,mode,hcol){
     g.fillStyle=sg.h?(mode==='mark'?col:hcol):col; g.textAlign='left'; g.textBaseline='top'; g.fillText(sg.s,cx,y-(sg.h&&mode==='big'?(fB-fs)*0.45:0)); cx+=sg.w; });
   return tw;
 }
-function xText(E,txt,hl,R,fs0,wt,col,al,va,mode,hcol,maxL,minK){   /* R 안에 글을 줄바꿈해 넣음 — 안 들어가면 글자를 줄임. 쓴 높이를 돌려줌 */
+function xText(E,txt,hl,R,fs0,wt,col,al,va,mode,hcol,maxL,minK){ if(klmOn(E)) return klmXText(E,txt,hl,R,fs0,wt,col,al,va,mode,hcol,maxL,minK);   /* v141 */   /* R 안에 글을 줄바꿈해 넣음 — 안 들어가면 글자를 줄임. 쓴 높이를 돌려줌 */
   const g=E.g; txt=String(txt==null?'':txt); if(!txt) return 0; const paras=hasNL(txt)?nlLines(txt):[txt]; let fs=fs0, lines=[];
   for(let k=0;k<14;k++){ g.font=wt+' '+fs.toFixed(1)+'px '+E.font; lines=[]; paras.forEach(p=>wrapLines(g,p,Math.max(10,R.w)).forEach(l=>lines.push(l))); if((lines.length<=(maxL||4)&&lines.length*fs*1.28<=R.h+1)||fs<=fs0*(minK||0.45)) break; fs*=0.92; }
   lines=lines.slice(0,maxL||4); const L=fs*1.28, th=lines.length*L, y0=va==='t'?R.y:va==='b'?R.y+R.h-th:R.y+(R.h-th)/2, ax=al==='c'?R.x+R.w/2:al==='r'?R.x+R.w:R.x;
@@ -50216,7 +50232,7 @@ function lData(it,max){ return (it.parts||[]).slice(0,max).map((p,i)=>({p,i,t:St
    tsize 큰 글 하나 + 나머지 작은 글 · tstack 줄마다 글자 크기가 단계로 줄어드는 쌓기 · tcloud 크기가 다른 낱말을 모아 놓는 구름 · tcols 큰 번호 + 글 기둥.
    색·굵기·밑줄·점은 타일과 같은 강조색·글꼴을 써서 영상 전체의 느낌이 이어지게 ── */
 const KL_TYK=/^t(size|stack|cloud|cols)$/;
-function drawLT(E,c,it,ds,bk,Pq,kind){
+function drawLT(E,c,it,ds,bk,Pq,kind){ if(klmOn(E)) return drawLTMin(E,c,it,ds,Pq,kind);   /* v141: 미니멀은 글 크기 체계 */
   const g=E.g, pal=E.pal, font=E.font, acc=pal.accent, pad=0.03*bk, n=ds.length, R={x:c.x+pad,y:c.y+pad*0.8,w:Math.max(10,c.w-pad*2),h:Math.max(10,c.h-pad*1.6)};
   const rule=(x0,y0,x1,y1,a)=>{ g.save(); g.strokeStyle=klA(pal.mute,a==null?0.3:a); g.lineWidth=Math.max(1,0.002*bk); g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke(); g.restore(); };
   const bar=(x,y,w)=>{ g.fillStyle=acc; roundRect(g,x,y,w,Math.max(3,0.008*bk),0.004*bk); g.fill(); };
@@ -50263,6 +50279,43 @@ function drawLT(E,c,it,ds,bk,Pq,kind){
     ds.forEach((q,i)=>{ const col=i%cols, row=Math.floor(i/cols), x0=R.x+col*cw, y0=R.y+row*rh;
       show(q,()=>{ const nf=Math.min(rh*0.28,cw*0.3,0.09*bk); dtx(g,String(i+1).padStart(2,'0'),x0+cw/2,y0+rh*0.22,nf,'800',acc,font,'center','middle'); bar(x0+cw/2-Math.min(cw*0.09,0.045*bk),y0+rh*0.22+nf*0.72,Math.min(cw*0.18,0.09*bk));
         const f=xTileFit(E,q.t,{x:0,y:0,w:cw*0.86,h:rh*0.5},3,'800',fsU); ctr(f,x0+cw/2,y0+rh*0.68,'800',pal.text); if(col>0) rule(x0,y0+rh*0.08,x0,y0+rh*0.92,0.22); if(row>0) rule(x0+cw*0.06,y0,x0+cw*0.94,y0,0.18); });
+    });
+  }
+}
+/* ── v141: 글자 크기형(tsize·tstack·tcloud·tcols)의 미니멀 그리기 — 칸을 채우려고 글을 키우지 않고, 큰 글(HEAD)과 나머지(BODY) 두 크기만 쓰며, 내용을 칸 가운데에 모음. 다른 스타일은 아래 drawLT 그대로 ── */
+function drawLTMin(E,c,it,ds,Pq,kind){
+  const g=E.g, pal=E.pal, font=E.font, acc=pal.accent, bk=klmBk(E,c), pad=0.03*bk, n=ds.length, R={x:c.x+pad,y:c.y+pad*0.8,w:Math.max(10,c.w-pad*2),h:Math.max(10,c.h-pad*1.6)};
+  const zt=FZP(it,'t'), fH=klmF(bk,'head',zt), fB=klmF(bk,'body',zt), hOf=f=>f?f.lines.length*f.lh:0;
+  const rule=(x0,y0,x1,y1,a)=>{ g.save(); g.strokeStyle=klA(pal.mute,a==null?0.3:a); g.lineWidth=Math.max(1,0.002*bk); g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke(); g.restore(); };
+  const barH=Math.max(3,0.008*bk), bar=(x,y,w)=>{ g.fillStyle=acc; roundRect(g,x,y,w,barH,0.004*bk); g.fill(); };
+  const show=(q,fn)=>{ const a=Pq(q); if(a<=0) return; g.save(); g.globalAlpha*=a; g.translate((1-a)*0.03*bk,0); fn(a); g.restore(); };
+  if(kind==='tsize'){
+    const hero=ds[0], rest=ds.slice(1), bg=0.014*bk, r=Math.min(0.011*bk,fB*0.3), rpad=fB*0.85; g.font='800 '+fH.toFixed(1)+'px '+font; const w1=g.measureText(nlFlat(hero.t)).width, wide=rest.length>0&&R.w/R.h>=1.25;
+    if(wide){
+      const hf=klmFit(E,hero.t,Math.min(R.w*0.5,w1*1.02+0.01*bk),fH,'800',3), colGap=R.w*0.08, rx=R.x+hf.w+colGap, rw=Math.max(10,R.x+R.w-rx);   /* 큰 글 칸은 큰 글이 한 줄에 들어갈 만큼만(폭의 50% 까지) */
+      const rfs=klmFitAll(E,rest.map(q=>q.t),rw-r*3.4,fB,'700',2), rows=rest.map((q,i)=>({q,f:rfs[i]})), rtot=rows.reduce((s,o)=>s+hOf(o.f),0)+rpad*(rows.length-1), htot=hOf(hf)+bg+barH, ytot=Math.max(htot,rtot), y0=R.y+Math.max(0,(R.h-ytot)/2);
+      show(hero,()=>{ const yy=y0+(ytot-htot)/2; klmPut(E,hf,R.x,yy,pal.text,'800'); bar(R.x,yy+hOf(hf)+bg,Math.min(hf.w*0.4,0.22*bk)); });
+      rule(rx-colGap/2,y0-ytot*0.08,rx-colGap/2,y0+ytot*1.08);
+      let y=y0+(ytot-rtot)/2; rows.forEach(o=>{ const yy=y; show(o.q,()=>{ klDot(g,rx+r,yy+o.f.lh/2,r,acc); o.f.lines.forEach((l,k)=>dtx(g,l,rx+r*3.2,yy+k*o.f.lh+o.f.lh/2,o.f.fs,'700',pal.text,font,'left','middle')); }); y+=hOf(o.f)+rpad; });
+    }else{
+      const hf=klmFit(E,hero.t,R.w,fH,'800',3), rfs=klmFitAll(E,rest.map(q=>q.t),R.w-r*3.4,fB,'700',2), rows=rest.map((q,i)=>({q,f:rfs[i]})), rtot=rows.length?rows.reduce((s,o)=>s+hOf(o.f),0)+rpad*(rows.length-1):0, htot=hOf(hf)+bg+barH, ytot=htot+(rows.length?fB*1.2+rtot:0);
+      let y=R.y+Math.max(0,(R.h-ytot)/2);
+      show(hero,()=>{ klmPut(E,hf,R.x,y,pal.text,'800'); bar(R.x,y+hOf(hf)+bg,Math.min(hf.w*0.4,0.22*bk)); }); y+=htot+(rows.length?fB*1.2:0);
+      rows.forEach(o=>{ const yy=y; show(o.q,()=>{ klDot(g,R.x+r,yy+o.f.lh/2,r,acc); o.f.lines.forEach((l,k)=>dtx(g,l,R.x+r*3.2,yy+k*o.f.lh+o.f.lh/2,o.f.fs,'700',pal.text,font,'left','middle')); }); y+=hOf(o.f)+rpad; });
+    }
+  }else if(kind==='tstack'){
+    const bw=0.012*bk, tx=R.x+bw+0.034*bk, tw=Math.max(10,R.w-bw-0.034*bk), fr=klmFitAll(E,ds.slice(1).map(q=>q.t),tw,fB,'700',2), fl=ds.map((q,i)=>i===0?klmFit(E,q.t,tw,fH,'800',2):fr[i-1]), gp=fB*0.5, th=fl.reduce((s,f)=>s+hOf(f),0)+gp*(n-1), y0=R.y+Math.max(0,(R.h-th)/2);
+    g.fillStyle=acc; roundRect(g,R.x,y0,bw,th,bw/2); g.fill();
+    let y=y0; ds.forEach((q,i)=>{ const f=fl[i], yy=y; y+=hOf(f)+gp; show(q,()=>{ g.globalAlpha*=1-0.06*i; klmPut(E,f,tx,yy,pal.text,i===0?'800':'700'); }); });
+  }else if(kind==='tcloud'){
+    const items=ds.map((q,i)=>({q,i,f:klmFit(E,q.t,R.w*0.62,i===0?fH:fB,'800',2)})), gap=fB*1.3, rg=fB*0.5, rows=[]; let cur=[], cw=0;
+    items.forEach(o=>{ if(cur.length&&cw+gap+o.f.w>R.w){ rows.push(cur); cur=[]; cw=0; } cw+=(cur.length?gap:0)+o.f.w; cur.push(o); }); if(cur.length) rows.push(cur);
+    const hts=rows.map(r=>Math.max.apply(null,r.map(o=>hOf(o.f)))), th=hts.reduce((a,h)=>a+h,0)+rg*(rows.length-1); let y=R.y+Math.max(0,(R.h-th)/2);
+    rows.forEach((r,ri)=>{ const tw=r.reduce((s,o)=>s+o.f.w,0)+gap*(r.length-1), hh=hts[ri]; let x=R.x+(R.w-tw)/2; r.forEach(o=>{ const bx0=x, yy=y+(hh-hOf(o.f))/2; show(o.q,()=>{ o.f.lines.forEach((l,i)=>dtx(g,l,bx0+o.f.w/2,yy+i*o.f.lh,o.f.fs,'800',o.i===0?acc:pal.text,font,'center','top')); }); x+=o.f.w+gap; }); y+=hh+rg; });
+  }else{   /* tcols — 큰 번호 + 글 기둥 */
+    const cols=n<=4?n:Math.ceil(n/2), rows=Math.ceil(n/cols), cw=R.w/cols, rh=R.h/rows, bw=Math.min(cw*0.18,0.09*bk);
+    ds.forEach((q,i)=>{ const col=i%cols, row=Math.floor(i/cols), x0=R.x+col*cw, y0=R.y+row*rh, f=klmFit(E,q.t,cw*0.86,fB,'800',3), nf=fH, grp=nf*1.15+barH+0.016*bk+hOf(f), gy=y0+Math.max(0,(rh-grp)/2);
+      show(q,()=>{ dtx(g,String(i+1).padStart(2,'0'),x0+cw/2,gy,nf,'800',acc,font,'center','top'); bar(x0+cw/2-bw/2,gy+nf*1.15,bw); klmPut(E,f,x0+cw/2,gy+nf*1.15+barH+0.016*bk,pal.text,'800','center'); if(col>0) rule(x0,y0+rh*0.12,x0,y0+rh*0.88,0.22); if(row>0) rule(x0+cw*0.06,y0,x0+cw*0.94,y0,0.18); });
     });
   }
 }
@@ -50651,7 +50704,7 @@ function layoutPick(ig,opt){
   const cellO=(ui,s,fit)=>{   /* 단위 ui 를 칸 s 에 놓았을 때 글자 배율 k(와 남는 넘침 fs) — 실제 그리기와 같은 계산(igCustomCells). fit: v135 글자 넘침 검사까지 */
     const mp=fit?cacheF:cache, key=ui+'|'+Math.round(s.w*cr.w/4)+'|'+Math.round(s.h*cr.h/4); let v=mp.get(key); if(v) return v;
     const u=us[ui], sub=its.slice(u.i,u.i+u.n).map((x,q)=>q===0?Object.assign({},x,{bx:{x:0,y:0,w:s.w,h:s.h}}):x);
-    let k=1, fs=0, k0=1; try{ const cs=igCustomCells(E,sub,cr,fit?{fit:true,ig}:undefined); k=cs.length?cs[0].k:1; fs=(cs.length&&cs[0].fsc)||0; k0=(cs.length&&cs[0].k0)||k; }catch(e){ k=1; k0=1; } v={k,fs,k0}; mp.set(key,v); return v;
+    let k=1, fs=0, k0=1, wr=0; try{ const cs=igCustomCells(E,sub,cr,fit?{fit:true,ig}:undefined); k=cs.length?cs[0].k:1; fs=(cs.length&&cs[0].fsc)||0; k0=(cs.length&&cs[0].k0)||k; if(fit&&E.sk&&E.sk.min&&cs.length&&u.n===1) wr=klmWrapExcess(E,sub[0],cs[0]); }catch(e){ k=1; k0=1; } v={k,fs,k0,wr}; mp.set(key,v); return v;   /* v141: 미니멀은 글이 불필요하게 여러 줄로 접히는 칸도 감점(wr) */
   };
   const cell=(ui,s)=>cellO(ui,s,useFit).k;
   const cost=(ui,s,aMax)=>{
@@ -50660,8 +50713,8 @@ function layoutPick(ig,opt){
     else if(q.txt){ if(sar<1.15) arc+=Math.log(1.15/sar)*1.6; else if(sar>3.6) arc+=Math.log(sar/3.6)*1.4; }   /* 짧은 글 블록이 좁고 긴 칸(낱말이 끊김)이나 화면 폭만큼 늘어난 띠에 놓이는 일을 막음 */
     const kSmall=k<0.55?Math.pow(0.55/k,2)*1.6:k<0.8?(0.8/k-1)*1.2:0, kBig=k>2.6?(k/2.6-1)*0.8:0, kt=0.9+1.1*q.imp, kp=Math.abs(Math.log(k/kt))*0.5;
     const area=(s.w*s.h)/aMax, ip=Math.abs(q.imp/mxImp-area)*0.9;   /* 중요한 단위는 큰 칸, 비슷하면 비슷한 크기의 칸 */
-    const fo=useFit?cellO(ui,s,true):null, ov=fo?Math.min(1.6,fo.fs)*1.4+Math.max(0,1-fo.k/Math.max(0.2,fo.k0))*3:0;   /* v135: 글자를 줄여야 하는 칸(줄인 만큼)과 줄여도 넘침이 남는 칸은 감점 → 글이 넘치지 않는 더 넓은 칸이 이김 */
-    return arc+kSmall+kBig+kp+ip+ov;
+    const fo=useFit?cellO(ui,s,true):null, ov=fo?Math.min(1.6,fo.fs)*1.4+Math.max(0,1-fo.k/Math.max(0.2,fo.k0))*3+(fo.wr||0)*1.0:0;   /* v135: 글자를 줄여야 하는 칸(줄인 만큼)과 줄여도 넘침이 남는 칸은 감점 → 글이 넘치지 않는 더 넓은 칸이 이김 */
+    return arc+kSmall+kBig+kp+ip+ov+((E.sk&&E.sk.min)?(k<0.995?1.2:0)+Math.max(0,1-k)*4:0);   /* v141: 미니멀은 글자 크기를 모든 화면에 같게 — k 가 1 에 못 미치는(글이 줄어드는) 칸은 조금만 줄어도 감점 */
   };
   const hints=us.map(u=>{ const sl=its[u.i]._slot; return sl>=1&&sl<=M?Math.round(sl)-1:-1; });
   const evalT=t=>{
@@ -50676,6 +50729,7 @@ function layoutPick(ig,opt){
     return {t,slots:sl,perm,kmin,cost:dp[N-1]/M+Math.max(0,0.8-cov)*0.6+unb*(M===1?2.6:0.4)+spread};   /* 화면이 휑하게 비거나(덮는 넓이) 한쪽으로 쏠리는 템플릿은 감점 — 한 칸짜리가 '왼쪽 크게'로 반만 차는 일을 막음 */
   };
   let cands=LTPL.filter(t=>t.n===M); if(opt.tpl){ const w=LTPL.find(t=>t.id===opt.tpl); if(w&&w.n===M) cands=[w]; }
+  if(E.sk&&E.sk.min&&M===1&&!opt.tpl&&/^(m\.mhero|x\.mhead|l\.mkey|t\.mtoc|g\.mba|g\.mring|l\.mfork)$/.test(its[0].type)){ const c2=cands.filter(t=>/^t1-0[1-4]$|^t1-09$/.test(t.id)); if(c2.length) cands=c2; }   /* v142: 한 화면의 주인공은 가운데 대칭 칸에 */
   const seed=String(ig.id||'')+'|'+its.map(x=>x.type).join(','), all=[];
   const histAdj=t=>{
     if(cands.length<=1) return 0; const hi=KL_HIST.indexOf(t.id), sc=M===1?0.45:1; let cnt=0, tot=0; for(let q=0;q<KL_HIST.length;q++) if(KL_HIST[q]===t.id) cnt++; if(hi>=0&&hi<4) tot+=[0.7,0.4,0.2,0.1][hi]*sc; tot+=Math.min(0.24,0.06*cnt)*sc; return tot;   /* 바로 앞 장면과 같은 템플릿은 크게, 이번 영상에서 많이 쓴 템플릿은 조금 감점 → 긴 영상에서 템플릿이 고르게 퍼짐 */
@@ -50689,6 +50743,7 @@ function layoutPick(ig,opt){
     const re=[]; useFit=true; all.slice(0,8).forEach(r0=>{ const r=evalT(r0.t); if(r){ r.total=r.cost+histAdj(r0.t); re.push(r); } }); useFit=false;
     if(re.length){ re.sort((a,b)=>a.total-b.total); all.length=0; re.forEach(r=>all.push(r)); }
   }
+  if(E.sk&&E.sk.min&&all.length>1&&!opt.tpl){ const full=all.filter(r=>r.kmin>=0.97); if(full.length&&full.length<all.length){ all.length=0; full.forEach(r=>all.push(r)); } }   /* v142: 미니멀은 글자 크기를 모든 화면에 같게 — 줄어들지 않는 배치가 있으면 줄어드는 배치는 후보에서 뺌 */
   let best=all[0]||null;
   if(best&&all.length>1&&!opt.tpl){   /* 거의 같은 점수(0.45 안)의 후보 중에서 장면마다 다르게 — 내용이 같으면 늘 같은 결과(해시)이고, 어색한 후보는 절대 안 고름 */
     const pool=all.filter(r=>r.total<=best.total+(klBal()&&info.every(q=>q.tile)?0.2:0.45)); if(pool.length>1) best=pool[Math.min(pool.length-1,Math.floor(klHash(seed)*pool.length))];
@@ -50737,7 +50792,7 @@ function klDialect(){ const sty=(P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news'
 function klShortOf(it){   /* 글 하나만 있는 짧은 블록의 글(아니면 '') */
   if(!it||(it.parts&&it.parts.length)) return '';
   const d=klOf(it.type), fid=d?d.fid:'';
-  if(!(it.type==='point'||(it.type==='quote'&&!it.by)||(fid==='x'&&!KL_TILEK.test(d.id)))) return '';
+  if(!(it.type==='point'||(it.type==='quote'&&!it.by)||(fid==='x'&&!KL_TILEK.test(d.id)&&d.id!=='mhead'))) return '';
   if(String(it.sub||'').trim()||String(it.by||'').trim()||String(it.label||'').trim()) return '';
   const t=String(it.text||'').trim(); return t&&klW(t)<=11?t:'';
 }
@@ -50821,6 +50876,80 @@ const klMinStyle=()=>((P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news')==='minim
 const klMinCtx=ctx=>((ctx&&ctx.style)||(P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news')==='minimal';
 const KLM_GRAY=['#ffffff','#cfd6dd','#98a3ae','#66717d'];
 function klMonoCol(pal,i){ return i<=0?pal.accent:KLM_GRAY[(i-1)%KLM_GRAY.length]; }   /* 여러 계열 색 대신 청록 → 흰 → 회색 단계 */
+/* ── v141: 미니멀 글자 크기 체계 + 균형 줄바꿈 ─────────────────────────────────────────────────────────────────────────────
+   요청(2026-11-03, 화면 3장): ① 같은 수치가 두 번 나온다('+13.7%' 아래 '평균 13.7% 상승') ② 불필요한 줄바꿈('퀄컴 실적 · 11월 FOMC / 개막', '핵심 요약 / 01', 'AI 인프라 / 조정')
+        ③ 강조할 말에만 큰 글씨, 나머지 글은 모든 화면에서 같은 크기로(너무 크지 않게) ④ 큰 수치도 모든 화면에서 같은 크기로.
+   원인: ㉠ 글자 배율 k 를 '칸에 들어가는 가장 큰 값'(igFlow 1.3 · hero 2.0 · 직접 배치 3.2)으로 잡아 칸이 넓으면 글이 커지고, ㉡ 글마다 폭에 맞춰 따로 줄여(fitFont) 같은 역할의 글이
+        카드마다 크기가 달랐음(수치 96↔114px · 오른쪽 태그 20.6↔34.6px) ㉢ 글이 '들어가는 첫 크기'에서 멈춰 조금만 줄이면 한 줄이 될 글도 접고(xText·klmMeasure·xTileFit), 탐욕 줄바꿈이라 낱말 하나만 남는 줄이 생김
+        ㉣ 수치 카드의 sub·note 가 value 의 수치를 되풀이해도 거름망이 안 잡음(거름망은 자막·제목과만 견주고 같은 카드 안은 안 봄).
+   고침: 미니멀은 k 를 KLM_K(1) 이하로 묶고(칸이 넓어도 글을 키우지 않고 내용을 칸 가운데에 모아 그림), 글은 세 가지 크기만 씀 — NUM(큰 수치)·HEAD(강조 글)·BODY(나머지), 모두 B 기준 비율.
+        줄바꿈은 정한 폭에 한 줄로 들어가면 한 줄(6% 안으로 넘치면 그만큼만 줄임), 접어야 하면 균형 있게(낱말 하나만 남는 줄 없이, '·'·'&' 같은 기호는 앞뒤 낱말에 붙임).
+        같은 수치는 한 구성요소(와 같은 clip 의 다른 글)에서 한 번만 — klNumClip(아래 중복 정리). 다른 스타일은 그대로. 검색: klm · KLM_T · klmFit · klNumClip · v141 ── */
+const KLM_K=1, KLM_T={num:0.130,head:0.072,body:0.040};   /* B 기준 — 큰 수치 · 강조 글(제목과 같은 크기) · 나머지 글(자막보다 조금 작게) */
+const klmOn=E=>!!(E&&E.sk&&E.sk.min);
+const klmBk=(E,c)=>E.B*Math.min(c.k,KLM_K);
+const klmF=(bk,role,z)=>KLM_T[role]*bk*(z||1);
+function klmTok(txt){   /* 낱말 목록 — '·' '&' '-' '/' 같은 홀로 선 기호는 앞뒤 낱말에 붙여 줄 끝·줄 머리에 안 오게 */
+  const w=String(txt==null?'':txt).split(/\s+/).filter(Boolean), out=[];
+  for(let i=0;i<w.length;i++){ const t=w[i]; if(/^[·•\-–—\/&+~|]$/.test(t)&&out.length&&i+1<w.length){ out[out.length-1]+=' '+t+' '+w[i+1]; i++; } else out.push(t); }
+  return out;
+}
+function klmGreedy(g,toks,w){
+  const ls=[]; let cur='';
+  toks.forEach(t=>{
+    if(g.measureText(t).width>w){ if(cur){ ls.push(cur); cur=''; } let part=''; for(const ch of t){ if(part&&g.measureText(part+ch).width>w){ ls.push(part); part=ch; } else part+=ch; } cur=part; return; }   /* 한 낱말이 폭보다 길면 글자 단위로 */
+    const x=cur?cur+' '+t:t; if(!cur||g.measureText(x).width<=w) cur=x; else{ ls.push(cur); cur=t; } });
+  if(cur) ls.push(cur); return ls;
+}
+function klmWrap(g,txt,w){   /* 균형 줄바꿈 — 줄 수는 그대로 두고 가장 좁은 폭으로 다시 접어 마지막 줄에 낱말 하나만 남는 일이 없게 */
+  const toks=klmTok(txt); if(!toks.length) return [''];
+  const ls=klmGreedy(g,toks,w); if(ls.length<2) return ls;
+  const n=ls.length; let lo=0, hi=w; toks.forEach(t=>{ lo=Math.max(lo,Math.min(w,g.measureText(t).width)); });
+  for(let i=0;i<14;i++){ const mid=(lo+hi)/2; if(klmGreedy(g,toks,mid).length<=n) hi=mid; else lo=mid; }
+  const b=klmGreedy(g,toks,hi); return b.length<=n?b:ls;
+}
+function klmFit(E,txt,w,fs0,wt,maxL,mink){   /* 글 한 덩어리 — 정한 크기(fs0)로 폭 w 안에: 한 줄이면 한 줄 · 6% 안으로 넘치면 한 줄로 줄임 · 접어야 하면 균형 있게(maxL 줄까지) · 그래도 안 들어가면 그때만 크기를 줄임. maxL=1 은 줄이기만(자르지 않음) */
+  const g=E.g; txt=String(txt==null?'':txt); const mx=Math.max(1,maxL||3);
+  if(!txt.trim()) return {fs:fs0,lines:[],lh:fs0*1.25,w:0};
+  const paras=hasNL(txt)?nlLines(txt):[txt], wrapAll=f=>{ g.font=wt+' '+f.toFixed(1)+'px '+E.font; const o=[]; paras.forEach(p=>klmWrap(g,p,Math.max(10,w)).forEach(l=>o.push(l))); return o; };
+  let fs=fs0, lines=wrapAll(fs);
+  if(paras.length===1&&lines.length>1){
+    g.font=wt+' '+fs.toFixed(1)+'px '+E.font; const one=paras[0].trim().replace(/\s+/g,' '), tw=g.measureText(one).width;
+    if(tw>0&&(tw<=w*1.07||mx===1)){ const f2=Math.max(fs0*(mx===1?0.35:0.93),fs*w/tw*0.995); g.font=wt+' '+f2.toFixed(1)+'px '+E.font; if(g.measureText(one).width<=w+0.5){ fs=f2; lines=[one]; } else if(mx===1){ fs=f2; lines=[one]; } }
+  }
+  for(let k=0;k<16&&lines.length>mx;k++){ const f2=fs*0.94; if(f2<fs0*(mink||0.55)) break; fs=f2; lines=wrapAll(fs); }
+  if(lines.length>mx) lines=lines.slice(0,mx);
+  g.font=wt+' '+fs.toFixed(1)+'px '+E.font; let mw=0; lines.forEach(l=>{ mw=Math.max(mw,g.measureText(l).width); });
+  return {fs,lines,lh:fs*1.25,w:mw};
+}
+function klmFitAll(E,txts,w,fs0,wt,maxL){   /* 한 구성요소 안의 같은 역할 글들(항목 이름·날짜·설명…) — 모두 같은 크기. 가장 많이 줄여야 하는 글에 맞춤(6% 안) · 빈 글은 null */
+  const a=txts.map(t=>t?klmFit(E,t,w,fs0,wt,maxL):null), fsU=a.reduce((m,f)=>(f&&f.lines.length)?Math.min(m,f.fs):m,fs0);
+  return a.map((f,i)=>!f?null:(Math.abs(f.fs-fsU)<0.05?f:klmFit(E,txts[i],w,fsU,wt,maxL,1)));
+}
+function klmWrapCount(R,its){   /* 기록된 그림에서 글 한 덩어리가 여러 줄로 나뉘어 그려진 여분의 줄 수 — 배치 디렉터가 불필요하게 접히는 좁은 칸을 피하게(klFxWrap 과 같은 방법) */
+  const srcs=[], walk=(o,d)=>{ if(typeof o==='string'){ const v=o.replace(/\s+/g,' ').trim(); if(v.length>=4) srcs.push(v); } else if(o&&typeof o==='object'&&d<3) Object.keys(o).forEach(k=>{ if(k!=='at'&&k!=='dt'&&k!=='id'&&k!=='bx'&&k!=='hl'&&k!=='_poster') walk(o[k],d+1); }); };
+  (its||[]).forEach(it=>walk(it,0)); const rs=R.texts; let extra=0; if(!srcs.length||rs.length<2) return 0;
+  const geo=(p,q)=>{ const dy=Math.abs(q.y0-p.y0); return Math.abs(q.fs-p.fs)<=p.fs*0.08&&dy>=p.fs*0.7&&dy<=p.fs*2&&(Math.abs(q.x0-p.x0)<=p.fs*0.5||Math.abs((q.x0+q.x1)/2-(p.x0+p.x1)/2)<=p.fs*0.5||Math.abs(q.x1-p.x1)<=p.fs*0.5); };
+  srcs.forEach(S=>{ const NS=S.replace(/ /g,''); let i=0;
+    while(i<rs.length){ const a=rs[i].s.replace(/ /g,''), pos=a.length?NS.indexOf(a):-1; if(pos<0||a.length>=NS.length){ i++; continue; }
+      let end=pos+a.length, run=1, j=i+1; while(j<rs.length){ const b=rs[j].s.replace(/ /g,''); if(b.length&&geo(rs[j-1],rs[j])&&NS.substr(end,b.length)===b){ end+=b.length; run++; j++; } else break; }
+      if(run>=2) extra+=run-1; i=Math.max(j,i+1); } });
+  return extra;
+}
+function klmWrapExcess(E,it,c){ try{ const R=klFxRec(), E2=klFxEnv(E,[it],{}); R.reset(); DRAW[c.t](E2,c,it); return klmWrapCount(R,[it]); }catch(e){ if(window.__klStrict) throw e; return 0; } }
+function klmPut(E,f,x,y,col,wt,al){ f.lines.forEach((l,i)=>dtx(E.g,l,x,y+i*f.lh,f.fs,wt,col,E.font,al||'left','top')); return f.lines.length*f.lh; }   /* 그리고 쓴 높이를 돌려줌 */
+function klmHl(lines,hl){   /* 줄바꿈 때문에 한 줄에 다 안 들어간 강조 구절은 낱말별로 강조(xRichLine 은 줄마다 찾음) */
+  hl=(hl||[]).filter(Boolean); if(!hl.length) return hl; const out=hl.slice();
+  hl.forEach(ph=>{ if(lines.some(l=>l.indexOf(ph)>=0)) return; ph.split(/\s+/).forEach(wd=>{ if(wd.length>=2&&out.indexOf(wd)<0&&lines.some(l=>l.indexOf(wd)>=0)) out.push(wd); }); });
+  return out;
+}
+function klmXText(E,txt,hl,R,fs0,wt,col,al,va,mode,hcol,maxL,minK){   /* xText 의 미니멀 판 — 한 줄이면 한 줄 · 균형 줄바꿈 · 높이가 모자랄 때만 줄임. 쓴 높이를 돌려줌 */
+  txt=String(txt==null?'':txt); if(!txt) return 0; const mx=maxL||4, mk=minK||0.45; let f=klmFit(E,txt,R.w,fs0,wt,mx,mk);
+  for(let k=0;k<12&&f.lines.length*f.lh>R.h+1&&f.fs>fs0*mk+0.01;k++) f=klmFit(E,txt,R.w,f.fs*0.93,wt,mx,1);
+  const th=f.lines.length*f.lh, y0=va==='t'?R.y:va==='b'?R.y+R.h-th:R.y+(R.h-th)/2, ax=al==='c'?R.x+R.w/2:al==='r'?R.x+R.w:R.x, hh=klmHl(f.lines,hl);
+  f.lines.forEach((l,i)=>xRichLine(E,l,ax,y0+i*f.lh+(f.lh-f.fs)*0.4,f.fs,wt,col,al,hh,mode,hcol)); return th;
+}
+function klmRich(E,f,hl,x,y,col,wt,mode,hcol,al){ const hh=klmHl(f.lines,hl); f.lines.forEach((l,i)=>xRichLine(E,l,x,y+i*f.lh+(f.lh-f.fs)*0.4,f.fs,wt,col,al||'l',hh,mode,hcol)); return f.lines.length*f.lh; }   /* 강조 낱말만 색·표시(mode) — 크기는 그대로 */
 
 /* ── 바탕: 검정(장면 위면 어둡게 낮춤), 카드 위치에는 어두운 막만 ── */
 function klMinBack(g,w,h,ig,L,pal,B){
@@ -50846,8 +50975,7 @@ function klMinHead(E,L,ig,lt,o){   /* 제목·윗글 — 슬래시 머리글 + �
   g.save(); if(L.panel){ g.beginPath(); roundRect(g,L.panel.x,L.panel.y,L.panel.w,L.panel.h,L.panel.r); g.clip(); }
   g.globalAlpha*=o.all?1:rv(lt,0.35); let y=H.y;
   const src=String(ig.source||'').trim();
-  if(src&&H.srcH>0){ const fs=0.022*B, s=nlFlat(src); g.font='600 '+fs.toFixed(1)+'px '+font; const pw=Math.min(H.w,g.measureText(s).width+fs*1.6), ph=fs*1.9, px=H.x, py=H.y; y+=H.srcH;
-    roundRect(g,px,py,pw,ph,ph*0.3); g.fillStyle='rgba(38,40,45,.94)'; g.fill(); dtf(g,s,px+pw/2,py+ph/2,pw-fs*1.0,fs,'600','rgba(255,255,255,.92)',font,'center','middle',0.6); }
+  if(src&&H.srcH>0){ const fs=0.022*B, s=nlFlat(src); y+=H.srcH; dtf(g,s,H.x,H.y+fs*0.15,H.w,fs,'500',alphaOf(pal.text,0.84),font,'left','top',0.6); }   /* v142: 출처는 알약 없이 왼쪽 위 작은 글(레퍼런스) */
   if(H.kick){ klMinKicker(E,H.kick,H.x,y,H.fsK,H.w); y+=H.fsK*1.55; }
   if(H.tl.length){ const lh=H.fsT*1.18; H.tl.forEach((l,i)=>dtx(g,l,H.x,y+i*lh,H.fsT,'800',pal.text,font)); }
   g.restore();
@@ -50862,179 +50990,208 @@ function klMinTitleCard(E,L,ig,k){   /* 타이틀 — 윤곽 알약(청록 슬�
   g.restore();
 }
 
-/* ── 글 크기를 그리지 않고 재기(xText 와 같은 계산) ── */
-function klmMeasure(E,txt,w,h,fs0,wt,maxL){
-  const g=E.g; txt=String(txt==null?'':txt); if(!txt) return {fs:fs0,n:0,th:0,lines:[]}; const paras=hasNL(txt)?nlLines(txt):[txt]; let fs=fs0, lines=[];
-  for(let k=0;k<14;k++){ g.font=wt+' '+fs.toFixed(1)+'px '+E.font; lines=[]; paras.forEach(p=>wrapLines(g,p,Math.max(10,w)).forEach(l=>lines.push(l))); if((lines.length<=(maxL||4)&&lines.length*fs*1.28<=h+1)||fs<=fs0*0.45) break; fs*=0.92; }
-  lines=lines.slice(0,maxL||4); return {fs,n:lines.length,th:lines.length*fs*1.28,lines};
-}
-function klmHl(E,text,hl,w,h,fs0,wt,maxL){   /* 줄바꿈 때문에 한 줄에 다 안 들어간 강조 구절은 낱말별로 강조(xRichLine 은 줄마다 찾음) */
-  hl=(hl||[]).filter(Boolean); if(!hl.length) return hl; const m=klmMeasure(E,text,w,h,fs0,wt,maxL), out=hl.slice();
-  hl.forEach(ph=>{ if(m.lines.some(l=>l.indexOf(ph)>=0)) return; ph.split(/\s+/).forEach(wd=>{ if(wd.length>=2&&out.indexOf(wd)<0&&m.lines.some(l=>l.indexOf(wd)>=0)) out.push(wd); }); });
-  return out;
-}
+/* ── 글 크기를 그리지 않고 재기·그리기(klmFit·klmPut·klmRich)는 위 v141 도구 — 아래 구성요소는 모두 같은 크기 체계(KLM_T)를 씀 ── */
 const klmSlide=(g,a,bk)=>{ g.globalAlpha*=a; g.translate((1-a)*0.025*bk,0); };   /* 나타날 때 옅음→진함 + 살짝 옆에서 */
 const klmBox=(c,bk,px,py)=>{ const pad=(px==null?0.024:px)*bk, pv=(py==null?0.7:py)*pad; return {x:c.x+pad,y:c.y+pv,w:Math.max(10,c.w-pad*2),h:Math.max(10,c.h-pv*2)}; };
 function klmRule(g,x,y,w,h,col){ g.fillStyle=col; g.fillRect(x,y,w,h); }
 
-/* ── m.mstat — 작은 이름 + 아주 큰 수치 + 오른쪽 변화·덧글 + 청록 선(pct 가 있으면 진행 막대) + 굵은 한 줄 요약 ── */
+/* ── m.mstat — 작은 이름 + 큰 수치(NUM) + 오른쪽 변화·덧글 + 청록 선(pct 가 있으면 진행 막대) + 굵은 한 줄 요약. 내용은 칸 가운데에 모아 그림(칸이 커도 글을 키우지 않음) ── */
+function klmStatGeo(E,c,it){   /* 수치 카드의 크기·자리 — 수치 옆 자리에 변화·덧글이 한 줄씩 들어가는지(안 들어가면 수치 아래로) */
+  const g=E.g, bk=klmBk(E,c), R=klmBox(c,bk,0.022,0.6), tone=itemTone(it), val=String(it.value||'').trim(), note=String(it.note||'').trim(), dl=deltaText(it,tone);
+  const fd=klmF(bk,'body',FZ(it,'delta')), fn=klmF(bk,'body',FZ(it,'note')); let fv=klmF(bk,'num',FZ(it,'value'));
+  g.font='800 '+fv.toFixed(1)+'px '+E.font; let vw=g.measureText(val).width; if(vw>R.w*0.96){ fv*=R.w*0.96/vw; vw=R.w*0.96; }   /* 아주 긴 수치만 줄임 */
+  const sx0=R.x+vw+Math.max(0.03*bk,fv*0.2), sw=R.x+R.w-sx0, one=(s,f,wt)=>{ if(!s) return true; g.font=wt+' '+f.toFixed(1)+'px '+E.font; return g.measureText(s).width<=sw*1.07; };
+  return {bk,R,fv,vw,sx0,sw,fd,fn,below:!!(dl||note)&&!(one(dl,fd,'800')&&one(note,fn,'600'))};
+}
+const KLM_SP=0.25;   /* 수치 카드의 간격·여백을 줄일 수 있는 하한(보통 간격의 25%) — 칸이 낮아도 글 크기는 그대로 두고 간격만 좁혀 모든 화면의 수치 크기를 같게 */
+function klmStatBelow(E,c,it){   /* 같은 clip 의 수치 카드들이 모두 같은 모양(옆/아래)이 되게 — 하나라도 옆에 한 줄씩 안 들어가면 모두 아래. 칸 목록이 없을 때(높이 재기)는 이 카드만 */
+  const cells=E.cells; if(!cells||!cells.length) return klmStatGeo(E,c,it).below;
+  if(E._mstB!==undefined) return E._mstB; let any=false; const sib=cells.filter(q=>q.t==='m.mstat'&&E.items&&E.items[q.i]).map(q=>({c:q,it:E.items[q.i]}));
+  (sib.length?sib:[{c,it}]).forEach(o=>{ if(klmStatGeo(E,o.c,o.it).below) any=true; }); return E._mstB=any;
+}
+function klmStatLay(E,c,it,belowForce){   /* 수치 카드 한 장의 글줄·높이 계산 — 그리기(drawMStat)와 높이 재기(MEAS)가 같이 씀. fixed = 글 크기로 정해지는 높이(줄지 않음) · gi = 줄 사이 간격 · pv = 위아래 여백(gi·pv 는 칸이 낮으면 좁힘) */
+  const G=klmStatGeo(E,c,it), bk=G.bk, R=G.R, fv=G.fv, fd=G.fd, fn=G.fn, tone=itemTone(it), dl=deltaText(it,tone);
+  const label=String(it.label||'').trim(), sub=String(it.sub||'').trim(), note=String(it.note||'').trim(), hOf=f=>f?f.lines.length*f.lh:0;
+  const fl=klmF(bk,'body',FZ(it,'label')), fb=klmF(bk,'body',FZ(it,'sub')), gap=0.016*bk, rh=Math.max(2,0.006*bk), side=!!(dl||note);
+  const below=side&&(belowForce!==undefined?belowForce:klmStatBelow(E,c,it)), sx0=G.sx0, sw=G.sw;
+  const lf=label?klmFit(E,label,R.w,fl,'700',1):null, bf=sub?klmFit(E,sub,R.w,fb,'800',2):null;
+  let sd=null, sn=null, inline=false, sh=0, belowH=0;
+  if(side&&!below){ sd=dl?klmFit(E,dl,sw,fd,'800',1,0.93):null; sn=note?klmFit(E,note,sw,fn,'600',1,0.93):null; sh=hOf(sd)+hOf(sn)+(sd&&sn?fn*0.15:0); }
+  if(below){
+    const g=E.g; g.font='800 '+fd.toFixed(1)+'px '+E.font; const wd=dl?g.measureText(dl).width:0; g.font='600 '+fn.toFixed(1)+'px '+E.font; const wn=note?g.measureText(note).width:0;
+    inline=!!(dl&&note)&&wd+wn+fd*1.2<=R.w;   /* 변화와 덧글이 한 줄에 같이 들어가면 한 줄 */
+    if(inline) belowH=fd*1.25; else{ sd=dl?klmFit(E,dl,R.w,fd,'800',2):null; sn=note?klmFit(E,note,R.w,fn,'600',2):null; belowH=hOf(sd)+hOf(sn); }
+  }
+  const rowH=Math.max(fv,sh), pv=R.y-c.y, gi=(lf?gap*0.5:0)+(belowH?gap*0.4:0)+gap*2+fv*0.1;   /* 수치 줄은 글자 높이(fv)가 기본이고 위아래 여유(0.1fv)는 간격처럼 좁힘 */
+  return {G,tone,dl,label,sub,note,lf,bf,sd,sn,inline,below,side,rowH,belowH,sh,gap,rh,gi,pv,fixed:(lf?lf.lh:0)+rowH+belowH+rh+hOf(bf),space:gi+2*pv};
+}
 function drawMStat(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, tone=itemTone(it), tc=toneCol(pal,tone)||pal.accent, a=rv(s0,0.5), R=klmBox(c,bk,0.022,0.6);
-  const label=String(it.label||'').trim(), val=String(it.value||'').trim(), sub=String(it.sub||'').trim(), note=String(it.note||'').trim(), dl=deltaText(it,tone), pc=nz(it.pct);
-  g.save(); klmSlide(g,a,bk); let y=R.y;
-  if(label){ const fl=0.030*bk*FZ(it,'label'); klT(E,label,R.x,y,R.w,fl,'700',pal.mute,'left','top',0.5); y+=fl*1.7; }
-  const fsub=0.046*bk*FZ(it,'sub'), botH=sub?fsub*1.5:0, gap=0.016*bk, rh=Math.max(2,0.006*bk), vh=Math.max(10,R.y+R.h-y-botH-gap*2-rh);
-  const side=!!(dl||note), vw=side?R.w*0.64:R.w, vs=klCnt(E,s0,val,0.9), fv=fitFont(g,val,vw,Math.min(0.26*bk*FZ(it,'value'),vh*0.9),'800',font,0.3);
-  dtx(g,vs,R.x,y+vh/2,fv,'800',pal.text,font,'left','middle');
-  if(side){ g.font='800 '+fv.toFixed(1)+'px '+font; const vwid=g.measureText(val).width, sx0=R.x+Math.min(vw,vwid)+0.045*bk, sx=(R.x+R.w-sx0>=0.15*bk)?sx0:R.x+vw+0.035*bk, sw=R.x+R.w-sx, fd=Math.min(fv*0.42,0.07*bk*FZ(it,'delta')); let sy=y+vh*0.5-(dl&&note?fd*0.9:fd*0.5);
-    if(dl){ klT(E,dl,sx,sy,sw,fd,'800',tc,'left','top',0.4); sy+=fd*1.3; }
-    if(note) klT(E,note,sx,sy+0.004*bk,sw,0.030*bk*FZ(it,'note'),'600',pal.mute,'left','top',0.45); }
-  const ry=y+vh+gap, grow=rv(s0-0.08,0.7);
-  if(pc!=null){ klmRule(g,R.x,ry,R.w,rh,alphaOf(pal.text,0.18)); klmRule(g,R.x,ry,R.w*clamp(pc/100,0,1)*grow,rh,pal.accent); }
-  else klmRule(g,R.x,ry,R.w*grow,rh,pal.accent);
-  if(sub) klT(E,sub,R.x,ry+rh+gap,R.w,fsub,'800',pal.text,'left','top',0.5);
+  let L=klmStatLay(E,c,it);
+  if(L.below&&!L.G.below&&L.fixed+KLM_SP*L.space>c.h+0.5){ const L2=klmStatLay(E,c,it,false); if(L2.fixed<L.fixed) L=L2; }   /* 다른 카드 때문에 '아래' 모양이 되었는데 이 칸이 낮아 안 들어가면 이 카드만 자기 모양대로 */
+  const G=L.G, bk=G.bk, R=G.R, fv=G.fv, fd=G.fd, fn=G.fn, tc=toneCol(pal,L.tone)||pal.accent, a=rv(s0,0.5), pc=nz(it.pct), val=String(it.value||'').trim();
+  const lf=L.lf, bf=L.bf, sd=L.sd, sn=L.sn, inline=L.inline, below=L.below, side=L.side, belowH=L.belowH, sh=L.sh, gap=L.gap, rh=L.rh, dl=L.dl, note=L.note, sx0=G.sx0, vs=klCnt(E,s0,val,0.9);
+  const sp=clamp((c.h-L.fixed)/L.space,KLM_SP,1), rowH=Math.max(fv*(1+0.1*sp),sh);   /* 칸이 낮으면 글 크기는 그대로 두고 간격·여백만 좁힘(가장 좁게 25%) */
+  let y=c.y+Math.max(0,(c.h-(L.fixed+sp*L.gi))/2);   /* fixed·gi 는 sp=1 기준 */
+  g.save(); klmSlide(g,a,bk);
+  if(lf){ klmPut(E,lf,R.x,y,pal.mute,'700'); y+=lf.lh+gap*0.5*sp; }
+  dtx(g,vs,R.x,y+rowH/2,fv,'800',pal.text,font,'left','middle');
+  if(!below&&side){ let sy=y+rowH/2-sh/2; if(sd){ sy+=klmPut(E,sd,sx0,sy,tc,'800'); if(sn) sy+=fn*0.15; } if(sn) klmPut(E,sn,sx0,sy,pal.mute,'600'); }
+  y+=rowH;
+  if(below){ y+=gap*0.4*sp;
+    if(inline){ g.font='800 '+fd.toFixed(1)+'px '+font; const wd=g.measureText(dl).width; dtx(g,dl,R.x,y,fd,'800',tc,font,'left','top'); dtx(g,note,R.x+wd+fd*1.2,y,fn,'600',pal.mute,font,'left','top'); y+=belowH; }
+    else{ if(sd) y+=klmPut(E,sd,R.x,y,tc,'800'); if(sn) y+=klmPut(E,sn,R.x,y,pal.mute,'600'); } }
+  y+=gap*sp; const grow=rv(s0-0.08,0.7);
+  if(pc!=null){ klmRule(g,R.x,y,R.w,rh,alphaOf(pal.text,0.18)); klmRule(g,R.x,y,R.w*clamp(pc/100,0,1)*grow,rh,pal.accent); }
+  else klmRule(g,R.x,y,R.w*grow,rh,pal.accent);
+  y+=rh+gap*sp; if(bf) klmPut(E,bf,R.x,y,pal.text,'800');
   g.restore();
 }
-/* ── x.mtitle(슬래시 제목) · x.mquote(인용 + 청록 형광) · x.mbar(청록 세로 막대 + 글) ── */
+/* ── x.mtitle(슬래시 제목) · x.mquote(인용 + 청록 형광) · x.mbar(청록 세로 막대 + 글) — 본문 글은 HEAD, 부가 글은 BODY ── */
 function drawXMin(E,c,it,D){
   const g=E.g, pal=E.pal, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, k=D.t.kind, a=rv(s0,0.5), R=klmBox(c,bk,0.024,0.7), acc=pal.accent;
+  const bk=klmBk(E,c), k=D.t.kind, a=rv(s0,0.5), R=klmBox(c,bk,0.024,0.7), acc=pal.accent;
   const text=String(it.text||'').trim(), sub=String(it.sub||'').trim(), by=String(it.by||'').trim(), label=String(it.label||'').trim(), hl=it.hl||[];
-  const fT=0.068*bk*FZ(it,'text'), fS=0.034*bk*FZ(it,'sub'), fB=0.027*bk*FZ(it,'by'), fL=0.028*bk*FZ(it,'label');
+  const fT=klmF(bk,'head',FZ(it,'text')), fS=klmF(bk,'body',FZ(it,'sub')), fB=klmF(bk,'body',FZ(it,'by')), fL=klmF(bk,'body',FZ(it,'label')), hOf=f=>f?f.lines.length*f.lh:0;
   g.save(); klmSlide(g,a,bk);
   if(k==='mtitle'){
-    let y=R.y; if(label){ klMinKicker(E,label,R.x,y,fL,R.w); y+=fL*2.0; }
-    const hs=(sub?fS*1.9:0)+(by?fB*1.8:0), hT=Math.max(10,R.y+R.h-y-hs), f0=0.085*bk*FZ(it,'text'), th=xText(E,text,klmHl(E,text,hl,R.w,hT,f0,'800',3),{x:R.x,y,w:R.w,h:hT},f0,'800',pal.text,'l','t','color',acc,3);
-    y+=th+fS*0.55;
-    if(sub){ const bw=Math.max(3,0.006*bk), sh=fS*1.3; g.fillStyle=acc; roundRect(g,R.x,y,bw,sh,bw/2); g.fill(); klT(E,sub,R.x+bw+fS*0.6,y+sh/2,R.w-bw-fS*0.6,fS,'600',alphaOf(pal.text,0.92),'left','middle',0.5); y+=sh+fB*0.6; }
-    if(by) klT(E,by,R.x,y,R.w,fB,'600',pal.mute,'left','top',0.5);
+    const bw=Math.max(3,0.006*bk), tf=klmFit(E,text,R.w,fT,'800',3), sf=sub?klmFit(E,sub,R.w-bw-fS*0.6,fS,'600',2):null, bf=by?klmFit(E,by,R.w,fB,'600',1):null, sh=sf?Math.max(hOf(sf),fS*1.3):0;
+    const tot=(label?fL*2.0:0)+hOf(tf)+(sf?fS*0.55+sh:0)+(bf?fB*0.6+bf.lh:0); let y=R.y+Math.max(0,(R.h-tot)/2);
+    if(label){ klMinKicker(E,label,R.x,y,fL,R.w); y+=fL*2.0; }
+    y+=klmRich(E,tf,hl,R.x,y,pal.text,'800','color',acc);
+    if(sf){ y+=fS*0.55; g.fillStyle=acc; roundRect(g,R.x,y,bw,sh,bw/2); g.fill(); klmPut(E,sf,R.x+bw+fS*0.6,y+(sh-hOf(sf))/2,alphaOf(pal.text,0.92),'600'); y+=sh; }
+    if(bf){ y+=fB*0.6; klmPut(E,bf,R.x,y,pal.mute,'600'); }
   }else if(k==='mquote'){
-    const q=Math.min(0.20*bk,R.h*0.3); klT(E,'“',R.x-0.004*bk,R.y-q*0.12,q*1.4,q*1.5,'800',acc,'left','top',0.3);
-    const y0=R.y+q*1.05, hb=(sub?fS*1.9:0)+(by?fB*1.9:0), hcol=klMix(acc,'#000000',0.2);
-    const hQ=Math.max(10,R.y+R.h-y0-hb), th=xText(E,text,klmHl(E,text,hl,R.w,hQ,fT,'800',4),{x:R.x,y:y0,w:R.w,h:hQ},fT,'800',pal.text,'l','t','mark',hcol,4); let y=y0+th+fS*0.6;
-    if(sub){ const sh=xText(E,sub,[],{x:R.x,y,w:R.w,h:fS*3},fS,'500',alphaOf(pal.text,0.88),'l','t','',acc,2); y+=sh+fB*0.7; }
-    if(by) klT(E,(/^[—–-]/.test(by)?'':'— ')+by,R.x,y,R.w,fB,'600',pal.mute,'left','top',0.5);
+    const q=Math.min(0.16*bk,R.h*0.25), byT=by?(/^[—–-]/.test(by)?'':'— ')+by:'', tf=klmFit(E,text,R.w,fT,'800',4), sf=sub?klmFit(E,sub,R.w,fS,'500',2):null, bf=byT?klmFit(E,byT,R.w,fB,'600',1):null;
+    const tot=q*0.9+hOf(tf)+(sf?fS*0.6+hOf(sf):0)+(bf?fB*0.7+bf.lh:0); let y=R.y+Math.max(0,(R.h-tot)/2);
+    klT(E,'“',R.x-0.004*bk,y-q*0.1,q*1.4,q*1.5,'800',acc,'left','top',0.3); y+=q*0.9;
+    y+=klmRich(E,tf,hl,R.x,y,pal.text,'800','mark',klMix(acc,'#000000',0.2));
+    if(sf){ y+=fS*0.6; y+=klmPut(E,sf,R.x,y,alphaOf(pal.text,0.88),'500'); }
+    if(bf){ y+=fB*0.7; klmPut(E,bf,R.x,y,pal.mute,'600'); }
   }else{   /* mbar */
-    const bw=Math.max(4,0.008*bk), x0=R.x+bw+0.028*bk, tw=Math.max(10,R.w-bw-0.028*bk), hb=sub?fS*1.9:0, fs0=fT*1.05, m=klmMeasure(E,text,tw,Math.max(10,R.h-hb),fs0,'800',3), tot=m.th+hb, y0=R.y+Math.max(0,(R.h-tot)/2);
-    xText(E,text,klmHl(E,text,hl,tw,Math.max(10,R.h-hb),fs0,'800',3),{x:x0,y:y0,w:tw,h:Math.max(10,R.h-hb)},fs0,'800',pal.text,'l','t','color',acc,3);
-    if(sub) klT(E,sub,x0,y0+m.th+fS*0.5,tw,fS,'600',pal.mute,'left','top',0.5);
+    const bw=Math.max(4,0.008*bk), x0=R.x+bw+0.028*bk, tw=Math.max(10,R.w-bw-0.028*bk), tf=klmFit(E,text,tw,fT,'800',3), sf=sub?klmFit(E,sub,tw,fS,'600',2):null;
+    const th=hOf(tf), tot=th+(sf?fS*0.5+hOf(sf):0), y0=R.y+Math.max(0,(R.h-tot)/2);
+    klmRich(E,tf,hl,x0,y0,pal.text,'800','color',acc); if(sf) klmPut(E,sf,x0,y0+th+fS*0.5,pal.mute,'600');
     g.fillStyle=acc; roundRect(g,R.x,y0,bw,Math.max(bw*2,tot*rv(s0,0.6)),bw/2); g.fill();
   }
   g.restore();
 }
-/* ── l.msum(요약: 왼쪽 큰 제목 + 청록 세로선 + 항목 이름·한 문장) · l.mstrike(취소선: sb '-' 는 그어 지운 옛것, '+' 는 청록으로 강조한 새것) ── */
+/* ── l.msum(요약: 왼쪽 큰 제목 HEAD + 청록 세로선 + 항목 이름·한 문장 BODY) · l.mstrike(취소선: sb '-' 는 그어 지운 옛것, '+' 는 청록으로 강조한 새것, HEAD) ── */
 function drawLMin(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, k=D.t.kind, ds=lData(it,6); if(!ds.length) return; const n=ds.length, acc=pal.accent, R=klmBox(c,bk,0.024,0.7), zt=FZP(it,'t');
-  const Pq=q=>{ const sp=klPtS(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.45); };
+  const bk=klmBk(E,c), k=D.t.kind, ds=lData(it,6); if(!ds.length) return; const n=ds.length, acc=pal.accent, R=klmBox(c,bk,0.024,0.7), zt=FZP(it,'t');
+  const Pq=q=>{ const sp=klPtS(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.45); }, hOf=f=>f?f.lines.length*f.lh:0;
   if(k==='msum'){
-    const label=String(it.label||'').trim(), lw=label?Math.min(R.w*0.32,0.5*bk):0, rx=R.x+(label?lw+0.04*bk:0), bw=Math.max(3,0.006*bk), dx=rx+bw+0.03*bk, tx=rx+bw+0.062*bk, tw=Math.max(10,R.x+R.w-tx), grow=rv(s0,0.6);
-    if(label){ const f0=0.095*bk*FZ(it,'label'), m=klmMeasure(E,label,lw,R.h,f0,'800',3); xText(E,label,[],{x:R.x,y:R.y+Math.max(0,(R.h-m.th)/2),w:lw,h:m.th+1},f0,'800',pal.text,'l','t','',acc,3); }
-    klmRule(g,rx,R.y+R.h*(1-grow)*0.5,bw,R.h*grow,acc);
-    const rh=Math.min(R.h/n,0.30*bk), y0=R.y+(R.h-rh*n)/2, fs=Math.min(0.048*bk*zt,rh*0.4), fl=Math.min(0.028*bk,rh*0.22);
-    ds.forEach((q,i)=>{ const a=Pq(q); if(a<=0) return; const cy=y0+i*rh+rh/2; g.save(); klmSlide(g,a,bk);
-      const m=klmMeasure(E,q.t,tw,rh*(q.s?0.62:0.8),fs,'700',2), bh=(q.s?fl*1.5:0)+m.th, by0=cy-bh/2;
-      if(q.s) klT(E,q.s,tx,by0,tw,fl,'600',pal.mute,'left','top',0.5);
-      const ty=by0+(q.s?fl*1.5:0); xText(E,q.t,[],{x:tx,y:ty,w:tw,h:m.th+1},fs,'700',pal.text,'l','t','',acc,2); klDot(g,dx,ty+m.fs*0.64,Math.max(2.5,0.009*bk),acc); g.restore(); });
+    const label=String(it.label||'').trim(), fH=klmF(bk,'head',FZ(it,'label')), fb=klmF(bk,'body',zt), bw=Math.max(3,0.006*bk), grow=rv(s0,0.6);
+    const lf=label?klmFit(E,label,R.w*0.4,fH,'800',3):null, rx=R.x+(lf?lf.w+0.05*bk:0), dx=rx+bw+0.03*bk, tx=rx+bw+0.062*bk, tw=Math.max(10,R.x+R.w-tx);   /* 제목 칸은 제목이 한 줄에 들어갈 만큼만(폭의 40% 까지) */
+    const tfs=klmFitAll(E,ds.map(q=>q.t),tw,fb,'700',2), sfs=klmFitAll(E,ds.map(q=>q.s),tw,fb,'600',1), rows=ds.map((q,i)=>({q,tf:tfs[i],sf:sfs[i],h:(sfs[i]?sfs[i].lh*1.05:0)+hOf(tfs[i])}));   /* 항목 글은 모두 같은 크기 */
+    const pad=0.03*bk, tot=rows.reduce((s,r)=>s+r.h,0)+pad*(n-1), top=R.y+Math.max(0,(R.h-tot)/2);
+    if(lf) klmPut(E,lf,R.x,R.y+Math.max(0,(R.h-hOf(lf))/2),pal.text,'800');
+    klmRule(g,rx,top+tot*(1-grow)*0.5,bw,tot*grow,acc);
+    let y=top; rows.forEach(r=>{ const a=Pq(r.q); if(a>0){ g.save(); klmSlide(g,a,bk); let yy=y; if(r.sf){ klmPut(E,r.sf,tx,yy,pal.mute,'600'); yy+=r.sf.lh*1.05; } klmPut(E,r.tf,tx,yy,pal.text,'700'); klDot(g,dx,yy+r.tf.fs*0.62,Math.max(2.5,0.009*bk),acc); g.restore(); } y+=r.h+pad; });
   }else{   /* mstrike */
-    const rh=Math.min(R.h/n,0.20*bk), y0=R.y+(R.h-rh*n)/2;
-    ds.forEach((q,i)=>{ const a=Pq(q); if(a<=0) return; const struck=/^[-−–]/.test(q.s), hot=/^\+/.test(q.s), cy=y0+i*rh+rh/2, f=fitFont(g,q.t,R.w*(struck?0.92:1),Math.min(0.07*bk*zt,rh*0.62)*(hot?1.12:1),'800',font,0.5);
+    const fH=klmF(bk,'head',zt), rh=Math.min(R.h/n,fH*1.9), y0=R.y+(R.h-rh*n)/2, fU=Math.min.apply(null,ds.map(q=>klmFit(E,q.t,R.w*(/^[-−–]/.test(q.s)?0.92:1),fH,'800',1,0.7).fs));   /* 모든 줄 같은 크기 */
+    ds.forEach((q,i)=>{ const a=Pq(q); if(a<=0) return; const struck=/^[-−–]/.test(q.s), hot=/^\+/.test(q.s), cy=y0+i*rh+rh/2, f=fU;
       g.save(); klmSlide(g,a,bk); dtx(g,q.t,R.x,cy,f,'800',struck?pal.mute:(hot?acc:pal.text),font,'left','middle');
       if(struck){ g.font='800 '+f.toFixed(1)+'px '+font; const tw=Math.min(g.measureText(q.t).width,R.w), ext=f*0.3, lp=rv(klPtS(E,it,q.p,q.i)-0.25,0.4);
         g.save(); g.beginPath(); g.rect(c.x-5,c.y-5,c.w+10,c.h+10); g.clip();   /* 일부러 글 위에 긋는 선 — 겹침 검사(klFxOv)가 덮개로 오해하지 않게 클립 안에서 */
         g.strokeStyle=acc; g.lineWidth=Math.max(2.5,f*0.09); g.beginPath(); g.moveTo(R.x-ext*0.4,cy+f*0.04); g.lineTo(R.x-ext*0.4+(tw+ext*0.8)*lp,cy+f*0.04); g.stroke(); g.restore(); }
       g.restore(); });
   }
-  g.restore();
 }
-/* ── r.mrows — 질문·답 표: 왼쪽 청록 세로 막대, 머리줄(회색) + 가는 선, 줄마다 굵은 이름 | 내용(+ 청록으로 덧붙이는 핵심 d) ── */
-function klmRight(E,t,d,x,cy,w,fs){
-  const g=E.g, pal=E.pal, font=E.font, full=d?t+' '+d:t; let f=fs, lines=null; g.font='600 '+f.toFixed(1)+'px '+font;
-  if(g.measureText(full).width>w){ f=fitFont(g,full,w,fs,'600',font,0.78); g.font='600 '+f.toFixed(1)+'px '+font; if(g.measureText(full).width>w+0.5) lines=wrapLines(g,t,w).slice(0,2); }
-  if(!lines){ g.font='600 '+f.toFixed(1)+'px '+font; const tw=g.measureText(t+(d?' ':'')).width; dtx(g,t,x,cy,f,'600',pal.text,font,'left','middle'); if(d) dtx(g,d,x+tw,cy,f,'800',pal.accent,font,'left','middle'); return; }
-  const L=f*1.2, n=lines.length+(d?1:0), y0=cy-(n-1)*L/2; lines.forEach((l,i)=>dtx(g,l,x,y0+i*L,f,'600',pal.text,font,'left','middle')); if(d) dtx(g,d,x,y0+lines.length*L,f,'800',pal.accent,font,'left','middle');
+/* ── r.mrows — 질문·답 표: 왼쪽 청록 세로 막대, 머리줄(회색) + 가는 선, 줄마다 굵은 이름 | 내용(+ 청록으로 덧붙이는 핵심 d) — 모두 BODY ── */
+function klmRight(E,t,d,x,cy,w,fs){   /* 한 줄에 들어가면 한 줄(7% 안으로 넘치면 줄임), 아니면 글을 균형 있게 접고 핵심 d 는 다음 줄 */
+  const g=E.g, pal=E.pal, font=E.font, full=d?t+' '+d:t, f1=klmFit(E,full,w,fs,'600',1,0.93);
+  if(f1.fs>=fs*0.93){ g.font='600 '+f1.fs.toFixed(1)+'px '+font; const tw=g.measureText(t+(d?' ':'')).width; dtx(g,t,x,cy,f1.fs,'600',pal.text,font,'left','middle'); if(d) dtx(g,d,x+tw,cy,f1.fs,'800',pal.accent,font,'left','middle'); return; }
+  const ft=klmFit(E,t,w,fs,'600',2), L=ft.lh, n=ft.lines.length+(d?1:0), y0=cy-(n-1)*L/2;
+  ft.lines.forEach((l,i)=>dtx(g,l,x,y0+i*L,ft.fs,'600',pal.text,font,'left','middle')); if(d) dtx(g,d,x,y0+ft.lines.length*L,ft.fs,'800',pal.accent,font,'left','middle');
 }
 function drawRMin(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, R=klmBox(c,bk,0.024,0.6), acc=pal.accent, ps=(it.parts||[]).slice(0,8).map((p,i)=>({p,i,l:String(p.l||'').trim(),t:String(p.t!=null&&p.t!==''?p.t:(p.v!=null?p.v:'')).trim(),d:String(p.d||'').trim()})).filter(q=>q.l||q.t), n=ps.length; if(!n) return;
-  const head=String(it.label||'').trim(), head2=String(it.note||'').trim(), fh=0.027*bk, hh=(head||head2)?fh*2.3:0, bw=Math.max(3,0.007*bk), lx=R.x+bw+0.03*bk, split=Math.min(R.w*0.34,0.5*bk), rx=lx+split+0.02*bk, rw=Math.max(10,R.x+R.w-rx);
-  const grow=rv(s0,0.6), rh=Math.min((R.h-hh)/n,0.19*bk), y0=R.y+hh+Math.max(0,(R.h-hh-rh*n)/2);
-  if(hh){ if(head) klT(E,head,lx,R.y+fh*0.9,split,fh,'700',pal.mute,'left','middle',0.5); if(head2) klT(E,head2,rx,R.y+fh*0.9,rw,fh,'700',pal.mute,'left','middle',0.5); klmRule(g,R.x,R.y+hh-1,R.w*grow,Math.max(1,0.0022*bk),alphaOf(pal.text,0.4)); }
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.024,0.6), acc=pal.accent, ps=(it.parts||[]).slice(0,8).map((p,i)=>({p,i,l:String(p.l||'').trim(),t:String(p.t!=null&&p.t!==''?p.t:(p.v!=null?p.v:'')).trim(),d:String(p.d||'').trim()})).filter(q=>q.l||q.t), n=ps.length; if(!n) return;
+  const head=String(it.label||'').trim(), head2=String(it.note||'').trim(), fb=klmF(bk,'body',1), hh=(head||head2)?fb*2.3:0, bw=Math.max(3,0.007*bk), lx=R.x+bw+0.03*bk, split=Math.min(R.w*0.34,0.5*bk), rx=lx+split+0.02*bk, rw=Math.max(10,R.x+R.w-rx);
+  const grow=rv(s0,0.6), rh=clamp((R.h-hh)/n,0.1*bk,0.17*bk), y0=R.y+hh+Math.max(0,(R.h-hh-rh*n)/2);
+  if(hh){ if(head) klT(E,head,lx,R.y+fb*0.9,split,fb,'700',pal.mute,'left','middle',0.5); if(head2) klT(E,head2,rx,R.y+fb*0.9,rw,fb,'700',pal.mute,'left','middle',0.5); klmRule(g,R.x,R.y+hh-1,R.w*grow,Math.max(1,0.0022*bk),alphaOf(pal.text,0.4)); }
   klmRule(g,R.x,y0,bw,rh*n*grow,acc);
+  const lfs=klmFitAll(E,ps.map(q=>q.l),split,klmF(bk,'body',FZP(it,'l')),'800',2);   /* 왼쪽 이름은 모두 같은 크기 */
   ps.forEach((q,i)=>{ const sp=klPtS(E,it,q.p,q.i), a=sp<=0?0:rv(sp,0.45); if(a<=0) return; const cy=y0+i*rh+rh/2; g.save(); klmSlide(g,a,bk);
-    if(q.l){ const f=fitFont(g,q.l,split,Math.min(0.050*bk*FZP(it,'l'),rh*0.42),'800',font,0.55); dtx(g,q.l,lx,cy,f,'800',pal.text,font,'left','middle'); }
-    if(q.t||q.d) klmRight(E,q.t,q.d,rx,cy,rw,Math.min(0.042*bk,rh*0.36));
+    if(q.l){ const lf=lfs[i], L=lf.lh, y1=cy-(lf.lines.length-1)*L/2; lf.lines.forEach((l,j)=>dtx(g,l,lx,y1+j*L,lf.fs,'800',pal.text,font,'left','middle')); }
+    if(q.t||q.d) klmRight(E,q.t,q.d,rx,cy,rw,fb);
     klmRule(g,R.x+bw,y0+(i+1)*rh-0.5,(R.w-bw)*a,1,alphaOf(pal.text,0.18)); g.restore(); });
-  g.restore();
 }
-/* ── t.mline — 얇은 가로 타임라인: 가는 선 + 점(마지막·중요도 3 은 청록), 위에 내용·아래에 날짜(청록)와 부연 ── */
+/* ── t.mline — 얇은 가로 타임라인: 가는 선 + 점(마지막·중요도 3 은 청록), 위에 내용(BODY)·아래에 날짜(HEAD, 청록)와 부연(BODY) ── */
 function drawTMin(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, ds=(it.parts||[]).slice(0,8).map((p,i)=>({p,i,d:String(p.d||'').trim(),t:String(p.t||'').trim(),s:String(p.sb||'').trim(),hot:(+p.lv)>=3})).filter(q=>q.t||q.d), n=ds.length; if(!n) return;
-  const R=klmBox(c,bk,0.024,0.6), head=String(it.label||'').trim(), fh=0.030*bk*FZ(it,'label'), hh=head?fh*2.0:0; if(head) klT(E,head,R.x,R.y,R.w,fh,'700',pal.mute,'left','top',0.5);
-  const ly=R.y+hh+(R.h-hh)*0.5, cw=R.w/n, fT=Math.min(0.040*bk*FZP(it,'t'),cw*0.2), fD=Math.min(0.046*bk*FZP(it,'d'),cw*0.22), fS=fT*0.8, r=Math.min(0.011*bk,cw*0.06), anyHot=ds.some(q=>q.hot), grow=rv(s0,0.7);
+  const bk=klmBk(E,c), ds=(it.parts||[]).slice(0,8).map((p,i)=>({p,i,d:String(p.d||'').trim(),t:String(p.t||'').trim(),s:String(p.sb||'').trim(),hot:(+p.lv)>=3})).filter(q=>q.t||q.d), n=ds.length; if(!n) return;
+  const R=klmBox(c,bk,0.024,0.6), head=String(it.label||'').trim(), fh=klmF(bk,'body',FZ(it,'label')), hh=head?fh*2.0:0; if(head) klT(E,head,R.x,R.y,R.w,fh,'700',pal.mute,'left','top',0.5);
+  const cw=R.w/n, fT=klmF(bk,'body',FZP(it,'t')), fD=klmF(bk,'head',FZP(it,'d')), fS=klmF(bk,'body',1), r=Math.min(0.011*bk,cw*0.06), anyHot=ds.some(q=>q.hot), grow=rv(s0,0.7), hOf=f=>f?f.lines.length*f.lh:0;
+  const tfs=klmFitAll(E,ds.map(q=>q.t),cw*0.92,fT,'700',2), dfs=klmFitAll(E,ds.map(q=>q.d),cw*0.94,fD,'800',1), sfs=klmFitAll(E,ds.map(q=>q.s),cw*0.94,fS,'500',2), os=ds.map((q,i)=>({q,tf:tfs[i],df:dfs[i],sf:sfs[i]}));   /* 같은 역할 글은 모두 같은 크기 */
+  const upH=Math.max.apply(null,os.map(o=>hOf(o.tf))), dnH=Math.max.apply(null,os.map(o=>(o.df?o.df.lh:0)+(o.sf?fS*0.2+hOf(o.sf):0))), grp=upH+r*4.6+dnH, ly=R.y+hh+Math.max(0,(R.h-hh-grp)/2)+upH+r*2.3;
   klmRule(g,R.x,ly-1,R.w*grow,Math.max(2,0.003*bk),alphaOf(pal.text,0.55));
-  ds.forEach((q,i)=>{ const sp=klPtS(E,it,q.p,q.i), a=sp<=0?0:rv(sp,0.45); if(a<=0) return; const cx=R.x+cw*(i+0.5), hot=q.hot||(!anyHot&&i===n-1); g.save(); g.globalAlpha*=a;
+  os.forEach((o,i)=>{ const q=o.q, sp=klPtS(E,it,q.p,q.i), a=sp<=0?0:rv(sp,0.45); if(a<=0) return; const cx=R.x+cw*(i+0.5), hot=q.hot||(!anyHot&&i===n-1); g.save(); g.globalAlpha*=a;
     klDot(g,cx,ly,r*(hot?1.3:1),hot?pal.accent:'#ffffff');
-    if(q.t){ const ls=tLines(E,q.t,cw*0.9,fT,'700',2), L=fT*1.2; ls.forEach((l,k2)=>dtx(g,l,cx,ly-r*2.3-(ls.length-1-k2)*L,fT,'700',pal.text,font,'center','bottom')); }
-    if(q.d) dtf(g,q.d,cx,ly+r*2.3,cw*0.94,fD,'800',hot?pal.accent:pal.text,font,'center','top',0.5);
-    if(q.s) dtf(g,q.s,cx,ly+r*2.3+fD*1.4,cw*0.94,fS,'500',pal.mute,font,'center','top',0.5); g.restore(); });
-  g.restore();
+    if(o.tf) klmPut(E,o.tf,cx,ly-r*2.3-hOf(o.tf),pal.text,'700','center');
+    let y=ly+r*2.3; if(o.df){ dtx(g,o.df.lines[0],cx,y,o.df.fs,'800',hot?pal.accent:pal.text,font,'center','top'); y+=o.df.lh+fS*0.2; }
+    if(o.sf) klmPut(E,o.sf,cx,y,pal.mute,'500','center'); g.restore(); });
 }
-/* ── g.mdots(점 격자: v/max 만큼 청록 점) · g.mcells(칸 막대) · g.mgauge(윤곽 막대 + 청록 채움) ── */
+/* ── g.mdots(점 격자: v/max 만큼 청록 점) · g.mcells(칸 막대) · g.mgauge(윤곽 막대 + 청록 채움) — 수치는 NUM, 이름·덧글은 BODY ── */
 function drawGMin(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, k=D.t.kind, I=gInfo(it), f=I.fr, R=klmBox(c,bk,0.024,0.7), acc=pal.accent, a=rv(s0,0.5), grow=rv(s0-0.1,1.0);
-  const label=String(it.label||'').trim(), unit=String(it.unit||'').trim(), note=String(it.note||I.zname||'').trim(), vraw=String(it.v==null?'':it.v), vt=klCnt(E,s0,vraw,0.9), fl=0.030*bk*FZ(it,'label'), zv=FZ(it,'v'), zn=FZ(it,'note');
-  const valBlock=(x,y,w,h,fs0)=>{ const fv=fitFont(g,vt+unit,w,Math.min(fs0*zv,h*0.8),'800',font,0.35); g.font='800 '+fv.toFixed(1)+'px '+font; const vw=g.measureText(vt).width; dtx(g,vt,x,y+h/2,fv,'800',pal.text,font,'left','middle'); if(unit) dtx(g,unit,x+vw+fv*0.08,y+h/2,fv*0.55,'800',acc,font,'left','middle'); };
+  const bk=klmBk(E,c), k=D.t.kind, I=gInfo(it), f=I.fr, R=klmBox(c,bk,0.024,0.7), acc=pal.accent, a=rv(s0,0.5), grow=rv(s0-0.1,1.0);
+  const label=String(it.label||'').trim(), unit=String(it.unit||'').trim(), note=String(it.note||I.zname||'').trim(), vraw=String(it.v==null?'':it.v), vt=klCnt(E,s0,vraw,0.9), fl=klmF(bk,'body',FZ(it,'label')), fn=klmF(bk,'body',FZ(it,'note')), zv=FZ(it,'v');
+  const valFs=(w)=>{ let fv=klmF(bk,'num',zv); g.font='800 '+fv.toFixed(1)+'px '+font; const tw=g.measureText(vt).width+(unit?fv*0.08+(g.measureText(unit).width*0.55):0); return tw>w?fv*w/tw:fv; };   /* 아주 좁을 때만 줄임 */
+  const valDraw=(x,y,h,fv)=>{ g.font='800 '+fv.toFixed(1)+'px '+font; const vw=g.measureText(vt).width; dtx(g,vt,x,y+h/2,fv,'800',pal.text,font,'left','middle'); if(unit) dtx(g,unit,x+vw+fv*0.08,y+h/2,fv*0.55,'800',acc,font,'left','middle'); };
   g.save(); g.globalAlpha*=a;
   if(k==='mdots'){
-    const lw=R.w*0.40; let y=R.y; if(label){ klT(E,label,R.x,y,lw,fl,'700',pal.mute,'left','top',0.5); y+=fl*1.8; }
-    const nh=note?0.032*bk*zn*1.6:0; valBlock(R.x,y,lw,R.y+R.h-y-nh,0.2*bk); if(note) klT(E,note,R.x,R.y+R.h-nh,lw,0.032*bk*zn,'600',pal.mute,'left','top',0.5);
+    const lw=R.w*0.40, fv=valFs(lw), lf=label?klmFit(E,label,lw,fl,'700',1):null, nf=note?klmFit(E,note,lw,fn,'600',2):null, hOf=q=>q?q.lines.length*q.lh:0, vh=fv*1.1, tot=(lf?lf.lh+fl*0.3:0)+vh+(nf?fn*0.3+hOf(nf):0); let y=R.y+Math.max(0,(R.h-tot)/2);
+    if(lf){ klmPut(E,lf,R.x,y,pal.mute,'700'); y+=lf.lh+fl*0.3; } valDraw(R.x,y,vh,fv); y+=vh; if(nf){ y+=fn*0.3; klmPut(E,nf,R.x,y,pal.mute,'600'); }
     const gx=R.x+lw+0.03*bk, gw=Math.max(10,R.w-lw-0.03*bk), gh=R.h, cols=clamp(Math.round(Math.sqrt(50*gw/Math.max(1,gh))),5,20), rows=Math.max(2,Math.ceil(50/cols)), N=cols*rows, pitch=Math.min(gw/cols,gh/rows), dr=Math.max(1.5,pitch*0.27), ox=gx+(gw-pitch*cols)/2, oy=R.y+(gh-pitch*rows)/2, on=Math.round(f*N*grow);
     for(let i=0;i<N;i++){ const cx=ox+pitch*((i%cols)+0.5), cy=oy+pitch*(Math.floor(i/cols)+0.5); klDot(g,cx,cy,dr,i<on?acc:alphaOf(pal.text,0.22)); }
   }else if(k==='mcells'){
-    let y=R.y; if(label){ klT(E,label,R.x,y,R.w*0.6,fl,'700',acc,'left','top',0.5); y+=fl*1.8; }
-    const n=clamp(Math.round(R.w/(0.05*bk)),10,28), cg=Math.max(2,R.w/n*0.16), cw=(R.w-cg*(n-1))/n, nh=0.12*bk*FZ(it,'v'), ch=Math.min(R.h*0.34,0.12*bk), sy=y+Math.max(0,(R.h-(y-R.y)-ch-nh)*0.35), on=Math.round(f*n*grow);
-    klmRule(g,R.x,sy-0.012*bk,R.w,Math.max(1,0.002*bk),alphaOf(pal.text,0.55)); klmRule(g,R.x,sy+ch+0.012*bk,R.w,Math.max(1,0.002*bk),alphaOf(pal.text,0.55));
+    const n=clamp(Math.round(R.w/(0.05*bk)),10,28), cg=Math.max(2,R.w/n*0.16), cw=(R.w-cg*(n-1))/n, ch=Math.min(R.h*0.34,0.12*bk), fv=valFs(R.w*0.55), vh=fv*1.1, lf=label?klmFit(E,label,R.w*0.6,fl,'700',1):null;
+    const tot=(lf?lf.lh+fl*0.5:0)+0.024*bk+ch+0.03*bk+vh; let y=R.y+Math.max(0,(R.h-tot)/2), on=Math.round(f*n*grow);
+    if(lf){ klmPut(E,lf,R.x,y,acc,'700'); y+=lf.lh+fl*0.5; }
+    const sy=y+0.012*bk; klmRule(g,R.x,sy-0.012*bk,R.w,Math.max(1,0.002*bk),alphaOf(pal.text,0.55)); klmRule(g,R.x,sy+ch+0.012*bk,R.w,Math.max(1,0.002*bk),alphaOf(pal.text,0.55));
     for(let i=0;i<n;i++){ const x=R.x+i*(cw+cg), fill=i<on; if(fill){ g.fillStyle=alphaOf(acc,0.22); g.fillRect(x,sy,cw,ch); } g.lineWidth=Math.max(1.5,0.003*bk); g.strokeStyle=fill?acc:alphaOf(pal.text,0.28); g.strokeRect(x+g.lineWidth/2,sy+g.lineWidth/2,cw-g.lineWidth,ch-g.lineWidth); }
-    const vy=sy+ch+0.03*bk; valBlock(R.x,vy,R.w*0.55,Math.max(10,R.y+R.h-vy),0.14*bk); if(note) klT(E,note,R.x+R.w,vy+Math.min(R.y+R.h-vy,0.14*bk)*0.5,R.w*0.42,0.032*bk*zn,'600',pal.mute,'right','middle',0.5);
+    const vy=sy+ch+0.03*bk; valDraw(R.x,vy,vh,fv); if(note){ const nf=klmFit(E,note,R.w*0.42,fn,'600',2); klmPut(E,nf,R.x+R.w,vy+(vh-nf.lines.length*nf.lh)/2,pal.mute,'600','right'); }
   }else{   /* mgauge */
-    let y=R.y; if(label){ const fb=Math.min(0.056*bk*FZ(it,'label'),R.h*0.3), lf=fitFont(g,label,R.w*0.62,fb,'800',font,0.5); dtx(g,label,R.x,y,lf,'800',pal.text,font,'left','top'); y+=lf*1.45; }
-    const bh=Math.min(0.05*bk,R.h*0.22), lw2=Math.max(2,0.004*bk), by=y+Math.max(0.01*bk,(R.y+R.h-y-bh-0.05*bk)*0.4);
-    roundRect(g,R.x+lw2/2,by+lw2/2,R.w-lw2,bh-lw2,(bh-lw2)*0.28); g.lineWidth=lw2; g.strokeStyle=alphaOf(pal.text,0.85); g.stroke();
+    const fH=klmF(bk,'head',FZ(it,'label')), lf=label?klmFit(E,label,R.w*0.62,fH,'800',1,0.6):null, vf=vt?klmFit(E,vt+unit,R.w*0.34,fn*1.0,'800',1):null, nf=note?klmFit(E,note,R.w,fn,'800',1):null, bh=Math.min(0.05*bk,R.h*0.22), lw2=Math.max(2,0.004*bk);
+    const tot=(lf?lf.lh+fn*0.4:0)+bh+(nf?fn*0.5+nf.lh:0); let y=R.y+Math.max(0,(R.h-tot)/2);
+    if(lf){ klmPut(E,lf,R.x,y,pal.text,'800'); if(vf) dtx(g,vf.lines[0],R.x+R.w,y+lf.lh,vf.fs,'800',pal.text,font,'right','bottom'); y+=lf.lh+fn*0.4; }
+    const by=y; roundRect(g,R.x+lw2/2,by+lw2/2,R.w-lw2,bh-lw2,(bh-lw2)*0.28); g.lineWidth=lw2; g.strokeStyle=alphaOf(pal.text,0.85); g.stroke();
     const inset=lw2*2.2, iw=(R.w-inset*2)*f*grow, mn=bh-inset*2; if(f>0){ roundRect(g,R.x+inset,by+inset,Math.max(mn,iw),mn,mn*0.2); g.fillStyle=acc; g.fill(); }
-    if(vt) dtf(g,vt+unit,R.x+R.w,y-0.002*bk,R.w*0.34,0.040*bk*zv,'800',pal.text,font,'right','bottom',0.5);
-    const sy=by+bh+0.014*bk; if(note) klT(E,note,R.x,sy,R.w,0.040*bk*zn,'800',acc,'left','top',0.5);
+    if(nf) klmPut(E,nf,R.x,by+bh+fn*0.5,acc,'800');
   }
   g.restore();
 }
 /* ── 등록 — 그룹 '미니멀'. 설계마다 자기 draw 를 가지고(계열의 기본 draw 를 쓰지 않음), kmin:true 는 미니멀 스타일에서만 AI 목록에 나온다는 표시 ── */
 const KM0='미니멀';
-KLD('m','mstat','큰 수치(청록 선)',{s:'큰수치',g:KM0,ar:2.6,h:0.32,mw:0.6,t:{kind:'mstat'},draw:drawMStat,kmin:true,sample:{label:'코스피 종가',value:'2,720.4',delta:'+1.2%',note:'전일 대비',sub:'3거래일 연속 상승',pct:null,spark:'',tone:'up'}});
+KLD('m','mstat','큰 수치(청록 선)',{s:'큰수치',g:KM0,ar:2.6,h:0.38,mw:0.72,t:{kind:'mstat'},draw:drawMStat,kmin:true,sample:{label:'코스피 종가',value:'2,720.4',delta:'+1.2%',note:'전일 대비',sub:'3거래일 연속 상승',pct:null,spark:'',tone:'up'}});
 KLD('x','mtitle','슬래시 제목',{s:'슬래시제목',g:KM0,ar:2.6,h:0.34,mw:0.7,t:{kind:'mtitle'},draw:drawXMin,kmin:true,sample:{label:'이번 주 핵심',text:'금리 인하 기대가 시장을 움직인다',sub:'FOMC 결과 발표를 앞두고 관망',by:'',hl:['금리 인하'],tone:''}});
 KLD('x','mquote','인용(청록 형광)',{s:'미니인용',g:KM0,ar:2.2,h:0.40,mw:0.8,t:{kind:'mquote'},draw:drawXMin,kmin:true,sample:{text:'This is the start of a new rate-cut cycle.',hl:['new rate-cut cycle'],sub:'새로운 금리 인하 국면의 시작이다',by:'Fed 의장',label:'',tone:''}});
-KLD('x','mbar','청록 막대 글',{s:'막대글',g:KM0,ar:3.0,h:0.18,mw:0.7,t:{kind:'mbar'},draw:drawXMin,kmin:true,sample:{text:'외국인 3일 연속 순매수',sub:'반도체 중심 매수세',by:'',hl:['3일 연속'],label:'',tone:''}});
-KLD('l','msum','요약 목록(세로선)',{s:'요약목록',g:KM0,ar:2.2,h:0.10,hp:0.11,mw:1.0,t:{kind:'msum'},draw:drawLMin,kmin:true,sample:{label:'오늘의 정리',parts:[{t:'코스피 2,720선 회복',sb:'무엇'},{t:'외국인이 반도체를 집중 매수',sb:'왜 올랐나'},{t:'FOMC 결과 발표 대기',sb:'변수'}]}});
-KLD('l','mstrike','취소선 목록',{s:'취소선',g:KM0,ar:1.8,h:0.05,hp:0.10,mw:0.6,t:{kind:'mstrike'},draw:drawLMin,kmin:true,sample:{label:'',parts:[{t:'금리 인하 지연',sb:'-'},{t:'달러 강세 지속',sb:'-'},{t:'증시는 이미 반영',sb:'+'}]}});
-KLD('r','mrows','질문·답 표',{s:'질문답표',g:KM0,ar:2.4,h:0.07,hp:0.10,mw:1.0,t:{kind:'mrows'},draw:drawRMin,kmin:true,sample:{label:'물음',note:'답',unit:'',cm:'',parts:[{l:'무엇이 올랐나',v:null,t:'코스피·코스닥 동반 상승',d:'+1.2%'},{l:'왜 올랐나',v:null,t:'외국인 순매수 확대',d:''},{l:'앞으로는',v:null,t:'FOMC 결과에 달려 있다',d:'11/7'}]}});
-KLD('t','mline','얇은 타임라인',{s:'얇은타임',g:KM0,ar:2.6,h:0.30,mw:1.0,t:{kind:'mline'},draw:drawTMin,kmin:true,sample:{label:'이번 주 일정',parts:[{d:'11/7',t:'FOMC 금리 결정',sb:'',lv:3},{d:'11/12',t:'미국 CPI 발표',sb:'',lv:2},{d:'11/14',t:'엔비디아 실적',sb:'',lv:3}]}});
+KLD('x','mbar','청록 막대 글',{s:'막대글',g:KM0,ar:3.0,h:0.22,mw:0.7,t:{kind:'mbar'},draw:drawXMin,kmin:true,sample:{text:'외국인 3일 연속 순매수',sub:'반도체 중심 매수세',by:'',hl:['3일 연속'],label:'',tone:''}});
+KLD('l','msum','요약 목록(세로선)',{s:'요약목록',g:KM0,ar:2.2,h:0.06,hp:0.09,mw:0.85,t:{kind:'msum'},draw:drawLMin,kmin:true,sample:{label:'오늘의 정리',parts:[{t:'코스피 2,720선 회복',sb:'무엇'},{t:'외국인이 반도체를 집중 매수',sb:'왜 올랐나'},{t:'FOMC 결과 발표 대기',sb:'변수'}]}});
+KLD('l','mstrike','취소선 목록',{s:'취소선',g:KM0,ar:1.8,h:0.05,hp:0.14,mw:0.6,t:{kind:'mstrike'},draw:drawLMin,kmin:true,sample:{label:'',parts:[{t:'금리 인하 지연',sb:'-'},{t:'달러 강세 지속',sb:'-'},{t:'증시는 이미 반영',sb:'+'}]}});
+KLD('r','mrows','질문·답 표',{s:'질문답표',g:KM0,ar:2.4,h:0.07,hp:0.11,mw:0.85,t:{kind:'mrows'},draw:drawRMin,kmin:true,sample:{label:'물음',note:'답',unit:'',cm:'',parts:[{l:'무엇이 올랐나',v:null,t:'코스피·코스닥 동반 상승',d:'+1.2%'},{l:'왜 올랐나',v:null,t:'외국인 순매수 확대',d:''},{l:'앞으로는',v:null,t:'FOMC 결과에 달려 있다',d:'11/7'}]}});
+KLD('t','mline','얇은 타임라인',{s:'얇은타임',g:KM0,ar:2.6,h:0.34,mw:0.35,mwp:0.2,t:{kind:'mline'},draw:drawTMin,kmin:true,sample:{label:'이번 주 일정',parts:[{d:'11/7',t:'FOMC 금리 결정',sb:'',lv:3},{d:'11/12',t:'미국 CPI 발표',sb:'',lv:2},{d:'11/14',t:'엔비디아 실적',sb:'',lv:3}]}});
 KLD('g','mdots','점 격자(비율)',{s:'점격자',g:KM0,ar:2.4,h:0.34,mw:0.9,t:{kind:'mdots'},draw:drawGMin,kmin:true,sample:{label:'외국인 지분율',v:36.2,min:0,max:100,unit:'%',preset:'plain',note:'전체 시가총액 대비'}});
 KLD('g','mcells','칸 막대(윤곽)',{s:'칸막대',g:KM0,ar:3.0,h:0.30,mw:1.0,t:{kind:'mcells'},draw:drawGMin,kmin:true,sample:{label:'목표 달성률',v:72,min:0,max:100,unit:'%',preset:'plain',note:'연초 대비'}});
 KLD('g','mgauge','윤곽 게이지',{s:'윤곽게이지',g:KM0,ar:3.0,h:0.22,mw:0.8,t:{kind:'mgauge'},draw:drawGMin,kmin:true,sample:{label:'공포·탐욕 지수',v:64,min:0,max:100,unit:'',preset:'fg',note:'탐욕'}});
+/* v141: 수치 카드의 최소 폭·최소 높이 — 최소 폭은 수치(NUM 크기)가 한 줄에 들어갈 폭(기본값 0.72 로 묶지 않음: 세 칸 나란히도 수치를 줄이지 않고 다른 화면과 같은 크기로), 최소 높이 hmin 은 글 크기를 그대로 두고 간격·여백만 가장 좁혔을 때의 높이(직접 배치가 글자 배율 k 를 정할 때 씀 — 자동 배치는 예전 h 그대로). 정말 좁은 칸에서는 같은 종류의 칸이 같은 배율로 함께 줄어들고, 배치 디렉터는 너무 좁은 칸을 피함 */
+{ const m0=MEAS['m.mstat']; MEAS['m.mstat']=(E,it,iw,kk)=>{ const r=m0(E,it,iw,kk); if(klmOn(E)){ const val=String(it.value||'').trim(); if(val){ E.g.font='800 '+(KLM_T.num*E.B*FZ(it,'value')).toFixed(1)+'px '+E.font; r.mw=Math.max(0.3,(E.g.measureText(val).width/0.96+0.044*E.B)/E.B); }
+  try{ const L=klmStatLay(E,{x:0,y:0,w:iw,h:1e4,k:kk},it); r.hmin=Math.min(r.h,L.fixed+KLM_SP*L.space); }catch(e){ if(window.__klStrict) throw e; } } return r; }; }
 
 /* ── 미니멀 스타일에서 규칙·AI·짧은 글 구성이 고르는 종류 ── */
 const KL_DIALECT_MIN={id:'min',tile:['x.tout','x.tdot'],typo:['l.tstack','l.tsize','l.tcols']};   /* 타일 방식은 안 쓰고(klMethod) 글자 크기형만 */
 let _klUpm=null;
 function klUpm(){   /* 규칙 구성(kindUpgrade)이 미니멀일 때 쓰는 목록 — 막대·일정·게이지 같은 일반 종류는 가는 선·윤곽 쪽으로 */
-  return _klUpm||(_klUpm={stat:{news:['m.mstat']},pct:['m.mstat'],hero:['m.mstat'],bars:{news:['s.hthin','s.hbar','s.hdot']},event:{news:['t.mline','t.hline','t.vline']},flow:['t.hline','t.hnum','t.hdash'],
-    point:['x.mbar','x.mtitle','x.plainbig','x.headline'],plist:['l.msum','l.numbered','l.bullets'],quote:['x.mquote'],gauge:Object.assign({},KL_UP.gauge,{plain:['g.mcells','g.mdots','g.mgauge']})});
+  return _klUpm||(_klUpm={stat:{news:['m.mstat']},pct:['m.mstat'],hero:['m.mhero'],bars:{news:['s.hthin','s.hbar','s.hdot']},event:{news:['t.mline','t.hline','t.vline']},flow:['t.hline','t.hnum','t.hdash'],
+    point:['x.mbar','x.mtitle','x.mhead','x.plainbig','x.headline'],plist:['l.msum','l.numbered','l.bullets'],quote:['x.mquote'],gauge:Object.assign({},KL_UP.gauge,{plain:['g.mcells','g.mdots','g.mgauge']})});
 }
 function kindUpgrade(items,ctx){
   if(!klMinCtx(ctx)) return kindUpgrade0(items,ctx);
   const U=klUpm(), keys=Object.keys(U), sv={}; keys.forEach(k=>{ sv[k]=KL_UP[k]; KL_UP[k]=U[k]; });
-  try{ return klPicPost(kindUpgrade0(items,ctx),ctx); } finally{ keys.forEach(k=>{ KL_UP[k]=sv[k]; }); }
+  try{ return klmHeroPost(klPicPost(kindUpgrade0(klmMoveFix(items),ctx),ctx)); } finally{ keys.forEach(k=>{ KL_UP[k]=sv[k]; }); }
 }
 const KL_BAL_GUIDE_MIN=`[짧은 글 구성 — 화면 균형]
 - 항목마다 한두 낱말(한글 11자 이하)인 글 2~6개는 l.check·l.bullets·l.numbered 같은 한 줄 목록이나 가로로 긴 point·banner·ribbon·cap 으로 화면을 가로로 다 채우지 말고, 타일 없이 글자 크기만 달리하는 '글자 크기형' 한 블록으로 구성한다: l.tsize(큰 글 하나 + 나머지 작은 글)·l.tstack(줄마다 글자 크기가 단계로 줄어드는 쌓기)·l.tcloud(크기가 다른 낱말 구름, 3~8개)·l.tcols(큰 번호 + 글 기둥, 3~6개) — parts 의 t 에 짧은 글을 중요한 것부터 순서대로. 타일 종류(x.tcard·x.tfill·x.tout·x.ttop·x.tnum·x.tdot)는 미니멀에서 쓰지 않는다.
@@ -51052,7 +51209,8 @@ const KL_MIN_GUIDE=`[미니멀 스타일 — 간결하고 세련되게]
   t.mline 얇은 타임라인 — parts 의 d=날짜, t=내용, lv 3=청록 강조.
   g.mdots 점 격자(v/max 비율만큼 청록 점) · g.mcells 칸 막대(진행 정도) · g.mgauge 윤곽 게이지 — label·v·min·max·unit·note.
 - 막대·선·순위·표 같은 일반 종류도 쓸 수 있다(색은 자동으로 청록·흰·회색이 된다). 다만 카드·타일 위주 종류(m.fill·m.grad·m.shadow·x.tcard·x.tfill·l.notes 등)와 포스트잇·배너·리본은 쓰지 않는다.
-- clip 에 선택 필드 "source"(출처·날짜, 예: "한국거래소 · 2026.11.03", 짧게)를 더하면 왼쪽 위에 작은 알약으로 나온다. title 은 짧고 굵게, kicker 는 한두 낱말(슬래시 머리글로 나온다).`;
+- clip 에 선택 필드 "source"(출처·날짜, 예: "한국거래소 · 2026.11.03", 짧게)를 더하면 왼쪽 위에 작은 알약으로 나온다. title 은 짧고 굵게, kicker 는 한두 낱말(슬래시 머리글로 나온다).
+- 글자 크기는 모든 화면에 같게 자동으로 정해진다(큰 수치 · 강조 글 · 나머지 글 세 가지). 그래서 글 칸(label·delta·note·sub·항목 이름)은 짧게 — 한글 10자 안팎, 한 줄에 들어가게 쓴다. 같은 수치를 한 화면에 두 번 쓰지 않는다(value 에 쓴 수치를 sub·note·label 에서 되풀이하지 말고 말로만 풀어 쓴다).`;
 /* ══ /v138 ══ */
 /* ══ v139 (2026-11-03) — 미니멀 스타일에 'AI 슬래시' 형식 학습 + 픽토그램 3,590개 ═══════════════════════════════════════════════════
    요청: 유튜브 [Quick SLASH] 두 편(LdRL5wsB6k4 · iCWIJvSidOo)을 학습 — 자막·나레이션을 화면으로 구현한 방식, 타이밍, 미니멀한 글+그림 조합, 특히 픽토그램을 내용에 맞게 쓰기(2,000가지 이상)
@@ -54936,49 +55094,52 @@ function klPicPost(items,ctx){
 
 /* ── 미니멀 픽토그램 구성요소 7종 ── */
 const klpHot=p=>/^(1|\*|y|true)$/i.test(String(p&&p.hl||'').trim()), klpDim=p=>/^[-−–]$/.test(String(p&&p.hl||'').trim());
-function drawXPic(E,c,it,D){   /* x.mpicto — 큰 아이콘(청록) + 제목·부제 */
+function drawXPic(E,c,it,D){   /* x.mpicto — 큰 아이콘(청록) + 제목(HEAD)·부제(BODY) — v141: 글 크기 체계·내용을 칸 가운데에 모음 */
   const g=E.g, pal=E.pal, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, a=rv(s0,0.5), R=klmBox(c,bk,0.024,0.7), acc=pal.accent;
+  const bk=klmBk(E,c), a=rv(s0,0.5), R=klmBox(c,bk,0.024,0.7), acc=pal.accent;
   const text=String(it.text||'').trim(), sub=String(it.sub||'').trim(), by=String(it.by||'').trim(), label=String(it.label||'').trim(), hl=it.hl||[];
   const id=klPicOf(it,null,label+' '+text+' '+sub), wide=R.w/Math.max(1,R.h)>=1.45, col=toneCol(pal,itemTone(it))||acc;
   const is=wide?Math.min(R.h*0.8,R.w*0.34,0.28*bk):Math.min(R.w*0.46,R.h*0.40,0.24*bk);
-  const fT=0.060*bk*FZ(it,'text'), fS=0.034*bk*FZ(it,'sub'), fB=0.027*bk*FZ(it,'by'), fL=0.028*bk*FZ(it,'label'), ia=rv(s0,0.45), isz=is*(0.86+0.14*ia);
+  const fT=klmF(bk,'head',FZ(it,'text')), fS=klmF(bk,'body',FZ(it,'sub')), fB=klmF(bk,'body',FZ(it,'by')), fL=klmF(bk,'body',FZ(it,'label')), ia=rv(s0,0.45), isz=is*(0.86+0.14*ia), hOf=f=>f?f.lines.length*f.lh:0;
+  const tx=wide?R.x+is+0.045*bk:R.x, tw=Math.max(10,wide?R.x+R.w-tx:R.w);
+  const lf=label?klmFit(E,label,tw,fL,'700',1):null, tf=klmFit(E,text,tw,fT,'800',3), sf=sub?klmFit(E,sub,tw,fS,'600',2):null, bf=by?klmFit(E,by,tw,fB,'600',1):null;
+  const tot=(lf?fL*2.0:0)+hOf(tf)+(sf?fS*0.5+hOf(sf):0)+(bf?fB*0.6+bf.lh:0), grp=wide?Math.max(is,tot):is+0.03*bk+tot, y0=R.y+Math.max(0,(R.h-grp)/2);
   g.save(); klmSlide(g,a,bk);
-  const tx=wide?R.x+is+0.045*bk:R.x, tw=Math.max(10,wide?R.x+R.w-tx:R.w), ty0=wide?R.y:R.y+is+0.03*bk, th0=Math.max(10,R.y+R.h-ty0);
-  g.save(); g.globalAlpha*=ia; klpGlyph(E,id,wide?R.x+is/2:R.x+is/2,wide?R.y+R.h/2:R.y+is/2,isz,col,0); g.restore();
-  const hb=(sub?fS*1.9:0)+(by?fB*1.8:0)+(label?fL*2.0:0), m=klmMeasure(E,text,tw,Math.max(10,th0-hb),fT,'800',3), tot=m.th+hb, y0=ty0+(wide?Math.max(0,(th0-tot)/2):0); let y=y0;
-  if(label){ klT(E,label,tx,y,tw,fL,'700',pal.mute,'left','top',0.5); y+=fL*2.0; }
-  xText(E,text,klmHl(E,text,hl,tw,Math.max(10,th0-hb),fT,'800',3),{x:tx,y,w:tw,h:m.th+1},fT,'800',pal.text,'l','t','color',acc,3); y+=m.th+fS*0.5;
-  if(sub){ klT(E,sub,tx,y,tw,fS,'600',pal.mute,'left','top',0.5); y+=fS*1.9; }
-  if(by) klT(E,by,tx,y,tw,fB,'600',pal.mute,'left','top',0.5);
+  g.save(); g.globalAlpha*=ia; klpGlyph(E,id,R.x+is/2,wide?y0+grp/2:y0+is/2,isz,col,0); g.restore();
+  let y=wide?y0+(grp-tot)/2:y0+is+0.03*bk;
+  if(lf){ klmPut(E,lf,tx,y,pal.mute,'700'); y+=fL*2.0; }
+  y+=klmRich(E,tf,hl,tx,y,pal.text,'800','color',acc);
+  if(sf){ y+=fS*0.5; y+=klmPut(E,sf,tx,y,pal.mute,'600'); }
+  if(bf){ y+=fB*0.6; klmPut(E,bf,tx,y,pal.mute,'600'); }
   g.restore();
 }
 function klpArrow(g,x0,x1,y,col,lw,hs){ g.save(); g.strokeStyle=col; g.lineWidth=lw; g.lineCap='round'; g.beginPath(); g.moveTo(x0,y); g.lineTo(x1,y); g.moveTo(x1-hs,y-hs*0.62); g.lineTo(x1,y); g.lineTo(x1-hs,y+hs*0.62); g.stroke(); g.restore(); }
-function drawLPic(E,c,it,D){   /* l.mpicts 아이콘 줄 · l.mflow 상자 + 화살표 흐름 · l.mvs 큰 아이콘 대결 */
+function drawLPic(E,c,it,D){   /* l.mpicts 아이콘 줄 · l.mflow 상자 + 화살표 흐름 · l.mvs 큰 아이콘 대결 — 아이콘 아래 글은 BODY */
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, k=D.t.kind, ds=lData(it,k==='mvs'?2:5), n=ds.length, R=klmBox(c,bk,0.024,0.7), acc=pal.accent; if(!n) return;
+  const bk=klmBk(E,c), k=D.t.kind, ds=lData(it,k==='mvs'?2:5), n=ds.length, R=klmBox(c,bk,0.024,0.7), acc=pal.accent; if(!n) return;
   const used=new Set(), ics=ds.map(q=>{ const id=klPicOf(it,q.p,q.t,used); if(id) used.add(id); return id; });
-  const anyHot=ds.some(q=>klpHot(q.p)), cw=R.w/n, mid=R.y+R.h*(k==='mvs'?0.42:0.40);
-  const bs=k==='mflow'?Math.min(cw*0.5,R.h*0.46,0.22*bk):0, is=k==='mflow'?bs*0.58:k==='mvs'?Math.min(cw*0.42,R.h*0.5,0.30*bk):Math.min(cw*0.52,R.h*0.44,0.20*bk);
-  const fl=Math.min(0.042*bk*FZP(it,'t'),cw*0.17), fs=fl*0.76, lh=fl*1.2, top=mid+(k==='mflow'?bs:is)/2+0.026*bk;
+  const anyHot=ds.some(q=>klpHot(q.p)), cw=R.w/n, bs=k==='mflow'?Math.min(cw*0.5,R.h*0.46,0.22*bk):0, is=k==='mflow'?bs*0.58:k==='mvs'?Math.min(cw*0.42,R.h*0.5,0.30*bk):Math.min(cw*0.52,R.h*0.44,0.20*bk);
+  const fl=klmF(bk,'body',FZP(it,'t')), fs=klmF(bk,'body',1), hOf=f=>f?f.lines.length*f.lh:0, ih=k==='mflow'?bs:is, gp=0.026*bk;
+  const tfs=klmFitAll(E,ds.map(q=>q.t),cw*0.92,fl,'800',2), sfs=klmFitAll(E,ds.map(q=>q.s),cw*0.94,fs,'500',2), tf=ds.map((q,i)=>({q,t:tfs[i],s:sfs[i]})), th=Math.max.apply(null,tf.map(o=>hOf(o.t)+(o.s&&!klpDim(o.q.p)?fl*0.12+hOf(o.s):0)));   /* 아이콘 아래 글은 모두 같은 크기 */
+  const y0=R.y+Math.max(0,(R.h-(ih+gp+th))/2), mid=y0+ih/2, top=y0+ih+gp;
   const Pq=q=>{ const sp=klPtS(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.45); };
-  if(k==='mvs') dtx(g,'VS',R.x+R.w/2,mid,Math.min(0.05*bk,cw*0.2),'800',alphaOf(pal.text,0.7),font,'center','middle');
-  ds.forEach((q,i)=>{ const a=Pq(q); if(a<=0) return; const cx=R.x+cw*(i+0.5), dim=klpDim(q.p), hot=klpHot(q.p)||(k!=='mpicts'&&!anyHot&&i===n-1), col=hot?acc:dim?alphaOf(pal.text,0.38):pal.text;
+  if(k==='mvs') dtx(g,'VS',R.x+R.w/2,mid,fl*1.25,'800',alphaOf(pal.text,0.7),font,'center','middle');
+  ds.forEach((q,i)=>{ const a=Pq(q); if(a<=0) return; const cx=R.x+cw*(i+0.5), dim=klpDim(q.p), hot=klpHot(q.p)||(k!=='mpicts'&&!anyHot&&i===n-1), col=hot?acc:dim?alphaOf(pal.text,0.38):pal.text, o=tf[i];
     g.save(); g.globalAlpha*=a; g.translate(0,(1-a)*0.02*bk);
     if(k==='mflow'){ roundRect(g,cx-bs/2,mid-bs/2,bs,bs,bs*0.2); g.lineWidth=Math.max(1.5,0.0034*bk); g.strokeStyle=hot?acc:alphaOf(pal.text,dim?0.3:0.85); g.stroke(); }
     klpGlyph(E,ics[i],cx,mid,is,col,i);
-    const ls=tLines(E,q.t,cw*0.92,fl,'800',2); ls.forEach((l,j)=>dtx(g,l,cx,top+j*lh,fl,'800',col,font,'center','top'));
-    if(q.s&&!dim) dtf(g,q.s,cx,top+ls.length*lh+fl*0.12,cw*0.94,fs,'500',pal.mute,font,'center','top',0.5);
+    const hh=klmPut(E,o.t,cx,top,col,'800','center');
+    if(o.s&&!dim) klmPut(E,o.s,cx,top+hh+fl*0.12,pal.mute,'500','center');
     g.restore();
     if(k==='mflow'&&i>0){ const pa=Pq(ds[i-1]); if(pa>0){ g.save(); g.globalAlpha*=Math.min(a,pa); klpArrow(g,R.x+cw*(i-0.5)+bs/2+0.012*bk,R.x+cw*(i+0.5)-bs/2-0.012*bk,mid,alphaOf(pal.text,0.6),Math.max(1.5,0.0034*bk),0.016*bk); g.restore(); } }
   });
 }
-function drawLCheck(E,c,it,D){   /* l.mcheck — 항목 이름 + ○(가능, 청록) · ✕(불가, 이름은 흐리게 + 취소선) · +(확인) */
+function drawLCheck(E,c,it,D){   /* l.mcheck — 항목 이름(HEAD) + ○(가능, 청록) · ✕(불가, 이름은 흐리게 + 취소선) · +(확인) */
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, ds=lData(it,6), n=ds.length, R=klmBox(c,bk,0.024,0.7), acc=pal.accent; if(!n) return;
-  const rh=Math.min(R.h/n,0.17*bk), y0=R.y+(R.h-rh*n)/2; let fl=Math.min(0.056*bk*FZP(it,'t'),rh*0.55); g.font='800 '+fl.toFixed(1)+'px '+font;
-  let mw=0; ds.forEach(q=>{ mw=Math.max(mw,g.measureText(q.t).width); }); const r=Math.min(rh*0.2,0.02*bk); if(mw>R.w-r*3-0.07*bk){ fl*=(R.w-r*3-0.07*bk)/mw; mw=R.w-r*3-0.07*bk; }
-  const mx=R.x+mw+0.07*bk+r;
+  const bk=klmBk(E,c), ds=lData(it,6), n=ds.length, R=klmBox(c,bk,0.024,0.7), acc=pal.accent; if(!n) return;
+  const fH=klmF(bk,'head',FZP(it,'t')), rh=Math.min(R.h/n,fH*1.9), y0=R.y+(R.h-rh*n)/2, r=Math.min(rh*0.2,0.02*bk), room=R.w-r*3-0.07*bk;
+  const fl=Math.min.apply(null,ds.map(q=>klmFit(E,q.t,room,fH,'800',1,0.5).fs)); g.font='800 '+fl.toFixed(1)+'px '+font;   /* 한 목록은 모두 같은 크기 — 가장 긴 항목이 들어가는 크기 */
+  let mw=0; ds.forEach(q=>{ mw=Math.max(mw,g.measureText(q.t).width); }); const mx=R.x+mw+0.07*bk+r;
   ds.forEach((q,i)=>{ const sp=klPtS(E,it,q.p,q.i), a=sp<=0?0:rv(sp,0.45); if(a<=0) return; const cy=y0+i*rh+rh/2, no=/^[-−–]/.test(q.s), ok=/^\+/.test(q.s);
     g.save(); klmSlide(g,a,bk); dtx(g,q.t,R.x,cy,fl,'800',no?pal.mute:pal.text,font,'left','middle');
     if(no){ g.font='800 '+fl.toFixed(1)+'px '+font; const tw=Math.min(g.measureText(q.t).width,R.w), lp=rv(sp-0.25,0.4);
@@ -54987,46 +55148,49 @@ function drawLCheck(E,c,it,D){   /* l.mcheck — 항목 이름 + ○(가능, 청
     else{ g.strokeStyle=acc; g.lineWidth=Math.max(2,0.004*bk); g.beginPath(); g.arc(mx,cy,r,0,Math.PI*2); g.stroke(); if(ok){ g.lineCap='round'; g.lineJoin='round'; g.beginPath(); g.moveTo(mx-r*0.5,cy+r*0.02); g.lineTo(mx-r*0.1,cy+r*0.45); g.lineTo(mx+r*0.55,cy-r*0.4); g.stroke(); } }
     g.restore(); });
 }
-function drawGUnit(E,c,it,D){   /* g.munit — 아이콘 N 개 가운데 k 개가 청록(10명 중 4명 · 40문제 중 18개) */
+function drawGUnit(E,c,it,D){   /* g.munit — 아이콘 N 개 가운데 k 개가 청록(10명 중 4명 · 40문제 중 18개) — 수치는 NUM, 이름·덧글은 BODY */
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, I=gInfo(it), R=klmBox(c,bk,0.024,0.7), acc=pal.accent, a=rv(s0,0.5), grow=rv(s0-0.1,1.0);
-  const label=String(it.label||'').trim(), unit=String(it.unit||'').trim(), note=String(it.note||'').trim(), vt=klCnt(E,s0,String(it.v==null?'':it.v),0.9), zv=FZ(it,'v'), zn=FZ(it,'note'), fl=0.030*bk*FZ(it,'label');
+  const bk=klmBk(E,c), I=gInfo(it), R=klmBox(c,bk,0.024,0.7), acc=pal.accent, a=rv(s0,0.5), grow=rv(s0-0.1,1.0);
+  const label=String(it.label||'').trim(), unit=String(it.unit||'').trim(), note=String(it.note||'').trim(), vt=klCnt(E,s0,String(it.v==null?'':it.v),0.9), zv=FZ(it,'v'), fl=klmF(bk,'body',FZ(it,'label')), fn=klmF(bk,'body',FZ(it,'note')), hOf=f=>f?f.lines.length*f.lh:0;
   const span=I.mx-I.mn, total=clamp((span>=2&&span<=60&&Math.abs(span-Math.round(span))<1e-9)?Math.round(span):(span>0?10:10),2,60), hi=clamp((span>=2&&span<=60&&Math.abs(span-Math.round(span))<1e-9)?Math.round(I.v-I.mn):Math.round(I.fr*total),0,total);
   const id=klPicOf(it,null,label+' '+note+' '+unit)||'user', lw=Math.min(R.w*0.34,0.5*bk);
-  g.save(); g.globalAlpha*=a; let y=R.y; if(label){ klT(E,label,R.x,y,lw,fl,'700',pal.mute,'left','top',0.5); y+=fl*1.8; }
-  const nh=note?0.032*bk*zn*1.6:0, vh=Math.max(10,R.y+R.h-y-nh), fv=fitFont(g,vt+unit,lw,Math.min(0.2*bk*zv,vh*0.8),'800',font,0.35);
-  g.font='800 '+fv.toFixed(1)+'px '+font; const vw=g.measureText(vt).width; dtx(g,vt,R.x,y+vh/2,fv,'800',pal.text,font,'left','middle'); if(unit) dtx(g,unit,R.x+vw+fv*0.08,y+vh/2,fv*0.5,'800',acc,font,'left','middle');
-  if(note) klT(E,note,R.x,R.y+R.h-nh,lw,0.032*bk*zn,'600',pal.mute,'left','top',0.5);
+  let fv=klmF(bk,'num',zv); g.font='800 '+fv.toFixed(1)+'px '+font; const vtw=g.measureText(vt).width+(unit?fv*0.08+g.measureText(unit).width*0.5:0); if(vtw>lw) fv*=lw/vtw;
+  const lf=label?klmFit(E,label,lw,fl,'700',1):null, nf=note?klmFit(E,note,lw,fn,'600',2):null, vh=fv*1.1, tot=(lf?lf.lh+fl*0.3:0)+vh+(nf?fn*0.3+hOf(nf):0); let y=R.y+Math.max(0,(R.h-tot)/2);
+  g.save(); g.globalAlpha*=a;
+  if(lf){ klmPut(E,lf,R.x,y,pal.mute,'700'); y+=lf.lh+fl*0.3; }
+  g.font='800 '+fv.toFixed(1)+'px '+font; const vw=g.measureText(vt).width; dtx(g,vt,R.x,y+vh/2,fv,'800',pal.text,font,'left','middle'); if(unit) dtx(g,unit,R.x+vw+fv*0.08,y+vh/2,fv*0.5,'800',acc,font,'left','middle'); y+=vh;
+  if(nf){ y+=fn*0.3; klmPut(E,nf,R.x,y,pal.mute,'600'); }
   const gx=R.x+lw+0.04*bk, gw=Math.max(10,R.w-lw-0.04*bk), gh=R.h; let bc=1, bp=0; for(let cc=1;cc<=total;cc++){ const rr=Math.ceil(total/cc), p=Math.min(gw/cc,gh/rr); if(p>bp){ bp=p; bc=cc; } }
   const cols=bc, rows=Math.ceil(total/cols), pitch=Math.min(gw/cols,gh/rows), isz=pitch*0.84, ox=gx+(gw-pitch*cols)/2, oy=R.y+(gh-pitch*rows)/2, on=Math.round(hi*grow);
   for(let i=0;i<total;i++){ const cx=ox+pitch*((i%cols)+0.5), cy=oy+pitch*(Math.floor(i/cols)+0.5); klPicDraw(g,id,cx,cy,isz,i<on?acc:alphaOf(pal.text,0.3),KLP_SW); }
   g.restore();
 }
-function drawTAgenda(E,c,it,D){   /* t.magenda — '/무엇을 /어떻게 /얼마나 /한계' 점선 목차: 점 + 슬래시 이름 + 작은 회색 설명, 말하는 순서대로 하나씩 */
+function drawTAgenda(E,c,it,D){   /* t.magenda — '/무엇을 /어떻게 /얼마나 /한계' 점선 목차: 점 + 슬래시 이름 + 작은 회색 설명, 말하는 순서대로 하나씩 — 모두 BODY */
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, ds=(it.parts||[]).slice(0,6).map((p,i)=>({p,i,d:String(p.d||'').trim(),t:String(p.t||'').trim()})).filter(q=>q.d||q.t), n=ds.length; if(!n) return;
-  const R=klmBox(c,bk,0.024,0.7), acc=pal.accent, cw=R.w/n, ly=R.y+R.h*0.30, r=Math.min(0.0105*bk,cw*0.06), fd=Math.min(0.050*bk*FZP(it,'d'),cw*0.2), ft=Math.min(0.028*bk*FZP(it,'t'),cw*0.115);
+  const bk=klmBk(E,c), ds=(it.parts||[]).slice(0,6).map((p,i)=>({p,i,d:String(p.d||'').trim(),t:String(p.t||'').trim()})).filter(q=>q.d||q.t), n=ds.length; if(!n) return;
+  const R=klmBox(c,bk,0.024,0.7), acc=pal.accent, cw=R.w/n, r=Math.min(0.0105*bk,cw*0.06), fd=klmF(bk,'body',FZP(it,'d')), ft=klmF(bk,'body',FZP(it,'t')), hOf=f=>f?f.lines.length*f.lh:0;
+  const dfs=klmFitAll(E,ds.map(q=>q.d),cw*0.92-fd*0.8,fd,'800',1), tfs=klmFitAll(E,ds.map(q=>q.t),cw*0.88,ft,'500',2), os=ds.map((q,i)=>({q,df:dfs[i],tf:tfs[i]})), dn=Math.max.apply(null,os.map(o=>(o.df?o.df.lh*1.1:0)+hOf(o.tf))), grp=r*2+0.036*bk+dn, ly=R.y+Math.max(0,(R.h-grp)/2)+r;
   const vis=ds.map(q=>{ const sp=klPtS(E,it,q.p,q.i); return sp<=0?0:rv(sp,0.4); }); let cur=-1; vis.forEach((v,i)=>{ if(v>0) cur=i; }); if(cur<0) return;
   g.save(); g.strokeStyle=alphaOf(pal.text,0.55); g.lineWidth=Math.max(2,0.003*bk); g.beginPath(); g.moveTo(R.x+r,ly); g.lineTo(R.x+cw*cur+r+(cw*0.9)*vis[cur],ly); g.stroke(); g.restore();
-  ds.forEach((q,i)=>{ const a=vis[i]; if(a<=0) return; const x=R.x+cw*i+r, isCur=i===cur; g.save(); g.globalAlpha*=a; g.translate(0,(1-a)*0.015*bk);
+  os.forEach((o,i)=>{ const a=vis[i]; if(a<=0) return; const x=R.x+cw*i+r, isCur=i===cur; g.save(); g.globalAlpha*=a; g.translate(0,(1-a)*0.015*bk);
     klDot(g,x,ly,r*(isCur?1.25:1),isCur?acc:'#ffffff');
-    const ty=ly+0.036*bk; g.font='800 '+fd.toFixed(1)+'px '+font; const sw=g.measureText('/').width+fd*0.12; dtx(g,'/',x-r,ty,fd,'800',acc,font);
-    if(q.d) dtf(g,q.d,x-r+sw,ty,cw*0.92-sw,fd,'800',pal.text,font,'left','top',0.5);
-    if(q.t){ const ls=tLines(E,q.t,cw*0.88,ft,'500',2); ls.forEach((l,j)=>dtx(g,l,x-r,ty+fd*1.35+j*ft*1.25,ft,'500',pal.mute,font)); }
+    const ty=ly+0.036*bk; let yy=ty; if(o.df){ g.font='800 '+o.df.fs.toFixed(1)+'px '+font; const sw=g.measureText('/').width+o.df.fs*0.12; dtx(g,'/',x-r,ty,o.df.fs,'800',acc,font); dtx(g,o.df.lines[0],x-r+sw,ty,o.df.fs,'800',pal.text,font,'left','top'); yy=ty+o.df.lh*1.1; }
+    if(o.tf) klmPut(E,o.tf,x-r,yy,pal.mute,'500');
     g.restore(); });
 }
-function drawXCite(E,c,it,D){   /* x.mcite — 출처 카드: 밝은 카드 위에 출처·날짜 + 기사 제목(청록 형광) — 영상에서 자주 나온 '근거 화면' */
+function drawXCite(E,c,it,D){   /* x.mcite — 출처 카드: 밝은 카드 위에 출처·날짜 + 기사 제목(청록 형광) — 영상에서 자주 나온 '근거 화면' — 모두 BODY */
   const g=E.g, pal=E.pal, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, a=rv(s0,0.5), R=klmBox(c,bk,0.024,0.7), acc=pal.accent;
+  const bk=klmBk(E,c), a=rv(s0,0.5), R=klmBox(c,bk,0.024,0.7), acc=pal.accent;
   const text=String(it.text||'').trim(), label=String(it.label||'').trim(), sub=String(it.sub||'').trim(), by=String(it.by||'').trim(), hl=it.hl||[];
-  const pad=0.026*bk, cw=Math.min(R.w,Math.max(0.7*bk,R.w*0.84)), tw=Math.max(10,cw-pad*2), fT=0.040*bk*FZ(it,'text'), fL=0.024*bk*FZ(it,'label'), fS=0.028*bk*FZ(it,'sub'), fB=0.022*bk*FZ(it,'by');
-  const hb=(label?fL*2.1:0)+(sub?fS*1.9:0)+(by?fB*2.0:0), m=klmMeasure(E,text,tw,Math.max(10,R.h-pad*2-hb),fT,'800',4), ch=Math.min(R.h,m.th+hb+pad*2);
-  g.save(); klmSlide(g,a,bk); roundRect(g,R.x,R.y,cw,ch,0.012*bk); g.fillStyle='#f3f4f6'; g.fill();
-  let y=R.y+pad;
-  if(label){ klDot(g,R.x+pad+fL*0.28,y+fL*0.5,fL*0.28,acc); klT(E,label,R.x+pad+fL*0.9,y,tw-fL*0.9,fL,'700','#6b7280','left','top',0.5); y+=fL*2.1; }
-  xText(E,text,klmHl(E,text,hl,tw,m.th+1,fT,'800',4),{x:R.x+pad,y,w:tw,h:m.th+1},fT,'800','#111827','l','t','mark',acc,4); y+=m.th+fS*0.5;
-  if(sub){ klT(E,sub,R.x+pad,y,tw,fS,'600','#4b5563','left','top',0.5); y+=fS*1.9; }
-  if(by) klT(E,by,R.x+pad,y,tw,fB,'600','#9ca3af','left','top',0.5);
+  const pad=0.026*bk, cw=Math.min(R.w,Math.max(0.7*bk,R.w*0.84)), tw=Math.max(10,cw-pad*2), fT=klmF(bk,'body',FZ(it,'text')), fL=klmF(bk,'body',FZ(it,'label')), fS=klmF(bk,'body',FZ(it,'sub')), fB=klmF(bk,'body',FZ(it,'by')), hOf=f=>f?f.lines.length*f.lh:0;
+  const lf=label?klmFit(E,label,tw-fL*0.9,fL,'700',1):null, tf=klmFit(E,text,tw,fT,'800',4), sf=sub?klmFit(E,sub,tw,fS,'600',2):null, bf=by?klmFit(E,by,tw,fB,'600',1):null;
+  const ch=Math.min(R.h,pad*2+(lf?fL*2.1:0)+hOf(tf)+(sf?fS*0.5+hOf(sf):0)+(bf?fB*0.6+bf.lh:0)), cy0=R.y+Math.max(0,(R.h-ch)/2);
+  g.save(); klmSlide(g,a,bk); roundRect(g,R.x,cy0,cw,ch,0.012*bk); g.fillStyle='#f3f4f6'; g.fill();
+  let y=cy0+pad;
+  if(lf){ klDot(g,R.x+pad+fL*0.28,y+fL*0.5,fL*0.28,acc); klmPut(E,lf,R.x+pad+fL*0.9,y,'#6b7280','700'); y+=fL*2.1; }
+  y+=klmRich(E,tf,hl,R.x+pad,y,'#111827','800','mark',acc);
+  if(sf){ y+=fS*0.5; y+=klmPut(E,sf,R.x+pad,y,'#4b5563','600'); }
+  if(bf){ y+=fB*0.6; klmPut(E,bf,R.x+pad,y,'#9ca3af','600'); }
   g.restore();
 }
 /* ── 등록 ── */
@@ -55036,9 +55200,9 @@ KLD('x','mpicto','픽토그램 + 글',{s:'픽토글',g:KM0,ar:2.4,h:0.30,mw:0.7,
 KLD('l','mpicts','픽토그램 줄',{s:'아이콘줄',g:KM0,ar:2.4,h:0.34,hp:0,mw:0.2,mwp:0.2,t:{kind:'mpicts'},draw:drawLPic,kmin:true,parts:KP_PARTS,sample:{label:'',parts:[{t:'은행',sb:'',ic:'building-bank',hl:''},{t:'보험',sb:'',ic:'umbrella',hl:''},{t:'증권',sb:'',ic:'chart-candle',hl:''},{t:'코인',sb:'',ic:'currency-bitcoin',hl:'1'}]}});
 KLD('l','mflow','픽토그램 흐름(상자 + 화살표)',{s:'아이콘흐름',g:KM0,ar:2.6,h:0.36,hp:0,mw:0.3,mwp:0.24,t:{kind:'mflow'},draw:drawLPic,kmin:true,parts:KP_PARTS,sample:{label:'',parts:[{t:'문자 링크',sb:'',ic:'message',hl:''},{t:'가짜 앱 설치',sb:'',ic:'device-mobile',hl:''},{t:'정보 유출',sb:'',ic:'bug',hl:'1'}]}});
 KLD('l','mvs','픽토그램 대결(A vs B)',{s:'아이콘대결',g:KM0,ar:2.4,h:0.44,hp:0,mw:0.9,t:{kind:'mvs'},draw:drawLPic,kmin:true,parts:KP_PARTS,sample:{label:'',parts:[{t:'AI 공격',sb:'',ic:'shield',hl:''},{t:'AI 방어',sb:'',ic:'shield-check',hl:'1'}]}});
-KLD('l','mcheck','가능·불가 체크 목록',{s:'체크목록',g:KM0,ar:1.8,h:0.05,hp:0.12,mw:0.7,t:{kind:'mcheck'},draw:drawLCheck,kmin:true,sample:{label:'',parts:[{t:'C 언어',sb:''},{t:'MicroPython',sb:''},{t:'리눅스급 운영체제',sb:'-'}]}});
+KLD('l','mcheck','가능·불가 체크 목록',{s:'체크목록',g:KM0,ar:1.8,h:0.05,hp:0.14,mw:0.7,t:{kind:'mcheck'},draw:drawLCheck,kmin:true,sample:{label:'',parts:[{t:'C 언어',sb:''},{t:'MicroPython',sb:''},{t:'리눅스급 운영체제',sb:'-'}]}});
 KLD('g','munit','픽토그램 단위 차트',{s:'아이콘차트',g:KM0,ar:2.2,h:0.34,mw:0.9,t:{kind:'munit'},draw:drawGUnit,kmin:true,f:G_F.f.concat(KP_IC),sample:{label:'개인정보 유출',v:4,min:0,max:10,unit:'명',preset:'plain',note:'10명 중 4명',ic:'user'}});
-KLD('t','magenda','슬래시 목차(점선)',{s:'슬래시목차',g:KM0,ar:3.2,h:0.24,mw:1.0,t:{kind:'magenda'},draw:drawTAgenda,kmin:true,ov:{partOk:q=>!!(q.d||q.t)},sample:{label:'',parts:[{d:'무슨 일',t:'뚫린 곳·피해',sb:'',lv:2},{d:'어디까지',t:'확인된 범위',sb:'',lv:2},{d:'AI는',t:'어디까지 썼나',sb:'',lv:2},{d:'내가 할 일',t:'점검 목록',sb:'',lv:3}]}});
+KLD('t','magenda','슬래시 목차(점선)',{s:'슬래시목차',g:KM0,ar:3.2,h:0.24,mw:0.2,mwp:0.17,t:{kind:'magenda'},draw:drawTAgenda,kmin:true,ov:{partOk:q=>!!(q.d||q.t)},sample:{label:'',parts:[{d:'무슨 일',t:'뚫린 곳·피해',sb:'',lv:2},{d:'어디까지',t:'확인된 범위',sb:'',lv:2},{d:'AI는',t:'어디까지 썼나',sb:'',lv:2},{d:'내가 할 일',t:'점검 목록',sb:'',lv:3}]}});
 KLD('x','mcite','출처 카드(기사·공시)',{s:'출처카드',g:KM0,ar:2.0,h:0.34,mw:0.8,t:{kind:'mcite'},draw:drawXCite,kmin:true,sample:{label:'한국일보 · 2026.10.28',text:'금융권 연쇄 해킹, 증권사·코인 거래소까지 번졌다',sub:'',by:'',hl:['연쇄 해킹'],tone:''}});
 KL.keys.forEach(k=>{ if(KL.dsn[k].kmin) LEAD_DEF[k]=0.12; });   /* 말하는 낱말에 맞춰 거의 그 순간에 나타남(영상 형식) */
 KL_LIM.ic=24;
@@ -55058,6 +55222,281 @@ const KL_PIC_GUIDE=`[AI 슬래시식 화면 구성 — 영상에서 학습한 �
 - 픽토그램은 3,590개 가운데서 고른다. 픽토그램 블록과 항목에는 ic 에 영어 1~3 낱말(아이콘 이름이나 뜻)을 쓴다 — 예: building-bank, lock, shield-check, bug, cpu, server, cloud, database, robot, brain, device-mobile, message, mail, phone, calendar, clock, world, map-pin, building-factory, truck, ship, plane, home, users, user, heart, pill, bulb, rocket, target, trophy, flag, alert-triangle, circle-check, ban, gavel, scale, news, report-money, file-text, bolt, flame, leaf, battery-charging, car, coin, cash, credit-card, wallet, chart-line, chart-candle, trending-up, trending-down, percentage, currency-dollar, currency-won, barrel(원유), gas-station, wheat, atom. 글의 뜻에 가장 구체적인 낱말을 고른다(해킹=bug·lock, 금리=percentage, 유가=barrel, 반도체=cpu, 대출=cash, 연금=pig-money, 법원=gavel, 문자=message). 모르면 ic 를 비워 둔다(글에서 자동으로 골라 준다).
 - 그림은 흰 윤곽이 기본이고, 강조·새로운 것은 청록(hl "1"), 지난 것·못 쓰는 것은 흐리게(hl "-") 또는 ✕ 로 나타낸다. 그림 밑 이름은 2~6자.`;
 /* ══ /v139 ══ */
+/* ══ v142 (2026-11-03) — 『학습용_프레젠테이션1.pptx』(33장)에서 배운 형식을 미니멀 제작 방식에 더함 ═══════════════════════════════════════════════
+   요청: "이 프리젠테이션 스타일을 인포그래픽 미니멀 제작 방식에 학습시켜줘 — 더 미니멀하면서도 정교하고, 전달하려는 내용을 심플하면서도 좋은 구성·배치·단어·수치로 세련되게"
+   레퍼런스(33장, 모두 그림): 검정 바탕(장면 위는 90% 어둡게) · 흰 굵은 글 + 슬레이트 회색 보조 글 + 청록 하나 · 가는 윤곽선·점선 · 한 화면 한 메시지 · 말하는 순서대로 하나씩.
+   실측(화면 높이 대비): 청록 #00dfff · 보조 글 #8ea2ad · 구분선 #313131 · 꺼진 도형 #1f1f1f/#474747 · 큰 수치 글자 0.22 · 슬래시 키워드 0.12 · 큰 제목 0.10 · 제목 0.07 · 한 구절 0.05 · 이름·설명 0.04 · 작은 머리글 0.03 · 출처 0.022.
+   새로 배운 구성(33장 가운데 자주 나온 순) — ① 슬래시 키워드 + 청록 세로선 + 줄마다 [청록 이름 | 흰 한 구절](6장) → l.mkey · ② 번호 + 슬래시 키워드 + 설명 목차 → t.mtoc ·
+        ③ 진행 탭 + 판정 칩(7장) → t.mtabs · ④ 회색 윗줄 + 큰 제목(청록 강조·밑줄·취소선)(6장) → x.mhead · ⑤ 그림 + 아주 큰 수치 + 설명 → m.mhero ·
+        ⑥ 전·후 막대 + 점선 화살표 → g.mba · ⑦ 분할 링 "10개 중 8개" → g.mring · ⑧ 갈림길(기회 vs 지름길) → l.mfork.
+   글자 크기는 종류마다 정해져 있어 모든 화면에서 같음(KLM_T: hero·key·disp·head·phr·body·tiny). 검색: v142 · klm* · KL_REF_GUIDE ── */
+Object.assign(KLM_T,{hero:0.22,key:0.12,disp:0.10,phr:0.05,tiny:0.03});   /* 큰 수치(hero) · 슬래시 키워드(key) · 큰 제목(disp) · 한 구절(phr) · 작은 머리글(tiny) — B 기준 */
+KL_LIM.lead=30; KL_LIM.l0=8; KL_LIM.l1=8;
+const klmUp=s=>String(s==null?'':s).trim();
+const klmAl=(it,dflt)=>{ const a=taOf(it)||dflt||'l'; return {a,x:v=>a==='c'?v.x+v.w/2:a==='r'?v.x+v.w:v.x,al:a==='c'?'center':a==='r'?'right':'left'}; };
+const KLM_NUMHL=/[+\-−▲▼]?\d[\d,.]*\s?(?:%p|%|퍼센트|bp|원|달러|위안|엔|유로|포인트|배럴|조|억|만|천|배|개월|분기|개|명|곳|건|위|등|종목|회|번|시간|분|초|일|주|년|월)?(?:\s?중\s?[+\-−▲▼]?\d[\d,.]*\s?(?:%|개|명|곳|건|위|등|종목|회|번|배|원|달러|시간|분|일|주|년|월)?)?/g;
+function klmNumHl(s){ return (klmUp(s).match(KLM_NUMHL)||[]).map(x=>x.trim()).filter(x=>x&&/\d/.test(x)); }   /* 글 속 수치 구절(10개 중 8개 · +1.2% · 7시간) — 청록으로 칠함 */
+const klmFmt=v=>Number(v).toLocaleString('ko-KR',{maximumFractionDigits:2});
+function klmNumFmt(s){   /* '2720.4' → '2,720.4' · '1350원' → '1,350원' — 연도로 보이는 네 자리(1900~2100)와 이미 쉼표가 있는 수는 그대로 */
+  const t=klmUp(s), m=/^([+\-−▲▼]?\s?)(\d{4,})(\.\d+)?(\s?[%A-Za-z가-힣]{0,4})?$/.exec(t); if(!m) return s;
+  const n=m[2]; if(n.length===4&&!m[3]&&+n>=1900&&+n<=2100&&!/원|달러|포인트|선|엔|위안|유로|배럴|조|억|만/.test(m[4]||'')) return s;
+  return m[1]+n.replace(/\B(?=(\d{3})+(?!\d))/g,',')+(m[3]||'')+(m[4]||'');
+}
+const KLM_NEW=/^(l\.mkey|t\.mtoc|m\.mhero|x\.mhead|g\.mba|g\.mring|l\.mfork|t\.mtabs)$/, klmTrim=s=>String(s==null?'':s).replace(/[\s.。!！]+$/,'');   /* 새 종류의 글 칸은 마침표·느낌표로 끝내지 않음(?는 둠) */
+function klmCopyFix(items){ (items||[]).forEach(it=>{ try{ if(!it) return;
+  if(/^(m\.mhero|m\.mstat|g\.mba)$/.test(it.type)) ['value','from','to'].forEach(f=>{ if(typeof it[f]==='string'&&it[f]) it[f]=klmNumFmt(it[f]); });
+  if(KLM_NEW.test(it.type)){ ['label','text','sub','note','lead','by','delta'].forEach(f=>{ if(typeof it[f]==='string'&&it[f]) it[f]=klmTrim(it[f]); }); (it.parts||[]).forEach(p=>{ ['t','d','sb'].forEach(f=>{ if(typeof p[f]==='string'&&p[f]) p[f]=klmTrim(p[f]); }); }); }
+ }catch(e){ if(window.__klStrict) throw e; } }); return items; }
+function klmPill(g,x,y,w,h,fill,stroke,lw){ roundRect(g,x,y,w,h,h/2); if(fill){ g.fillStyle=fill; g.fill(); } if(stroke){ g.lineWidth=lw; g.strokeStyle=stroke; g.stroke(); } }
+function klmKick(E,s,x,y,fs,al,maxW){   /* 슬래시 머리글 — 청록 '/' + 굵은 흰 글(가운데·오른쪽 정렬도) */
+  const g=E.g, pal=E.pal; s=nlFlat(klmUp(s)).replace(/^\/+\s*/,''); if(!s) return 0; g.save();
+  if('letterSpacing' in g) g.letterSpacing=(fs*0.1).toFixed(1)+'px';
+  g.font='800 '+fs.toFixed(1)+'px '+E.font; const sw=g.measureText('/').width+fs*0.4; let tw=sw+g.measureText(s).width; if(tw>maxW){ s=s.slice(0,Math.max(1,Math.floor(s.length*maxW/tw)-1))+'…'; tw=sw+g.measureText(s).width; }
+  const x0=al==='c'?x-tw/2:al==='r'?x-tw:x; dtx(g,'/',x0,y,fs,'800',pal.accent,E.font,'left','top'); dtx(g,s,x0+sw,y,fs,'800',pal.text,E.font,'left','top'); g.restore(); return fs;
+}
+function klmIcon(g,id,cx,cy,size,col,fill,sw){   /* 큰 그림 — 선 굵기를 키우고(sw) 별·하트 같은 닫힌 모양은 채움 */
+  const p=klPicPath(id); if(!p) return false;
+  g.save(); g.translate(cx-size/2,cy-size/2); g.scale(size/24,size/24); g.lineCap='round'; g.lineJoin='round'; g.strokeStyle=col; g.lineWidth=sw||1.4;
+  if(fill){ g.fillStyle=col; g.fill(p); } g.stroke(p); g.restore(); return true;
+}
+const KLM_FILLIC=/^(star|heart|bolt|flame|moon|circle|square|triangle|diamond|bookmark|flag|bell|crown|map-pin|shield|cloud|sun|rocket|trophy|target|coin)$/;
+function klmSegs(g,line,hl,st,fs,wt,font){   /* 한 줄을 강조(hl)·취소선(st) 낱말로 나눠 폭을 잼 — [{s,k:''|'h'|'s',x,w}] */
+  const words=[]; (hl||[]).filter(Boolean).forEach(w=>words.push({w,k:'h'})); (st||[]).filter(Boolean).forEach(w=>words.push({w,k:'s'}));
+  words.sort((a,b)=>b.w.length-a.w.length); let segs=[{s:line,k:''}];
+  if(words.length){ const re=new RegExp('('+words.map(o=>o.w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','g'); segs=line.split(re).filter(Boolean).map(s=>{ const o=words.find(q=>q.w===s); return {s,k:o?o.k:''}; }); }
+  let x=0; segs.forEach(sg=>{ g.font=(sg.k==='s'?'700':(sg.k?'800':wt))+' '+fs.toFixed(1)+'px '+font; sg.w=g.measureText(sg.s).width; sg.x=x; x+=sg.w; });
+  return {segs,w:x};
+}
+
+/* ── l.mkey — 큰 슬래시 키워드(청록) + 가는 청록 세로선 + 줄마다 [청록 이름 | 흰 한 구절] — 장·구역 전환, 요약 ── */
+function klmKeyGeo(E,it,iw,bk){   /* 칸 폭(iw)에서의 열 위치 — 그리기와 높이·폭 재기가 같이 씀 */
+  const g=E.g, font=E.font, key=klmUp(it.label).replace(/^\/+\s*/,''), ds=(it.parts||[]).slice(0,5).map((p,i)=>({p,i,d:klmUp(p.d),t:klmUp(p.t)})).filter(q=>q.d||q.t);
+  const fK=klmF(bk,'key',FZ(it,'label')), fD=klmF(bk,'body',FZP(it,'d')), fT=klmF(bk,'phr',FZP(it,'t')), bw=Math.max(3,0.005*bk), W=Math.max(10,iw-0.048*bk);
+  let kf=fK, kw=0, kw0=0; if(key){ g.font='800 '+kf.toFixed(1)+'px '+font; kw=g.measureText('/'+key).width; kw0=kw; const cap=W*0.40; if(kw>cap){ kf*=cap/kw; kw=cap; } }
+  const lx=key?Math.min(Math.max(kw+0.06*bk,W*0.30),W*0.44):0, cx0=lx+(key?bw+0.04*bk:0), rw0=Math.max(10,W-cx0), hasD=ds.some(q=>q.d);
+  const dfs=hasD?klmFitAll(E,ds.map(q=>q.d),rw0*0.34,fD,'700',1):[]; let dw=0; dfs.forEach(f=>{ if(f) dw=Math.max(dw,f.w); });
+  const tx=cx0+(hasD?dw+0.045*bk:0), tw=Math.max(10,W-tx), tfs=klmFitAll(E,ds.map(q=>q.t),tw,fT,'800',2);
+  return {key,ds,n:ds.length,kf,kw,kw0,bw,lx,cx0,tx,tw,dfs,tfs};
+}
+function drawLKey(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.024,0.7), acc=pal.accent, G=klmKeyGeo(E,it,c.w,bk), n=G.n; if(!n) return;
+  const pitch=Math.min(0.145*bk,R.h/(n+0.5)), lineLen=Math.min(R.h,Math.max(0.43*bk,(n+0.7)*pitch)), cy=R.y+R.h/2, grow=rv(s0,0.6), a=rv(s0,0.5);
+  g.save();
+  if(G.key){ g.save(); klmSlide(g,a,bk); dtx(g,'/'+G.key,R.x,cy,G.kf,'800',acc,font,'left','middle'); g.restore(); klmRule(g,R.x+G.lx,cy-lineLen*grow/2,G.bw,lineLen*grow,acc); }
+  G.ds.forEach((q,i)=>{ const sp=klPtS(E,it,q.p,q.i), ap=sp<=0?0:rv(sp,0.45); if(ap<=0) return; const ry=cy+(i-(n-1)/2)*pitch, tf=G.tfs[i], df=G.dfs[i], hot=klpHot(q.p), dim=klpDim(q.p); g.save(); klmSlide(g,ap,bk);
+    if(q.d&&df) dtx(g,df.lines[0],R.x+G.cx0,ry,df.fs,'700',dim?pal.mute:acc,font,'left','middle');
+    if(q.t&&tf){ const L=tf.lh, y1=ry-(tf.lines.length-1)*L/2; tf.lines.forEach((l,j)=>dtx(g,l,R.x+G.tx,y1+j*L,tf.fs,'800',hot?acc:(dim?pal.mute:pal.text),font,'left','middle')); }
+    g.restore(); });
+  g.restore();
+}
+function measKey(E,it,iw,kk){ const B=E.B, bk=B*Math.min(kk,KLM_K), G=klmKeyGeo(E,it,Math.max(10,iw),bk), n=Math.max(1,G.n); let pw=0; G.tfs.forEach(f=>{ if(f) pw=Math.max(pw,f.w); });
+  return {h:Math.max(0.40,(n+0.6)*0.125)*B*kk, hmin:Math.max(0.27,(n+0.4)*0.085)*B*kk+0.034*bk, mw:(G.kw0+0.06*bk+0.04*bk+G.bw+(G.dfs.length?G.tx-G.cx0:0)+Math.min(pw,0.42*B)+0.05*bk)/B}; }
+
+/* ── t.mtoc — 번호 목차: 회색 번호 + 가는 눈금 + 청록 슬래시 키워드 + 흰 설명(한 줄) ── */
+function drawTToc(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.03,0.7), acc=pal.accent, ds=(it.parts||[]).slice(0,6).map((p,i)=>({p,i,d:klmUp(p.d).replace(/^\/+\s*/,''),t:klmUp(p.t)})).filter(q=>q.d||q.t), n=ds.length; if(!n) return;
+  const fN=klmF(bk,'tiny',1), fK=klmF(bk,'head',FZP(it,'d')), fD=klmF(bk,'phr',FZP(it,'t')), pitch=Math.min(0.118*bk,R.h/n), y0=R.y+(R.h-pitch*n)/2;
+  g.font='700 '+fN.toFixed(1)+'px '+font; const numW=g.measureText('00').width; g.font='800 '+fK.toFixed(1)+'px '+font; let kwMax=0; ds.forEach(q=>{ if(q.d) kwMax=Math.max(kwMax,g.measureText('/'+q.d).width); }); kwMax=Math.min(kwMax,R.w*0.4);
+  const xTick=numW+0.022*bk, xKey=xTick+0.034*bk, xDesc=Math.max(xKey+kwMax+0.06*bk,R.w*0.40), dW=Math.max(10,R.w-xDesc), dfs=klmFitAll(E,ds.map(q=>q.t),dW,fD,'800',1);
+  let mxD=0; dfs.forEach(f=>{ if(f) mxD=Math.max(mxD,f.w); }); const ox=R.x+Math.max(0,(R.w-(xDesc+mxD))/2);
+  ds.forEach((q,i)=>{ const sp=klPtS(E,it,q.p,q.i), ap=sp<=0?0:rv(sp,0.45); if(ap<=0) return; const cy=y0+(i+0.5)*pitch; g.save(); klmSlide(g,ap,bk);
+    dtx(g,String(i+1).padStart(2,'0'),ox,cy,fN,'700',pal.mute,font,'left','middle');
+    klmRule(g,ox+xTick,cy-0.022*bk,Math.max(2,0.003*bk),0.044*bk,alphaOf(pal.text,0.32));
+    if(q.d){ g.font='800 '+fK.toFixed(1)+'px '+font; const kw=g.measureText('/'+q.d).width, f=kw>kwMax?fK*kwMax/kw:fK; dtx(g,'/'+q.d,ox+xKey,cy,f,'800',acc,font,'left','middle'); }
+    if(q.t&&dfs[i]) dtx(g,dfs[i].lines[0],ox+xDesc,cy,dfs[i].fs,'800',pal.text,font,'left','middle');
+    g.restore(); });
+}
+
+/* ── m.mhero — 윗글(슬래시) + 그림 + 아주 큰 수치(HERO) + 변화·덧글 + 설명 — 한 화면의 주인공 숫자 ── */
+function klmHeroGeo(E,it,iw,bk){
+  const g=E.g, font=E.font, val=klmUp(it.value), label=klmUp(it.label), sub=klmUp(it.sub), tone=itemTone(it), dl=deltaText(it,tone), note=klmUp(it.note);
+  const fv0=klmF(bk,'hero',FZ(it,'value')), fb=klmF(bk,'body',FZ(it,'sub')), fk=klmF(bk,'tiny',FZ(it,'label')), fd=klmF(bk,'body',FZ(it,'delta')), W=Math.max(10,iw-0.06*bk);
+  let fv=fv0, vw=0, vw0=0; if(val){ g.font='800 '+fv.toFixed(1)+'px '+font; vw=g.measureText(val).width; vw0=vw; if(vw>W*0.98){ fv*=W*0.98/vw; vw=W*0.98; } }
+  const sf=sub?klmFit(E,sub,W,fb,'700',2):null, gap=0.04*bk, kh=label?fk*1.9:0, dlh=(dl||note)?fd*1.3:0;
+  return {val,label,sub,tone,dl,note,fv,vw,vw0,fb,fk,fd,sf,gap,kh,dlh,vh:fv*1.0,W};
+}
+function drawMHero(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), a=rv(s0,0.5), R=klmBox(c,bk,0.03,0.7), acc=pal.accent, hOf=f=>f?f.lines.length*f.lh:0, G=klmHeroGeo(E,it,c.w,bk); if(!G.val) return;
+  const al=klmAl(it,'c'), ax=al.x(R), id=it.ic?klPicFind(String(it.ic),null):'';
+  const rest=G.vh+((G.dl||G.note)?G.gap*0.6+G.dlh:0)+(G.sf?G.gap+hOf(G.sf):0), kh=(G.kh&&rest+G.kh>R.h+1)?0:G.kh, body=kh+rest;   /* 자리가 모자라면 윗글부터 빼서 큰 수치 크기를 지킴 */
+  let isz=0; if(id){ isz=clamp(R.h-body-G.gap*1.3,0,0.26*bk); if(isz<0.07*bk) isz=0; }
+  const tot=body+(isz?isz+G.gap*1.3:0); let y=R.y+Math.max(0,(R.h-tot)/2);
+  g.save(); klmSlide(g,a,bk);
+  if(G.label&&kh){ klmKick(E,G.label,ax,y,G.fk,al.a,R.w); y+=kh; }
+  if(isz){ klmIcon(g,id,al.a==='c'?ax:(al.a==='r'?ax-isz/2:ax+isz/2),y+isz/2,isz,acc,KLM_FILLIC.test(id),1.5); y+=isz+G.gap*1.3; }
+  const sym=!/\d/.test(G.val)&&G.val.length<=2, vs=klCnt(E,s0,G.val,0.9); dtx(g,vs,ax,y+G.vh/2,G.fv,'800',sym?acc:pal.text,font,'left'===al.al?'left':al.al,'middle'); y+=G.vh;
+  if(G.dl||G.note){ y+=G.gap*0.6; const tc=toneCol(pal,G.tone)||acc, fd=G.fd; g.font='800 '+fd.toFixed(1)+'px '+font; const w1=G.dl?g.measureText(G.dl).width:0; g.font='600 '+fd.toFixed(1)+'px '+font; const w2=G.note?g.measureText(G.note).width:0, gp=(G.dl&&G.note)?fd*0.5:0, tw=w1+gp+w2;
+    let x0=al.a==='c'?ax-tw/2:(al.a==='r'?ax-tw:ax); if(G.dl){ dtx(g,G.dl,x0,y+G.dlh/2,fd,'800',tc,font,'left','middle'); x0+=w1+gp; } if(G.note) dtx(g,G.note,x0,y+G.dlh/2,fd,'600',pal.mute,font,'left','middle'); y+=G.dlh; }
+  if(G.sf){ y+=G.gap; klmPut(E,G.sf,ax,y,pal.mute,'700',al.a==='c'?'center':al.a==='r'?'right':'left'); }
+  g.restore();
+}
+function measHero(E,it,iw,kk){ const B=E.B, bk=B*Math.min(kk,KLM_K), G=klmHeroGeo(E,it,Math.max(10,iw),bk), hOf=f=>f?f.lines.length*f.lh:0;
+  const rest=G.vh+((G.dl||G.note)?G.gap*0.6+G.dlh:0)+(G.sf?G.gap+hOf(G.sf):0)+0.042*bk;
+  return {h:rest+G.kh+0.018*bk, hmin:rest, mw:Math.max(0.3,(G.vw0/0.98+0.06*bk)/B)}; }
+
+/* ── x.mhead — 회색 윗줄 + 큰 제목(청록 강조 낱말 + 밑줄 · 취소선 낱말 · 채운 상자) + 회색 아랫줄. 장면 위면 가운데, 검정 위면 왼쪽 ── */
+function klmHeadGeo(E,it,iw,bk){
+  const text=klmUp(it.text), lead=klmUp(it.lead), sub=klmUp(it.sub), label=klmUp(it.label), W=Math.max(10,iw-0.06*bk);
+  const fD=klmF(bk,'disp',FZ(it,'text')), fL=klmF(bk,'phr',FZ(it,'lead')), fS=klmF(bk,'phr',FZ(it,'sub')), fK=klmF(bk,'tiny',FZ(it,'label'));
+  const tf=text?klmFit(E,text,W,fD,'800',3,0.5):null, lf=lead?klmFit(E,lead,W,fL,'700',2):null, sf=sub?klmFit(E,sub,W,fS,'700',2):null, hOf=f=>f?f.lines.length*f.lh:0;
+  const kh=label?fK*2.4:0, gapL=lf?fL*0.4:0, gapS=sf?fS*0.7:0, ulPad=(tf&&(it.hl||[]).length&&(it.ul||'line')==='line')?tf.fs*0.14:0;
+  return {text,lead,sub,label,tf,lf,sf,fK,kh,gapL,gapS,ulPad,h:kh+(lf?hOf(lf)+gapL:0)+(tf?hOf(tf):0)+ulPad+(sf?gapS+hOf(sf):0)};
+}
+function drawXHead(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), a=rv(s0,0.5), R=klmBox(c,bk,0.03,0.7), acc=pal.accent, G=klmHeadGeo(E,it,c.w,bk); if(!G.tf) return;
+  const al=klmAl(it,(E.ig&&E.ig.bg==='scene')?'c':'l'), ax=al.x(R), hl=it.hl||[], st=it.st||[], ul=it.ul||'line', hOf=f=>f?f.lines.length*f.lh:0;
+  let y=R.y+Math.max(0,(R.h-G.h)/2);
+  g.save(); klmSlide(g,a,bk);
+  if(G.label){ klmKick(E,G.label,ax,y,G.fK,al.a,R.w); y+=G.kh; }
+  if(G.lf){ klmPut(E,G.lf,ax,y,pal.mute,'700',al.a==='c'?'center':al.a==='r'?'right':'left'); y+=hOf(G.lf)+G.gapL; }
+  const tf=G.tf, fs=tf.fs, grow=rv(s0-0.12,0.55), sk=rv(s0-0.3,0.4); let ulDone=false;
+  tf.lines.forEach((l,i)=>{ const S=klmSegs(g,l,hl,st,fs,'800',font), x0=al.a==='c'?ax-S.w/2:(al.a==='r'?ax-S.w:ax), ty=y+i*tf.lh+(tf.lh-fs)*0.4;
+    S.segs.forEach(sg=>{ const sx=x0+sg.x;
+      if(sg.k==='h'&&ul==='box'){ roundRect(g,sx-fs*0.14,ty+fs*0.02,sg.w+fs*0.28,fs*1.04,fs*0.16); g.fillStyle=acc; g.fill(); }
+      dtx(g,sg.s,sx,ty,fs,sg.k==='s'?'700':(sg.k?'800':'800'),sg.k==='s'?pal.mute:(sg.k==='h'?(ul==='box'?'#001018':acc):pal.text),font,'left','top');
+      if(sg.k==='s'){ g.save(); g.strokeStyle=acc; g.lineWidth=Math.max(2.5,fs*0.085); g.lineCap='round'; g.beginPath(); g.moveTo(sx-fs*0.06,ty+fs*0.56); g.lineTo(sx-fs*0.06+(sg.w+fs*0.12)*sk,ty+fs*0.56); g.stroke(); g.restore(); }
+      if(sg.k==='h'&&ul==='line'&&!ulDone){ ulDone=true; g.fillStyle=acc; roundRect(g,sx,ty+fs*1.12,sg.w*grow,Math.max(3,fs*0.07),Math.max(1.5,fs*0.035)); g.fill(); }
+    }); });
+  y+=hOf(tf)+G.ulPad;
+  if(G.sf){ y+=G.gapS; klmPut(E,G.sf,ax,y,pal.mute,'700',al.a==='c'?'center':al.a==='r'?'right':'left'); }
+  g.restore();
+}
+function measHead(E,it,iw,kk){ const B=E.B, bk=B*Math.min(kk,KLM_K), G=klmHeadGeo(E,it,Math.max(10,iw),bk); return {h:G.h+0.06*bk, mw:0.5}; }
+
+/* ── g.mba — 전·후 막대: 회색 막대(전) → 청록 윤곽 막대(후) + 이전 높이 점선 + 청록 점선 화살표 + 변화 글 ── */
+function drawGBa(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.03,0.7), acc=pal.accent, a=rv(s0,0.5), v0=nz(it.from), v1=nz(it.v); if(v0==null||v1==null) return;
+  const label=klmUp(it.label), sub=klmUp(it.sub), l0=klmUp(it.l0)||'전', l1=klmUp(it.l1)||'후', unit=klmUp(it.unit), hOf=f=>f?f.lines.length*f.lh:0;
+  const fT=klmF(bk,'phr',FZ(it,'label')), fS=klmF(bk,'tiny',FZ(it,'sub')), fV=klmF(bk,'phr',FZ(it,'v')), fX=klmF(bk,'body',1), fC=klmF(bk,'phr',FZ(it,'note'));
+  const lw=(label||sub)?Math.min(R.w*0.26,0.38*bk):0, cx0=R.x+(lw?lw+0.03*bk:0), cw=Math.max(10,R.x+R.w-cx0);
+  const xH=fX*1.6, vH=fV*1.45, baseY=R.y+R.h-xH, topY=R.y+vH+0.015*bk, maxH=Math.max(10,baseY-topY), mx=Math.max(Math.abs(v0),Math.abs(v1))||1;
+  const h0=Math.max(0.035*bk,maxH*Math.abs(v0)/mx), h1=Math.max(0.035*bk,maxH*Math.abs(v1)/mx), bwid=Math.min(cw*0.2,0.2*bk), b0x=cx0+cw*0.03, b1x=b0x+bwid+Math.min(cw*0.16,0.14*bk), ax=b1x+bwid+0.07*bk, capX=ax+0.032*bk;
+  const g0=rv(s0,0.55), g1=rv(s0-0.35,0.6), g2=rv(s0-0.75,0.4), sw=Math.max(2,0.0035*bk);
+  g.save(); g.globalAlpha*=a;
+  if(lw){ const lf=label?klmFit(E,label,lw,fT,'800',2):null, sf=sub?klmFit(E,sub,lw,fS,'600',2):null, th=hOf(lf)+(sf?fS*0.4+hOf(sf):0); let y=R.y+(R.h-th)/2; if(lf){ klmPut(E,lf,R.x,y,pal.text,'800'); y+=hOf(lf)+fS*0.4; } if(sf) klmPut(E,sf,R.x,y,pal.mute,'600'); }
+  g.fillStyle=alphaOf(pal.text,0.38); g.fillRect(b0x-0.04*bk,baseY,ax-b0x+0.05*bk,Math.max(2,0.0028*bk));
+  const bar=(x,h,fill,stroke)=>{ roundRect(g,x,baseY-h,bwid,h,Math.min(0.012*bk,bwid*0.1)); g.fillStyle=fill; g.fill(); g.lineWidth=sw; g.strokeStyle=stroke; g.stroke(); };
+  g.save(); g.globalAlpha*=Math.min(1,g0*1.5); bar(b0x,h0*g0,'rgba(255,255,255,.12)',alphaOf(pal.text,0.55)); g.restore();
+  const t0=baseY-h0, t1=baseY-h1;
+  if(g1>0){ g.save(); g.globalAlpha*=Math.min(1,g1*1.5); bar(b1x,h1*g1,alphaOf(acc,0.15),acc); g.restore(); }
+  const vtxt=v=>klmFmt(v)+unit;
+  dtx(g,vtxt(v0),b0x+bwid/2,baseY-h0*g0-0.012*bk,fV,'800',pal.mute,font,'center','bottom');
+  if(g1>0.4) dtx(g,vtxt(v1),b1x+bwid/2,baseY-h1*g1-0.012*bk,fV,'800',pal.text,font,'center','bottom');
+  dtx(g,l0,b0x+bwid/2,baseY+xH*0.55,fX,'700',pal.mute,font,'center','middle'); dtx(g,l1,b1x+bwid/2,baseY+xH*0.55,fX,'800',acc,font,'center','middle');
+  if(g2>0){ g.save(); g.globalAlpha*=g2;
+    const dy=t1-t0, len=Math.abs(dy), up=dy<0, far=len>=fV*1.7, cap=klmUp(it.note)||(v1===v0?'변동 없음':((v1>v0?'+':'−')+klmFmt(Math.abs(v1-v0))+unit)), cf=klmFit(E,cap,Math.max(10,R.x+R.w-capX),fC,'800',2);
+    if(far){   /* 차이가 크면 이전 높이 점선 + 청록 점선 화살표 + 가운데 변화 글 */
+      g.setLineDash([0.012*bk,0.009*bk]); g.strokeStyle=alphaOf(pal.text,0.5); g.lineWidth=Math.max(1.5,0.0025*bk); g.beginPath(); g.moveTo(b1x-0.02*bk,t0); g.lineTo(ax+0.02*bk,t0); g.stroke(); g.setLineDash([]);
+      const dir=up?1:-1; g.setLineDash([0.002*bk,0.012*bk]); g.lineCap='round'; g.strokeStyle=acc; g.lineWidth=Math.max(3,0.006*bk); g.beginPath(); g.moveTo(ax,t0-dir*0.012*bk); g.lineTo(ax,t1+dir*0.026*bk); g.stroke(); g.setLineDash([]);
+      const hw=0.016*bk, hy=t1+dir*0.004*bk; g.beginPath(); g.moveTo(ax-hw,hy+dir*hw*1.15); g.lineTo(ax,hy); g.lineTo(ax+hw,hy+dir*hw*1.15); g.stroke();
+      klmPut(E,cf,capX,(t0+t1)/2-hOf(cf)/2,acc,'800');
+    }else klmPut(E,cf,capX,Math.min(t0,t1)-0.012*bk-fV*1.15-(hOf(cf)-cf.lh)/2,acc,'800');   /* 차이가 작으면 점선·화살표 없이 값 줄 오른쪽에 변화 글 */
+    g.restore(); }
+  g.restore();
+}
+
+/* ── g.mring — 분할 링(칸 N개 가운데 M개가 청록) + 위 머리글 + 가운데 글 + 아래 설명(수치 구절은 청록) ── */
+function drawGRing(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.03,0.7), acc=pal.accent, a=rv(s0,0.5), I=gInfo(it), hOf=f=>f?f.lines.length*f.lh:0;
+  const label=klmUp(it.label), mid=klmUp(it.sub), unit=klmUp(it.unit), span=I.mx-I.mn, isInt=span>=2&&span<=24&&Math.abs(span-Math.round(span))<1e-9;
+  const total=isInt?Math.round(span):20, hi=isInt?clamp(Math.round(I.v-I.mn),0,total):clamp(Math.round(I.fr*total),0,total);
+  const capT=klmUp(it.note)||(isInt?(klmFmt(I.mx)+unit+' 중 '+klmFmt(I.v)+unit):(Math.round(I.fr*100)+'%'));
+  const fH=klmF(bk,'phr',FZ(it,'label')), fC=klmF(bk,'phr',FZ(it,'note')), fM=klmF(bk,'body',FZ(it,'sub'));
+  const hf=label?klmFit(E,label,R.w,fH,'800',1,0.7):null, cf=klmFit(E,capT,R.w,fC,'800',2,0.7), hH=hf?hf.lh+0.03*bk:0, cH=hOf(cf)+0.035*bk;
+  const Ro=Math.max(10,Math.min(R.w*0.5,(R.h-hH-cH)*0.5)), t=Ro*0.17, cx=R.x+R.w/2, cy=R.y+hH+(R.h-hH-cH)/2, on=Math.round(hi*rv(s0,0.8));
+  g.save(); g.globalAlpha*=a;
+  if(hf) klmPut(E,hf,cx,R.y,pal.text,'800','center');
+  const gapA=Math.min(0.5,0.016*bk/Ro), step=Math.PI*2/total;
+  for(let i=0;i<total;i++){ const t0=-Math.PI/2+i*step+gapA/2, t1=-Math.PI/2+(i+1)*step-gapA/2; g.beginPath(); g.arc(cx,cy,Ro-t/2,t0,t1); g.lineWidth=t; g.lineCap='butt'; g.strokeStyle=i<on?acc:alphaOf(pal.text,0.28); g.stroke(); }
+  if(mid){ const mf=klmFit(E,mid,(Ro-t)*1.5,fM,'700',2,0.6); klmPut(E,mf,cx,cy-hOf(mf)/2,pal.mute,'700','center'); }
+  klmRich(E,cf,klmNumHl(capT),cx,cy+Ro+0.035*bk,pal.text,'800','color',acc,'c');
+  g.restore();
+}
+
+/* ── l.mfork — 갈림길: 윤곽 알약(출발점) → 청록 고리 → 위(청록)·아래(흰) 곡선, 끝 점 + [이름 | 한 구절] ── */
+function drawLFork(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.03,0.7), acc=pal.accent, a=rv(s0,0.5), ds=(it.parts||[]).slice(0,3).map((p,i)=>({p,i,d:klmUp(p.d),t:klmUp(p.t)})).filter(q=>q.d||q.t), n=ds.length; if(n<2) return;
+  const label=klmUp(it.label), fP=klmF(bk,'body',FZ(it,'label')), fD=klmF(bk,'body',FZP(it,'d')), fT=klmF(bk,'phr',FZP(it,'t')), lw=Math.max(3,0.0045*bk), pad=0.03*bk, ph=0.105*bk, cy=R.y+R.h/2;
+  g.font='800 '+fP.toFixed(1)+'px '+font; const pw=label?Math.min(R.w*0.3,g.measureText(label).width+pad*2):0, forkX=R.x+Math.max(pw+0.07*bk,R.w*0.30), endX=R.x+R.w-0.02*bk, s=Math.min((endX-forkX)*0.3,0.3*bk), labX=forkX+s+0.03*bk;
+  const spread=Math.min(0.17*bk,Math.max(0.06*bk,R.h/2-fT*1.7)), offs=n===2?[-spread,spread]:[-spread,0,spread];
+  g.save(); g.globalAlpha*=a;
+  if(label){ klmPill(g,R.x,cy-ph/2,pw,ph,null,alphaOf(pal.text,0.95),lw); dtx(g,label,R.x+pw/2,cy,fP,'800',pal.text,font,'center','middle'); }
+  g.strokeStyle=alphaOf(pal.text,0.95); g.lineWidth=lw; g.lineCap='round'; g.beginPath(); g.moveTo(R.x+pw,cy); g.lineTo(forkX,cy); g.stroke();
+  ds.forEach((q,i)=>{ const sp=klPtS(E,it,q.p,q.i), ap=sp<=0?0:rv(sp,0.5); if(ap<=0) return; const yE=cy+offs[i], hot=i===0||klpHot(q.p), dim=klpDim(q.p), col=hot&&!dim?acc:alphaOf(pal.text,0.95), up=offs[i]<=0;
+    g.save(); g.globalAlpha*=ap; g.strokeStyle=col; g.lineWidth=lw; g.beginPath(); g.moveTo(forkX,cy); g.bezierCurveTo(forkX+s*0.55,cy,forkX+s*0.45,yE,forkX+s,yE); g.lineTo(endX,yE); g.stroke(); klDot(g,endX,yE,0.0125*bk,col);
+    g.font='700 '+fD.toFixed(1)+'px '+font; const dw=q.d?g.measureText(q.d).width:0, tx=labX+(q.d?dw+0.03*bk:0), tf=q.t?klmFit(E,q.t,Math.max(10,endX-tx-0.03*bk),fT,'800',1,0.7):null, by=up?yE-0.03*bk:yE+0.03*bk, bl=up?'bottom':'top';
+    if(q.d) dtx(g,q.d,labX,by,fD,'700',hot&&!dim?acc:pal.mute,font,'left',bl); if(tf) dtx(g,tf.lines[0],tx,by,tf.fs,'800',dim?pal.mute:pal.text,font,'left',bl);
+    g.restore(); });
+  g.beginPath(); g.arc(forkX,cy,0.03*bk,0,Math.PI*2); g.fillStyle='#000'; g.fill(); g.lineWidth=lw; g.strokeStyle=acc; g.stroke();
+  g.restore();
+}
+
+/* ── t.mtabs — 진행 탭: 번호 동그라미 + 이름 + 밑줄(지금=굵은 청록·지난=옅은 청록·앞으로=회색) + 판정 칩 — 말한 순서대로 '지금' 탭이 넘어감 ── */
+function drawTTabs(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=klmBk(E,c), R=klmBox(c,bk,0.03,0.5), acc=pal.accent, a=rv(s0,0.5), ds=(it.parts||[]).slice(0,6).map((p,i)=>({p,i,t:klmUp(p.t),s:klmUp(p.sb)})).filter(q=>q.t), n=ds.length; if(n<2) return;
+  const gap=0.022*R.w, tw=(R.w-gap*(n-1))/n, fL=klmF(bk,'body',FZP(it,'t')), fC=klmF(bk,'tiny',1), r=fL*0.6;
+  let cur=-1; ds.forEach((q,i)=>{ if(klPtS(E,it,q.p,q.i)>0) cur=i; }); const hot=ds.findIndex(q=>(+q.p.lv)>=3); if(hot>=0) cur=hot; if(cur<0) cur=E.all?n-1:0;
+  g.save(); g.globalAlpha*=a;
+  ds.forEach((q,i)=>{ const x=R.x+i*(tw+gap), done=i<cur, now=i===cur, rowY=R.y+r, ulY=rowY+r+0.02*bk;
+    g.lineWidth=Math.max(2,0.003*bk); g.beginPath(); g.arc(x+r,rowY,r,0,Math.PI*2);
+    if(now){ g.fillStyle=acc; g.fill(); } else{ g.strokeStyle=done?alphaOf(acc,0.9):alphaOf(pal.text,0.4); g.stroke(); }
+    dtx(g,String(i+1),x+r,rowY,r*1.05,'800',now?'#001018':(done?pal.text:pal.mute),font,'center','middle');
+    const lf=klmFit(E,q.t,Math.max(10,tw-r*2-0.02*bk),fL,now?'800':'700',1,0.6); dtx(g,lf.lines[0],x+r*2+0.016*bk,rowY,lf.fs,now?'800':'700',now?acc:(done?pal.text:pal.mute),font,'left','middle');
+    g.fillStyle=now?acc:(done?alphaOf(acc,0.5):alphaOf(pal.text,0.25)); const uh=now?Math.max(4,0.007*bk):Math.max(2,0.003*bk); g.fillRect(x,ulY+(now?0:(Math.max(4,0.007*bk)-uh)/2),tw,uh);
+    if(q.s&&(done||now)){ g.font='800 '+fC.toFixed(1)+'px '+font; const cw=Math.min(tw,g.measureText(q.s).width+fC*1.5), ch=fC*1.5, cy0=ulY+0.024*bk; klmPill(g,x,cy0,cw,ch,now?acc:null,now?null:alphaOf(pal.text,0.4),Math.max(1.5,0.0025*bk)); dtx(g,q.s,x+cw/2,cy0+ch/2,fC,'800',now?'#001018':pal.mute,font,'center','middle'); } });
+  g.restore();
+}
+
+/* ── 등록 — 그룹 '미니멀'(kmin: 미니멀일 때만 AI 목록에 나옴). 크기·폭은 배치 디렉터가 칸을 고를 때 씀 ── */
+KLD('l','mkey','슬래시 키워드 + 이름·구절',{s:'키워드목록',g:KM0,ar:2.6,h:0.22,hp:0.065,mw:0.95,imp:0.85,t:{kind:'mkey'},draw:drawLKey,kmin:true,meas:measKey,f:[['label','슬래시 키워드(한 낱말, / 없이)']],parts:[['d','이름(청록 · 1~6자)'],['t','한 구절(흰색 · 14자 안팎)'],['hl','강조(1=청록 · -=흐리게)']],ov:{nonews:true,max:5,min:1,partOk:q=>!!(q.d||q.t)},sample:{label:'what',parts:[{d:'무엇',t:'AI가 앱의 원리를 대신 읽어 낸다',hl:''},{d:'조건',t:'누구나 무료 공개',hl:''}]}});
+KLD('t','mtoc','번호 목차(슬래시 키워드 + 설명)',{s:'번호목차',g:KM0,ar:2.0,h:0.10,hp:0.095,mw:0.9,imp:0.9,t:{kind:'mtoc'},draw:drawTToc,kmin:true,f:[['label','제목(없어도 돼요)']],parts:[['d','키워드(한 낱말)'],['t','설명(짧게)']],ov:{nonews:true,max:6,min:2,partOk:q=>!!(q.d||q.t)},sample:{label:'',parts:[{d:'시황',t:'오늘 증시 흐름'},{d:'수급',t:'외국인·기관 매매'},{d:'환율',t:'원달러 1,350원대'},{d:'일정',t:'이번 주 핵심 발표'}]}});
+KLD('m','mhero','히어로 수치(그림 + 아주 큰 수치 + 설명)',{s:'히어로수치',g:KM0,ar:1.7,h:0.40,mw:0.6,imp:1,t:{kind:'mhero'},draw:drawMHero,kmin:true,meas:measHero,f:[['label','윗글(작게 · 슬래시 머리글)'],['value','큰 수치'],['delta','변화'],['note','덧글'],['sub','설명(아래 회색 글)'],['ic','그림 낱말(선택 · 영어)'],['tone','색','tone']],ov:{nonews:true},sample:{label:'오늘의 숫자',value:'190,000',delta:'',note:'',sub:'GitHub 추천 별',ic:'star',tone:''}});
+KLD('x','mhead','헤드라인(회색 윗줄 + 큰 제목 + 청록 강조)',{s:'헤드라인',g:KM0,ar:2.2,h:0.32,mw:0.8,imp:0.9,t:{kind:'mhead'},draw:drawXHead,kmin:true,meas:measHead,f:X_F.f.concat([['lead','윗줄(회색 · 짧게)'],['st','취소선 낱말(쉼표로)','hl'],['ul','강조 방식','sel:line=밑줄/box=채운 상자/none=색만']]),ov:{nonews:true},sample:{label:'',lead:'AI 리버스 엔지니어링으로',text:'무엇까지 만들고 있을까?',sub:'',by:'',hl:['무엇까지'],st:[],ul:'line',tone:''}});
+KLD('g','mba','전·후 막대(점선 화살표)',{s:'전후막대',g:KM0,ar:1.7,h:0.50,mw:0.9,imp:0.8,t:{kind:'mba'},draw:drawGBa,kmin:true,f:[['label','이름'],['sub','부연(이름 밑 작은 글)'],['from','이전 값','num'],['v','지금 값','num'],['unit','단위'],['l0','이전 이름(예: 지난달)'],['l1','지금 이름(예: 이번 달)'],['note','변화 글(비우면 증감 자동)']],ov:{nonews:true,ok:it=>nz(it.v)!=null&&nz(it.from)!=null,fix:()=>{}},sample:{label:'기준금리',sub:'',from:5.25,v:4.75,unit:'%',l0:'지난해',l1:'올해',note:'한 단계 낮게'}});
+KLD('g','mring','분할 링(N개 중 M개)',{s:'분할링',g:KM0,ar:1.4,h:0.58,mw:0.5,imp:0.8,t:{kind:'mring'},draw:drawGRing,kmin:true,f:G_F.f.concat([['sub','가운데 글']]),ov:{nonews:true},sample:{label:'보호 후',v:8,min:0,max:10,unit:'개',preset:'plain',note:'10개 중 8개 상승',sub:'오른 종목'}});
+KLD('l','mfork','갈림길(기회 vs 위험)',{s:'갈림길',g:KM0,ar:2.4,h:0.44,mw:0.95,imp:0.8,t:{kind:'mfork'},draw:drawLFork,kmin:true,f:[['label','출발점(짧게)']],parts:[['d','갈림길 이름(1~5자)'],['t','한 구절'],['hl','강조(1=청록 · -=흐리게)']],ov:{nonews:true,max:3,min:2,partOk:q=>!!(q.d||q.t)},sample:{label:'금리 인하',parts:[{d:'기회',t:'성장주 반등',hl:'1'},{d:'위험',t:'환율 불안 확대',hl:''}]}});
+KLD('t','mtabs','진행 탭 + 판정 칩',{s:'진행탭',g:KM0,ar:8,h:0.155,mw:0.9,imp:0.35,t:{kind:'mtabs'},draw:drawTTabs,kmin:true,f:[],parts:[['t','탭 이름(2~8자)'],['sb','판정 칩(1~4자)'],['lv','지금 단계는 3','num']],ov:{nonews:true,max:6,min:2,partOk:q=>!!q.t},sample:{label:'',parts:[{t:'미국',sb:'강세',lv:2},{t:'유럽',sb:'보합',lv:3},{t:'아시아',sb:'',lv:1}]}});
+KL.keys.forEach(k=>{ if(KL.dsn[k].kmin) LEAD_DEF[k]=0.12; });
+
+/* ── 규칙 모드: 이전→지금(move)은 미니멀에서 전·후 막대(숫자·단위가 같을 때)나 수치 카드로 ── */
+function klmMoveFix(items){
+  return (items||[]).map(it=>{ try{
+    if(!it||it.type!=='move') return it;
+    const pn=s=>{ const m=/^\s*([+\-−]?)\s?(\d[\d,]*(?:\.\d+)?)\s?(%p|%|퍼센트|bp|원|달러|위안|엔|유로|포인트|배럴|조|억|만|배|pt|p)?\s*$/.exec(String(s==null?'':s)); return m?{v:(m[1]&&/[-−]/.test(m[1])?-1:1)*parseFloat(m[2].replace(/,/g,'')),u:m[3]||''}:null; };
+    const a=pn(it.from), b=pn(it.to), at=it.at, dt=it.dt||0;
+    if(a&&b&&a.u===b.u) return {id:it.id,type:'g.mba',label:klmUp(it.label),sub:'',from:a.v,v:b.v,unit:a.u,l0:'이전',l1:'지금',note:'',at,dt,ld:it.ld};
+    return {id:it.id,type:'m.mstat',label:klmUp(it.label),value:klmUp(it.to),delta:klmUp(it.delta)||moveDelta(it),note:'',sub:klmUp(it.from)?('이전 '+klmUp(it.from)):'',pct:null,spark:'',tone:it.tone||'',at,dt,ld:it.ld};
+  }catch(e){ if(window.__klStrict) throw e; return it; } });
+}
+
+function klmHeroPost(items){   /* 규칙 모드: 수치 카드 하나뿐인 장면은 그 숫자를 화면의 주인공(히어로)으로 — 레퍼런스의 '그림 + 아주 큰 수치 + 설명' */
+  try{ if(Array.isArray(items)&&items.length===1&&items[0]&&items[0].type==='m.mstat'&&nz(items[0].pct)==null&&klmUp(items[0].value).length<=9){ const it=items[0]; return [Object.assign({},it,{type:'m.mhero',sub:klmUp(it.sub),ic:'',pct:undefined,spark:undefined})]; } }catch(e){ if(window.__klStrict) throw e; }
+  return items;
+}
+
+const KL_REF_GUIDE=`[미니멀 — 『학습용 프레젠테이션』에서 배운 구성·단어·수치 규칙]
+- 한 화면 = 메시지 하나. '말 하나 + 그림 하나'로 블록은 1~2개(많아도 3개)만 쓰고, 화면을 채우려 하지 말고 여백을 넉넉히 둔다. 색은 흰색(핵심)·회색(설명)·청록(강조)뿐이고, 한 화면에서 청록으로 칠하는 말은 한 구절(hl 한 곳)만이다.
+- 단어: 자막 문장을 그대로 옮기지 않고 줄여 쓴다(자막은 이미 아래에 보인다). 이름(label·d)은 1~6자, 한 구절(t·text)은 한글 14자 안팎으로 마침표·"~입니다"·"~했습니다" 없이 끝낸다 — 좋은 예: "누구나 무료 공개", "30분 안에 복원", "AI로 다시 만든 13개", "원하는 기능을 말한다", "코스피 3일 연속 반등". 구체적인 명사·동사를 고르고 같은 뜻을 두 번 쓰지 않는다. 열거는 가운뎃점("분석기 선택 · 순서 · 정리"), 변화는 화살표("5.25% → 4.75%"), 합침은 "+"("주소 + 설치해 줘")로 쓴다.
+- 수치: 한 화면에서 가장 중요한 수치 하나만 크게 보이고(m.mhero·m.mstat), 나머지 수치는 구절 속에 짧게 넣는다("10개 중 8개", "7시간 가까이"). 천 단위 쉼표와 단위를 붙이고("190,000", "1,350원", "+13.7%", "7시간"), 소수는 둘째 자리까지, 변화는 부호(+·−)와 함께 쓴다. 같은 수치를 한 화면에 두 번 쓰지 않는다. 연도·날짜가 핵심이면 그 연도를 크게(m.mhero value "1991").
+- 말 → 화면 대응(새 종류)
+  · 단 하나의 숫자가 주인공("19만 개", "−7.2%", "연 3.5%") → m.mhero {"type":"m.mhero","label":"짧은 윗글","value":"190,000","delta":"","note":"","sub":"GitHub 추천 별","ic":"star"} — sub 는 숫자 뜻을 알려 주는 회색 한 줄, ic 는 그림 낱말(선택), 그림 없이 숫자와 설명만이 더 깔끔하면 ic 를 비운다
+  · 장·구역 전환이나 요약("무엇인가 · 어떻게 · 정리") → l.mkey {"type":"l.mkey","label":"what","parts":[{"d":"무엇","t":"AI가 앱의 원리를 대신 읽어 낸다"},{"d":"조건","t":"누구나 무료 공개"}]} — label=슬래시 키워드 한 낱말(영어·한글, / 없이 6자 안팎), parts 2~4개의 d=청록 이름 1~6자·t=흰 한 구절
+  · 오늘 다룰 순서(목차) → t.mtoc {"type":"t.mtoc","parts":[{"d":"시황","t":"오늘 증시 흐름"},{"d":"수급","t":"외국인·기관 매매"}]} (3~5개, d=키워드 한 낱말, t=설명 짧게, 번호는 자동)
+  · 한 문장 결론·질문·부정("무엇까지 만들고 있을까?", "비밀이 아니다") → x.mhead {"type":"x.mhead","lead":"AI 리버스 엔지니어링으로","text":"무엇까지 만들고 있을까?","hl":["무엇까지"],"st":[],"sub":""} — lead=회색 윗줄(선택), text=큰 제목(한 줄 14자 안팎), hl=청록으로 칠하고 밑줄 그을 낱말, st=취소선으로 지울 낱말("비밀"), sub=회색 아랫줄(선택), ul="box" 면 강조 낱말을 청록 상자로
+  · 전·후, 지난달·이번 달, 금리 인하 전·후 → g.mba {"type":"g.mba","label":"기준금리","from":5.25,"v":4.75,"unit":"%","l0":"지난해","l1":"올해","note":"한 단계 낮게"} (from=이전 값, v=지금 값, note=변화 글, 비우면 증감을 자동으로)
+  · "N개 중 M개"(10종목 중 8개 상승) → g.mring {"type":"g.mring","label":"오늘 증시","v":8,"min":0,"max":10,"unit":"개","sub":"오른 종목","note":"10개 중 8개 상승"} (max 는 2~24, 수치 구절은 자동으로 청록)
+  · 양면·갈림길(기회와 위험, 호재와 악재) → l.mfork {"type":"l.mfork","label":"금리 인하","parts":[{"d":"기회","t":"성장주 반등","hl":"1"},{"d":"위험","t":"환율 불안 확대"}]} (parts 2~3개, hl "1" 이 청록 가지)
+  · 지역·단계·주제별로 나눠 하나씩 판정("미국 강세 → 유럽 보합 → 아시아 약세") → t.mtabs {"type":"t.mtabs","parts":[{"t":"미국","sb":"강세"},{"t":"유럽","sb":"보합"},{"t":"아시아","sb":"약세"}]} (2~6개, sb=판정 칩 1~4자, 말하는 순서대로 s·q 를 정확히 주면 '지금' 탭이 따라 넘어간다) — 탭 아래에 내용 블록 1개를 함께 둘 수 있다
+- 장면이 영상 위일 때는 가운데 정렬, 검정 바탕일 때는 왼쪽 정렬이 기본이다. 같은 영상 안에서는 같은 종류·같은 정렬을 되풀이해 흐름이 이어지게 한다.`;
+/* ══ /v142 ══ */
 
 /* ── v135: 글자가 칸(타일·박스)을 넘으면 알아서 맞추기 ──
    · 검사: 구성요소를 눈에 안 보이는 기록용 캔버스(klFxRec)에 한 번 그려 보고 — ① 글이 칸 밖으로 나가거나 ② 글끼리 겹치거나 ③ 글 위를 나중에 그린 도형(원·막대·알약)이 덮으면 '넘침'으로 셈(klFxOv)
@@ -55276,7 +55715,7 @@ function klSys(base,lang){
   if(klDetailOn()) base=klDetailInsert(base);   /* v127: 세부 내용 위주 규칙 */
   let add=''; if(klRich()) add+='\n\n[확장 구성요소 — 위 [블록 종류]와 함께 쓸 수 있고 내용에 맞으면 확장 쪽을 우선한다. 종류 이름은 "계열.설계"(예: "m.ring"). 모든 블록(그리고 parts 항목)에 s·q 를 넣고, 선택 필드 w(중요도 1~3)·slot(칸 번호)을 더할 수 있다]\n'+klCatalog()+'\n\n'+klDetailDoc(KL_GUIDE);
   if(klLtpl()) add+='\n\n'+KL_LAYOUT_GUIDE+'\n'+layoutCatalog();
-  if(klBal()) add+='\n\n'+(klMinStyle()?KL_BAL_GUIDE_MIN:KL_BAL_GUIDE); if(klMinStyle()&&klRich()) add+='\n\n'+KL_MIN_GUIDE+'\n\n'+KL_PIC_GUIDE;   /* v133: 짧은 글은 타일로 균형 있게 */
+  if(klBal()) add+='\n\n'+(klMinStyle()?KL_BAL_GUIDE_MIN:KL_BAL_GUIDE); if(klMinStyle()&&klRich()) add+='\n\n'+KL_MIN_GUIDE+'\n\n'+KL_PIC_GUIDE+'\n\n'+KL_REF_GUIDE;   /* v133: 짧은 글은 타일로 균형 있게 */
   if(add&&klLtpl()) add+='\n\n[형식 추가] clip 에 "tpl"(템플릿 id)을 더할 수 있다: {"mode":"full","title":"…","tpl":"t3-05","items":[…]}';
   if(add&&lang&&!isKo(lang)){ const lg=V.get(lang); if(lg&&lg.ai) add+=['','','[출력 언어] 위 확장 구성요소·배치 설명의 예시 글(외국인 지분율·전일 대비 등)은 한국어 예시일 뿐입니다. 실제 화면 글(label·text·l·t·sb·note 등 모든 글 칸)은 반드시 '+lg.ai+'로 쓰세요.'].join(String.fromCharCode(10)); }
   return add?base+add:base;
@@ -55517,6 +55956,57 @@ function klStatsFromText(text,at,have,keys){   /* 지운 글 속 수치 중 화�
     out.push({id:uid('i'),type:'stat',label:lab,value:f.val,delta:'',note:'',tone:/^\+/.test(f.val)?'up':/^[-−–]/.test(f.val)?'down':'',at:at||null,dt:0}); });
   return out;
 }
+/* ── v141: 같은 수치는 한 번만 — 큰 수치(value·from·to·delta·v)로 보여 주는 수치를 같은 카드의 sub·note·label·text·by 나 같은 clip 의 다른 블록 글에서 또 쓰면 그 글에서 수치만 뺌 ──
+   원인: m.mstat 의 value '+13.7%' 아래 sub '평균 13.7% 상승' 처럼 AI·규칙이 수치를 글로 한 번 더 풀어 써도 거름망이 못 잡았음 — 거름망은 자막·제목과만 견주고(v128 은 구체적 수치를 일부러 남김) 같은 카드·같은 clip 안은 안 봄.
+   고침: klDetailItems(새로 만들 때 · 열 때·내보내기 전 klCleanExisting 모두 부름)가 klNumClipInto 를 부름 — 수치 키 = 숫자 + 단위(부호·쉼표·소수 끝 0 무시, '퍼센트'='%'). 글 칸에서 그 수치만 지우고 군더더기(빈 괄호·남은 조사)를 다듬음,
+        글자가 두 자도 안 남으면 칸을 비우고, 글뿐인 블록(요점·인용·x 계열)이 비면 블록을 뺌. 큰 수치끼리(예: 코스피 +1.2%·코스닥 +1.2%)와 목록 항목은 그대로(같은 수치가 우연히 같을 수 있음). ── */
+const KL_NUMTXT=['label','sub','note','text','by'], KL_NUMPAR=/(?:^|\s)(?:으로|로|에서|에게|까지|부터|보다|이나|와|과|은|는|이|가|을|를|의|에|도|만)(?=\s|$)/g;
+function klFigKey(tok){   /* '+13.7%' · '13.70 퍼센트' → '13.7%' (숫자+단위, 부호 없음) */
+  const m=/^[+\-−–]?\s?(\d[\d,]*(?:\.\d+)?)\s?(%p|%|퍼센트|bp|원|달러|위안|엔|유로|포인트|배럴당|배럴|조|억|만|천|배|pt|p)?$/.exec(String(tok==null?'':tok).trim()); if(!m) return '';
+  const n=parseFloat(m[1].replace(/,/g,'')); if(!isFinite(n)) return ''; let u=m[2]||''; if(u==='퍼센트') u='%'; else if(u==='포인트'||u==='pt') u='p'; return n+u;
+}
+function klMaskDates(s){   /* 날짜·연도·월·지수 이름의 숫자(S&P 500)는 수치가 아니므로 같은 길이의 빈칸으로 가림 */
+  s=String(s==null?'':s); const sp=a=>' '.repeat(a.length);
+  s=s.replace(/(?:19|20)\d{2}\s*[.\/\-년]\s*\d{1,2}\s*[.\/\-월]\s*\d{1,2}\s*일?/g,sp).replace(/\d{1,2}\s*월\s*\d{1,2}\s*일/g,sp).replace(/(?:19|20)\d{2}\s*년/g,sp).replace(/\d{1,2}\s*월/g,sp);
+  return s.replace(IDX_NAME_RE,m=>m.replace(/\d/g,'x'));
+}
+function klNumScan(text){   /* 글 속 구체적인 수치들 — [{i,len,key}] (klFigsOf 와 같은 기준: 단위·쉼표·소수점이 있거나 네 자리 이상) */
+  const s=String(text==null?'':text), m0=klMaskDates(s), re=new RegExp(KL_FIGRX.source,'g'), out=[]; let m;
+  while((m=re.exec(m0))){ const tok=m[0].trim(); if(!tok) continue; const dg=tok.replace(/\D/g,''); if(!/[%A-Za-z가-힣]/.test(tok)&&dg.length<4&&tok.indexOf(',')<0&&tok.indexOf('.')<0) continue; const key=klFigKey(tok); if(key) out.push({i:m.index,len:tok.length,key}); }
+  return out;
+}
+function klNumStrip(text,keys){   /* 글에서 keys 에 든 수치만 지우고 다듬음 — 남은 글자가 두 자도 안 되면 '' */
+  const s=String(text==null?'':text), hits=klNumScan(s).filter(x=>keys.has(x.key)); if(!hits.length) return s;
+  let out='', pos=0; hits.forEach(h=>{ out+=s.slice(pos,h.i); pos=h.i+h.len; }); out+=s.slice(pos);
+  out=out.replace(/[(\[（【]\s*[)\]）】]/g,' ').replace(/[▲▼△▽]\s*(?=\s|$)/g,' ').replace(/\s{2,}/g,' ').trim();
+  out=out.replace(/^[\s,.·:;\-–—~\/]+/,'').replace(/[\s,·:;\-–—~\/]+$/,'').replace(/^(?:으로|로|에서|에게|까지|부터|보다|이나|와|과|은|는|이|가|을|를|의|에|도|만)(?=\s|$)\s*/,'').replace(/\s{2,}/g,' ').trim();
+  return ((out.replace(KL_NUMPAR,' ').match(/[a-zA-Zㄱ-ㆎ가-힣぀-ヿ一-鿿]/g)||[]).length<2&&!/\d/.test(out))?'':out;   /* 다른 수치가 남아 있으면(이전→지금 중 한쪽만 지운 글) 그대로 둠 */
+}
+function klNumKeysOf(it){   /* 이 블록이 큰 수치로 보여 주는 수치들 */
+  const ks=new Set(); ['value','from','to','delta'].forEach(f=>{ if(typeof it[f]==='string'&&it[f]){ klNumScan(it[f]).forEach(x=>ks.add(x.key)); const k=klFigKey(it[f]); if(k) ks.add(k); } });
+  if(typeof it.v==='number'&&isFinite(it.v)){ const k=klFigKey(String(it.v)+String(it.unit||'').trim()); if(k&&(/%|[가-힣A-Za-z]/.test(String(it.unit||''))||String(it.v).indexOf('.')>=0)) ks.add(k); }
+  if(typeof it.from==='number'&&isFinite(it.from)){ const k=klFigKey(String(it.from)+String(it.unit||'').trim()); if(k&&(/%|[가-힣A-Za-z]/.test(String(it.unit||''))||String(it.from).indexOf('.')>=0)) ks.add(k); }   /* v142: g.mba 의 이전 값 */
+  return ks;
+}
+function klNumClip(items){   /* 한 clip 의 블록들 — 블록이 큰 수치로 보여 준 수치를 같은 블록의 글 칸(과, 같은 나레이션 문장에 걸린 다른 블록의 글 칸)에서 또 쓰면 그 글에서 뺌 */
+  if(!Array.isArray(items)||!items.length) return items;
+  const own=items.map(klNumKeysOf), bySid=new Map();
+  items.forEach((it,i)=>{ const sid=it.at&&it.at.sid; if(sid==null||!own[i].size) return; let s=bySid.get(sid); if(!s){ s=new Set(); bySid.set(sid,s); } own[i].forEach(k=>s.add(k)); });
+  const out=[];
+  items.forEach((it,i)=>{
+    if(typeof it.value==='string'&&typeof it.delta==='string'&&it.delta){ const kv=klFigKey(it.value), kd=klFigKey(it.delta); if(kv&&kd&&kv===kd) it.delta=''; }   /* 변화 칸이 수치와 똑같으면 비움 */
+    const sid=it.at&&it.at.sid, keys=new Set(own[i]); if(sid!=null&&bySid.has(sid)) bySid.get(sid).forEach(k=>keys.add(k));   /* 다른 문장에서 우연히 같은 수치가 나온 블록은 건드리지 않음 */
+    if(keys.size) KL_NUMTXT.forEach(f=>{ if(typeof it[f]!=='string'||!it[f]) return; const t=klNumStrip(it[f],keys); if(t!==it[f]){ it[f]=t; if(f==='text'&&Array.isArray(it.hl)) it.hl=it.hl.filter(h=>t.indexOf(h)>=0); } });
+    const d=klOf(it.type), textOnly=it.type==='point'||it.type==='quote'||(d&&d.fid==='x'); if(keys.size&&textOnly&&!String(it.text||'').trim()) return;
+    out.push(it); });
+  return out;
+}
+function klNumClipInto(out,refs){   /* klDetailItems 가 쓰는 자리에서 고치기 — 뺀 블록은 거른 글로 기억해 스토리보드 보충이 다시 끼우지 않게 */
+  const r=klNumClip(out.slice()); if(r.length===out.length) return;
+  out.filter(x=>r.indexOf(x)<0).forEach(it=>{ KL_DROP.n++; if(refs&&refs.gone) refs.gone.push.apply(refs.gone,klAllStrs(it)); });
+  out.length=0; r.forEach(x=>out.push(x));
+}
+const klTextSig=items=>(items||[]).map(it=>klAllStrs(it).join('\u0001')).join('\u0002');
 function klDetailItems(items,ss,ctx,rule,c){
   if(!klDetailOn()||!items||!items.length) return items;
   if(c&&c.mode==='title') return items;   /* v131: 타이틀 형태 clip 은 제목 블록이 본문 — 거르지 않음 */
@@ -55524,6 +56014,7 @@ function klDetailItems(items,ss,ctx,rule,c){
   const keys=klSecKeys(ss,ctx,c), refs=klRefs(ss,ctx,c), out=[]; refs.lost=[]; refs.gone=[]; refs.parts=0;
   klPoolFix(items,refs);   /* v130: 따로 만든 짧은 이름 칩·요점이 모여 자막 낱말로 채워지면 주제 나열 */
   items.forEach(it=>{ const r=klDetailFix(it,keys,ss,refs); if(r) out.push(r); else{ KL_DROP.n++; refs.gone.push.apply(refs.gone,klAllStrs(it)); } });
+  klNumClipInto(out,refs);   /* v141: 같은 수치는 한 번만 */
   KL_DROP.n+=refs.parts;
   if(refs.lost.length){   /* 지운 글에 수치가 있었는데 그 수치를 보여 주는 카드가 없으면, 수치만 숫자 카드로 */
     let have=sbNorm(out.map(it=>sbLeaf(it,[]).join(' ')).join(' '));
@@ -55570,7 +56061,7 @@ function klCleanExisting0(only){
   (P.igs||[]).slice().forEach(g=>{
     if(!g||(only&&g!==only)||g.ov||g.src==='hand'||g.mode==='title'||!(g.items||[]).length) return;
     const sc=P.scenes[sceneIdx(g.s)]; if(!sc) return;
-    const all=sentsOf(P,sc), ctx=Object.assign(igCtx(sc),{ss:all,all}), sig0=g.items.map(i=>i.id).join(',');
+    const all=sentsOf(P,sc), ctx=Object.assign(igCtx(sc),{ss:all,all}), sig0=g.items.map(i=>i.id).join(','), txt0=klTextSig(g.items);
     let out; try{ out=klDetailItems(g.items.slice(),all,ctx,false,{title:g.title}); }catch(e){ if(window.__klStrict) throw e; return; }
     if(!out.length){ P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; removed++; return; }
     if(out.map(i=>i.id).join(',')!==sig0){
@@ -55578,9 +56069,9 @@ function klCleanExisting0(only){
       g.items=out; sortItems(g);
       if(g.items.some(it=>it.bx)&&(wasTpl||!igBoxOK(g))){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; if(klLtpl()){ try{ layoutApply(g,{force:true}); }catch(e){ if(window.__klStrict) throw e; } } }
       try{ igPoster(g); }catch(e){} cleaned++;
-    }
+    } else if(klTextSig(g.items)!==txt0){ try{ igPoster(g); }catch(e){} cleaned++; }   /* v141: 글만 고쳐진 클립(겹친 수치 정리) */
   });
-  if(removed||cleaned){ layout(P); commit('인포그래픽 중복 정리'); renderAll(); toast('🧹 이미 만든 인포그래픽에서 자막·제목과 같은 구성요소를 뺐어요 — 클립 '+removed+'개 지우고 '+cleaned+'개 고쳤어요'); }
+  if(removed||cleaned){ layout(P); commit('인포그래픽 중복 정리'); renderAll(); toast('🧹 이미 만든 인포그래픽에서 자막·제목과 같은 구성요소나 겹친 수치를 정리했어요 — 클립 '+removed+'개 지우고 '+cleaned+'개 고쳤어요'); }
   return removed+cleaned;
 }
 /* AI 요청 글 — [표기 판단] 뒤에 '세부 내용 위주' 규칙을 끼우고, 분류어로 보이는 예시 머리말은 설명형으로 바꿔 줌 */
@@ -55590,7 +56081,8 @@ const KL_DETAIL=`[구성요소에 담을 내용 — 세부 내용 위주]
 - 자막(화면 아래에 나오는 나레이션 문장)도 이미 화면에 보인다. 자막과 같은 뜻인 글은 구성요소로 만들지 않는다 — 문장을 줄이거나 말만 바꾼(동의어·번역 포함) 요점·한마디·목록 항목, 제목을 풀어 쓴 문구, 날짜·요일·인사·소개 문구가 해당한다(예: 자막이 "11월 2일 월요일 증시 브리핑입니다"일 때 "11월 2일 월요일 증시 브리핑"·"Five Minute Market Brief"·"2026.11.02 MON" 같은 항목). 자막이 다룰 주제를 알리는 문장("A와 B, C를 점검하겠습니다")일 때 그 주제들을 이름만 나열한 칩·카드·목록 항목(영어 이름 "INDEX"와 한글 설명 "지수 흐름"이 짝인 것 포함)도 같은 뜻이고, clip 의 title 과 같은 글을 items 에 다시 넣는 것도 마찬가지다. 올리는 것은 구체적인 수치(값·등락·비교)와, 자막 한 줄로는 안 보이는 것(여러 문장을 묶은 결론·원인→결과·순위·일정·구조화된 비교)뿐이다. 자막·제목에 나온 내용 중에는 수치만 숫자 카드(stat·bar 등)로 올리고, 같은 내용을 문장으로 풀어 쓰지 않는다. 스토리보드가 알려 준 글자·숫자도 마찬가지다. 올릴 내용이 없는 장면은 {"clips":[],"skip":true,"reason":"자막과 같은 내용뿐"} 로 답한다.
 - 요청 글에 [본문에 쓰지 않는 글]로 알려 준 글(영상 제목·시리즈명·브랜드 — 예: "Five Minute Market Brief", "The FIVE")은 머리말과 타이틀 화면에서만 쓰인다. 스토리보드가 로고·워터마크·고정 라벨로 화면에 나온다고 적어 두었어도 구성요소의 어떤 칸(label·text·note·항목)에도 넣지 않는다. "SECTOR ANALYSIS"처럼 분류·구역 이름만 영어로 적은 라벨도 마찬가지다.
 - label 은 그 수치·항목이 무엇인지 알려 주는 이름("S&P 500", "기준금리", "외국인 순매수")으로만 쓴다. 여러 항목을 묶은 블록의 머리말(label)은 그 값들이 무엇을 재는지 알려 줄 때만("업종별 등락률") 쓰고, "업종"·"일정"·"시황" 같은 분류어이거나 챕터 이름이면 빈 문자열("")로 둔다.
-- 태그·머리말(label)이 붙는 한마디 모양(x.tag·x.split·x.kicker 등)은 label 이 내용의 성격(속보·주의·전망·리스크)일 때만 쓰고, "POINT"·"요약" 같은 분류 딱지는 붙이지 않는다.`;
+- 태그·머리말(label)이 붙는 한마디 모양(x.tag·x.split·x.kicker 등)은 label 이 내용의 성격(속보·주의·전망·리스크)일 때만 쓰고, "POINT"·"요약" 같은 분류 딱지는 붙이지 않는다.
+- 같은 수치는 화면에 한 번만 쓴다 — 큰 수치(value·delta·from·to)로 보여 준 수치를 sub·note·label·text 같은 글 칸에서 되풀이하지 않는다(예: value "+13.7%"이면 sub 는 "평균 13.7% 상승"이 아니라 "평균 상승"). 글에는 숫자 없이 뜻만 쓴다.`;
 const KL_DETAIL_EX=[['"type":"heat","label":"업종",','"type":"heat","label":"업종별 등락률",'],['"type":"map","label":"주요국 증시",','"type":"map","label":"주요국 증시 등락률",'],['"type":"donut","label":"수급",','"type":"donut","label":"투자자별 수급 비중",'],['"type":"line","label":"지수 흐름",','"type":"line","label":"S&P 500 주간 흐름",'],['"type":"event","label":"이번 주 일정",','"type":"event","label":"",'],['"type":"level","label":"주요 가격대",','"type":"level","label":"",'],['숫자가 거의 없는 장면은 point 2~4개나 quote.','숫자가 거의 없는 장면은 자막에 없는 내용(원인·영향·결론)이 있을 때만 point·quote 로 올리고, 자막을 되풀이할 뿐이면 skip 한다.']];
 function klDetailInsert(base){
   if(!klDetailOn()) return base;
@@ -55699,7 +56191,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v139';
+const KL_BUILD='v142';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -55932,7 +56424,12 @@ function tselPaint(){   /* 타임라인의 테두리·도구줄(삭제 단추·�
   if(UI.tsel&&P){ const els=tselEls(); if(!els.length) UI.tsel=null; else{ els.forEach(e=>e.classList.add('tsel')); lab=tselLabel(); } }
   const multi=!!(P&&UI.tmul&&UI.tmul.length>1); if(multi){ const me=tmulEls(); me.forEach(e=>e.classList.add('tsel')); if(!me.length) UI.tmul=[]; }   /* v113: Ctrl/⌘+클릭으로 고른 여러 개 */
   const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)':'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
-  const h=$('vsTlHint'); if(h&&multi&&UI.tmul.length>1) h.innerHTML='선택: <b>'+esc(TSEL_KIND[UI.tmul[0].k])+' '+UI.tmul.length+'개</b> <i>· 오른쪽 클릭 → 길이 동일·정렬·일렬배치 · Delete 로 삭제 · Ctrl(⌘)+클릭으로 더하거나 빼요</i>'; else if(h) h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · Delete 로 끄기':'Delete 로 삭제')+'</i>':'요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정';
+  const h=$('vsTlHint'); if(h){   /* v140: 복사·붙여넣기 안내 */
+    const cp=TLCB?' · 📋 '+cbLabel()+' 복사됨':'', cc=(UI.tsel&&(UI.tsel.k==='comp'||UI.tsel.k==='clip'))?'Ctrl+C 복사 · ':'';
+    if(multi&&UI.tmul.length>1) h.innerHTML='선택: <b>'+esc(TSEL_KIND[UI.tmul[0].k])+' '+UI.tmul.length+'개</b> <i>· Ctrl+C 복사 · 오른쪽 클릭 → 길이 동일·정렬·일렬배치 · Delete 로 삭제 · Ctrl(⌘)+클릭으로 더하거나 빼요'+cp+'</i>';
+    else h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · Delete 로 끄기':cc+'Delete 로 삭제')+cp+'</i>':(TLCB?'📋 <b>'+esc(cbLabel())+'</b> 복사됨 <i>· 붙여넣을 곳에 재생 위치를 놓고 Ctrl+V</i>':'요소를 눌러 고르고 Ctrl+C/V 로 복사·붙여넣기 · <i>오른쪽 버튼으로 끌어 범위 선택 · Delete 로 삭제</i>');
+    h.title=h.textContent;
+  }
 }
 function tselSet(k,id,pi){ UI.tmul=[]; UI.tsel={k,id:String(id),pi:pi==null?-1:pi}; tselPaint(); }
 function tselClear(){ if(UI.tsel||(UI.tmul&&UI.tmul.length)){ UI.tsel=null; UI.tmul=[]; tselPaint(); } }
@@ -56020,8 +56517,8 @@ function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
 function tlMenuClose(){ const m=$('vsCm'); if(m) m.remove(); }
 function tlMenu(e){
   if(!P||UI.busy==='export') return; const hit=tmulHit(e.target); if(hit){ e.preventDefault(); tlMenuClose(); tmulMenu(e,hit); return; }   /* v113: 여러 개 고른 것 위에서는 정렬 메뉴 */
-  const k=tlSelFrom(e.target); if(!k) return; e.preventDefault(); tlMenuClose();
-  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc(TSEL_KIND[k]+' · '+tselLabel())+'</div><button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 삭제</button>';
+  const k=tlSelFrom(e.target); if(!k){ cbPasteMenu(e); return; } e.preventDefault(); tlMenuClose();
+  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc(TSEL_KIND[k]+' · '+tselLabel())+'</div>'+cbMenuHtml(k,1)+'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 삭제</button>';
   _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
 }
 /* ══ /v102 ══ */
@@ -56348,6 +56845,7 @@ function tmulMenu(e,ref){
     +b('row','☰','일렬배치','시작이 빠른 순서대로 앞 요소가 끝나는 곳에서 다음 요소가 시작하게 이어 붙여요(길이는 그대로)')
     +b('rowEq','▤','동일길이로 일렬배치','같은 길이로 나눠 차례로 이어 붙여요')
     +b('dist','⇹','간격 균등','처음과 끝은 그대로 두고 사이 요소의 시작 간격을 같게 해요')
+    +cbMenuHtml(sel[0].k,n)
     +'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 선택 '+n+'개 삭제</button>';
   _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
 }
@@ -56418,6 +56916,200 @@ function tmulDelete(){   /* 여러 개 고른 구성요소·인포그래픽을 �
   toastUndo((sel[0].k==='clip'?'인포그래픽 ':'구성요소 ')+n+'개 삭제'+(gone?' — 비어 버린 인포그래픽 '+gone+'개는 그대로 남겨 뒀어요':'')); return true;
 }
 /* ══ /v113 ══ */
+/* ══ v140 (2026-11-03) — 타임라인 인포그래픽 복사·붙여넣기 + 오른쪽 버튼 끌기 범위 선택 ═══════════════════════════════════════════════════
+   ① [구성] 줄의 구성요소 칩이나 [인포] 줄의 인포그래픽 막대를 왼쪽 클릭으로 고르고(여럿이면 Ctrl/⌘+클릭 또는 ②) Ctrl/⌘+C → 다른 장면 쪽으로 재생 위치를 옮겨 Ctrl/⌘+V. 오른쪽 클릭 메뉴의 [복사]·[붙여넣기]도 같은 일.
+      · 구성요소 — 재생 위치를 덮는 인포그래픽에 끼워 넣음(우선순위: 마지막으로 누른 것 > 전체 틀 > 겹침 띠·타이틀 카드). 덮는 게 없고 같은 장면에서 1.5초 안에 시작하는 인포그래픽이 있으면 그 인포그래픽에,
+        그것도 없으면 그 자리에서 시작하는 새 인포그래픽(복사한 것의 형태·바탕·스타일을 따름, 장면 끝·다음 전체 틀 앞까지). 가장 먼저 나오는 것이 재생 위치에 오고 나머지는 서로의 간격 그대로(인포그래픽 끝을 넘으면 끝에 맞춤).
+        직접 정한 크기/배치(bx)는 복사본에서 빼고, 대상이 직접 배치 상태였으면 [＋ 블록 추가]와 같이 자동 배치로 되돌림. 항목 칩만 골랐으면 그 항목들만 가진 블록이 됨.
+      · 인포그래픽 — 통째로 복제해 재생 위치에서 시작(영상 끝을 넘으면 끝에 맞춰 앞으로). 안의 블록 시점은 같이 옮기고 길이·크기/배치·템플릿은 그대로.
+      · 복사본에는 문장 번호(at.sid)가 아니라 '말하는 시각(초)'을 적어 둠 → 스크립트를 고쳤거나 다른 프로젝트를 열어도 붙여넣을 수 있음. 붙여넣기는 되돌리기 1번(+알림의 [되돌리기]).
+   ② 오른쪽 버튼을 누른 채 끌면 점선 상자가 그려지고 상자에 걸친 요소가 선택됨 — [구성] 줄의 칩이 걸리면 구성요소, 없고 [인포] 줄 막대만 걸리면 인포그래픽(v113 다중 선택처럼 한 번에 한 종류).
+      Ctrl/⌘·Shift 를 누르고 끌면 지금 선택에 더함. 끌지 않고 누르면 예전 오른쪽 클릭 메뉴. 끌고 놓을 때 따라오는 contextmenu 는 막음(Windows 는 놓을 때, mac/Linux 는 누를 때 옴 → 누를 때 온 것도 막았다가 끌지 않았으면 메뉴를 직접 띄움).
+      가장자리에서 자동 스크롤, Esc = 취소, 끄는 동안 상자 안에 들어올 요소는 점선으로 미리 보임. ── */
+let TLCB=null, MQ=null, _mqT=0;   /* TLCB = 복사해 둔 것 · MQ = 오른쪽 버튼 끌기 상태 */
+const MQ_TH=5;
+const cbClone=o=>JSON.parse(serialize(o));
+const cbLabel=()=>TLCB?(TLCB.k==='clip'?'인포그래픽 ':'구성요소 ')+TLCB.n+'개':'';
+const cbSelList=()=>(UI.tmul&&UI.tmul.length>1)?UI.tmul.slice():(UI.tsel?[UI.tsel]:[]);
+function cbSelAssign(list){   /* 선택을 데이터로만 바꿈 — 타임라인을 다시 그리기 전에 쓰려고(tselPaint 는 아직 없는 칩을 보면 선택을 풀어 버림) */
+  const a=list.map(d=>({k:d.k,id:String(d.id),pi:d.pi==null?-1:d.pi}));
+  UI.tmul=a.length>1?a:[]; UI.tsel=a.length?a[0]:null;
+}
+function cbSetSel(list){ cbSelAssign(list); tselPaint(); }
+const cbMen=it=>({m:mentionOf(P,it),p:(it.parts||[]).map(q=>partMention(P,q))});   /* 말하는 시각(초) — 블록 하나와 그 항목들 */
+function cbAnchor(o,m,sh){ if(m==null||!isFinite(m)) return; const a=anchorAtTime(P,m+sh); if(a){ o.at={sid:a.sid,f:a.f}; o.dt=a.dt; } }   /* 말하는 시각 m 을 sh 초 옮긴 자리로 앵커를 다시 적음 */
+
+/* ── ① 복사 ── */
+function cbCopy(){   /* 고른 구성요소·인포그래픽을 복사해 둠 — 복사한 개수(0 = 복사할 것이 없음) */
+  if(!P) return 0; const sel=cbSelList().filter(d=>d.k==='comp'||d.k==='clip'); if(!sel.length) return 0;
+  const kind=sel[0].k, list=sel.filter(d=>d.k===kind);
+  if(kind==='clip'){
+    const gs=list.map(d=>igById(d.id)).filter(Boolean).sort((a,b)=>(a.s-b.s)||(a.e-b.e)); if(!gs.length) return 0;
+    TLCB={k:'clip',n:gs.length,ref:gs[0].s,clips:gs.map(g=>({g:cbClone(g),s0:g.s,e0:g.e,men:g.items.map(cbMen)}))};
+    return gs.length;
+  }
+  const all=compList(), by=new Map(); let n=0;
+  list.forEach(d=>{ const c=all.find(x=>x.it.id===d.id&&x.pi===(d.pi==null?-1:d.pi)); if(!c) return; n++; let e=by.get(c.it); if(!e){ e={g:c.g,it:c.it,pis:[],t0:c.t0,ve:0}; by.set(c.it,e); } if(c.pi>=0) e.pis.push(c.pi); e.t0=Math.min(e.t0,c.t0); e.ve=Math.max(e.ve,(c.pi<0&&c.it.du>0)?c.t0+c.it.du:c.g.e); });   /* ve = 화면에서 사라지는 시각 */
+  const es=[...by.values()].sort((a,b)=>a.t0-b.t0); if(!es.length) return 0;
+  const blocks=es.map(e=>{
+    const it=e.it, tot=(it.parts||[]).length, keep=(e.pis.length&&e.pis.length<tot)?e.pis.slice().sort((a,b)=>a-b):null, sp=keep?keep.map(i=>it.parts[i]):(it.parts||[]), b=cbClone(it);
+    delete b.bx; if(keep) b.parts=sp.map(cbClone);   /* 항목 칩만 골랐으면 그 항목들만 */
+    const mp=sp.map(q=>partMention(P,q)), mn=mp.filter(x=>x!=null), mm=mentionOf(P,it), m=keep?(mn.length?Math.min.apply(null,mn):mm):(mm!=null?mm:(mn.length?Math.min.apply(null,mn):null));
+    return {it:b,t0:e.t0,men:{m,p:mp}};
+  });
+  const ref=es[0].t0, g0=es[0].g;
+  TLCB={k:'comp',n,ref,span:Math.max(0.8,Math.max.apply(null,es.map(e=>e.ve))-ref),src:{mode:g0.mode,bg:g0.bg,sty:g0.sty},blocks};
+  return n;
+}
+function cbDoCopy(){
+  const n=cbCopy(); if(!n){ toast('복사할 구성요소·인포그래픽을 먼저 눌러 골라 주세요'); return 0; }
+  toast(cbLabel()+'를 복사했어요 — 붙여넣을 위치에 재생 위치를 두고 Ctrl+V'); tselPaint(); return n;
+}
+
+/* ── ① 붙여넣기 ── */
+function cbTarget(tp){   /* 구성요소를 끼워 넣을 인포그래픽 — 재생 위치를 덮는 것(마지막으로 누른 것 > 전체 틀 > 겹침 띠·타이틀 카드), 없으면 같은 장면에서 1.5초 안에 시작하는 것, 그것도 없으면 null(새로 만듦) */
+  const gs=P.igs||[], cov=gs.filter(g=>tp>=g.s-0.05&&tp<g.e);
+  if(cov.length){ const pri=g=>(g.id===UI.ig?0:4)+((isOver(g.mode)||g.mode==='title')?2:0); return cov.slice().sort((a,b)=>(pri(a)-pri(b))||(a.s-b.s))[0]; }
+  const sc=P.scenes[sceneIdx(tp)], soon=gs.filter(g=>g.s>tp&&g.s-tp<=1.5&&g.mode!=='title'&&(!sc||g.s<sc.e-0.05)).sort((a,b)=>a.s-b.s);
+  return soon[0]||null;
+}
+function cbNewClip(cb,tp){   /* 재생 위치에서 시작하는 빈 인포그래픽 — 복사한 구성요소가 있던 인포그래픽의 형태·바탕·스타일을 따르고, 제목은 비움 */
+  const s=cb.src||{}, mode=MODE_OF[s.mode]?s.mode:'left', sc=P.scenes[sceneIdx(tp)]; let e=tp+Math.max(1.0,cb.span||0);
+  if(sc&&sc.e-tp>=0.8) e=Math.min(e,sc.e);   /* 그 장면 안에서 */
+  if(!isOver(mode)){ const nx=(P.igs||[]).filter(x=>x.s>tp+0.05&&!isOver(x.mode)&&x.mode!=='title').map(x=>x.s).sort((a,b)=>a-b)[0]; if(nx!=null&&nx-tp>=0.8) e=Math.min(e,nx); }   /* 전체 틀끼리 겹치지 않게 다음 것 앞까지 */
+  e=Math.min(P.dur,Math.max(e,tp+0.8));
+  const g={id:uid('g'),name:'',mode,bg:s.bg||(isOver(mode)?'scene':'solid'),a:anchorAtTime(P,tp),b:anchorAtTime(P,e),title:'',kicker:'',source:'',items:[],src:'hand',sty:s.sty||(P.cfg.info&&P.cfg.info.style)||'news'};
+  (P.igs=P.igs||[]).push(g); layout(P); return g;
+}
+function cbPasteComps(cb,tp){
+  let g=cbTarget(tp), made=false;
+  if(!g){ tp=Math.min(tp,Math.max(0,P.dur-1.0)); g=cbNewClip(cb,tp); made=true; }
+  const lo=Math.max(0,g.s), hi=Math.max(g.s+0.3,g.e-0.3), base=clamp(tp,lo,hi), D=base-cb.ref, was=!made&&igBoxOK(g); let clamped=0; const news=[];
+  cb.blocks.forEach(b=>{
+    const n=cbClone(b.it); n.id=uid('i'); delete n.bx; const ld=leadOf(n), multi=!!(n.parts&&n.parts.length>1), fit=t=>clamp(t,lo,hi)-t;   /* fit = 인포그래픽 안으로 들어가게 맞출 양(초) — 끝을 넘는 항목이 안 보이는 일이 없게 항목마다 */
+    const ex=fit(b.t0+D); cbAnchor(n,b.men.m,D+ex); if(!multi&&Math.abs(ex)>0.004) clamped++;
+    (n.parts||[]).forEach((q,i)=>{ const pm=b.men.p[i]; if(pm==null) return; let sh=D+ex; if(multi){ const ep=fit(pm-ld+D); if(Math.abs(ep)>0.004) clamped++; sh=D+ep; } cbAnchor(q,pm,sh); });
+    g.items.push(n); news.push(n);
+  });
+  if(was){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; }   /* 블록이 늘었으니 직접 정한 상자가 모자람 — [＋ 블록 추가]와 같이 자동 배치로 */
+  sortItems(g); layout(P); sortClips(P); igPoster(g);
+  const sel=[]; news.forEach(n=>{ if(n.parts&&n.parts.length>1) n.parts.forEach((q,i)=>sel.push({k:'comp',id:n.id,pi:i})); else sel.push({k:'comp',id:n.id,pi:-1}); });
+  cbSelAssign(sel); UI.ig=g.id; UI.igIt=news[news.length-1].id; UI.igPt=-1;
+  commit('붙여넣기 — 구성요소 '+sel.length+'개'); renderAll(); seekTo(Math.min(P.dur,base+0.05));
+  toastUndo('구성요소 '+sel.length+'개를 '+(made?'새 인포그래픽':'"'+clipS(igName(g),18)+'" 인포그래픽')+'에 붙여넣었어요 ('+fmtT(base,1)+')'+(clamped?' · '+clamped+'개는 인포그래픽 안에 들어가게 시각을 맞췄어요':'')+(was?' · 직접 정한 크기/배치는 자동 배치로 돌아갔어요 — [📐 크기/배치 수정]에서 다시 정해 주세요':''));
+  return true;
+}
+function cbPasteClips(cb,tp){
+  const gs=cb.clips, s0=Math.min.apply(null,gs.map(c=>c.s0)), e0=Math.max.apply(null,gs.map(c=>c.e0)); let D=tp-cb.ref;
+  if(e0+D>P.dur) D=P.dur-e0;   /* 영상 끝을 넘으면 끝에 맞춰 앞으로 */
+  if(s0+D<0) D=-s0;
+  const out=[];
+  gs.forEach(c=>{
+    const n=cbClone(c.g); n.id=uid('g'); const sN=Math.max(0,c.s0+D), eN=Math.min(P.dur,c.e0+D);
+    n.a=anchorAtTime(P,sN); n.b=anchorAtTime(P,Math.max(sN+0.5,eN));
+    n.items.forEach((it,i)=>{ it.id=uid('i'); const m=c.men[i]||{m:null,p:[]}; cbAnchor(it,m.m,D); (it.parts||[]).forEach((q,k)=>cbAnchor(q,m.p[k],D)); });
+    (P.igs=P.igs||[]).push(n); out.push(n);
+  });
+  layout(P); sortClips(P); out.forEach(igPoster);
+  const solid=x=>!isOver(x.mode)&&x.mode!=='title', crash=out.some(n=>solid(n)&&P.igs.some(x=>out.indexOf(x)<0&&solid(x)&&x.s<n.e-0.05&&x.e>n.s+0.05));
+  cbSelAssign(out.map(n=>({k:'clip',id:n.id,pi:-1}))); UI.ig=out[0].id; UI.igIt=''; UI.igPt=-1;
+  commit('붙여넣기 — 인포그래픽 '+out.length+'개'); renderAll(); seekTo(Math.min(P.dur,out[0].s+0.05));
+  toastUndo('인포그래픽 '+out.length+'개를 붙여넣었어요 ('+fmtT(out[0].s,1)+')'+(crash?' · 다른 인포그래픽과 시간이 겹쳐요 — 끌어서 옮겨 주세요':''));
+  return true;
+}
+function cbPaste(o){   /* o.t = 붙여넣을 시각(초, 없으면 재생 위치) — 붙여넣었으면 true */
+  if(!P) return false;
+  if(!TLCB){ toast('붙여넣을 게 없어요 — 타임라인에서 구성요소·인포그래픽을 눌러 고르고 Ctrl+C 로 먼저 복사해 주세요'); return false; }
+  if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 붙여넣어 주세요'); return false; }
+  if(!P.sents.length){ toast('나레이션 문장이 없어 붙여넣을 수 없어요'); return false; }
+  if(UI.le) leClose(true); if(ENG.playing) pausePlay();
+  const tp=clamp(o&&o.t!=null&&isFinite(+o.t)?+o.t:ENG.pos,0,P.dur);
+  return TLCB.k==='clip'?cbPasteClips(TLCB,tp):cbPasteComps(TLCB,tp);
+}
+function cbKey(e){   /* Ctrl/⌘+C·V — 타임라인 구성요소·인포그래픽 복사/붙여넣기. 처리했으면 true(브라우저 기본 동작은 막음) */
+  if(!P||UI.le||UI.busy==='export'||($('vsDlg')&&$('vsDlg').classList.contains('on'))) return false;
+  const tg=e.target, tag=String(tg&&tg.tagName||'').toLowerCase();
+  if(tag==='textarea'||tag==='select'||(tg&&tg.isContentEditable)||(tag==='input'&&!/^(range|checkbox|radio|button|submit|color|file)$/.test(tg.type||''))) return false;   /* 글을 적는 칸에서는 브라우저가 복사·붙여넣기 */
+  const ky=/^[a-z]$/i.test(e.key||'')?e.key.toLowerCase():(/^Key[A-Z]$/.test(e.code||'')?e.code.slice(3).toLowerCase():'');   /* 한글 입력 상태라 e.key 가 'ㅊ'·'ㅍ' 로 와도 물리 키로 */
+  if(ky==='c'){
+    const sl=window.getSelection&&window.getSelection(); if(sl&&!sl.isCollapsed&&String(sl).trim()&&!($('vsTlIn')&&$('vsTlIn').contains(sl.anchorNode))) return false;   /* 끌어서 고른 글이 있으면 그 글을 복사하게 둠 */
+    const sel=cbSelList(); if(!sel.length) return false;
+    e.preventDefault(); e.stopPropagation();
+    if(!sel.some(d=>d.k==='comp'||d.k==='clip')){ toast('복사할 수 있는 건 구성요소·인포그래픽이에요 — [구성]·[인포] 줄에서 골라 주세요'); return true; }
+    cbDoCopy(); return true;
+  }
+  if(ky==='v'){ e.preventDefault(); e.stopPropagation(); cbPaste(); return true; }
+  return false;
+}
+function cbMenuHtml(k,n){   /* 오른쪽 클릭 메뉴의 [복사]·[붙여넣기] 줄 */
+  if(k!=='comp'&&k!=='clip') return '';
+  return '<button class="mobile-keep" data-a="tlCopy">📋 '+(n>1?'선택 '+n+'개 ':'')+'복사 (Ctrl+C)</button>'+(TLCB?'<button class="mobile-keep" data-a="tlPaste">📌 재생 위치에 붙여넣기 ('+esc(cbLabel())+' · Ctrl+V)</button>':'');
+}
+function cbPasteMenu(e){   /* 빈 곳을 오른쪽 클릭했을 때 — 복사해 둔 게 있으면 그 자리(클릭한 시각)에 붙여넣는 메뉴 */
+  if(!TLCB||!e.target||!e.target.closest||!e.target.closest('#vsTlIn')) return false;
+  const t=Math.max(0,r2((e.clientX-$('vsTlIn').getBoundingClientRect().left)/UI.pps)); e.preventDefault(); tlMenuClose();
+  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc('복사해 둔 것 · '+cbLabel())+'</div><button class="mobile-keep" data-a="tlPaste" data-id="'+t+'">📌 여기('+fmtT(t,1)+')에 붙여넣기</button>';
+  _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px'; return true;
+}
+
+/* ── ② 오른쪽 버튼 끌기 범위 선택 ── */
+function mqRect(){   /* 상자 — 타임라인 안쪽(#vsTlIn) 좌표라 스크롤해도 내용에 붙어 있음. 안쪽 경계를 넘지 않게(넘으면 상자가 스크롤 영역을 계속 늘림) */
+  const host=$('vsTlIn'), hr=host.getBoundingClientRect(), W=host.offsetWidth, H=host.offsetHeight, x=clamp(MQ.cx-hr.left,0,W), y=clamp(MQ.cy-hr.top,0,H), x0=clamp(MQ.x0,0,W), y0=clamp(MQ.y0,0,H);
+  return {l:Math.min(x0,x),t:Math.min(y0,y),r:Math.max(x0,x),b:Math.max(y0,y),hr};
+}
+function mqHits(R){   /* 상자에 걸친 요소 — [구성] 줄의 칩이 하나라도 있으면 구성요소, 없으면 [인포] 줄의 막대(시간 순) */
+  const host=$('vsTlIn'), L=R.hr.left+R.l, T=R.hr.top+R.t, RR=R.hr.left+R.r, B=R.hr.top+R.b, byX=(a,b)=>(parseFloat(a.style.left)||0)-(parseFloat(b.style.left)||0);
+  const inBox=el=>{ const q=el.getBoundingClientRect(); return q.right>L&&q.left<RR&&q.bottom>T&&q.top<B; };
+  const ics=[...host.querySelectorAll('.tl-ic')].filter(inBox).sort(byX);
+  if(ics.length) return {k:'comp',els:ics,list:ics.map(el=>({k:'comp',id:el.dataset.i,pi:el.dataset.p!=null&&el.dataset.p!==''?+el.dataset.p:-1}))};
+  const igs=[...host.querySelectorAll('.tl-ig')].filter(inBox).sort(byX);
+  return {k:'clip',els:igs,list:igs.map(el=>({k:'clip',id:el.dataset.id,pi:-1}))};
+}
+function mqPaint(){
+  const host=$('vsTlIn'); if(!host||!MQ||!MQ.moved||MQ.cancel) return; let el=$('vsMq'); if(!el||!host.contains(el)){ el=document.createElement('div'); el.id='vsMq'; el.className='tl-mq'; host.appendChild(el); }   /* 타임라인을 다시 그려 상자가 사라졌으면 다시 만듦 */
+  const R=mqRect(); el.style.left=R.l+'px'; el.style.top=R.t+'px'; el.style.width=(R.r-R.l)+'px'; el.style.height=(R.b-R.t)+'px';
+  const h=MQ.hit=mqHits(R); host.querySelectorAll('.tpre').forEach(e=>{ if(h.els.indexOf(e)<0) e.classList.remove('tpre'); }); h.els.forEach(e=>e.classList.add('tpre'));
+  const hint=$('vsTlHint'); if(hint){ hint.innerHTML='범위 안: <b>'+(h.list.length?esc(TSEL_KIND[h.k])+' '+h.list.length+'개':'없음')+'</b> <i>· 놓으면 선택돼요 · Ctrl/Shift = 지금 선택에 더하기 · Esc = 취소</i>'; hint.title=hint.textContent; }
+}
+function mqAuto(){   /* 상자를 가장자리로 끌면 타임라인이 따라 움직임 */
+  if(!MQ||!MQ.moved||MQ.cancel) return; const s=$('vsTls'); if(!s) return; const r=s.getBoundingClientRect(), E=28, sp=d=>Math.min(36,6+d*0.9); let dx=0, dy=0;
+  if(MQ.cx<r.left+E) dx=-sp(r.left+E-MQ.cx); else if(MQ.cx>r.right-E) dx=sp(MQ.cx-(r.right-E));
+  if(MQ.cy<r.top+E) dy=-sp(r.top+E-MQ.cy); else if(MQ.cy>r.bottom-E) dy=sp(MQ.cy-(r.bottom-E));
+  if(dx||dy){ s.scrollLeft+=dx; s.scrollTop+=dy; mqPaint(); }
+}
+function mqCtx(ev){ ev.preventDefault(); ev.stopPropagation(); if(MQ) MQ.ctx=true; else mqCtxOff(); }   /* 끌고 있는 동안·놓은 직후 한 번만 오는 contextmenu 를 막음 */
+function mqCtxOff(){ document.removeEventListener('contextmenu',mqCtx,true); clearTimeout(_mqT); }
+function mqDown(e){
+  if(e.button!==2||!P||UI.busy==='export'||DRAG||MQ) return;
+  const s=$('vsTls'), host=$('vsTlIn'); if(!s||!host) return; const sr=s.getBoundingClientRect(); if(e.clientX>sr.left+s.clientWidth||e.clientY>sr.top+s.clientHeight) return;   /* 스크롤바 위는 제외 */
+  const hr=host.getBoundingClientRect(); tlMenuClose(); mqCtxOff(); document.addEventListener('contextmenu',mqCtx,true);
+  MQ={pid:e.pointerId,sx:e.clientX,sy:e.clientY,x0:e.clientX-hr.left,y0:e.clientY-hr.top,cx:e.clientX,cy:e.clientY,moved:false,cancel:false,ctx:false,add:!!(e.ctrlKey||e.metaKey||e.shiftKey),hit:null,timer:0};
+  try{ s.setPointerCapture(e.pointerId); }catch(x){}
+}
+function mqMove(e){
+  if(!MQ||e.pointerId!==MQ.pid||MQ.cancel) return;
+  if(e.buttons!=null&&!(e.buttons&2)){ mqEnd(e,true); return; }   /* 버튼을 놓았는데 놓은 신호를 못 받았을 때 */
+  MQ.cx=e.clientX; MQ.cy=e.clientY;
+  if(!MQ.moved){ if(Math.hypot(e.clientX-MQ.sx,e.clientY-MQ.sy)<MQ_TH) return; MQ.moved=true; MQ.timer=setInterval(mqAuto,40); try{ const sl=window.getSelection&&window.getSelection(); if(sl&&sl.removeAllRanges) sl.removeAllRanges(); }catch(x){} }
+  mqPaint();
+}
+function mqUp(e){ if(!MQ||e.pointerId!==MQ.pid||e.button!==2) return; mqEnd(e,true); }
+function mqCancel(){   /* Esc — 상자만 걷음(버튼을 놓을 때 따라오는 메뉴는 계속 막음) */
+  if(!MQ) return; MQ.cancel=true; clearInterval(MQ.timer); const el=$('vsMq'); if(el) el.remove(); const host=$('vsTlIn'); if(host) host.querySelectorAll('.tpre').forEach(x=>x.classList.remove('tpre')); tselPaint();
+}
+function mqEnd(e,up){   /* up=true: 버튼을 놓음 → 선택 / false: 취소(pointercancel) */
+  const m=MQ; if(!m) return; let h=null;
+  if(up&&e&&m.moved&&!m.cancel){ m.cx=e.clientX; m.cy=e.clientY; h=mqHits(mqRect()); }
+  MQ=null; clearInterval(m.timer); const host=$('vsTlIn'), s=$('vsTls'); try{ s.releasePointerCapture(m.pid); }catch(x){}
+  const el=$('vsMq'); if(el) el.remove(); if(host) host.querySelectorAll('.tpre').forEach(x=>x.classList.remove('tpre'));
+  if(m.moved){ clearTimeout(_mqT); _mqT=setTimeout(mqCtxOff,700); }   /* 놓을 때 따라오는 contextmenu 는 mqCtx 가 한 번 막고 풀림(안 오면 0.7초 뒤 풀림) */
+  else if(m.ctx&&up&&e){ mqCtxOff(); const t=document.elementFromPoint(e.clientX,e.clientY); tlMenu({target:t||host,clientX:e.clientX,clientY:e.clientY,preventDefault(){}}); }   /* mac/Linux — 누를 때 이미 contextmenu 가 와서 막았으니 끌지 않았으면 여기서 메뉴를 띄움 */
+  else mqCtxOff();   /* Windows — 놓은 뒤에 오는 contextmenu 는 예전대로 tlMenu 가 받음 */
+  if(!h||(m.add&&!h.list.length)){ tselPaint(); return; }   /* 더하기로 끌었는데 걸린 게 없으면 지금 선택 그대로 */
+  let list=h.list; if(m.add){ const cur=cbSelList().filter(d=>d.k===h.k), seen=new Set(cur.map(tmKey)); list=cur.concat(list.filter(d=>!seen.has(tmKey(d)))); }
+  cbSetSel(list);
+}
+/* ══ /v140 ══ */
 /* ══ v103 (2026-10-26) — 타임라인의 챕터 타이틀을 끌어서 길이·위치 바꾸기 ═════════════════════════════════════════════════════
    · [타이틀] 줄 블록 — 몸통을 끌면 위치, 오른쪽 끝을 끌면 길이(뒤 내용이 밀리거나 당겨짐), 왼쪽 끝을 끌면 시작(끝은 그대로). Alt = 달라붙지 않음. 오프닝 타이틀도 같은 규칙(앞 문장 끝 E=0, 기본 앞 쉼 0 — v104)
    · 저장 p.ttl[챕터]={dur,pre,post} — dur=타이틀 길이(초, 없으면 공통 길이), pre=앞 챕터 나레이션이 끝난 뒤 타이틀이 나오기까지(앞 쉼, 없으면 max(쉬는 시간,길이+0.2)−길이),
@@ -57360,6 +58052,8 @@ async function act(a,btn){
     case 'playScene': { const c=P.scenes[UI.sel]; if(c) startPlay(c.s,'preview',c.e); break; }
     case 'playSent': { const s=P.sents.find(x=>x.id===id); if(s) startPlay(Math.max(0,s.s-0.3)); break; }
     case 'tlDel': tlDelete(); break;
+    case 'tlCopy': cbDoCopy(); break;   /* v140 */
+    case 'tlPaste': cbPaste(id!=null&&id!==''&&isFinite(+id)?{t:+id}:null); break;
     case 'tlPlay': { const t0=tselStart(); if(t0!=null) startPlay(Math.max(0,t0-0.2)); break; }
     case 'edToggle': UI.edOpen=!UI.edOpen; edSaveOpen(); paintEd(); break;
     case 'edWhat': UI.edWhat[id]=!UI.edWhat[id]; try{ localStorage.setItem('BTMVideoEdWhat',JSON.stringify(UI.edWhat)); }catch(e){} paintEd(); break;
@@ -58602,7 +59296,7 @@ function bindEvents(el){
   const z=$('vsZoom'); z.addEventListener('input',()=>setZoom(+z.value));
   const et=$('vsEdTxt'); et.addEventListener('input',()=>{ UI.edTxt=et.value; }); et.addEventListener('keydown',e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); runSceneEdit(); } });
   const ex=$('vsEdEx'); ex.addEventListener('change',()=>{ if(ex.value){ UI.edTxt=(UI.edTxt?UI.edTxt.replace(/\s+$/,'')+'\n':'')+ex.value; et.value=UI.edTxt; ex.value=''; et.focus(); } });
-  const tl=$('vsTlIn'); tl.addEventListener('pointerdown',tlDown); tl.addEventListener('pointermove',tlMove); tl.addEventListener('pointerup',tlUp); tl.addEventListener('pointercancel',tlUp); tl.addEventListener('contextmenu',tlMenu); document.addEventListener('pointerdown',ev=>{ const m=$('vsCm'); if(m&&!m.contains(ev.target)) tlMenuClose(); },true);
+  const tl=$('vsTlIn'); tl.addEventListener('pointerdown',tlDown); tl.addEventListener('pointermove',tlMove); tl.addEventListener('pointerup',tlUp); tl.addEventListener('pointercancel',tlUp); tl.addEventListener('contextmenu',tlMenu); { const ts=$('vsTls'); ts.addEventListener('pointerdown',mqDown); ts.addEventListener('pointermove',mqMove); ts.addEventListener('pointerup',mqUp); ts.addEventListener('pointercancel',e=>mqEnd(e,false)); }   /* v140: 오른쪽 버튼 끌기 범위 선택 */ document.addEventListener('pointerdown',ev=>{ const m=$('vsCm'); if(m&&!m.contains(ev.target)) tlMenuClose(); },true);
   $('vsTls').addEventListener('wheel',e=>{ if(e.ctrlKey||e.metaKey){ e.preventDefault(); setZoom(UI.pps*(e.deltaY<0?1.2:1/1.2)); } },{passive:false});
   $('vsFVis').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P) visualFromFile(P.scenes[UI.sel],f); });
   $('vsFAud').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P){ if(P.chunks.some(k=>k.bid)&&!confirm('지금 있는 음성을 이 파일로 바꿀까요?')) return; importNarration(f); } });
@@ -58625,10 +59319,11 @@ function nlKey(e){   /* v116: 글 칸에서 Shift+Enter — 커서 자리에 줄
 document.addEventListener('keydown',e=>{
   if(!_ov||!_ov.classList.contains('open')) return;
   const tg=e.target, tag=(tg.tagName||'').toLowerCase(), typing=tag==='input'||tag==='textarea'||tag==='select'||tg.isContentEditable;
-  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')){ dlgClose(); return; } if(UI.le){ leKey(e); return; } closeStudio(); return; }
+  if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if(MQ){ mqCancel(); return; } if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')){ dlgClose(); return; } if(UI.le){ leKey(e); return; } closeStudio(); return; }
   if(!P) return;
   if(e.key==='Enter'&&e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&nlKey(e)) return;
   if(UI.le&&leKey(e)) return;
+  if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&!e.altKey&&cbKey(e)) return;   /* v140: Ctrl/⌘+C·V = 타임라인 구성요소·인포그래픽 복사·붙여넣기 */
   if((e.ctrlKey||e.metaKey)&&!typing){ const k=e.key.toLowerCase(); if(k==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); } else if(k==='y'){ e.preventDefault(); redo(); } else if(k==='s'){ e.preventDefault(); act('save'); } return; }
   if(typing||UI.busy==='export'||$('vsDlg').classList.contains('on')) return;
   if(e.key===' '){ e.preventDefault(); togglePlay(); }
@@ -58671,12 +59366,12 @@ async function closeStudio(force){
 /* ═════════ 바깥에 내놓는 것 ═════════ */
 window.openVideoStudio=opt=>openStudio(opt);
 window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classList.contains('open')),
-  _dbg:{PRV,get P(){ return P; },get UI(){ return UI; },get ENG(){ return ENG; },get Q(){ return Q; },BL,BUF,IMG,VM,DEF_CFG,kpic,klPicFind,klPicAuto,klPicAutoScore,klPicDraw,klPicOf,klPicPost,klPicFillItems,
+  _dbg:{PRV,get P(){ return P; },get UI(){ return UI; },get ENG(){ return ENG; },get Q(){ return Q; },BL,BUF,IMG,VM,DEF_CFG,kpic,klPicFind,klPicAuto,klPicAutoScore,klPicDraw,klPicOf,klPicPost,klPicFillItems,klmNumFmt,klmCopyFix,klmMoveFix,klmNumHl,KLM_T,
     newProject,layout,buildCues,cuesOf,fitPlan,analyzeAudio,alignSentences,applyChunkAudio,runVoice,importNarration,qRun,genOne,syncReport,exportRun,narrationWav,
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
-    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,tlDown,tlMove,tlUp,fixPartAnchors,fixProject,btOpts,BT_GRP,numList,drawArrow,sparkDraw,tapeLay,hasNL,nlLines,nlFlat,nlKey,dtx,fitFont,pill,clipS,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
+    igUnits,igBoxOK,igCustomCells,duLeft,tlSlots,tlCatalog,LTPL,tlThumb,leOpen,leClose,leInitBoxes,leApplyTpl,leGeom,leTarget,leDown,leMove,leUp,leKey,leAct,leRefresh,lePaintBar,lePaintBoxes,leSquare,leSame,leAutoBack,leResetAll,tmulToggle,tmulApply,tmulDelete,tmulHit,tmulMenu,compAlign,clipAlign,cbCopy,cbPaste,cbKey,cbTarget,cbSelList,cbSetSel,cbDoCopy,cbPasteMenu,cbMenuHtml,mqDown,mqMove,mqUp,mqEnd,mqCancel,mqHits,mqRect,get TLCB(){ return TLCB; },get MQ(){ return MQ; },klmFit,klmFitAll,klmWrap,klmTok,klmWrapCount,klmWrapExcess,klNumClip,klNumStrip,klNumScan,klFigKey,klNumClipInto,klDetailItems,klCleanExisting0,KLM_T,KLM_K,drawLTMin,klFxRec,klFxEnv,tlDown,tlMove,tlUp,fixPartAnchors,fixProject,btOpts,BT_GRP,numList,drawArrow,sparkDraw,tapeLay,hasNL,nlLines,nlFlat,nlKey,dtx,fitFont,pill,clipS,taX,taOf,vaOf,vaFree,alApply,alBtns,alHtml,alOK,AL_NOV,leAlBar,
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
