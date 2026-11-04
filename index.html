@@ -42886,6 +42886,8 @@ window.BTMVLang={L,order,get,norm,split,filler,substance,agendaScore,isAgenda,AG
    · 직접 수정 (2026-10-27, v119) — 만든 ① 보고서·② 스크립트·③ 스토리보드를 부분마다 [✏️ 수정]으로 직접 고치고 [💾 저장] (ED·edOpen·edSave — 코드는 '만든 결과를 직접 고치기' 구역).
        스크립트: 챕터 이름·나레이션·[화면: …] 지시 / 스토리보드: 스타일·분위기, 장면 시간·묘사, 장면 추가(둘로 나눔)·삭제 / 보고서: 통째로. 저장하면 같은 이력 기록에 반영(기록에 ed 표시만 더 붙음, 고친 적 없는 기록은 모양 그대로).
        스크립트 길이가 바뀌면 board.tch(옛 글자 수)와 비교해 ③ 위에 [시간 맞추기](retimeBoard)를 보여 줌. 이력 상세의 [✏️ 수정]은 그 기록을 만들기 화면 결과로 불러옴. 고친 내용은 이미 만든 영상 프로젝트에는 반영되지 않음(스튜디오 [새로 시작]부터).
+   · 챕터 4부 고정 제목 (2026-11-04, v146) — 스크립트 챕터를 영상 길이에 따라 이웃과 합쳐 '오프닝 ~ 경제 일정 체크포인트' 같은 이름이 되던 방식 대신 '주요 지수 & 경제 일정(오프닝 포함) / 시황 분석 / 테마 & 섹터 분석 /
+       핵심 요약(시나리오·마무리 포함)' 네 제목으로 나눔(fixedParts·GRP_T·FIXED_PARTS). 고르지 않은 섹션의 부는 빠지고(오프닝은 맨 앞 부에 붙음), 추가로 고른 섹션(관심 종목 등)은 각자 한 챕터(자기들끼리만 1분 미만이면 합침). FIXED_PARTS=false 면 예전 방식.
    · 수정 요령: 이 블록(표식 BTMSCRIPT-JS-BEGIN~END)과 위쪽 BTMSCRIPT-CSS 블록만 고치면 됨
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
@@ -42930,6 +42932,15 @@ const META={
   strategy:{rpt:'매매 전략 점검',chap:'매매 전략 점검',w:9,focus:'매매 전략의 핵심 원칙과 이번 시장에서의 적용 포인트(개인 포지션은 드러내지 말고 일반론으로)'},
 };
 const LIM={indices:3000,eco:5000,watch:3000,market:7000,theme:7000,warren:5000,radar:6000,tech:6000,strategy:6000};
+/* v146 — 스크립트 챕터 4부 제목(영상 언어별). ie = 주요 지수+경제 일정을 같이 고른 첫 부, i·e = 둘 중 하나만 골랐을 때, m = 시황 분석, t = 테마·섹터, w = 시나리오·마무리가 든 마지막 부.
+   제목에 ·(가운뎃점)·~ 는 쓰지 말 것 — 영상 스튜디오 splitOpen 이 '오프닝 · 이름' 꼴로 읽음. 영어·중국어·일본어는 스튜디오 개요(ovShort)가 끝말(Summary·总结·まとめ)을 떼지 않는 이름으로. */
+const GRP_T={
+  ko:{ie:'주요 지수 & 경제 일정',i:'주요 지수',e:'경제 일정',m:'시황 분석',t:'테마 & 섹터 분석',w:'핵심 요약'},
+  en:{ie:'Major Indices & Economic Calendar',i:'Major Indices',e:'Economic Calendar',m:'Market Analysis',t:'Theme & Sector Analysis',w:'Key Takeaways'},
+  zh:{ie:'主要指数与经济日程',i:'主要指数',e:'经济日程',m:'市场分析',t:'主题与板块分析',w:'核心摘要'},
+  ja:{ie:'主要指数と経済日程',i:'主要指数',e:'経済日程',m:'市況分析',t:'テーマ・セクター分析',w:'要点整理'}
+};
+let FIXED_PARTS=true;   /* false 면 예전처럼 영상 길이에 맞춰 1분 미만 챕터를 이웃과 합침 */
 const labelOf=k=>(SECS.find(s=>s.k===k)||{label:k}).label;
 /* 결과(화면 ctx·이력 기록)에 보여줄 부분 — 만들 것 선택이 없던 옛 기록은 둘 다. 보고서는 스크립트만 만들며 가져다 쓴 것도 보여줌 */
 const showRep=c=>(c.cfg||{}).rep!==false||!!String(c.report||'').trim();
@@ -43188,17 +43199,9 @@ function secInfo(k){
 }
 
 /* ═════════ 챕터 계획 — 영상 길이 → 챕터별 목표 글자 수 ═════════ */
-function buildPlan(L,cpm,secs,lang){
-  const has=k=>secs.indexOf(k)>=0, ct=(key,ko)=>(lang&&lang!=='ko'&&V.get(lang).chap&&V.get(lang).chap[key])||ko;   /* v108: 챕터 이름도 영상 언어로 */
-  let it=[{key:'open',title:ct('open','오프닝'),w:7,data:[],focus:'오늘 시장에서 가장 강한 한 줄로 시작(후킹) → 인사 → 이번 영상에서 다룰 내용 예고'}];
-  ['indices','eco','market','theme','watch','warren','radar','tech','strategy'].forEach(k=>{ if(has(k)){ const m=META[k]; it.push({key:k,title:ct(k,m.chap),w:m.w,data:[k],focus:m.focus}); } });
-  it.push({key:'scenario',title:ct('scenario','시나리오와 대응 전략'),w:12,data:[],focus:'상승·기본·하락 시나리오와 각각의 트리거·점검 지표, 투자자가 이번 주 체크할 것'});
-  it.push({key:'close',title:ct('close','마무리'),w:6,data:[],focus:'핵심 3줄 요약 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'});
-  it.forEach(x=>{ x.names=[x.title]; x.foci=[x.focus]; });
-  const tw=it.reduce((a,x)=>a+x.w,0);
-  it.forEach(x=>{ x.min=L*x.w/tw; });
-  /* 1분이 안 되는 챕터는 이웃과 합침(가장 짧은 것부터, 최소 2챕터는 유지) */
-  while(it.length>2){
+/* 1분이 안 되는 챕터는 이웃과 합침(가장 짧은 것부터, 최소 keep 챕터는 유지) — 예전 buildPlan 의 규칙 그대로 */
+function mergeShort(it,keep){
+  while(it.length>keep){
     let i=-1,mn=Infinity; it.forEach((x,j)=>{ if(x.min<mn){ mn=x.min; i=j; } });
     if(mn>=MIN_CH) break;
     const j=i===0?1:i===it.length-1?i-1:(it[i-1].min<=it[i+1].min?i-1:i+1);
@@ -43209,6 +43212,37 @@ function buildPlan(L,cpm,secs,lang){
       w:A.w+B.w,min:A.min+B.min,data:A.data.concat(B.data.filter(d=>A.data.indexOf(d)<0)),
       focus:foci.map((f,i)=>(i+1)+') '+names[i]+': '+f).join('\n')});   /* 합쳐진 챕터는 순서대로 모두 다루게 번호 목록으로 */
   }
+}
+/* v146 — 항목(오프닝·섹션·시나리오·마무리)을 4부 제목으로 묶음: ① 주요 지수 & 경제 일정(오프닝 포함) ② 시황 분석 ③ 테마 & 섹터 분석 ④ 핵심 요약(시나리오·마무리).
+   고르지 않은 섹션의 부는 빠지고 오프닝은 맨 앞 부에 붙음. 추가로 고른 섹션(관심 종목·Warren Kim·Radar·기술적 분석·매매 전략)은 ③ 뒤에 각자 한 챕터(자기들끼리만 1분 미만이면 합침).
+   합친 부의 key·names 는 항목 것을 그대로 이어 둠 — 영상 스튜디오 splitOpen 이 첫 부의 'open+…' 키와 이름 목록으로 오프닝을 가름 */
+function fixedParts(it,lang){
+  const gt=GRP_T[V.norm(lang)]||GRP_T.ko, by=k=>it.find(x=>x.key===k), sum=(l,k)=>l.reduce((a,x)=>a+x[k],0);
+  const one=(list,title)=>{   /* 항목 여럿 → 챕터 하나(안에서 다룰 내용은 번호 목록), 하나면 이름만 바꿈 */
+    if(list.length===1){ const x=list[0]; return Object.assign({},x,{title,names:x.names.length>1?x.names:[title]}); }
+    const names=[].concat.apply([],list.map(x=>x.names)), foci=[].concat.apply([],list.map(x=>x.foci)), data=[]; list.forEach(x=>x.data.forEach(d=>{ if(data.indexOf(d)<0) data.push(d); }));
+    return {key:list.map(x=>x.key).join('+'),title,names,foci,w:sum(list,'w'),min:sum(list,'min'),data,focus:foci.map((f,i)=>(i+1)+') '+names[i]+': '+f).join('\n')};
+  };
+  const idx=by('indices'), eco=by('eco'), mkt=by('market'), th=by('theme'), ex=['watch','warren','radar','tech','strategy'].map(by).filter(Boolean), first=[idx,eco].filter(Boolean), G=[];
+  mergeShort(ex,1);
+  if(first.length) G.push([[by('open')].concat(first),first.length===2?gt.ie:(idx?gt.i:gt.e)]);
+  if(mkt) G.push([[mkt],gt.m]);
+  if(th) G.push([[th],gt.t]);
+  ex.forEach(x=>G.push([[x],x.title]));
+  G.push([[by('scenario'),by('close')],gt.w]);
+  if(!first.length) G[0][0].unshift(by('open'));   /* 주요 지수·경제 일정을 안 골랐으면 오프닝은 맨 앞 챕터에 붙음(그 챕터 이름 그대로) */
+  return G.map(g=>one(g[0],g[1]));
+}
+function buildPlan(L,cpm,secs,lang){
+  const has=k=>secs.indexOf(k)>=0, ct=(key,ko)=>(lang&&lang!=='ko'&&V.get(lang).chap&&V.get(lang).chap[key])||ko;   /* v108: 챕터 이름도 영상 언어로 */
+  let it=[{key:'open',title:ct('open','오프닝'),w:7,data:[],focus:'오늘 시장에서 가장 강한 한 줄로 시작(후킹) → 인사 → 이번 영상에서 다룰 내용 예고'}];
+  ['indices','eco','market','theme','watch','warren','radar','tech','strategy'].forEach(k=>{ if(has(k)){ const m=META[k]; it.push({key:k,title:ct(k,m.chap),w:m.w,data:[k],focus:m.focus}); } });
+  it.push({key:'scenario',title:ct('scenario','시나리오와 대응 전략'),w:12,data:[],focus:'상승·기본·하락 시나리오와 각각의 트리거·점검 지표, 투자자가 이번 주 체크할 것'});
+  it.push({key:'close',title:ct('close','마무리'),w:6,data:[],focus:'핵심 3줄 요약 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'});
+  it.forEach(x=>{ x.names=[x.title]; x.foci=[x.focus]; });
+  const tw=it.reduce((a,x)=>a+x.w,0);
+  it.forEach(x=>{ x.min=L*x.w/tw; });
+  if(FIXED_PARTS) it=fixedParts(it,lang); else mergeShort(it,2);   /* v146: 4부 제목 구성(기본) / 예전 — 1분이 안 되는 챕터는 이웃과 합침(최소 2챕터는 유지) */
   /* 글자 수 배정 + 너무 긴 챕터는 여러 번에 나눠 요청 */
   const units=[];
   it.forEach((x,ci)=>{
@@ -44748,7 +44782,7 @@ document.addEventListener('keydown',e=>{
 window.openScriptMaker=()=>openMaker();
 window.openScriptHistory=()=>openHistory();
 window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
-  _dbg:{buildPlan,sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
+  _dbg:{buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
     buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur,
     V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,
     isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted,
@@ -56748,7 +56782,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v144';
+const KL_BUILD='v146';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -56861,7 +56895,7 @@ function ovChapters(p){   /* 개요에 올릴 챕터 — 오프닝·마무리는
 const OV_GEN={ko:/\s*(?:브리핑|체크\s*포인트|체크|점검|포인트|요약|리포트|보고)\s*$/,en:/\s+(?:Briefing|Checkpoints?|Check|Review|Recap|Summary|Report|Overview)$/i,zh:/(?:简报|要点|检查|回顾|总结)$/,ja:/(?:ブリーフィング|ポイント|チェック|まとめ)$/};
 const OV_STOP=/^(?:브리핑|체크포인트|체크|점검|포인트|요약|정리|현황|분석|확인|리포트|오늘|시장|briefing|check(?:points?)?|review|recap|summary|analysis|report|overview|points?|market|markets|today|the|and|for|with|of|简报|分析|总结|市场|ブリーフィング|市場)$/i;
 function ovShort(name){ const re=OV_GEN[P.lang]||OV_GEN.ko; let s=cleanChap(name); const all=s.split(/\s*[·~]\s*/), ps=all.filter(x=>x&&!CH_CLOSE_RE.test(x)); if(ps.length&&ps.length<all.length) s=ps.join(' · ');   /* '시나리오와 대응 전략 · 마무리' 처럼 마무리가 합쳐진 이름은 마무리를 뺌 */
-  const t=s.replace(re,'').trim(); if(t.length>=2) s=t; return clipS(s,KW(16)); }
+  const t=s.replace(re,'').trim(); if(t.length>=2&&!/^(?:핵심|오늘|이번|주요)$/.test(t)) s=t; return clipS(s,KW(16)); }   /* v146: '핵심 요약' 은 '핵심' 만 남기지 않음 */
 function ovTokens(label){ const lat=LG().cls==='latin'; return String(label).split(/[\s·,/&+\-–—()（）\[\]'"“”]+/).map(x=>x.trim()).filter(x=>lat?x.length>=4:x.length>=2).filter(x=>!OV_STOP.test(x)); }
 function ovRuleBlock(span,chs){   /* 규칙 — 챕터 이름의 고유한 낱말이 안내 문장에서 나오는 곳에 붙이고, 못 찾은 항목은 앞뒤 사이에 고르게 */
   const ss=span.ss, lat=LG().cls==='latin', text=ss.map(s=>s.text).join(' '), offs=[]; let o=0; ss.forEach(s=>{ offs.push(o); o+=s.text.length+1; });
