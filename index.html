@@ -2929,6 +2929,8 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-ck2 b{color:#fcd34d}.vs-ck2 em{font-style:normal;font-size:10px;padding:0 6px;border-radius:7px;background:#243149}
 .vs-ck2.done em{background:#164e2e;color:#86efac}.vs-ck2.run em{background:#0c4a6e;color:#7dd3fc}.vs-ck2.err em{background:#7f1d1d;color:#fecaca}.vs-ck2.stale em{background:#78350f;color:#fde68a}
 .vs-ck2 i{font-style:normal;font-size:9.5px;color:#c4b5fd}
+.vs-vte{margin:2px 0 8px 12px;padding:6px 8px;border-left:2px solid #2a3a56;display:flex;flex-direction:column;gap:6px}.vs-vts{padding:6px 7px;border:1px solid #1f2d46;border-radius:7px;background:#0f192b}.vs-vts .r{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}.vs-vts .n{font-size:10px;color:#9fb0c9;min-width:14px}.vs-vts .t{font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:#fcd34d;background:#2a2410;border-radius:4px;padding:0 6px}.vs-vtd{font-size:10px;padding:0 7px;border-radius:8px;background:#78350f;color:#fde68a}.vs-vts .cue{margin-top:4px;font-size:10.5px;color:#7dd3fc}
+.vs-vtdet{margin-top:6px;font-size:11px;color:#9fb0c9}.vs-vtdet summary{cursor:pointer;color:#8fb6e8}.vs-vtdet summary em{font-style:normal;color:#fde68a;font-size:10px}.vs-vtdet .r.sm{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}.vs-vtf .c{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.vt-off{display:none!important}
 /* 타임라인 */
 .vs-tl{height:292px;flex-shrink:0;border-top:1px solid #243149;background:#0a1120;display:flex;flex-direction:column}
 .vs-tlbar{display:flex;align-items:center;gap:7px;padding:5px 10px;border-bottom:1px solid #18243a;flex-shrink:0}.vs-tlbar b{font-size:12px;color:#cbd5e1;margin-right:4px}
@@ -45160,7 +45162,7 @@ function layout(p){
     const k=cm.get(s.cid), al=s.al, has=!!(al&&k&&k.bid&&k.state==='done');
     s.has=has; let dur,vs,ve;
     if(has){ dur=Math.max(0.2,al.b-al.a); vs=cur+(al.vs-al.a); ve=cur+(al.ve-al.a); }
-    else{ const sp=Math.max(0.5,s.n/c.cpm*60); dur=sp+0.35; vs=cur+0.06; ve=cur+0.06+sp; }
+    else{ const sp=Math.max(0.5,vNum(s)/c.cpm*60); dur=sp+0.35; vs=cur+0.06; ve=cur+0.06+sp; }   /* v155: 음성 글이 따로 있으면 그 길이로 어림 */
     s.s=r3(cur); s.e=r3(cur+dur); s.vs=r3(vs); s.ve=r3(ve);
     const nx=S[i+1], gap=s.pause!=null?s.pause:(!nx?0:nx.ci!==s.ci?c.gap.chap:nx.pa!==s.pa?c.gap.para:c.gap.sent);
     cur=s.e+gap;
@@ -48049,7 +48051,7 @@ function applyInfoEdit(sc,raw,all,opt){   /* 장면의 인포그래픽을 AI 가
 function applyEditToScene(sc,e,w,stat){   /* 한 장면에 AI 의 수정을 반영 — 바꾼 내용을 글 목록으로 돌려줌 */
   const all=sentsOf(P,sc), chg=[], num=x=>parseInt(x,10)||0, cl=t=>String(t==null?'':t).replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean).join('\n');
   const arr=x=>Array.isArray(x)?x:(x&&typeof x==='object'?Object.keys(x).map(k=>({s:k,text:x[k]})):[]);   /* {"1":"글"} 처럼 번호표로 줘도 읽음 */
-  if(w.narr&&e.narr){ let n=0; arr(e.narr).forEach(r=>{ const s=all[num(r&&r.s)-1], t=cl(r&&r.text).replace(/\s+/g,' '); if(!s||!t||t===s.text||t.length>s.text.length*3+40) return; s.text=t; s.n=t.replace(/\s+/g,'').length; const ck=P.chunks.find(x=>x.id===s.cid); if(ck&&ck.bid) ck.stale=true; n++; }); if(n){ chg.push('나레이션 '+n+'문장'); stat.stale+=n; } }
+  if(w.narr&&e.narr){ let n=0; arr(e.narr).forEach(r=>{ const s=all[num(r&&r.s)-1], t=cl(r&&r.text).replace(/\s+/g,' '); if(!s||!t||t===s.text||t.length>s.text.length*3+40) return; s.text=t; delete s.vt; s.n=t.replace(/\s+/g,'').length; const ck=P.chunks.find(x=>x.id===s.cid); if(ck&&ck.bid) ck.stale=true; n++; });   /* v155: 나레이션을 통째로 바꾸면 음성 글은 버림 */ if(n){ chg.push('나레이션 '+n+'문장'); stat.stale+=n; } }
   if(w.sub&&e.subs){ let n=0; arr(e.subs).forEach(r=>{ const s=all[num(r&&r.s)-1]; if(!s||!r) return;
     if(r.hide===true){ if(!s.sub.hide){ s.sub.hide=true; n++; } return; }
     if(r.hide===false&&s.sub.hide){ s.sub.hide=false; n++; }
@@ -48670,7 +48672,7 @@ async function translateProject(d){
     /* 1) 번역할 글 모으기 */
     np.chap.forEach((c,i)=>want('caption',c,t=>{ np.chap[i]=t.trim()||c; },0));
     np.sents.forEach(s=>{
-      want('narration',s.text,t=>{ s.text=t.replace(/\s*\n\s*/g,' ').trim()||s.text; s.n=s.text.replace(/\s+/g,'').length; });
+      want('narration',s.text,t=>{ s.text=t.replace(/\s*\n\s*/g,' ').trim()||s.text; delete s.vt; s.n=s.text.replace(/\s+/g,'').length; });
       if(s.cue) want('cue',cueClean(s.cue),t=>{ s.cue=t.trim(); });
       if(d.lsub&&s.sub&&s.sub.text!=null) want('subtitle',s.sub.text,t=>{ s.sub.text=t.trim(); });
     });
@@ -48721,7 +48723,7 @@ async function translateProject(d){
     if(d.lvis==='clear') np.scenes.forEach(c=>{ const v=c.vis||{}; if((v.kind==='image'||v.kind==='video')&&v.src==='ai'){ c.vis=Object.assign(keepLook(v),{kind:'none'}); res.vis++; } });
     progress(0.9,'파일 옮기는 중…');
     for(const bid of usedBids(np)){ const b=await getBlob(bid); if(b) await dbPutBlob(np.id+'|'+bid,b); }
-    np.chunks.forEach(k=>{ k.bid=''; });
+    np.chunks.forEach(k=>{ k.bid=''; delete k.tts; });
     UI.busy=''; UI.ctl=null; paintBusy();
     await startProject(np,true);
     res.anch=reanchorInfo(); layout(P); commit('언어 버전 — 시점 맞춤'); renderAll();
@@ -56857,7 +56859,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v154';
+const KL_BUILD='v155';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -58467,6 +58469,81 @@ function ueClipRow(g){   /* 편집창 — 붙잡힌 구성요소가 있으면 �
 }
 function ueTip(c){ return (c&&ueActive(c.g,c.it))?' · 화면이 늘어나도 '+fmtT(ueT(c.it),1)+'에 사라져요':''; }   /* 칩 말풍선 */
 /* ══ /v154 ══ */
+/* ══ v155 (2026-11-04) — 음성 글(말하는 글) 저장·고치기·다시 만들기 ═══════════════════════════════════════════════════
+   요청: "음성을 만들 때 특정 단어를 수정하거나 삭제해서 음성을 다시 작성하게 하고 싶어. 음성을 만들 때 그 텍스트가 어딘가에 저장이 되고, 내가 그 텍스트를 수정해서 다시 만들기를 하면 그 텍스트대로 음성을 다시 만들 수 있게."
+   이전: TTS 에 보내는 글 = 나레이션 문장 글(s.text)을 공백으로 이은 것 — [음성] 탭 어디에도 안 보였고, 말할 글을 고치려면 나레이션 글(= 자막 기본 글)을 고쳐야 해서 자막·화면 글까지 같이 바뀌었음.
+   ① 문장마다 '음성 글' s.vt — 없으면 나레이션 글 그대로(vText). 음성만 이 글로 만들고 자막·화면·인포그래픽은 나레이션 글 그대로. 원문과 같게 쓰거나 비우면 지워짐(원문대로).
+   ② 음성을 만들 때 실제로 TTS 에 보낸 글을 묶음마다 k.tts 에 저장(runVoice) — [음성] 탭 '이 음성을 만든 글(저장됨)'로 볼 수 있고, 지금 음성 글과 달라졌는지(= 고침 k.stale) 판단하는 기준(chunkTts).
+   ③ [음성] 탭 음성 묶음마다 [글 ▾] — 그 묶음 문장별 음성 글 편집·[↺ 원문대로]·[🔈 이 글로 다시 만들기](=redoChunk). 위쪽 '찾아 바꾸기'(비우고 바꾸면 삭제)·[↺ 모두 원문대로]. [장면] 탭 문장마다 '🔈 음성 글'.
+   ④ 문장 경계 맞춤(alignSentences)은 음성 글 길이(vNum) 기준. 음성 글을 고치면 그 묶음이 고침(k.stale) — ① 음성 만들기·[다시]가 새 글로 만듦. 이미 만든 음성은 다시 만들기 전까지 그대로.
+   ⑤ 나레이션 글을 직접 고칠 때 그 문장에 따로 고친 음성 글이 있으면 음성은 그대로(고침 표시 안 함) · AI 수정·번역은 나레이션을 통째로 바꾸므로 음성 글을 버림. 옛 프로젝트(k.tts 없음)는 처음 고치는 순간 그때 글을 기준으로 삼음 ── */
+Object.assign(UI,{vtk:{},vtFind:'',vtRepl:''});   /* vtk = 글 편집을 펼쳐 둔 묶음 */
+const vtClean=x=>String(x==null?'':x).replace(/\s*\n\s*/g,' ').replace(/[ \t ]{2,}/g,' ').trim();
+const vText=s=>{ if(!s) return ''; const t=s.vt!=null?vtClean(s.vt):''; return t||s.text; };   /* 이 문장을 말할 글 */
+const vNum=s=>vDiff(s)?Math.max(1,vText(s).replace(/\s+/g,'').length):Math.max(1,(s.n|0)||s.text.replace(/\s+/g,'').length);   /* 경계 맞춤·길이 어림에 쓰는 글자 수 — 음성 글이 따로 있으면 그 글 기준, 없으면 예전 그대로 s.n */
+const vDiff=s=>!!s&&vText(s)!==s.text;   /* 음성 글이 나레이션 글과 다른가 */
+function chunkTts(k,sm){ sm=sm||sentMap(); return k.sids.map(id=>sm.get(id)).filter(Boolean).map(vText).join(' '); }   /* 이 묶음을 지금 만든다면 TTS 에 보낼 글 */
+function vtMark(k,before){   /* 이 묶음의 음성 글이 만든 글과 달라졌나 따져 고침 표시 — before = 고치기 전 묶음 글 */
+  if(!k||!k.bid||k.imported) return;
+  const now=chunkTts(k);
+  if(k.tts==null&&!k.stale) k.tts=before;   /* 옛 프로젝트: 음성을 만든 글 = 고치기 전 글(그때까지는 고침 표시가 없었으니 맞았음) */
+  k.stale=(k.tts==null)?true:(now!==k.tts);
+}
+function vtPaintS(s){ const e=$('vsInsp'); if(!e||!s) return; const df=vDiff(s); e.querySelectorAll('[data-vs="'+s.id+'"]').forEach(x=>x.classList.toggle('vt-off',!df)); }   /* 이미 그려진 문장 표시만 고침(다시 그리면 눌러 둔 단추가 사라져서) */
+function vtPaint(k){   /* [음성] 탭의 묶음 줄·안내·머리 숫자만 고침 */
+  const e=$('vsInsp'); if(!e||!P||!k) return;
+  const row=e.querySelector('.vs-ck2[data-k="'+k.id+'"]'); if(row){ row.classList.toggle('stale',!!k.stale); const em=row.querySelector('em'); if(em) em.textContent=k.state==='done'?(k.stale?'고침':'완료'):k.state==='run'?'만드는 중':k.state==='err'?'실패':'아직'; const mk=row.querySelector('i.vt-mark'); if(mk){ const sm=sentMap(); mk.classList.toggle('vt-off',!k.sids.some(id=>vDiff(sm.get(id)))); } }
+  { const nd=P.sents.filter(vDiff).length, cn=e.querySelector('.vt-cnt'); if(cn){ cn.classList.toggle('vt-off',!nd); const hh=cn.querySelector('.hint'); if(hh) hh.textContent='음성 글을 고친 문장 '+nd+'개'; } }
+  const nt=e.querySelector('.vs-vte[data-k="'+k.id+'"] .vs-vtn'); if(nt) nt.classList.toggle('vt-off',!k.stale);
+  if(UI.tab==='voice'){ const h=e.querySelector('.vs-ih span'); if(h) h.textContent=P.chunks.filter(x=>x.state==='done'&&!x.stale).length+' / '+P.chunks.length+' 묶음 완료'; }
+}
+function vtSetText(s,raw){   /* 문장의 음성 글을 고침 — 원문과 같거나 비면 지움(원문대로). 말할 글이 바뀌었으면 true */
+  const k=P.chunks.find(x=>x.id===s.cid), before=k?chunkTts(k):'', prev=vText(s), t=vtClean(raw);
+  if(!t||t===s.text) delete s.vt; else s.vt=t;
+  vtPaintS(s); if(vText(s)===prev) return false;
+  vtMark(k,before); if(k) vtPaint(k); return true;
+}
+function vtReplaceAll(find,repl){   /* 모든 음성 글에서 찾아 바꿈(대소문자 무시) — repl 이 비면 지움. 문장 전체가 지워지는 곳은 건너뜀 */
+  const f=String(find||''); if(!f.trim()) return null; repl=String(repl==null?'':repl);
+  const re=new RegExp(f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'); let n=0, ss=0, skip=0; const ks=new Set();
+  P.sents.forEach(s=>{ const cur=vText(s); let c=0; const out=cur.replace(re,()=>{ c++; return repl; }); if(!c) return;
+    if(!vtClean(out)){ skip+=c; return; }
+    n+=c; if(vtSetText(s,out)){ ss++; ks.add(s.cid); } });
+  return {n,ss,ks:ks.size,skip};
+}
+function vtSentHtml(s,n){   /* 문장 하나의 음성 글 편집(음성 탭) */
+  const df=vDiff(s), off=df?'':' vt-off';
+  return '<div class="vs-vts" data-s="'+s.id+'"><div class="r"><span class="n">'+n+'</span><span class="t">'+fmtT(s.s,1)+'</span><span class="vs-vtd'+off+'" data-vs="'+s.id+'">원문과 달라요</span>'+F.btn('playSent','▶',{d:s.id,title:'이 문장부터 재생'})+'<span class="vs-sp"></span><span class="'+off.trim()+'" data-vs="'+s.id+'">'+F.btn('vtReset','↺ 원문대로',{d:s.id,title:'이 문장의 음성 글을 나레이션 글 그대로 되돌려요'})+'</span></div>'+F.ta('ss:'+s.id+':vt',vText(s),{rows:2})+'<div class="cue'+off+'" data-vs="'+s.id+'">자막·나레이션 글: '+esc(s.text)+'</div></div>';
+}
+function vtEditor(k,key){   /* 묶음 하나의 음성 글 편집 영역 */
+  const sm=sentMap(), ss=k.sids.map(id=>sm.get(id)).filter(Boolean);
+  if(k.imported) return '<div class="vs-vte" data-k="'+k.id+'"><div class="vs-note sm">가져온 음성 파일은 글로 다시 만들 수 없어요.</div></div>';
+  let h='<div class="vs-vte" data-k="'+k.id+'"><div class="vs-note sm">음성은 아래 글대로 만들어요 — 단어를 고치거나 지워도 자막·화면의 글은 그대로예요. 문장 끝 마침표(.)는 남겨 두세요(문장 사이 쉼으로 경계를 찾아요).</div>';
+  h+=ss.map((s,i)=>vtSentHtml(s,i+1)).join('');
+  h+='<div class="vs-btns">'+F.btn('redoChunk','🔈 이 글로 다시 만들기',{c:'pri',d:k.id,dis:!key,title:'이 묶음을 위 글로 새로 합성해요'+(ss.length>1?' — 묶음 전체의 음성이 새로 만들어져요(한 문장만 바꾸려면 합성 방식을 \'문장별\'로)':'')})+'</div>';
+  h+='<div class="vs-note sm vs-vtn'+(k.stale?'':' vt-off')+'">음성 글이 바뀌었어요 — 다시 만들어야 소리가 바뀌어요.</div>';
+  if(k.tts) h+='<details class="vs-det"><summary>이 음성을 만든 글(저장됨)</summary><pre>'+esc(k.tts)+'</pre></details>';
+  return h+'</div>';
+}
+function vtKeep(){ const a=$('vsVtFind'), b=$('vsVtRepl'); if(a) UI.vtFind=a.value; if(b) UI.vtRepl=b.value; }   /* 찾아 바꾸기 칸에 쓰던 글을 다시 그리기 전에 기억 */
+function vtOpen(id){ if(P&&UI.vtkP!==P.id){ UI.vtk={}; UI.vtkP=P.id; } return !!UI.vtk[id]; }   /* 글 편집을 펼쳐 둔 묶음인가 — 프로젝트가 바뀌면 기억을 비움(묶음 이름 k1·k2…이 프로젝트마다 겹쳐서) */
+function vtChunkHtml(k,key){   /* 음성 묶음 줄 + (펼쳤으면) 글 편집 */
+  const open=vtOpen(k.id), sm=sentMap(), any=k.sids.some(id=>vDiff(sm.get(id)));
+  return '<div class="vs-ck2 '+k.state+(k.stale?' stale':'')+'" data-k="'+k.id+'"><b>'+k.id+'</b><span>'+k.sids.length+'문장 · '+k.n+'자'+(k.dur?' · '+k.dur.toFixed(1)+'초':'')+'</span><em>'+(k.state==='done'?(k.stale?'고침':'완료'):k.state==='run'?'만드는 중':k.state==='err'?'실패':'아직')+'</em>'+(k.imported?'<i title="'+esc(k.imported)+'">가져옴</i>':'')+'<i class="vt-mark'+(any?'':' vt-off')+'" title="말할 글을 고친 문장이 있어요">✎ 글 고침</i><span class="vs-sp"></span>'+F.btn('vtToggle',open?'글 ▴':'글 ▾',{d:k.id,title:'이 묶음에서 말할 글을 보고 고쳐요'})+F.btn('redoChunk','다시',{d:k.id,dis:!key||!!k.imported})+'</div>'+(k.err?'<div class="vs-note err sm">'+esc(k.err)+'</div>':'')+(open?vtEditor(k,key):'');
+}
+function vtVoiceSec(key){   /* [음성] 탭의 '음성 글' 구역 — 찾아 바꾸기 + 묶음 목록 */
+  const nd=P.sents.filter(vDiff).length;
+  let h='<div class="vs-sec">음성 글 <span class="hint">음성은 이 글로 만들어요 · 고쳐도 자막·화면 글은 그대로 · 프로젝트에 저장돼요</span></div>';
+  h+='<div class="vs-fr vs-vtf"><label>찾아 바꾸기</label><div class="c"><input type="text" class="vs-in mobile-keep" id="vsVtFind" value="'+esc(UI.vtFind)+'" placeholder="찾을 말 (예: FOMC)" style="flex:1;min-width:90px"><input type="text" class="vs-in mobile-keep" id="vsVtRepl" value="'+esc(UI.vtRepl)+'" placeholder="바꿀 말 (비우면 지움)" style="flex:1;min-width:90px">'+F.btn('vtReplace','모두 바꾸기',{title:'모든 문장의 음성 글에서 찾아 바꿔요(대소문자 무시) — 바뀐 묶음은 [다시]로 새로 만들어요'})+'</div></div>';
+  h+='<div class="vs-btns vt-cnt'+(nd?'':' vt-off')+'"><span class="hint">음성 글을 고친 문장 '+nd+'개</span>'+F.btn('vtResetAll','↺ 모두 원문대로',{title:'고친 음성 글을 모두 나레이션 글 그대로 되돌려요'})+'</div>';
+  h+='<div class="vs-sec">음성 묶음 <span class="hint">[글 ▾]을 눌러 말할 글을 보고 고쳐요</span></div><div class="vs-chunks">'+P.chunks.map(k=>vtChunkHtml(k,key)).join('')+'</div>';
+  return h;
+}
+function vtSceneHtml(s){   /* [장면] 탭 문장 아래 '🔈 음성 글' */
+  const df=vDiff(s), off=df?'':'vt-off', k=P.chunks.find(x=>x.id===s.cid);
+  return '<details class="vs-vtdet"'+(df?' open':'')+'><summary>🔈 음성 글 <em class="'+off+'" data-vs="'+s.id+'">· 원문과 달라요</em></summary>'+F.ta('ss:'+s.id+':vt',vText(s),{rows:2})+'<div class="r sm"><span class="'+off+'" data-vs="'+s.id+'">'+F.btn('vtReset','↺ 원문대로',{d:s.id})+'</span>'+F.btn('redoChunk','🔈 이 묶음 다시 만들기',{d:s.cid,dis:!geminiKey()||!k||!!k.imported,title:'이 문장이 든 묶음의 음성을 위 글로 새로 합성해요'})+'</div></details>';
+}
+/* ══ /v155 ══ */
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
 const VM=new Map();
 function vidEl(sc){
@@ -58769,7 +58846,7 @@ const aspectOf=()=>P.cfg.h>P.cfg.w?'9:16':'16:9';
 /* ═════════ 음성 — 묶음마다 합성(또는 가져온 파일) → 침묵 분석 → 문장 경계 ═════════ */
 function applyChunkAudio(k,ss,pcm,sr){
   const buf=f32Buffer(pcm,sr), an=analyzeAudio(pcm,sr);
-  const al=ss.length===1?[{vs:an.vs,ve:an.ve,a:Math.max(0,an.vs-0.1),b:Math.min(buf.duration,an.ve+0.18),conf:1}]:alignSentences(an,ss.map(s=>({n:s.n})),pauseEq());
+  const al=ss.length===1?[{vs:an.vs,ve:an.ve,a:Math.max(0,an.vs-0.1),b:Math.min(buf.duration,an.ve+0.18),conf:1}]:alignSentences(an,ss.map(s=>({n:vNum(s)})),pauseEq());   /* v155: 말할 글(음성 글) 길이로 경계를 맞춤 */
   const old=k.bid, bid=putBlob(f32ToWav(pcm,sr)); BUF.set(bid,buf);
   if(old){ BL.delete(old); BUF.delete(old); const u=URLS.get(old); if(u){ URL.revokeObjectURL(u); URLS.delete(old); } }
   k.bid=bid; k.dur=r3(buf.duration); k.gain=loudGain(pcm,an); k.peaks=peaksOf(pcm,sr,25); k.state='done'; k.stale=false; k.err='';
@@ -58787,8 +58864,9 @@ async function runVoice(o){
       const k=todo[i], ss=k.sids.map(id=>sm.get(id)).filter(Boolean);
       k.state='run'; k.err=''; renderTracks(); progress(i/todo.length,'음성 만드는 중 '+(i+1)+'/'+todo.length);
       try{
-        const r=await PRV.tts(ss.map(s=>s.text).join(' '),{name:v.name,style:v.style,model:v.model,signal:UI.ctl.signal,onWait:(a,m)=>progress(i/todo.length,'AI 서버가 바빠요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+m+')')});
-        applyChunkAudio(k,ss,r.pcm,r.sr);
+        const txt=ss.map(vText).join(' ');   /* v155: 나레이션 글이 아니라 음성 글(없으면 나레이션 글)로 말함 */
+        const r=await PRV.tts(txt,{name:v.name,style:v.style,model:v.model,signal:UI.ctl.signal,onWait:(a,m)=>progress(i/todo.length,'AI 서버가 바빠요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+m+')')});
+        applyChunkAudio(k,ss,r.pcm,r.sr); k.tts=txt; if(chunkTts(k)!==txt) k.stale=true;   /* v155: 실제로 보낸 글을 저장(만드는 동안 글을 또 고쳤으면 고침으로 남김) */
       }catch(e){
         if(e&&e.name==='AbortError'){ k.state=k.bid?'done':'none'; ok=false; break; }
         k.state=k.bid?'done':'err'; k.err=(e&&e.message)||String(e); ok=false; toast('음성 오류: '+k.err.slice(0,90));
@@ -59056,7 +59134,7 @@ function inspScene(){
   h+='<div class="vs-btns">'+F.btn('splitPh','✂ 재생헤드에서 나누기')+F.btn('mergeNext','⇥ 다음 장면과 합치기',{dis:j>=P.scenes.length-1})+F.btn('delScene','🗑 장면 삭제',{c:'dng',dis:P.scenes.length<=1,title:'삭제하면 앞 장면이 그 구간을 이어받아요'})+F.btn('swapUp','⇅ 위와 화면 맞바꾸기',{dis:j<=0})+F.btn('swapDown','⇅ 아래와 화면 맞바꾸기',{dis:j>=P.scenes.length-1})+'</div>';
   h+='<div class="vs-sec">이 장면의 나레이션 ('+ss.length+'문장) <span class="hint">글을 고치면 음성은 ① 음성에서 다시 만들어요</span></div>';
   h+=ss.map(s=>{ const k=P.chunks.find(x=>x.id===s.cid), low=s.has&&s.al&&s.al.conf<0.35;
-    return '<div class="vs-sn'+(s.has?'':' no')+'"><div class="r"><span class="t">'+fmtT(s.s,1)+'</span><span class="b '+(!s.has?'no':low?'low':'ok')+'">'+(!s.has?'음성 없음':low?'경계 불확실':(k&&k.stale?'고침(다시 합성 필요)':'음성'))+'</span>'+F.btn('playSent','▶',{d:s.id,title:'이 문장부터 재생'})+'<span class="vs-sp"></span><label class="sm">뒤 쉬는 시간 '+F.num('ss:'+s.id+':pause',s.pause==null?'':s.pause,{min:0,max:10,step:0.05,ph:String(r2(s.pause!=null?s.pause:gapAfter(s)))})+'초</label></div>'+F.ta('ss:'+s.id+':text',s.text,{rows:2})+(s.cue?'<div class="cue">▶ 화면 지시: '+esc(s.cue)+'</div>':'')+'</div>'; }).join('');
+    return '<div class="vs-sn'+(s.has?'':' no')+'"><div class="r"><span class="t">'+fmtT(s.s,1)+'</span><span class="b '+(!s.has?'no':low?'low':'ok')+'">'+(!s.has?'음성 없음':low?'경계 불확실':(k&&k.stale?'고침(다시 합성 필요)':'음성'))+'</span>'+F.btn('playSent','▶',{d:s.id,title:'이 문장부터 재생'})+'<span class="vs-sp"></span><label class="sm">뒤 쉬는 시간 '+F.num('ss:'+s.id+':pause',s.pause==null?'':s.pause,{min:0,max:10,step:0.05,ph:String(r2(s.pause!=null?s.pause:gapAfter(s)))})+'초</label></div>'+F.ta('ss:'+s.id+':text',s.text,{rows:2})+vtSceneHtml(s)+(s.cue?'<div class="cue">▶ 화면 지시: '+esc(s.cue)+'</div>':'')+'</div>'; }).join('');
   return h;
 }
 const gapAfter=s=>{ const i=P.sents.indexOf(s), nx=P.sents[i+1]; return !nx?0:nx.ci!==s.ci?P.cfg.gap.chap:nx.pa!==s.pa?P.cfg.gap.para:P.cfg.gap.sent; };
@@ -59124,7 +59202,7 @@ function inspVoice(){
   h+=F.row('음량',F.rng('cfg.mix.narr',P.cfg.mix.narr,0,2,0.05),'나레이션');
   h+=prefResetRow('voice');
   h+='<div class="vs-btns">'+F.btn('voiceAll','① 음성 만들기(안 만든 것)',{c:'pri',dis:!key})+F.btn('voiceSel','이 장면만 다시',{dis:!key})+F.btn('importAud','📎 음성 파일 가져오기',{title:'다른 TTS·녹음 파일 한 개를 올리면 문장 경계를 자동으로 맞춰요'})+F.btn('wav','WAV 저장')+'</div>';
-  h+='<div class="vs-sec">음성 묶음</div><div class="vs-chunks">'+P.chunks.map(k=>'<div class="vs-ck2 '+k.state+(k.stale?' stale':'')+'"><b>'+k.id+'</b><span>'+k.sids.length+'문장 · '+k.n+'자'+(k.dur?' · '+k.dur.toFixed(1)+'초':'')+'</span><em>'+(k.state==='done'?(k.stale?'고침':'완료'):k.state==='run'?'만드는 중':k.state==='err'?'실패':'아직')+'</em>'+(k.imported?'<i title="'+esc(k.imported)+'">가져옴</i>':'')+'<span class="vs-sp"></span>'+F.btn('redoChunk','다시',{d:k.id,dis:!key||!!k.imported})+'</div>'+(k.err?'<div class="vs-note err sm">'+esc(k.err)+'</div>':'')).join('')+'</div>';
+  h+=vtVoiceSec(key);   /* v155: 음성 글 — 찾아 바꾸기 + 묶음마다 [글 ▾] */
   return h;
 }
 function inspOut(){
@@ -59256,8 +59334,9 @@ function setSceneField(c,k,v){
 function setSentField(path,v){
   const [, id, k]=path.split(':'), s=P.sents.find(x=>x.id===id); if(!s) return 'draw';
   switch(k){
-    case 'text': { s.text=String(v||'').trim()||s.text; s.n=s.text.replace(/\s+/g,'').length; const ck=P.chunks.find(x=>x.id===s.cid); if(ck&&ck.bid) ck.stale=true; return 'lay'; }
+    case 'text': { s.text=String(v||'').trim()||s.text; s.n=s.text.replace(/\s+/g,'').length; const ck=P.chunks.find(x=>x.id===s.cid); if(ck&&ck.bid&&!(s.vt!=null&&vtClean(s.vt))) ck.stale=true; vtPaintS(s); return 'lay'; }   /* v155: 따로 고친 음성 글이 있으면 음성은 그대로 */
     case 'cue': s.cue=String(v||'').trim(); return 'draw';   /* v107: 화면 지시 직접 고치기 */
+    case 'vt': vtSetText(s,v); return 'draw';   /* v155: 음성 글 — 음성만 이 글로 만듦(자막·화면은 나레이션 글 그대로) */
     case 'pause': s.pause=v==null?null:Math.max(0,v); return 'lay';
     case 'sub': s.sub.text=String(v)===s.text?null:String(v); P._cues=null; return 'draw';
     case 'hide': s.sub.hide=!!v; P._cues=null; return 'draw';
@@ -59425,6 +59504,14 @@ async function act(a,btn){
     case 'voiceAll': runVoice({}); break;
     case 'voiceSel': { const c=P.scenes[UI.sel], ids=[...new Set(sentsOf(P,c).map(s=>s.cid))]; runVoice({ids}); break; }
     case 'redoChunk': runVoice({ids:[id]}); break;
+    case 'vtToggle': vtKeep(); UI.vtk[id]=!vtOpen(id); renderInspector(true); break;   /* v155: 음성 글 편집 펼치기·접기 */
+    case 'vtReset': { vtKeep(); const s=P.sents.find(x=>x.id===id); if(s){ vtSetText(s,''); commit('음성 글 원문대로'); refresh('draw'); renderInspector(true); } break; }
+    case 'vtResetAll': { vtKeep(); let n=0; P.sents.forEach(s=>{ if(s.vt!=null){ if(vDiff(s)) n++; vtSetText(s,''); } }); commit('음성 글 모두 원문대로'); refresh('draw'); renderInspector(true); toast(n?'음성 글 '+n+'개를 나레이션 글 그대로 되돌렸어요 — 바뀐 묶음은 [다시]로 새로 만들어요':'고친 음성 글이 없어요'); break; }
+    case 'vtReplace': { const fe=$('vsVtFind'), re2=$('vsVtRepl'), a=fe?fe.value:UI.vtFind, b=re2?re2.value:UI.vtRepl; UI.vtFind=a; UI.vtRepl=b; const res=vtReplaceAll(a,b);
+      if(!res){ toast('찾을 말을 입력해 주세요'); break; }
+      if(!res.n){ toast('“'+a+'” 이(가) 음성 글에 없어요'+(res.skip?' (문장 전체가 지워지는 '+res.skip+'곳은 건너뛰었어요)':'')); break; }
+      commit('음성 글 바꾸기'); refresh('draw'); renderInspector(true);
+      toast('“'+a+'” '+res.n+'곳을 '+(b?'“'+b+'”로 바꿨어요':'지웠어요')+' — 문장 '+res.ss+'개 · 묶음 '+res.ks+'개가 바뀌어 [다시] 또는 ① 음성 만들기로 새로 만들어요'+(res.skip?' (문장 전체가 지워지는 '+res.skip+'곳은 건너뜀)':'')); break; }
     case 'voiceTest': previewVoice(); break;
     case 'importAud': $('vsFAud').click(); break;
     case 'wav': try{ progress(0.3,'WAV 만드는 중…'); const b=await narrationWav(); download(b,safeName(P.title)+'_나레이션.wav'); progress(1,'WAV 저장'); }catch(e){ toast('WAV 만들기 실패: '+((e&&e.message)||'')); } break;
@@ -60705,7 +60792,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
-    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
+    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
     SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
