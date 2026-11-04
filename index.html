@@ -2881,6 +2881,23 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-fr{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
 .vs-fr>label{width:78px;flex-shrink:0;color:#9fb0c9;font-size:11.5px;padding-top:6px}
 .vs-fr .c{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+/* v148 — 배경 고르기(장면 배경·화면 배경) */
+.vs-ov .vs-bgc{margin:2px 0 8px}
+.vs-ov .vs-bgc .vs-bgg{margin:9px 0 4px;font-size:10.5px;font-weight:700;color:#8da2c6}
+.vs-ov .vs-bgt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.vs-ov .vs-bgt{position:relative;height:46px;padding:0;border:1px solid #2a3a56;border-radius:7px;background:#0b1322 center/cover no-repeat;cursor:pointer;overflow:hidden;color:#e2e8f0;font-family:inherit;min-height:0}
+.vs-ov .vs-bgt span{position:absolute;left:0;right:0;bottom:0;padding:2px 5px;font-size:9.5px;font-weight:700;line-height:1.35;background:rgba(2,6,16,.64);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vs-ov .vs-bgt:hover{border-color:#5b7bb5}
+.vs-ov .vs-bgt.on{outline:2px solid #f59e0b;outline-offset:-1px}
+.vs-ov .vs-sws{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+.vs-ov .vs-sw{width:24px;height:24px;min-height:0;padding:0;border:1px solid rgba(255,255,255,.28);border-radius:6px;cursor:pointer}
+.vs-ov .vs-sw.gr{width:34px}
+.vs-ov .vs-sw:hover{border-color:#fff}
+.vs-ov .vs-sw.on{outline:2px solid #f59e0b;outline-offset:1px}
+.vs-ov .vs-pz{display:flex;align-items:center;justify-content:center;gap:10px;min-height:66px;margin:6px 0;padding:8px 10px;border:2px dashed #35507d;border-radius:9px;background:#0d1a30;color:#9fb4d6;font-size:11.5px;line-height:1.5;text-align:center;cursor:pointer}
+.vs-ov .vs-pz.static{cursor:default;border-style:solid;border-width:1px}
+.vs-ov .vs-pz:focus{outline:none;border-color:#f59e0b;background:#14233d;color:#fde68a}
+.vs-ov .vs-pz img{max-height:54px;max-width:96px;border-radius:5px;object-fit:cover}
 .vs-ov .vs-in{background:#0b1322;border:1px solid #2a3a56;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px;min-height:28px;max-width:100%}   /* 앱 전역 input[type=…] 규칙(특이도 높음)을 이기려고 .vs-ov 를 붙임 */
 .vs-ov .vs-in[type=number]{width:78px}.vs-ov .vs-in.wide{flex:1 1 140px;min-width:100px}
 .vs-ov select.vs-in{max-width:100%}
@@ -45067,7 +45084,7 @@ const putBlob=blob=>{ const id=uid('b'); BL.set(id,blob); DIRTY.add(id); return 
 async function getBlob(id){ if(!id) return null; if(BL.has(id)) return BL.get(id); if(!P) return null; const b=await dbGetBlob(P.id+'|'+id).catch(()=>null); if(b) BL.set(id,b); return b; }
 function urlOf(id){ if(URLS.has(id)) return URLS.get(id); const b=BL.get(id); if(!b) return ''; const u=URL.createObjectURL(b); URLS.set(id,u); return u; }
 function dropCaches(){ URLS.forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(e){} }); URLS.clear(); BL.clear(); DIRTY.clear(); BUF.clear(); IMG.forEach(b=>{ try{ b.close&&b.close(); }catch(e){} }); IMG.clear(); }
-const usedBids=p=>{ const s=new Set(); (p.chunks||[]).forEach(k=>{ if(k.bid) s.add(k.bid); }); (p.scenes||[]).forEach(c=>{ if(c.vis&&c.vis.bid) s.add(c.vis.bid); }); if(p.cfg&&p.cfg.bgm&&p.cfg.bgm.bid) s.add(p.cfg.bgm.bid); if(p.char&&p.char.bid) s.add(p.char.bid); return s; };
+const usedBids=p=>{ const s=new Set(); (p.chunks||[]).forEach(k=>{ if(k.bid) s.add(k.bid); }); (p.scenes||[]).forEach(c=>{ if(c.vis&&c.vis.bid) s.add(c.vis.bid); }); if(p.cfg&&p.cfg.bgm&&p.cfg.bgm.bid) s.add(p.cfg.bgm.bid); if(p.char&&p.char.bid) s.add(p.char.bid); if(p.sbg&&p.sbg.bid) s.add(p.sbg.bid); (p.igs||[]).forEach(g=>{ if(g.bgs&&g.bgs.bid) s.add(g.bgs.bid); }); return s; };   /* v148: 장면 배경·화면 배경의 이미지·영상 */
 
 /* 스크립트의 문장을 읽어서 프로젝트를 만듦 — src 는 BTMScript.videoSource() 가 주는 자료 */
 function newProject(src){
@@ -45336,21 +45353,24 @@ function motionOf(sc,j){ const m=(sc.vis&&sc.vis.motion)||P.cfg.look.motion||'ke
 function filterOf(v){ const f=v&&v.filter; return (f&&(f.b!==1||f.c!==1||f.s!==1))?'brightness('+f.b+') contrast('+f.c+') saturate('+f.s+')':'none'; }
 function drawCard(g,w,h,sc,lt,loading){
   const p=P, j=p.scenes.indexOf(sc), s0=p.sents[sc.first], ci=s0?s0.ci:0, card=(sc.vis&&sc.vis.card)||{};
-  const c1=card.c1||'hsl('+hueOf(ci)+',55%,17%)', c2=card.c2||'hsl('+((hueOf(ci)+34)%360)+',58%,30%)';
-  const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,c1); gr.addColorStop(1,c2); g.fillStyle=gr; g.fillRect(0,0,w,h);
-  const t=lt+j*1.7;
-  for(let i=0;i<3;i++){
-    const cx=w*(0.5+0.38*Math.sin(t*0.35+i*2.1)), cy=h*(0.5+0.32*Math.cos(t*0.27+i*1.3)), r=Math.min(w,h)*(0.45+0.1*i), rg=g.createRadialGradient(cx,cy,0,cx,cy,r);
-    rg.addColorStop(0,'rgba(255,255,255,.10)'); rg.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=rg; g.fillRect(0,0,w,h);
-  }
+  const c1=card.c1||'hsl('+hueOf(ci)+',55%,17%)', c2=card.c2||'hsl('+((hueOf(ci)+34)%360)+',58%,30%)', own=!!(card.c1||card.c2);
+  if(own){   /* v148: 카드 배경색을 직접 고른 장면만 예전 그라데이션 — 그 밖에는 영상 전체가 같은 장면 배경(P.sbg) */
+    const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,c1); gr.addColorStop(1,c2); g.fillStyle=gr; g.fillRect(0,0,w,h);
+    const t=lt+j*1.7;
+    for(let i=0;i<3;i++){
+      const cx=w*(0.5+0.38*Math.sin(t*0.35+i*2.1)), cy=h*(0.5+0.32*Math.cos(t*0.27+i*1.3)), r=Math.min(w,h)*(0.45+0.1*i), rg=g.createRadialGradient(cx,cy,0,cx,cy,r);
+      rg.addColorStop(0,'rgba(255,255,255,.10)'); rg.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=rg; g.fillRect(0,0,w,h);
+    }
+  }else drawSceneBg(g,w,h,sc,lt);
   const prev=p.scenes[j-1], first=!prev||(p.sents[prev.first]||{}).ci!==ci;
   const title=card.title!=null&&card.title!==''?card.title:(first&&!(titleOn(p)&&!ttOff(p,ci))?(p.chap[ci]||''):''), cue=(s0&&s0.cue)||'';
-  g.save(); g.textAlign='center'; g.textBaseline='middle'; g.fillStyle='#fff';
+  const lite=!own&&!bgDark(), ink=lite?['#0f172a','rgba(15,23,42,.86)','rgba(15,23,42,.72)','rgba(15,23,42,.55)']:['#fff','rgba(255,255,255,.86)','rgba(255,255,255,.72)','rgba(255,255,255,.55)'], noTx=(sc.vis&&sc.vis.kind==='info')||(!own&&bgCovered(sc,lt));   /* v148: 밝은 장면 배경이면 어두운 글 · 인포그래픽 장면과 화면이 덮은 때는 카드 글을 안 그림(화면이 투명이라 비쳐 보이지 않게) */
+  g.save(); g.textAlign='center'; g.textBaseline='middle'; g.fillStyle=ink[0];
   let subY=h*0.46;
-  if(title){ const fs=h*0.075; g.font='700 '+fs.toFixed(1)+'px '+p.cfg.sub.font; const ls=wrapLines(g,title,w*0.78); const y0=h*0.40-(ls.length-1)*fs*0.62; g.shadowColor='rgba(0,0,0,.45)'; g.shadowBlur=fs*0.3; ls.forEach((l,i)=>g.fillText(l,w/2,y0+i*fs*1.25)); g.shadowBlur=0; subY=y0+(ls.length-1)*fs*1.25+fs*1.2; }
-  if(card.sub){ const fs2=h*0.04; g.font='400 '+fs2.toFixed(1)+'px '+p.cfg.sub.font; g.fillStyle='rgba(255,255,255,.86)'; wrapLines(g,String(card.sub),w*0.74).slice(0,3).forEach((l,i)=>g.fillText(l,w/2,subY+i*fs2*1.45)); g.fillStyle='#fff'; }   /* v107: 스토리보드의 나머지 화면 글자 */
-  if(cue&&!card.title){ const fs=h*0.034; g.font='400 '+fs.toFixed(1)+'px '+p.cfg.sub.font; g.fillStyle='rgba(255,255,255,.72)'; const ls=wrapLines(g,'▶ '+cue,w*0.7); ls.slice(0,2).forEach((l,i)=>g.fillText(l,w/2,h*(title?0.58:0.42)+i*fs*1.4)); }
-  if(loading){ g.font='400 '+(h*0.03).toFixed(1)+'px '+p.cfg.sub.font; g.fillStyle='rgba(255,255,255,.55)'; g.fillText(TX('loading','화면을 불러오는 중…'),w/2,h*0.9); }
+  if(title&&!noTx){ const fs=h*0.075; g.font='700 '+fs.toFixed(1)+'px '+p.cfg.sub.font; const ls=wrapLines(g,title,w*0.78); const y0=h*0.40-(ls.length-1)*fs*0.62; g.shadowColor=lite?'rgba(255,255,255,.55)':'rgba(0,0,0,.45)'; g.shadowBlur=fs*0.3; ls.forEach((l,i)=>g.fillText(l,w/2,y0+i*fs*1.25)); g.shadowBlur=0; subY=y0+(ls.length-1)*fs*1.25+fs*1.2; }
+  if(card.sub&&!noTx){ const fs2=h*0.04; g.font='400 '+fs2.toFixed(1)+'px '+p.cfg.sub.font; g.fillStyle=ink[1]; wrapLines(g,String(card.sub),w*0.74).slice(0,3).forEach((l,i)=>g.fillText(l,w/2,subY+i*fs2*1.45)); g.fillStyle=ink[0]; }   /* v107: 스토리보드의 나머지 화면 글자 */
+  if(cue&&!card.title&&!noTx){ const fs=h*0.034; g.font='400 '+fs.toFixed(1)+'px '+p.cfg.sub.font; g.fillStyle=ink[2]; const ls=wrapLines(g,'▶ '+cue,w*0.7); ls.slice(0,2).forEach((l,i)=>g.fillText(l,w/2,h*(title?0.58:0.42)+i*fs*1.4)); }
+  if(loading){ g.font='400 '+(h*0.03).toFixed(1)+'px '+p.cfg.sub.font; g.fillStyle=ink[3]; g.fillText(TX('loading','화면을 불러오는 중…'),w/2,h*0.9); }
   g.restore();
 }
 /* ── INFO-BEGIN ──────────────────────────────────────────────────────────────────────────────────────────────
@@ -45487,10 +45507,11 @@ function sortItems(ig){   /* 나오는 순서대로 — 화면의 자리 순서�
 const sortClips=p=>{ if(p.igs) p.igs.sort((a,b)=>(a.s-b.s)||(a.e-b.e)); };
 
 /* ── 색 ── */
-function infoPal(ci,sty){
-  const cf=P.cfg.info||{}, bk=STY_B[cf.base], ik=STY_I[cf.item], hue=ACC_H[(ci||0)%ACC_H.length], kr=cf.ud!=='us', sp=(!bk&&sty&&SPAL[sty])||null, dark=bk?!!bk[1]:(sp?sp.dark:cf.theme!=='light');
+function infoPal(ci,sty,force){   /* v148: force='light'|'dark' — 고른 배경이 밝으면 어두운 글, 어두우면 밝은 글로(직접 고른 Base 색이 있으면 그 색이 우선이라 안 건드림). 안 주면 예전과 똑같음 */
+  const cf=P.cfg.info||{}, bk=STY_B[cf.base], ik=STY_I[cf.item], hue=ACC_H[(ci||0)%ACC_H.length], kr=cf.ud!=='us', sp0=(!bk&&sty&&SPAL[sty])||null, dark0=bk?!!bk[1]:(sp0?sp0.dark:cf.theme!=='light');
+  const dark=(force&&!bk)?force==='dark':dark0, flip=dark!==dark0, sp=flip?((!dark&&sty==='minimal')?SPAL_MINL:null):sp0;
   const own=/^#[0-9a-f]{6}$/i.test(cf.accent||'')?cf.accent:(ik?(dark?ik[2]:ik[1]):'');   /* 직접 고른 포인트색이 있으면 스타일 기본색보다 우선 */
-  const accent=own||(sp&&sp.accent)||(dark?'hsl('+hue+',88%,64%)':'hsl('+hue+',78%,38%)');
+  const accent=own||(sp&&sp.accent)||(flip&&sp0&&accFlip(sp0.accent,dark))||(dark?'hsl('+hue+',88%,64%)':'hsl('+hue+',78%,38%)');
   const base={dark,hue,accent,up:kr?(dark?'#ff6b6b':'#dc2626'):(dark?'#4ade80':'#16a34a'),down:kr?(dark?'#60a5fa':'#2563eb'):(dark?'#ff6b6b':'#dc2626'),flat:dark?'#cbd5e1':'#475569',shadow:dark?'rgba(0,0,0,.38)':'rgba(15,23,42,.14)',mono:sty==='minimal'};
   if(bk){
     const acc2=/^#/.test(accent)?accent:(dark?'#6aa8ff':'#2563eb');
@@ -45503,7 +45524,7 @@ function infoPal(ci,sty){
     blob:dark?'rgba(255,255,255,.08)':'hsla('+hue+',85%,60%,.18)', blob0:dark?'rgba(255,255,255,0)':'hsla('+hue+',85%,60%,0)',
     panel:dark?'rgba(255,255,255,.075)':'rgba(255,255,255,.86)', panelLine:dark?'rgba(255,255,255,.16)':'rgba(15,23,42,.10)',
     card:dark?'rgba(255,255,255,.085)':'rgba(255,255,255,.96)', cardLine:dark?'rgba(255,255,255,.15)':'rgba(15,23,42,.09)',
-    track:dark?'rgba(255,255,255,.13)':'rgba(15,23,42,.08)', text:dark?'#f8fafc':'#0f172a', mute:dark?'rgba(226,232,240,.72)':'rgba(30,41,59,.64)', cardSolid:dark?'#1c2540':'#ffffff'});
+    track:dark?'rgba(255,255,255,.13)':'rgba(15,23,42,.08)', text:dark?'#f8fafc':'#0f172a', mute:flip?(dark?'#aab6c9':'#475569'):(dark?'rgba(226,232,240,.72)':'rgba(30,41,59,.64)'), cardSolid:dark?'#1c2540':'#ffffff'});   /* v148: 바뀐 팔레트의 보조 글색은 #색(alphaOf 가 rgba 글은 투명도를 못 바꿔 모눈·줄이 너무 진해짐) */
 }
 function itemTone(it){   /* 'up'|'down'|'flat'|'acc'|'' — 직접 고른 색이 없으면 변화·수치의 부호로 */
   if(it.tone==='up'||it.tone==='down'||it.tone==='flat'||it.tone==='acc') return it.tone;
@@ -46114,10 +46135,10 @@ function buildIgLay(g,w,h,ig,X){
     Object.assign(L,{panel:{x:cx,y:cy,w:cw,h:ch,r:0.028*B},cells:pl.cells,k:pl.k,head:Object.assign(head,{x:cx+pad,y:cy+pad,w:iw})});
     }
   }else if(mode==='title'){
-    const ti=items.find(x=>x.type==='title')||{}, text=String(ti.text||ig.title||'').trim()||'타이틀', sub2=String(ti.sub||''), kick=String(ig.kicker||''), iw=w*0.70;
+    const ti=items.find(x=>x.type==='title')||{}, text=String(ti.text||ig.title||'').trim()||'타이틀', sub2=String(ti.sub||''), kick=String(ig.kicker||''), iw=w*0.70, gp=ti.gp||{}, gk=gp.gk==null?1:gp.gk, lh=gp.lh==null?1:gp.lh, gs=gp.gs==null?1:gp.gs;   /* v147: 글 간격 배율(윗글↔제목·제목 줄·제목↔아래 글) — 없으면 1 = 예전 모습 */
     let fs=0.120*B*FZ(ti,'text'), ls=[]; for(let n=0;n<10;n++){ g.font='800 '+fs.toFixed(1)+'px '+font; ls=wrapLines(g,text,iw); if(ls.length<=3||fs<0.05*B) break; fs*=0.9; } ls=ls.slice(0,3);
-    const ks=0.034*B*FZ(ig,'kicker'), ss=0.040*B*FZ(ti,'sub'), hh=(kick?ks*2.2:0)+ls.length*fs*1.18+0.05*B+(sub2?ss*1.8:0), y0=top+Math.max(0,(bot-top)-hh)*0.45;
-    L.tt={x:w*0.10,y:y0,w:iw,kick,ks,ls,fs,sub:sub2,ss,hh};
+    const ks=0.034*B*FZ(ig,'kicker'), ss=0.040*B*FZ(ti,'sub'), hh=(kick?ks*2.2:0)+ls.length*fs*1.18+0.05*B+(sub2?ss*1.8:0)+((kick&&gk!==1)?ks*(sk.min?0.5:0.65)*(gk-1):0)+((lh!==1&&ls.length>1)?(ls.length-1)*fs*1.18*(lh-1):0)+((sub2&&gs!==1)?(sk.min?0.016:0.032)*B*(gs-1):0), y0=top+Math.max(0,(bot-top)-hh)*0.45;
+    L.tt={x:w*0.10,y:y0,w:iw,kick,ks,ls,fs,sub:sub2,ss,hh,gk,lh,gs};
   }else{   /* 겹치기 띠·배지: 칩을 가로로 */
     const chipable=items.map((it,i)=>({it,i,c:chipOf(it)})), pad=0.016*B;
     if(mode==='lower'){
@@ -46158,18 +46179,12 @@ function drawChip(E,r,it,sz){   /* 겹치기 칩 한 개: 큰 글(수치)이 있
 
 /* ── 배경·패널을 한 번만 구워 둠(그림자 번짐 같은 무거운 그리기를 매 프레임 하지 않게 + 움직이는 배경이 없어 영상 인코더에도 가벼움) ── */
 const _igb=new Map();
-function igBack(w,h,ig,L,pal,ci){
-  const cf=P.cfg.info, sty=L.sty||'news', key=[w,h,L.mode,ig.bg,cf.base,cf.item,cf.theme,cf.accent,cf.ud,ci,sty,L.panel?[L.panel.x,L.panel.y,L.panel.w,L.panel.h].join(','):'',L.bar?[L.bar.x,L.bar.y,L.bar.w,L.bar.h].join(','):'',L.band?L.band.h:''].join('|');
+function igBack(w,h,ig,L,pal,ci,nofill){
+  const cf=P.cfg.info, sty=L.sty||'news', key=[w,h,L.mode,ig.bg,nofill?1:0,pal.dark?1:0,pal.text,cf.base,cf.item,cf.theme,cf.accent,cf.ud,ci,sty,L.panel?[L.panel.x,L.panel.y,L.panel.w,L.panel.h].join(','):'',L.bar?[L.bar.x,L.bar.y,L.bar.w,L.bar.h].join(','):'',L.band?L.band.h:''].join('|');
   let c=_igb.get(key); if(c) return c;
-  c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d'), B=L.B, solid=!isOver(L.mode)&&ig.bg!=='scene'; if(sty==='minimal'){ klMinBack(g,w,h,ig,L,pal,B); _igb.set(key,c); if(_igb.size>30) _igb.delete(_igb.keys().next().value); return c; }
+  c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d'), B=L.B, solid=!isOver(L.mode)&&ig.bg!=='scene'; if(sty==='minimal'){ klMinBack(g,w,h,ig,L,pal,B,nofill); _igb.set(key,c); if(_igb.size>30) _igb.delete(_igb.keys().next().value); return c; }
   if(solid){
-    const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,pal.bg1); gr.addColorStop(1,pal.bg2); g.fillStyle=gr; g.fillRect(0,0,w,h);
-    if(sty!=='magazine') [[0.18,0.22,0.62],[0.82,0.30,0.74],[0.55,0.92,0.68]].forEach(b=>{ const cx=w*b[0], cy=h*b[1], r=B*b[2], rg=g.createRadialGradient(cx,cy,0,cx,cy,r); rg.addColorStop(0,pal.blob); rg.addColorStop(1,pal.blob0); g.fillStyle=rg; g.fillRect(0,0,w,h); });
-    if(sty==='dash'){   /* 대시보드: 가는 격자무늬 바탕 */
-      g.strokeStyle=alphaOf(pal.accent,0.07); g.lineWidth=1; const st=Math.max(18,0.05*B); g.beginPath(); for(let x=0;x<w;x+=st){ g.moveTo(x+0.5,0); g.lineTo(x+0.5,h); } for(let y=0;y<h;y+=st){ g.moveTo(0,y+0.5); g.lineTo(w,y+0.5); } g.stroke();
-    }else if(sty==='map'){   /* 지도: 위도·경도 눈금선 */
-      g.strokeStyle=alphaOf(pal.accent,0.07); g.lineWidth=1; g.beginPath(); for(let q=1;q<12;q++){ const x=Math.round(w*q/12)+0.5; g.moveTo(x,0); g.lineTo(x,h); } for(let q=1;q<6;q++){ const y=Math.round(h*q/6)+0.5; g.moveTo(0,y); g.lineTo(w,y); } g.stroke();
-    }
+    if(!nofill) igFillBg(g,w,h,pal,sty,B);   /* v148: 전용 배경은 igFillBg(= 장면 배경의 '스타일 바탕'과 같은 그림). 화면은 기본이 투명이라 nofill */
     if(L.mode==='title'){
       const a=alphaOf(/^#/.test(pal.accent)||/^hsl/.test(pal.accent)?pal.accent:'#3b82f6',1);
       const cg=g.createRadialGradient(w*0.86,h*0.46,0,w*0.86,h*0.46,B*0.8); cg.addColorStop(0,alphaOf(pal.accent,0.34)); cg.addColorStop(1,alphaOf(pal.accent,0)); g.fillStyle=cg; g.fillRect(0,0,w,h);
@@ -46226,12 +46241,12 @@ function drawFoot(E,L,ig,o){   /* 슬라이드: 아래 줄 — 영상 제목 · 
 }
 function drawClip(g,w,h,ig,t,o){
   o=o||{}; const lt=t-ig.s; let al=1;
-  if(!o.all){ al=Math.min(rv(lt,0.45),clamp((ig.e-t)/0.32,0,1)); if(al<=0.004) return; }
-  const s0=sentById(P,ig.a&&ig.a.sid), ci=s0?s0.ci:0, L=igLay(g,w,h,ig), sty=L.sty, sk=ISTY[sty], pal0=infoPal(ci,sty), pal=ig.ovt?Object.assign({},pal0,{text:'#f8fafc',mute:'rgba(226,232,240,.82)',dark:true}):pal0, cf=P.cfg.info, B=L.B, font=L.font;   /* 겹쳐 얹은 타이틀(ovt)은 어두운 막 위라 글을 밝게 */
+  if(!o.all){ al=Math.min(o.noIn?1:rv(lt,0.45),o.noOut?1:clamp((ig.e-t)/0.32,0,1)); if(al<=0.004) return; }
+  const s0=sentById(P,ig.a&&ig.a.sid), ci=s0?s0.ci:0, L=igLay(g,w,h,ig), sty=L.sty, sk=ISTY[sty], pal0=infoPal(ci,sty,bgForce(ig,L,ci)), pal=ig.ovt?Object.assign({},pal0,{text:'#f8fafc',mute:'rgba(226,232,240,.82)',dark:true}):pal0, cf=P.cfg.info, B=L.B, font=L.font;   /* 겹쳐 얹은 타이틀(ovt)은 어두운 막 위라 글을 밝게 */
   const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all,sty,sk,cells:L.cells};
   E.sinceAt=tm=>{ if(E.all) return 99; if(tm==null) return t-ig.s; return tm<ig.s-0.05?99:t-Math.max(tm,ig.s); };
   E.sinceBlock=it=>E.sinceAt(blockT0(P,it));
-  g.save(); g.globalAlpha*=al; g.drawImage(igBack(w,h,ig,L,pal,ci),0,0);
+  g.save(); g.globalAlpha*=al; const own=scrOwn(ig,L); if(own===1) drawBgSpec(g,w,h,ig.bgs,{ci,t,ig,L}); g.drawImage(igBack(w,h,ig,L,pal,ci,own!==2),0,0);   /* v148: 화면 배경 — 0 투명(기본) · 1 고른 배경 · 2 예전 자기 스타일 바탕 */
   if(L.col) drawInfoChar(g,L,t,pal,o);
   if(L.mode==='title'){ drawTitleCard(E,L,ig); g.restore(); return; }
   drawHead(E,L,ig,lt,o);
@@ -46245,22 +46260,26 @@ function drawClip(g,w,h,ig,t,o){
 }
 function drawTitleCard(E,L,ig){
   const g=E.g, pal=E.pal, font=E.font, T=L.tt, lt=E.t-ig.s, B=L.B; const k=E.all?1:rv(lt,0.55); if(E.sk&&E.sk.min){ klMinTitleCard(E,L,ig,k); return; }
-  g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.06*B,0); let y=T.y;
-  if(T.kick){ pill(E,T.x,y,T.kick,T.ks,pal.dark?'#0b1220':'#ffffff',pal.accent,'l'); y+=T.ks*2.2; }
-  T.ls.forEach((l,i)=>dtx(g,l,T.x,y+i*T.fs*1.18,T.fs,'800',pal.text,font)); y+=T.ls.length*T.fs*1.18+0.012*B;
+  g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.06*B,0); let y=T.y; const gkv=T.gk==null?1:T.gk, lhv=T.lh==null?1:T.lh, gsv=T.gs==null?1:T.gs, nl=T.ls.length, eff=nl+(nl-1)*(lhv-1);   /* v147: 윗글·줄·아래 글 간격 배율(eff = 줄 간격을 반영한 제목 줄 수) */
+  if(T.kick){ pill(E,T.x,y,T.kick,T.ks,pal.dark?'#0b1220':'#ffffff',pal.accent,'l'); y+=gkv===1?T.ks*2.2:T.ks*1.55+T.ks*0.65*gkv; }   /* 알약 높이(ks×1.55) + 윗글 간격(ks×0.65 × 배율) */
+  T.ls.forEach((l,i)=>dtx(g,l,T.x,y+i*T.fs*1.18*lhv,T.fs,'800',pal.text,font)); y+=eff*T.fs*1.18+0.012*B*gsv;
   g.fillStyle=pal.accent; roundRect(g,T.x,y,Math.min(T.w*0.28,0.32*B)*(E.all?1:rv(lt-0.15,0.7)),0.010*B,0.005*B); g.fill();
-  if(T.sub) dtx(g,T.sub,T.x,y+0.03*B,T.ss,'600',pal.mute,font);
+  if(T.sub) dtx(g,T.sub,T.x,y+(gsv===1?0.03*B:0.01*B+0.02*B*gsv),T.ss,'600',pal.mute,font);   /* 막대(0.010B) 아래 0.02B × 배율 */
   g.restore();
 }
 function drawClips(g,w,h,t){   /* 지금 시각에 나와야 할 클립을 (전체 틀 → 카드 → 띠) 순서로 겹쳐 그림 */
   const a=P&&P.igs; if(!a||!a.length) return; const act=a.filter(x=>t>=x.s-0.001&&t<x.e);
   if(!act.length) return; if(act.length>1) act.sort((x,y)=>(FRAME_ORDER[x.mode]||1)-(FRAME_ORDER[y.mode]||1));
-  act.forEach(x=>{ try{ drawClip(g,w,h,x,t,(UI.le&&UI.le.gid===x.id&&UI.busy!=='export'&&!UI.exp)?LE_ALL:undefined); }catch(e){ if(!window.__infoErr){ window.__infoErr=e; console.warn('인포그래픽 그리기 오류',e); } g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; } });
+  let xt=null; try{ xt=scrActive(act,t); }catch(e){ if(window.__klStrict) throw e; xt=null; }   /* v148: 화면 간 전환 중인 한 쌍 */
+  act.forEach(x=>{ try{ const le=(UI.le&&UI.le.gid===x.id&&UI.busy!=='export'&&!UI.exp)?LE_ALL:undefined;
+    if(xt&&!le){ if(x===xt.B){ drawScrTrans(g,w,h,t,xt); return; } if(x===xt.A) return; }
+    drawClip(g,w,h,x,t,le||scrOpt(x)); }catch(e){ if(!window.__infoErr){ window.__infoErr=e; console.warn('인포그래픽 그리기 오류',e); } g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; } });
 }
 function igPoster(ig){   /* 목록용 작은 그림 — 모든 블록이 나온 상태. 저장하지 않음(_poster) */
   try{
     const W=P.cfg.w, H=P.cfg.h, tw=192, th=Math.max(48,Math.round(192*H/W)), cv=document.createElement('canvas'); cv.width=tw; cv.height=th;
     const g=cv.getContext('2d'); g.scale(tw/W,tw/W); const gr=g.createLinearGradient(0,0,W,H); gr.addColorStop(0,'#3b4a63'); gr.addColorStop(1,'#1c2434'); g.fillStyle=gr; g.fillRect(0,0,W,H);
+    if(scrIsFrame(ig)&&ig.bg!=='scene'){ try{ drawSceneBg(g,W,H,P.scenes[sceneIdx(ig.s)],ig.s); }catch(e){} }   /* v148: 화면이 투명이라 장면 배경 위에 */
     drawClip(g,W,H,ig,Math.max(ig.s,ig.e-0.01),{all:true}); ig._poster=cv.toDataURL('image/jpeg',0.72);
   }catch(e){}
 }
@@ -46879,7 +46898,8 @@ function igEditor(g){
   h+=F.row('이름',F.txt(pre+'name',g.name||'',{ph:'(선택) 타임라인에 보일 이름'}));
   h+=F.row('형태',F.sel(pre+'mode',g.mode,MODES.map(m=>[m[0],m[2]+' '+m[1]])));
   h+=F.row('스타일',F.sel(pre+'sty',styOf(g),STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'이 인포그래픽의 모양 — 새로 만들 때 기본 스타일은 아래 [캐릭터·모양]에서');
-  h+=F.row('배경',F.sel(pre+'bg',g.bg||'solid',[['solid','전용 배경(기본)'],['scene','장면 화면 위에 겹침']]),isOver(g.mode)?'겹치기 형태는 늘 장면 화면 위':'');
+  h+=bgSection(g.id);   /* v148: 화면 배경 고르기 + 화면 전환 */
+  h+=scrTransRows(g);
   h+=F.row('시작·끝',F.num(pre+'s',r2(g.s),{min:0,step:0.1})+F.btn('igPhS','재생헤드로',{d:g.id})+'<span class="hint">~</span>'+F.num(pre+'e',r2(g.e),{min:0,step:0.1})+F.btn('igPhE','재생헤드로',{d:g.id}),'초 — 타임라인에서 끌어도 돼요');
   h+=F.row('제목',F.txt(pre+'title',g.title||'',{ph:'패널 맨 위 제목'}),'줄을 나누려면 글 칸에서 Shift+Enter(↵ 표시) — 어느 글 칸에서나 돼요');
   h+=F.row('윗글',F.txt(pre+'kicker',g.kicker||'',{ph:'(선택) 제목 위 작은 글 — 예: 챕터 이름'}));
@@ -46917,6 +46937,7 @@ function inspInfoLook(open){
   h+=F.row('테마',F.sel('cfg.info.theme',cf.theme,[['dark','어둡게'],['light','밝게']]),'바탕색이 \'자동\'일 때');
   h+=F.row('등락 색',F.sel('cfg.info.ud',cf.ud,[['kr','한국식 — 상승 빨강 · 하락 파랑'],['us','미국식 — 상승 초록 · 하락 빨강']]));
   h+=F.row('숫자',F.chk('cfg.info.count',cf.count,'나올 때 숫자가 올라가며 표시'));
+  h+=F.row('화면 전환',scrSel('cfg.info.xt',cf.xt||'legacy',true)+F.num('cfg.info.xd',cf.xd>0?cf.xd:'',{min:0.1,max:3,step:0.05,ph:'0.6'}),'초 — 인포그래픽 화면이 바뀔 때의 기본 효과(화면마다 [인포] 편집창에서 따로 고를 수 있어요)');   /* v148 */
   h+=F.row('글 문체',F.chk('cfg.info.news',cf.news!==false,'뉴스체로 다듬기 — 명사형 헤드라인, 인사·접속어·종결어미 제거'),'새로 만들 때 적용 · 만든 것은 [📰 뉴스체로]');
   h+=prefResetRow('vis');
   return h+'</details>';
@@ -46934,6 +46955,8 @@ function setIgField(path,v){
         case 'mode': g.mode=v; g.bg=isOver(v)?'scene':(g.bg==='scene'&&!isOver(v)?'solid':g.bg); return 'insp';
         case 'sty': g.sty=ISTY[v]?v:'news'; return 'insp';
         case 'bg': g.bg=v; return 'draw';
+        case 'trans': { if(!v||v==='inherit'){ if(g.trans) delete g.trans.t; } else (g.trans=g.trans||{}).t=v; if(g.trans&&!g.trans.t&&!(g.trans.d>0)) delete g.trans; return 'insp'; }   /* v148: 화면 전환 */
+        case 'transd': { if(v==null||!(v>0)){ if(g.trans) delete g.trans.d; } else (g.trans=g.trans||{}).d=r2(clamp(v,0.1,3)); if(g.trans&&!g.trans.t&&!(g.trans.d>0)) delete g.trans; return 'insp'; }
         case 'title': g.title=String(v||'').slice(0,60); return klTitleEchoFix(g)?'insp':'draw';
         case 'kicker': g.kicker=String(v||'').slice(0,60); return klTitleEchoFix(g)?'insp':'draw';
         case 's': case 'e': if(v==null) return 'insp'; igSetTimes(g,k==='s'?v:g.s,k==='e'?v:g.e); return 'insp';
@@ -47632,7 +47655,7 @@ function styleThumb(k){   /* 스타일 견본 그림(데이터 URL) — 색 구�
   let url=''; try{
     const W=P.cfg.w, H=P.cfg.h, tw=240, th=Math.max(60,Math.round(240*H/W)), cv=document.createElement('canvas'); cv.width=tw; cv.height=th; const g=cv.getContext('2d'); g.scale(tw/W,tw/W);
     const gr=g.createLinearGradient(0,0,W,H); gr.addColorStop(0,'#3b4a63'); gr.addColorStop(1,'#1c2434'); g.fillStyle=gr; g.fillRect(0,0,W,H);
-    const ig=Object.assign({id:'sample',name:'',bg:'solid',kicker:'',a:null,b:null,s:0,e:5,src:'rule'},STY_SAMPLE[k](),{mode:'full',sty:k});
+    const ig=Object.assign({id:'sample',name:'',bg:'solid',kicker:'',a:null,b:null,s:0,e:5,src:'rule'},STY_SAMPLE[k](),{mode:'full',sty:k,bgs:{k:'tpl',id:'sty:'+k}});
     drawClip(g,W,H,ig,4,{all:true}); url=cv.toDataURL('image/jpeg',0.82);
   }catch(e){}
   _stc.set(key,url); if(_stc.size>48) _stc.delete(_stc.keys().next().value); return url;
@@ -47733,9 +47756,34 @@ function titleSpec(p,ci){
   const o=(p.ttl&&p.ttl[ci])||{}, d=titleDef(p,ci), pick=(v,df)=>(v!=null&&String(v).trim()!=='')?String(v):df;
   return {t:pick(o.t,d.t),k:pick(o.k,d.k),s:pick(o.s,d.s)};
 }
+/* ══ v147 (2026-11-04) — 타이틀 글 간격 ═══════════════════════════════════════════════════════════════════════════
+   · [타이틀] 탭에서 윗글(알약) ↔ 제목 · 제목 줄 사이(두 줄 이상일 때) · 제목 ↔ 아래 글 사이의 간격을 배율로 조정 — 1 = 지금 모습, 윗글·아래 글 간격 0~5, 줄 간격 0.5~3
+   · 공통 값 cfg.title.gk·lh·gs(길이와 같은 자리 — 모든 프로젝트 공통 설정) + 챕터마다 따로 p.ttl[챕터].gk·lh·gs(비우면 공통 값). 모두 1 이면 아무것도 안 실어 예전과 똑같이 그려짐
+   · 그림: titleIg 가 제목 항목에 gp={gk,lh,gs} 를 실으면 igLay(배치 캐시 키에 항목이 다 들어 있음)가 L.tt 에 담고 drawTitleCard·klMinTitleCard 가 씀. 블록 높이(hh)도 같이 늘려 가운데 맞춤이 유지됨
+   · 간격 칸을 누르면 그 타이틀이 다 나타난 곳으로 재생헤드를 옮겨(ttShow) 바뀐 모습이 미리보기에 보임 ── */
+const TTG={gk:{lo:0,hi:5},lh:{lo:0.5,hi:3},gs:{lo:0,hi:5}};
+const ttgClamp=(k,v)=>{ v=+v; if(!isFinite(v)) return 1; return r2(clamp(v,TTG[k].lo,TTG[k].hi)); };
+function titleGap(p,ci){   /* 이 챕터 타이틀의 {gk,lh,gs} — 챕터별 값 → 공통 값 → 1. 모두 1 이면 null(예전과 똑같이) */
+  const o=(p.ttl&&p.ttl[ci])||{}, c=(p.cfg&&p.cfg.title)||{}, g={}, ok=x=>x!=null&&x!==''&&isFinite(+x);
+  ['gk','lh','gs'].forEach(k=>{ g[k]=ttgClamp(k,ok(o[k])?o[k]:(ok(c[k])?c[k]:1)); });
+  return (g.gk===1&&g.lh===1&&g.gs===1)?null:g;
+}
+function ttShow(ci){   /* 간격을 고칠 때 바뀐 모습이 보이게 — 재생헤드가 그 타이틀이 다 나타난 곳이 아니면 거기로 옮김(ci 가 없으면 고른 타이틀, 그것도 없으면 첫 타이틀 · 타이틀이 꺼진 챕터면 그대로) */
+  if(!P||ENG.playing) return; const a=P._titles||[]; if(!a.length) return; const q=ci==null?(a.find(x=>x.ci===UI.ttSel)||a[0]):a.find(x=>x.ci===ci); if(!q) return; const t=ENG.pos;
+  if(t>=q.ta+0.7&&t<=q.te) return; seekTo(r3(Math.max(q.ta,Math.min(q.ta+0.9,q.te-0.05))));
+}
+const ttGapAny=()=>{ const c=(P&&P.cfg&&P.cfg.title)||{}; return ['gk','lh','gs'].some(k=>c[k]!=null&&+c[k]!==1)||Object.keys((P&&P.ttl)||{}).some(i=>{ const o=P.ttl[i]; return !!o&&(o.gk!=null||o.lh!=null||o.gs!=null); }); };
+function ttGapRows(ci,o){   /* [타이틀] 탭 챕터 칸의 윗글·줄·아래 글 간격 — 비우면 위의 공통 값 */
+  const c=(P&&P.cfg&&P.cfg.title)||{}, ph=k=>String(ttgClamp(k,c[k]==null?1:c[k])), has=!!o&&(o.gk!=null||o.lh!=null||o.gs!=null);
+  return F.row('윗글 간격',F.num('tt:'+ci+':gk',o.gk==null?'':o.gk,{min:0,max:5,step:0.1,ph:ph('gk')}),'배율 — 윗글과 제목 사이(비우면 위의 공통 값)')
+    +F.row('줄 간격',F.num('tt:'+ci+':lh',o.lh==null?'':o.lh,{min:0.5,max:3,step:0.1,ph:ph('lh')}),'배율 — 제목이 두 줄 이상일 때 줄 사이')
+    +F.row('아래 글 간격',F.num('tt:'+ci+':gs',o.gs==null?'':o.gs,{min:0,max:5,step:0.1,ph:ph('gs')}),'배율 — 제목과 아래 글 사이')
+    +(has?'<div class="vs-btns">'+F.btn('ttGapReset','↺ 간격을 처음대로',{d:String(ci),title:'이 타이틀의 윗글·줄·아래 글 간격을 지우고 공통 값으로'})+'</div>':'');
+}
+/* ══ /v147 ══ */
 function titleIg(ti){   /* 타이틀 한 장 — 인포그래픽 'title' 모양을 그대로 씀(저장하지 않는 임시 클립) */
-  const p=P, sp=titleSpec(p,ti.ci), s0=p.sents[ti.i];
-  return {id:'tt'+ti.ci,name:'',mode:'title',bg:ti.ov?'scene':'solid',ovt:!!ti.ov,sty:(p.cfg.info&&p.cfg.info.style)||'news',kicker:sp.k,title:'',a:{sid:s0?s0.id:'',f:0},b:null,s:ti.ta,e:ti.te+0.32,src:'title',items:[{id:'tti',type:'title',text:sp.t,sub:sp.s}]};
+  const p=P, sp=titleSpec(p,ti.ci), s0=p.sents[ti.i], gp=titleGap(p,ti.ci);
+  return {id:'tt'+ti.ci,name:'',mode:'title',bg:ti.ov?'scene':'solid',ovt:!!ti.ov,sty:(p.cfg.info&&p.cfg.info.style)||'news',kicker:sp.k,title:'',a:{sid:s0?s0.id:'',f:0},b:null,s:ti.ta,e:ti.te+0.32,src:'title',items:[Object.assign({id:'tti',type:'title',text:sp.t,sub:sp.s},gp?{gp}:null)]};   /* v147: 간격을 정했을 때만 gp — 안 정하면 예전 클립과 똑같아 배치 캐시도 그대로 */
 }
 function titleAt(t){ const a=P&&P._titles; if(!a||!a.length) return null; for(let i=0;i<a.length;i++){ const q=a[i]; if(t>=q.ta-0.001&&t<q.te+0.32) return q; } return null; }
 function drawTitle(g,w,h,t,ti){
@@ -47746,6 +47794,7 @@ function drawTitle(g,w,h,t,ti){
       const al=Math.min(rv(t-ti.ta,0.45),clamp((ti.te+0.32-t)/0.32,0,1));
       if(al>0.004){ g.save(); const gr=g.createLinearGradient(0,0,w*0.88,0); gr.addColorStop(0,'rgba(4,8,16,'+(0.80*al).toFixed(3)+')'); gr.addColorStop(0.55,'rgba(4,8,16,'+(0.50*al).toFixed(3)+')'); gr.addColorStop(1,'rgba(4,8,16,0)'); g.fillStyle=gr; g.fillRect(0,0,w,h); g.restore(); }
     }
+    if(!ti.ov){ const al0=Math.min(rv(t-ti.ta,0.45),clamp((ti.te+0.32-t)/0.32,0,1)); if(al0>0.004){ g.save(); g.globalAlpha*=al0; drawSceneBg(g,w,h,P.scenes[sceneIdx(t)],t-ti.ta); g.restore(); } }   /* v148: 타이틀 배경 = 장면 배경 */
     drawClip(g,w,h,ti._ig,t);
   }catch(e){ if(!window.__titleErr){ window.__titleErr=e; console.warn('챕터 타이틀 그리기 오류',e); } g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; }
 }
@@ -47777,6 +47826,10 @@ function setTitleField(path,v){   /* tt:<챕터>:<t|k|s|on|dur|pre|post|ov|ofs> 
     if(v==null||!isFinite(+v)||(k==='dur'&&+v<=0)) delete o[k]; else o[k]=k==='dur'?r3(clamp(+v,TT_MIN,TT_MAX)):k==='ofs'?r3(clamp(+v,-60,3600)):r3(clamp(+v,0,30));
     if(!Object.keys(o).length) delete P.ttl[ci]; setTimeout(()=>renderInspector(true),0); return 'lay';
   }
+  if(k==='gk'||k==='lh'||k==='gs'){   /* v147: 글 간격 배율 — 비우면 공통 값을 따름 */
+    if(v==null||v===''||!isFinite(+v)) delete o[k]; else o[k]=ttgClamp(k,v);
+    if(!Object.keys(o).length) delete P.ttl[ci]; (P._titles||[]).forEach(q=>{ q._ig=null; }); setTimeout(()=>renderInspector(true),0); return 'draw';
+  }
   o[k]=String(v==null?'':v); if(!o[k].trim()) delete o[k];
   (P._titles||[]).forEach(q=>{ q._ig=null; }); return 'draw';
 }
@@ -47790,6 +47843,9 @@ function inspTitle(){
   h+=F.row('길이',F.num('cfg.title.dur',tt.dur,{min:1,max:6,step:0.5}),'초 — 끼워 넣은 타이틀은 이 동안 소리를 모두 꺼요(약 2~3초 권장). 겹쳐 얹은 타이틀은 끄지 않아요. 챕터마다 따로 정한 길이는 그대로예요');
   h+=F.row('소리',F.chk('cfg.title.keepBgm',!!tt.keepBgm,'배경음악은 끄지 않고 이어서 재생'),'기본은 나레이션·배경음악·영상 소리를 모두 끔');
   h+=F.row('디자인',F.sel('cfg.info.style',ic.style||'news',STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'인포그래픽 스타일과 같은 모양(모든 프로젝트 공통)');
+  h+=F.row('윗글 간격',F.num('cfg.title.gk',ttgClamp('gk',tt.gk==null?1:tt.gk),{min:0,max:5,step:0.1}),'배율(1 = 기본) — 윗글(알약)과 제목 사이. 모든 타이틀에 같이 적용돼요(챕터마다 따로 정한 값은 그대로)');   /* v147 */
+  h+=F.row('줄 간격',F.num('cfg.title.lh',ttgClamp('lh',tt.lh==null?1:tt.lh),{min:0.5,max:3,step:0.1}),'배율(1 = 기본) — 제목이 두 줄 이상일 때 줄 사이');
+  h+=F.row('아래 글 간격',F.num('cfg.title.gs',ttgClamp('gs',tt.gs==null?1:tt.gs),{min:0,max:5,step:0.1}),'배율(1 = 기본) — 제목과 아래 글 사이');
   if(openCi(P)>=0) h+=F.row('번호',F.chk('tt:*:num',numAfter(P),'오프닝 다음 챕터부터 CHAPTER 01'),'오프닝(개요) 뒤 첫 챕터가 CHAPTER 01 — 끄면 오프닝이 CHAPTER 01 이에요');
   h+='<div class="vs-note'+(on?'':' err')+'">'+(on?'타이틀 <b>'+list.length+'개</b> · 소리 없이 타이틀만 나오는 시간은 모두 '+tot.toFixed(1)+'초예요.'+(nov?' (겹쳐 얹은 '+nov+'개는 소리를 끄지 않고 화면 위에 얹혀요)':''):'타이틀이 꺼져 있어요 — 챕터가 바로 이어져요.')+'</div>';
   h+='<div class="vs-sec">챕터별 글·길이·위치 <span class="hint">비워 두면 챕터 이름·날짜가 들어가요. 타임라인의 [타이틀] 줄에서 몸통을 끌면 위치, 양 끝을 끌면 길이가 바뀌어요</span></div>';
@@ -47797,9 +47853,9 @@ function inspTitle(){
   h+=cis.map(ci=>{
     const q=list.find(x=>x.ci===ci), o=(P.ttl&&P.ttl[ci])||{}, df=titleDef(P,ci), off=ttOff(P,ci), dim=!on||off;
     return '<div class="vs-sn'+(dim?' no':'')+(ci===UI.ttSel?' cur':'')+'" data-ci="'+ci+'"><div class="r"><span class="t">'+(q?fmtT(q.ta,1):'—')+'</span><span class="b '+(dim?'no':'ok')+'">'+(dim||!q?'타이틀 없음':'타이틀 '+(q.tb-q.ta).toFixed(1)+'초')+'</span>'+F.btn('ttPlay','▶',{d:String(ci),title:'이 타이틀부터 재생',dis:!q})+'<span class="vs-sp"></span>'+F.chk('tt:'+ci+':on',!off,'넣기')+'</div>'
-      +F.row('제목',F.txt('tt:'+ci+':t',o.t||'',{ph:df.t}))+F.row('윗글',F.txt('tt:'+ci+':k',o.k||'',{ph:df.k||'(없음)'}))+F.row('아래 글',F.txt('tt:'+ci+':s',o.s||'',{ph:df.s||'(없음)'}))+(q&&!dim?F.row('배치',F.chk('tt:'+ci+':ov',!!q.ov,'영상·음성·자막 위에 겹쳐 얹기'),q.ov?'소리를 끄지 않고 그 시각의 화면 위에 얹혀요(뒤 내용이 밀리지 않아요) — 끄면 소리 없는 타이틀을 끼워 넣어요':'지금은 소리 없는 타이틀을 끼워 넣은 상태(뒤 내용이 밀려요) — 체크하면 화면 위에 얹어요')+ttTimeRows(ci,q,o):'')+'</div>';
+      +F.row('제목',F.txt('tt:'+ci+':t',o.t||'',{ph:df.t}))+F.row('윗글',F.txt('tt:'+ci+':k',o.k||'',{ph:df.k||'(없음)'}))+F.row('아래 글',F.txt('tt:'+ci+':s',o.s||'',{ph:df.s||'(없음)'}))+ttGapRows(ci,o)+(q&&!dim?F.row('배치',F.chk('tt:'+ci+':ov',!!q.ov,'영상·음성·자막 위에 겹쳐 얹기'),q.ov?'소리를 끄지 않고 그 시각의 화면 위에 얹혀요(뒤 내용이 밀리지 않아요) — 끄면 소리 없는 타이틀을 끼워 넣어요':'지금은 소리 없는 타이틀을 끼워 넣은 상태(뒤 내용이 밀려요) — 체크하면 화면 위에 얹어요')+ttTimeRows(ci,q,o):'')+'</div>';
   }).join('');
-  h+='<div class="vs-btns">'+F.btn('ttNoOv','⧉ 모든 타이틀 겹치지 않게',{d:'*',dis:!list.some(q=>q.ov),title:'겹쳐 얹은 타이틀을 모두 영상·음성·자막과 겹치지 않게(소리 없이 끼워 넣기로) 바꿔요 — 뒤 내용이 타이틀 길이만큼 밀려요'})+F.btn('ttReset','↺ 모든 글을 처음대로',{d:'*',title:'고친 제목·윗글·아래 글·넣기 표시를 모두 처음 상태로'})+F.btn('ttTimeReset','↺ 모든 길이·위치를 처음대로',{d:'*',dis:!Object.keys(P.ttl||{}).some(k=>ttHasTime(P.ttl[k])),title:'챕터마다 따로 정한 길이·앞 쉼·뒤 쉼을 지우고 공통 길이·기본 위치로'})+'</div>';
+  h+='<div class="vs-btns">'+F.btn('ttNoOv','⧉ 모든 타이틀 겹치지 않게',{d:'*',dis:!list.some(q=>q.ov),title:'겹쳐 얹은 타이틀을 모두 영상·음성·자막과 겹치지 않게(소리 없이 끼워 넣기로) 바꿔요 — 뒤 내용이 타이틀 길이만큼 밀려요'})+F.btn('ttReset','↺ 모든 글을 처음대로',{d:'*',title:'고친 제목·윗글·아래 글·넣기 표시를 모두 처음 상태로'})+F.btn('ttGapReset','↺ 모든 간격을 처음대로',{d:'*',dis:!ttGapAny(),title:'모든 타이틀의 윗글·줄·아래 글 간격을 처음(배율 1)으로 — 공통 값과 챕터마다 따로 정한 값을 모두 지워요'})+F.btn('ttTimeReset','↺ 모든 길이·위치를 처음대로',{d:'*',dis:!Object.keys(P.ttl||{}).some(k=>ttHasTime(P.ttl[k])),title:'챕터마다 따로 정한 길이·앞 쉼·뒤 쉼을 지우고 공통 길이·기본 위치로'})+'</div>';
   return h;
 }
 /* ══ /v100 ══ */
@@ -50960,7 +51016,7 @@ function klShortComposeClip(g){   /* 이미 만든 클립에 글이 덧붙은 �
 const klMinStyle=()=>((P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news')==='minimal';
 const klMinCtx=ctx=>((ctx&&ctx.style)||(P&&P.cfg&&P.cfg.info&&P.cfg.info.style)||'news')==='minimal';
 const KLM_GRAY=['#ffffff','#cfd6dd','#98a3ae','#66717d'];
-function klMonoCol(pal,i){ return i<=0?pal.accent:KLM_GRAY[(i-1)%KLM_GRAY.length]; }   /* 여러 계열 색 대신 청록 → 흰 → 회색 단계 */
+function klMonoCol(pal,i){ return i<=0?pal.accent:(pal.dark===false?KLM_GRAYL:KLM_GRAY)[(i-1)%KLM_GRAY.length]; }   /* v148: 밝은 바탕이면 검정 → 회색 단계 */   /* 여러 계열 색 대신 청록 → 흰 → 회색 단계 */
 /* ── v141: 미니멀 글자 크기 체계 + 균형 줄바꿈 ─────────────────────────────────────────────────────────────────────────────
    요청(2026-11-03, 화면 3장): ① 같은 수치가 두 번 나온다('+13.7%' 아래 '평균 13.7% 상승') ② 불필요한 줄바꿈('퀄컴 실적 · 11월 FOMC / 개막', '핵심 요약 / 01', 'AI 인프라 / 조정')
         ③ 강조할 말에만 큰 글씨, 나머지 글은 모든 화면에서 같은 크기로(너무 크지 않게) ④ 큰 수치도 모든 화면에서 같은 크기로.
@@ -51037,9 +51093,9 @@ function klmXText(E,txt,hl,R,fs0,wt,col,al,va,mode,hcol,maxL,minK){   /* xText �
 function klmRich(E,f,hl,x,y,col,wt,mode,hcol,al){ const hh=klmHl(f.lines,hl); f.lines.forEach((l,i)=>xRichLine(E,l,x,y+i*f.lh+(f.lh-f.fs)*0.4,f.fs,wt,col,al||'l',hh,mode,hcol)); return f.lines.length*f.lh; }   /* 강조 낱말만 색·표시(mode) — 크기는 그대로 */
 
 /* ── 바탕: 검정(장면 위면 어둡게 낮춤), 카드 위치에는 어두운 막만 ── */
-function klMinBack(g,w,h,ig,L,pal,B){
+function klMinBack(g,w,h,ig,L,pal,B,nofill){
   if(!isOver(L.mode)){
-    g.fillStyle=ig.bg==='scene'?'rgba(0,0,0,.78)':pal.bg1; g.fillRect(0,0,w,h);
+    if(ig.bg==='scene'||!nofill){ g.fillStyle=ig.bg==='scene'?'rgba(0,0,0,.78)':pal.bg1; g.fillRect(0,0,w,h); }
     if(ig.bg==='scene'){ const lg=g.createLinearGradient(0,0,w,0); lg.addColorStop(0,'rgba(0,0,0,.30)'); lg.addColorStop(0.7,'rgba(0,0,0,0)'); g.fillStyle=lg; g.fillRect(0,0,w,h); }
     return;
   }
@@ -51066,11 +51122,11 @@ function klMinHead(E,L,ig,lt,o){   /* 제목·윗글 — 슬래시 머리글 + �
   g.restore();
 }
 function klMinTitleCard(E,L,ig,k){   /* 타이틀 — 윤곽 알약(청록 슬래시) + 아주 큰 흰 제목 + 청록 세로 막대 부제 */
-  const g=E.g, pal=E.pal, font=E.font, T=L.tt, B=L.B; g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.05*B,0); let y=T.y;
+  const g=E.g, pal=E.pal, font=E.font, T=L.tt, B=L.B; g.save(); g.globalAlpha*=k; g.translate((1-k)*-0.05*B,0); let y=T.y; const gkv=T.gk==null?1:T.gk, lhv=T.lh==null?1:T.lh, gsv=T.gs==null?1:T.gs, nl=T.ls.length, eff=nl+(nl-1)*(lhv-1);   /* v147: 윗글·줄·아래 글 간격 배율(eff = 줄 간격을 반영한 제목 줄 수) */
   if(T.kick){ const fs=T.ks, s=nlFlat(T.kick), sw=fs*0.8; g.font='800 '+fs.toFixed(1)+'px '+font; const pw=g.measureText(s).width+sw+fs*1.6, ph=fs*1.7;
     roundRect(g,T.x,y,pw,ph,ph*0.34); g.fillStyle='rgba(255,255,255,.05)'; g.fill(); g.lineWidth=Math.max(1.5,fs*0.07); g.strokeStyle=alphaOf(pal.accent,0.9); g.stroke();
-    dtx(g,'/',T.x+fs*0.55,y+ph/2,fs,'800',pal.accent,font,'left','middle'); dtx(g,s,T.x+fs*0.55+sw,y+ph/2,fs,'800',pal.text,font,'left','middle'); y+=ph+fs*0.5; }
-  T.ls.forEach((l,i)=>dtx(g,l,T.x,y+i*T.fs*1.18,T.fs,'800',pal.text,font)); y+=T.ls.length*T.fs*1.18+0.016*B;
+    dtx(g,'/',T.x+fs*0.55,y+ph/2,fs,'800',pal.accent,font,'left','middle'); dtx(g,s,T.x+fs*0.55+sw,y+ph/2,fs,'800',pal.text,font,'left','middle'); y+=ph+fs*0.5*gkv; }
+  T.ls.forEach((l,i)=>dtx(g,l,T.x,y+i*T.fs*1.18*lhv,T.fs,'800',pal.text,font)); y+=eff*T.fs*1.18+0.016*B*gsv;
   if(T.sub){ const bw=Math.max(3,0.006*B), sh=T.ss*1.3; g.fillStyle=pal.accent; roundRect(g,T.x,y,bw,sh,bw/2); g.fill(); dtf(g,T.sub,T.x+bw+T.ss*0.6,y+sh/2,T.w-bw-T.ss,T.ss,'600',alphaOf(pal.text,0.92),font,'left','middle',0.6); }
   g.restore();
 }
@@ -56782,7 +56838,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v146';
+const KL_BUILD='v148';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -57630,7 +57686,8 @@ function cbKey(e){   /* Ctrl/⌘+C·V — 타임라인 구성요소·인포그�
     if(!sel.some(d=>d.k==='comp'||d.k==='clip')){ toast('복사할 수 있는 건 구성요소·인포그래픽이에요 — [구성]·[인포] 줄에서 골라 주세요'); return true; }
     cbDoCopy(); return true;
   }
-  if(ky==='v'){ e.preventDefault(); e.stopPropagation(); cbPaste(); return true; }
+  if(ky==='v'){ if(bgPasteTarget()){ UI.bgDefer=Date.now(); return false; }   /* v148: 배경 고르기가 이미지를 받는 상태면 브라우저 붙여넣기(paste 이벤트)로 넘김 — 이미지가 아니면 거기서 cbPaste() */
+    e.preventDefault(); e.stopPropagation(); cbPaste(); return true; }
   return false;
 }
 function cbMenuHtml(k,n){   /* 오른쪽 클릭 메뉴의 [복사]·[붙여넣기] 줄 */
@@ -57761,6 +57818,322 @@ function ttTimeRows(ci,q,o){   /* [타이틀] 탭 챕터 칸의 길이·앞 쉼�
 /* ══ /v103 ══ */
 /* ── INFO-END ── */
 
+/* ══ v148 (2026-11-04) — 장면 배경 통일 · 화면 배경 고르기 · 화면 간 전환 ═══════════════════════════════════════════════════════════════
+   · 용어: 장면 = 장면 목록의 한 칸(카드·AI 그림·영상이 깔림) / 화면 = 그 위에 올라가는 인포그래픽 클립(P.igs)
+   · 문제였던 것: 장면 카드는 챕터마다 색이 다르고(hueOf) 화면(인포그래픽)엔 전용 배경이 따로 있어서, 화면이 바뀌는 사이(나타남 0.45초·사라짐 0.32초)에 장면 배경이 비쳐 색이 번쩍였음
+   · ① 장면 배경: 영상 전체가 같은 배경 — P.sbg(없으면 인포그래픽 스타일의 바탕 = 화면이 쓰던 배경). 카드 배경색을 직접 고른 장면(vis.card.c1·c2)과 AI 그림·영상 장면은 그대로
+     ② 화면 배경: ig.bgs(없으면 투명 — 장면 배경이 비침). 스타일이 장면 배경과 다른 옛 클립은 예전처럼 자기 스타일 바탕을 깔아 글자가 안 묻힘
+     ③ 둘 다 같은 고르기(bgChooser): 단색·그라데이션·템플릿(스타일 배경·기존 장면 배경·그라데이션 모음·무늬)·이미지(Ctrl+V·파일)·동영상(파일) + 투명도(spec.a)
+        화면은 '장면 화면 위에 겹침(ig.bg==='scene')'도 이 목록에서 고름
+     ④ 화면 간 전환: ig.trans={t,d}(t='inherit' → cfg.info.xt, 기본 'legacy' = 예전의 부드러운 나타남·사라짐) — 효과 목록은 장면 전환(TRANS)과 같음. 전체 화면형(왼쪽·오른쪽 패널·전체·큰 수치)만
+   · 배경 사양 spec = {k:'none'|'solid'|'grad'|'tpl'|'img'|'vid', c1,c2,ang, id, bid,name,poster,w,h,dur, a(0~1, 기본 1)} ── */
+const BG_PAL=['#000000','#0b1220','#111827','#1e293b','#334155','#0f2a4d','#1e40af','#0e7490','#047857','#3f6212','#b45309','#b91c1c','#9d174d','#6d28d9','#f8fafc','#e2e8f0','#fde68a','#bfdbfe'];
+const BG_GR=[   /* [id, 이름, 색1, 색2, 각도] */
+  ['midnight','미드나잇','#0b1020','#1b2a4a',135],['deepblue','딥 블루','#0a2540','#1d5fa8',135],['ocean','오션','#032b43','#136f63',135],['forest','포레스트','#0a2a1f','#1f6b45',135],
+  ['graphite','그래파이트','#0f1115','#3a4150',135],['wine','와인','#2a0a18','#8a2147',135],['sunset','선셋','#2b1055','#d4145a',135],['royal','로열','#1a1042','#5b3cc4',135],
+  ['amber','앰버','#2e1604','#b45309',135],['mint','민트','#04302c','#14b8a6',135],['slate','슬레이트','#0f172a','#475569',160],['aurora','오로라','#0b1f2a','#2dd4bf',120],
+  ['daylight','데이라이트(밝음)','#f8fafc','#cfe0f7',135],['paper','페이퍼(밝음)','#faf7f0','#e6dcc6',135]
+];
+const bgLum=hex=>{ const m=/^#?([0-9a-f]{6})$/i.exec(String(hex||'')); if(!m) return 0; const n=parseInt(m[1],16); return (0.2126*(n>>16&255)+0.7152*(n>>8&255)+0.0722*(n&255))/255; };
+const sceneStyle=()=>{ const s=P&&P.cfg&&P.cfg.info&&P.cfg.info.style; return ISTY[s]?s:'news'; };
+/* 글 색 자동 맞춤에 쓰는 밝은 바탕용 색(미니멀) · 시리즈 회색 단계 · 포인트색 밝기 바꾸기 — infoPal(ci,sty,force)·klMonoCol 이 씀 */
+const SPAL_MINL={dark:false,accent:'#0e7490',bg1:'#ffffff',bg2:'#ffffff',blob:'rgba(0,0,0,0)',blob0:'rgba(0,0,0,0)',panel:'rgba(0,0,0,0)',panelLine:'rgba(15,23,42,0)',card:'rgba(0,0,0,0)',cardLine:'rgba(15,23,42,.26)',track:'rgba(15,23,42,.14)',text:'#0a0a0a',mute:'#55606a',cardSolid:'#f4f4f5',shadow:'rgba(0,0,0,0)'};
+const KLM_GRAYL=['#0a0a0a','#3c4650','#6b7681','#98a3ae'];
+function accFlip(acc,toDark){   /* 어두운 바탕용 ↔ 밝은 바탕용 포인트색 — 밝은 바탕으로 갈 땐 35% 어둡게(청록 같은 밝은 색이 안 묻히게), 어두운 바탕으로 갈 땐 18% 밝게 */
+  const s=String(acc||''); if(/^#[0-9a-f]{6}$/i.test(s)){ const y=toDark?255:0, k=toDark?0.18:0.35; return '#'+rgbOf(s).map(v=>('0'+Math.max(0,Math.min(255,Math.round(v+(y-v)*k))).toString(16)).slice(-2)).join(''); }
+  const m=/^hsl\(\s*([\d.]+)/i.exec(s); return m?(toDark?'hsl('+m[1]+',88%,64%)':'hsl('+m[1]+',78%,38%)'):'';
+}
+const bgReady=sp=>!!sp&&!!sp.k&&sp.k!=='none'&&!((sp.k==='img'||sp.k==='vid')&&!sp.bid);   /* 그릴 수 있는 배경 사양인가(이미지·동영상은 파일이 있어야) */
+const sceneBgDef=()=>{ const s=P&&P.sbg; return !bgReady(s)||(s.k==='tpl'&&s.id==='style'&&(s.a==null||s.a>=1)); };   /* 장면 배경이 '기본'(화면 스타일의 바탕)인가 */
+/* 스타일 바탕 한 장 — 예전 igBack 의 '전용 배경'과 같은 그림(미니멀은 검정 한 색) */
+function igFillBg(g,w,h,pal,sty,B){
+  if(sty==='minimal'){ g.fillStyle=pal.bg1; g.fillRect(0,0,w,h); return; }
+  const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,pal.bg1); gr.addColorStop(1,pal.bg2); g.fillStyle=gr; g.fillRect(0,0,w,h);
+  if(sty!=='magazine') [[0.18,0.22,0.62],[0.82,0.30,0.74],[0.55,0.92,0.68]].forEach(b=>{ const cx=w*b[0], cy=h*b[1], r=B*b[2], rg=g.createRadialGradient(cx,cy,0,cx,cy,r); rg.addColorStop(0,pal.blob); rg.addColorStop(1,pal.blob0); g.fillStyle=rg; g.fillRect(0,0,w,h); });
+  if(sty==='dash'){   /* 대시보드: 가는 격자무늬 바탕 */
+    g.strokeStyle=alphaOf(pal.accent,0.07); g.lineWidth=1; const st=Math.max(18,0.05*B); g.beginPath(); for(let x=0;x<w;x+=st){ g.moveTo(x+0.5,0); g.lineTo(x+0.5,h); } for(let y=0;y<h;y+=st){ g.moveTo(0,y+0.5); g.lineTo(w,y+0.5); } g.stroke();
+  }else if(sty==='map'){   /* 지도: 위도·경도 눈금선 */
+    g.strokeStyle=alphaOf(pal.accent,0.07); g.lineWidth=1; g.beginPath(); for(let q=1;q<12;q++){ const x=Math.round(w*q/12)+0.5; g.moveTo(x,0); g.lineTo(x,h); } for(let q=1;q<6;q++){ const y=Math.round(h*q/6)+0.5; g.moveTo(0,y); g.lineTo(w,y); } g.stroke();
+  }
+}
+const _bgc=new Map();
+function bgBake(key,w,h,fn,nocache){   /* 무거운 바탕은 한 번 구워 두고 씀(썸네일처럼 작은 것은 안 구움) */
+  if(nocache){ const c=document.createElement('canvas'); c.width=w; c.height=h; fn(c.getContext('2d')); return c; }
+  let c=_bgc.get(key); if(c) return c; c=document.createElement('canvas'); c.width=w; c.height=h; fn(c.getContext('2d')); _bgc.set(key,c); if(_bgc.size>10) _bgc.delete(_bgc.keys().next().value); return c;
+}
+function bgStyleDraw(g,w,h,sty,ci,nocache){
+  const cf=P.cfg.info||{}, key=['sty',sty,ci,w,h,cf.base,cf.item,cf.theme,cf.accent,cf.ud].join('|');
+  g.drawImage(bgBake(key,w,h,c=>{ igFillBg(c,w,h,infoPal(ci,sty),sty,Math.min(h,w*0.75)); },nocache),0,0);
+}
+function bgChapDraw(g,w,h,ci,t,j){   /* 예전 장면 카드 배경 — 챕터별 색 그라데이션 + 천천히 움직이는 빛 */
+  const c1='hsl('+hueOf(ci)+',55%,17%)', c2='hsl('+((hueOf(ci)+34)%360)+',58%,30%)';
+  const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,c1); gr.addColorStop(1,c2); g.fillStyle=gr; g.fillRect(0,0,w,h);
+  const tt=t+j*1.7;
+  for(let i=0;i<3;i++){
+    const cx=w*(0.5+0.38*Math.sin(tt*0.35+i*2.1)), cy=h*(0.5+0.32*Math.cos(tt*0.27+i*1.3)), r=Math.min(w,h)*(0.45+0.1*i), rg=g.createRadialGradient(cx,cy,0,cx,cy,r);
+    rg.addColorStop(0,'rgba(255,255,255,.10)'); rg.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=rg; g.fillRect(0,0,w,h);
+  }
+}
+let _bgReg=null, _bgRegSig='';
+function bgReg(){   /* 템플릿 목록 — {list:[{id,name,g}], map:{id:{c1,c2,ang}|{fn}}} */
+  const sig=(typeof STY_ORDER!=='undefined'?STY_ORDER.join(','):''); if(_bgReg&&_bgRegSig===sig) return _bgReg;
+  const list=[], map={}, add=(id,name,gp,def)=>{ list.push({id,name,g:gp}); map[id]=def; };
+  add('style','현재 스타일(기본)','스타일 배경',{fn:(g,w,h,o)=>bgStyleDraw(g,w,h,sceneStyle(),0,o&&o.nocache)});
+  STY_ORDER.forEach(k=>add('sty:'+k,ISTY[k].ic+' '+ISTY[k].n,'스타일 배경',{fn:(g,w,h,o)=>bgStyleDraw(g,w,h,k,0,o&&o.nocache)}));
+  add('chap','챕터별 색(기존)','기존 장면 배경',{fn:(g,w,h,o)=>bgChapDraw(g,w,h,(o&&o.ci)||0,(o&&o.t)||0,(o&&o.j)||0)});
+  for(let i=0;i<6;i++) add('chap'+i,'장면 배경 '+(i+1),'기존 장면 배경',{fn:(g,w,h,o)=>bgChapDraw(g,w,h,i,(o&&o.t)||0,(o&&o.j)||0)});
+  BG_GR.forEach(x=>add('g:'+x[0],x[1],'그라데이션',{c1:x[2],c2:x[3],ang:x[4]}));
+  add('grid','모눈','무늬',{fn:(g,w,h)=>{ g.fillStyle='#08111f'; g.fillRect(0,0,w,h); g.strokeStyle='rgba(56,189,248,.12)'; g.lineWidth=1; const st=Math.max(18,Math.min(w,h)*0.06); g.beginPath(); for(let x=0;x<w;x+=st){ g.moveTo(x+0.5,0); g.lineTo(x+0.5,h); } for(let y=0;y<h;y+=st){ g.moveTo(0,y+0.5); g.lineTo(w,y+0.5); } g.stroke(); }});
+  add('dots','점무늬','무늬',{fn:(g,w,h)=>{ g.fillStyle='#0b1220'; g.fillRect(0,0,w,h); g.fillStyle='rgba(255,255,255,.10)'; const st=Math.max(16,Math.min(w,h)*0.05), r=Math.max(1.2,st*0.07); for(let y=st/2;y<h;y+=st) for(let x=st/2;x<w;x+=st){ g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill(); } }});
+  add('diag','사선','무늬',{fn:(g,w,h)=>{ g.fillStyle='#0f172a'; g.fillRect(0,0,w,h); g.strokeStyle='rgba(255,255,255,.05)'; g.lineWidth=Math.max(2,Math.min(w,h)*0.012); const st=Math.max(20,Math.min(w,h)*0.07); g.beginPath(); for(let x=-h;x<w+h;x+=st){ g.moveTo(x,h); g.lineTo(x+h,0); } g.stroke(); }});
+  add('spot','스포트라이트','무늬',{fn:(g,w,h)=>{ g.fillStyle='#050a14'; g.fillRect(0,0,w,h); const rg=g.createRadialGradient(w*0.5,h*0.42,0,w*0.5,h*0.42,Math.max(w,h)*0.62); rg.addColorStop(0,'#1e3a5f'); rg.addColorStop(1,'rgba(5,10,20,0)'); g.fillStyle=rg; g.fillRect(0,0,w,h); }});
+  _bgReg={list,map}; _bgRegSig=sig; return _bgReg;
+}
+function bgGradPts(w,h,ang){ const a=((ang==null?135:+ang)-90)*Math.PI/180, cx=w/2, cy=h/2, c=Math.cos(a), s=Math.sin(a), L=Math.abs(w*c)+Math.abs(h*s); return [cx-c*L/2,cy-s*L/2,cx+c*L/2,cy+s*L/2]; }
+function bgGrad(g,w,h,c1,c2,ang){ const p=bgGradPts(w,h,ang), gr=g.createLinearGradient(p[0],p[1],p[2],p[3]); gr.addColorStop(0,c1); gr.addColorStop(1,c2); g.fillStyle=gr; g.fillRect(0,0,w,h); }
+function bgTplDraw(g,w,h,id,o){ const R=bgReg(), d=R.map[id]||R.map.style; if(d.c1){ bgGrad(g,w,h,d.c1,d.c2,d.ang); return; } d.fn(g,w,h,o||{}); }
+/* ── 배경 영상(장면 배경·화면 배경) — 장면 영상처럼 재생 위치에 맞춰 돌리되 소리 없이 반복 ── */
+const BVM=new Map();
+function bgVidEl(bid){
+  let e=BVM.get(bid); if(e) return e; const u=urlOf(bid); if(!u){ getBlob(bid).then(()=>wantDraw()); return null; }
+  e=document.createElement('video'); e.muted=true; e.loop=true; e.playsInline=true; e.preload='auto'; e._sk=false;
+  e.addEventListener('seeked',()=>{ e._sk=false; wantDraw(); }); e.addEventListener('loadeddata',()=>wantDraw()); e.src=u; BVM.set(bid,e); return e;
+}
+function bgNeeds(t){   /* 지금 돌려야 할 배경 영상 → 시작 기준 시각 */
+  const m=new Map(); if(!P) return m; const sp=P.sbg; if(sp&&sp.k==='vid'&&sp.bid) m.set(sp.bid,0);
+  (P.igs||[]).forEach(g=>{ const b=g.bgs; if(b&&b.k==='vid'&&b.bid&&t>=g.s-1.2&&t<g.e+1.2&&!m.has(b.bid)) m.set(b.bid,g.s); }); return m;
+}
+function bgPurge(){ if(P&&BVM._pid!==P.id){ BVM.forEach(e=>{ try{ e.pause(); e.removeAttribute('src'); e.load(); }catch(x){} }); BVM.clear(); BVM._pid=P.id; } }   /* 다른 프로젝트를 열면 이전 프로젝트의 배경 영상은 놓음 */
+function bgSync(t,playing){
+  if(!P) return; bgPurge();
+  const need=bgNeeds(t);
+  need.forEach((t0,bid)=>{
+    const e=bgVidEl(bid); if(!e) return; const du=e.duration, ok=isFinite(du)&&du>0, mt=ok?((((t-t0)%du)+du)%du):Math.max(0,t-t0);
+    if(playing){ if(e.paused) e.play().catch(()=>{}); if(e.readyState>=1&&!e._sk&&ok){ const df=Math.abs(e.currentTime-mt); if(df>0.5&&df<du-0.5) seekEl(e,mt); } }
+    else{ if(!e.paused) e.pause(); if(e.readyState>=1&&!e._sk&&Math.abs(e.currentTime-mt)>0.04) seekEl(e,mt); }
+  });
+  BVM.forEach((e,bid)=>{ if(!need.has(bid)&&!e.paused) e.pause(); });
+}
+function bgStop(){ BVM.forEach(e=>{ try{ e.pause(); }catch(x){} }); }
+async function ensureBgImages(){   /* 재생·내보내기 전에 배경 이미지를 읽고 배경 영상은 첫 장면이 나올 만큼 불러 둠(내보내기 첫 장면이 비지 않게) */
+  const ids=new Set(), vids=new Set(), add=sp=>{ if(!sp||!sp.bid) return; if(sp.k==='img') ids.add(sp.bid); else if(sp.k==='vid') vids.add(sp.bid); };
+  add(P.sbg); (P.igs||[]).forEach(g=>add(g.bgs)); for(const b of ids) await loadImg(b);
+  if(vids.size) bgPurge();
+  for(const b of vids){ await getBlob(b); const e=bgVidEl(b); if(e&&e.readyState<2) await new Promise(res=>{ const done=()=>{ e.removeEventListener('loadeddata',done); res(); }; e.addEventListener('loadeddata',done); setTimeout(done,4000); }); }
+}
+/* ── 그리기 ── */
+function drawBgSpec(g,w,h,sp,o){   /* 배경 사양 하나를 w×h 에 그림(투명도 a 반영) */
+  if(!sp||!sp.k||sp.k==='none') return; o=o||{}; const a=sp.a==null?1:clamp(+sp.a,0,1); if(a<=0.001) return;
+  g.save(); if(a<1) g.globalAlpha*=a;
+  try{
+    if(sp.k==='solid'){ g.fillStyle=sp.c1||'#000000'; g.fillRect(0,0,w,h); }
+    else if(sp.k==='grad') bgGrad(g,w,h,sp.c1||'#0f172a',sp.c2||'#1d4ed8',sp.ang);
+    else if(sp.k==='tpl') bgTplDraw(g,w,h,sp.id||'style',o);
+    else if(sp.k==='img'){ const im=sp.bid&&IMG.get(sp.bid); if(im) drawCover(g,im,im.width,im.height,w,h,1,0,0); else if(sp.bid) loadImg(sp.bid); }
+    else if(sp.k==='vid'){ const e=sp.bid&&bgVidEl(sp.bid); if(e){ if(e.readyState>=2&&e.videoWidth&&!e.seeking) drawCover(g,e,e.videoWidth,e.videoHeight,w,h,1,0,0); else if(e._last) drawCover(g,e._last,e._last.width,e._last.height,w,h,1,0,0); } }
+  }finally{ g.restore(); }
+}
+function drawSceneBg(g,w,h,sc,lt){   /* 장면 배경 — 카드·인포그래픽 장면 밑에 깔림. 안 정했으면 화면 스타일의 바탕 */
+  const sp=P.sbg, j=sc?P.scenes.indexOf(sc):0, ci=sc?((P.sents[sc.first]||{}).ci||0):0;
+  if(!bgReady(sp)){ bgTplDraw(g,w,h,'style',{ci:0,t:lt||0,j}); return; }   /* 안 골랐거나 이미지·동영상 파일이 아직 없으면 기본(스타일 바탕) */
+  if((sp.a==null?1:sp.a)<1){ g.fillStyle='#000'; g.fillRect(0,0,w,h); }   /* 투명도를 낮추면 검정 위에 얹혀 어두워짐 */
+  drawBgSpec(g,w,h,sp,{ci,t:lt||0,j,sc});
+}
+/* ── 글 색 자동 맞춤 — 화면 뒤로 보이는 바탕이 밝으면 어두운 글, 어두우면 밝은 글(고른 배경과 스타일의 글 색이 어긋나 안 보이는 것을 막음) ── */
+function specLum(sp,under){   /* 배경 사양이 칠하는 평균 밝기 0(검정)~1(흰색) — 투명도(a)만큼 아래 바탕(under)과 섞음 */
+  if(!bgReady(sp)) return under; const a=sp.a==null?1:clamp(+sp.a,0,1); let L=0.3;
+  if(sp.k==='solid') L=bgLum(sp.c1); else if(sp.k==='grad') L=(bgLum(sp.c1)+bgLum(sp.c2))/2;
+  else if(sp.k==='tpl'){ const id=sp.id||'style', d=bgReg().map[id]; if(d&&d.c1) L=(bgLum(d.c1)+bgLum(d.c2))/2; else{ const sk=id==='style'?sceneStyle():/^sty:/.test(id)?id.slice(4):''; L=sk?(infoPal(0,ISTY[sk]?sk:'news').dark?0.06:0.93):(/^chap/.test(id)?0.12:0.05); } }
+  else if(sp.lum!=null) L=+sp.lum;
+  return a*L+(1-a)*under;
+}
+function sceneLum(){ const s=P.sbg; return bgReady(s)?specLum(s,0):(infoPal(0,sceneStyle()).dark?0.06:0.93); }   /* 장면 배경의 밝기(안 골랐으면 화면 스타일 바탕) */
+const bgDark=()=>sceneLum()<0.55;   /* 장면 배경이 어두운가 — 카드 글자색(밝은 배경이면 어두운 글) */
+function bgForce(ig,L,ci){   /* 이 화면의 글을 'light'(밝은 바탕 → 어두운 글)·'dark'(어두운 바탕 → 밝은 글)로 맞출지 — 안 건드려도 되면 undefined(기본 상태는 늘 예전 그대로) */
+  if(!P||!L||isOver(L.mode)||ig.bg==='scene') return undefined; const own=scrOwn(ig,L); if(own===2||(own===0&&sceneBgDef())) return undefined;
+  const lum=own===1?specLum(ig.bgs,sceneLum()):sceneLum(); return lum>=0.55?'light':'dark';
+}
+function bgCovered(sc,lt){   /* 이 장면 시각에 장면 배경을 가리는 전체 화면형 인포그래픽(화면)이 있는가 — 카드 글자를 숨기려고 */
+  const t=sc.s+lt; return (P.igs||[]).some(g=>scrIsFrame(g)&&g.bg!=='scene'&&t>=g.s&&t<g.e);
+}
+function scrOwn(ig,L){   /* 화면이 자기 배경을 그리는 방식 — 0 투명(장면 배경이 비침, 기본) · 1 고른 배경(ig.bgs) · 2 예전 자기 스타일 바탕(스타일이 장면 배경과 다른 옛 클립) */
+  if(isOver(L.mode)||ig.bg==='scene') return 0; if(bgReady(ig.bgs)) return 1;
+  return (sceneBgDef()&&styOf(ig)!==sceneStyle())?2:0;
+}
+const _bgth=new Map();
+function bgThumb(id){   /* 템플릿 견본 그림(데이터 URL) */
+  const cf=P.cfg.info||{}, key=[id,sceneStyle(),cf.base,cf.item,cf.theme,cf.accent,cf.ud].join('|'); if(_bgth.has(key)) return _bgth.get(key);
+  let u=''; try{ const cv=document.createElement('canvas'); cv.width=108; cv.height=60; const g=cv.getContext('2d'); bgTplDraw(g,108,60,id,{ci:0,t:0,j:0,nocache:true}); u=cv.toDataURL('image/jpeg',0.8); }catch(e){}
+  _bgth.set(key,u); if(_bgth.size>90) _bgth.delete(_bgth.keys().next().value); return u;
+}
+function sceneBgCss(){   /* 장면 목록 작은 그림 배경 */
+  const sp=P.sbg; if(!bgReady(sp)||(sp.k==='tpl'&&sp.id==='style')){ const pal=infoPal(0,sceneStyle()); return 'linear-gradient(135deg,'+pal.bg1+','+pal.bg2+')'; }
+  if(sp.k==='solid') return sp.c1||'#000'; if(sp.k==='grad') return 'linear-gradient('+(sp.ang==null?135:sp.ang)+'deg,'+(sp.c1||'#000')+','+(sp.c2||'#000')+')';
+  if(sp.k==='tpl'){ const u=bgThumb(sp.id); return u?'url('+u+') center/cover':'#111'; } if(sp.poster) return 'url('+sp.poster+') center/cover'; return '#111';
+}
+/* ── 화면 간 전환 ── */
+const scrIsFrame=g=>!!g&&!isOver(g.mode)&&g.mode!=='title';
+function scrTrans(g){   /* 이 화면이 시작할 때의 전환 → {t,d,legacy} — legacy = 예전처럼 부드럽게 나타나고 사라짐 */
+  const tr=g.trans||{}, cf=(P.cfg&&P.cfg.info)||{}, lk=P.cfg.look; let t=(tr.t&&tr.t!=='inherit')?tr.t:(cf.xt||'legacy'), d=tr.d>0?tr.d:(cf.xd>0?cf.xd:0.6);
+  if(t==='scene'){ t=lk.trans; if(!(tr.d>0)) d=lk.transDur||0.6; }   /* 장면 전환과 같게 */
+  if(t==='random'){ let hh=0; const s=String(g.id||''); for(let i=0;i<s.length;i++) hh=(hh*31+s.charCodeAt(i))>>>0; t=TR_RAND[hh%TR_RAND.length]; }
+  if(t==='legacy'||!TRK[t]) return {t:'legacy',d:0.45,legacy:true};
+  return {t,d:Math.max(0.1,+d||0.6),legacy:false};
+}
+function scrPrev(B){   /* B 바로 앞 화면(전체 화면형) — B 가 시작하기 전에 시작해 0.8초 안에 끝난(또는 아직 이어지는) 것 중 가장 늦게 끝나는 것 */
+  let best=null; (P.igs||[]).forEach(A=>{ if(A===B||!scrIsFrame(A)||A.s>=B.s-0.05||A.e<B.s-0.8) return; if(!best||A.e>best.e||(A.e===best.e&&A.s>best.s)) best=A; }); return best;
+}
+function scrNextT(A){   /* A 바로 뒤에 전환(예전 방식이 아닌)이 걸린 화면이 있으면 그것 — A 는 그동안 흐려지지 않고 끝까지 남음 */
+  const L=P.igs||[]; for(let i=0;i<L.length;i++){ const B=L[i]; if(B===A||!scrIsFrame(B)||B.s<=A.s+0.05||B.s>A.e+0.8) continue; if(scrTrans(B).legacy) continue; if(scrPrev(B)===A) return B; } return null;
+}
+function scrActive(act,t){   /* 지금 전환 중인 화면 → {B,A,k,d,p}  (컷은 전환 구간이 없고, 직접 고치는 중인 화면은 건너뜀) */
+  let best=null;
+  act.forEach(B=>{ if(!scrIsFrame(B)||(UI.le&&UI.le.gid===B.id&&UI.busy!=='export'&&!UI.exp)) return; const tr=scrTrans(B); if(tr.legacy||tr.t==='cut') return; const d=Math.min(tr.d,(B.e-B.s)*0.8), lt=Math.max(0,t-B.s); if(lt>=d) return; if(!best||B.s>best.B.s) best={B,k:tr.t,d,lt}; });
+  if(!best) return null; best.A=scrPrev(best.B); best.p=COMP[best.k]?easeIO(clamp(best.lt/best.d,0,1)):clamp(best.lt/best.d,0,1); return best;
+}
+function scrOpt(x){ if(!scrIsFrame(x)) return undefined; const o={}; if(!scrTrans(x).legacy) o.noIn=true; if(scrNextT(x)) o.noOut=true; return (o.noIn||o.noOut)?o:undefined; }
+function drawScrTrans(g,w,h,t,x){   /* 앞 화면(O)의 마지막 모습과 새 화면(N)을 장면 전환과 같은 효과로 섞어 그림 — 둘 다 투명 바탕에 그려서 장면 배경은 그대로 */
+  const O=trScratch('trO2',w,h), N=trScratch('trN2',w,h), gO=O.getContext('2d'), gN=N.getContext('2d');
+  [gO,gN].forEach(c=>{ c.setTransform(1,0,0,1,0,0); c.globalAlpha=1; c.filter='none'; c.globalCompositeOperation='source-over'; c.clearRect(0,0,w,h); });
+  if(x.A) drawClip(gO,w,h,x.A,Math.min(t,x.A.e-0.001),{noIn:true,noOut:true});
+  drawClip(gN,w,h,x.B,t,{noIn:true});
+  const k=x.k, p=x.p;
+  if(k==='xfade'){ g.save(); g.globalAlpha=1-p; g.drawImage(O,0,0); g.globalAlpha=p; g.drawImage(N,0,0); g.restore(); }
+  else if(k==='fade'||k==='fadew'){ const first=p<0.5; g.save(); g.drawImage(first?O:N,0,0); g.fillStyle='rgba('+fadeRGB(k)+','+(first?p*2:(1-p)*2).toFixed(3)+')'; g.fillRect(0,0,w,h); g.restore(); }
+  else composeTrans(g,w,h,O,N,k,p);
+}
+/* ── 고르기 화면(장면 배경 · 화면 배경 공통) ── */
+function bgTarget(T){   /* T = 'scene' | 클립 id */
+  if(T==='scene') return {g:null,get:()=>P.sbg||null,set:s=>{ P.sbg=s; },del:()=>{ delete P.sbg; }};
+  const g=igById(T); if(!g) return null;
+  return {g,get:()=>g.bgs||null,set:s=>{ g.bgs=s; if(g.bg==='scene'&&!isOver(g.mode)) g.bg='solid'; },del:()=>{ delete g.bgs; }};
+}
+function bgKindOf(T){
+  if(T==='scene'){ const s=P.sbg; return (s&&s.k&&s.k!=='none')?s.k:'def'; }
+  const g=igById(T); if(!g) return 'none'; if(g.bg==='scene'&&!isOver(g.mode)) return 'over'; const s=g.bgs; return (s&&s.k&&s.k!=='none')?s.k:'none';
+}
+function bgNewSpec(kind,old){   /* 종류를 바꿀 때 새 사양 — 투명도(a)와 쓸 수 있는 값은 이어받음 */
+  old=old||{}; const a=old.a!=null?{a:old.a}:{};
+  if(kind==='solid') return Object.assign({k:'solid',c1:old.c1||'#0b1220'},a);
+  if(kind==='grad') return Object.assign({k:'grad',c1:old.c1||'#0f172a',c2:old.c2||'#1d4ed8',ang:old.ang==null?135:old.ang},a);
+  if(kind==='tpl') return Object.assign({k:'tpl',id:old.id||'style'},a);
+  if(kind==='img'||kind==='vid') return Object.assign({k:kind},(old.k===kind&&old.bid)?{bid:old.bid,name:old.name,w:old.w,h:old.h,poster:old.poster,dur:old.dur,lum:old.lum}:{},a);
+  return null;
+}
+function bgSetKind(T,kind){
+  const tg=bgTarget(T); if(!tg) return;
+  if(T==='scene'){ if(kind==='def') tg.del(); else tg.set(bgNewSpec(kind,tg.get())); return; }
+  const g=tg.g;
+  if(kind==='over'){ g.bg='scene'; tg.del(); return; }
+  if(g.bg==='scene'&&!isOver(g.mode)) g.bg='solid';
+  if(kind==='none'){ tg.del(); return; }
+  tg.set(bgNewSpec(kind,tg.get()));
+}
+function bgTplGrid(T,cur){
+  const R=bgReg(); let gp='', h='';
+  R.list.forEach(x=>{ if(x.g!==gp){ if(gp) h+='</div>'; gp=x.g; h+='<div class="vs-bgg">'+esc(gp)+'</div><div class="vs-bgt-grid">'; } const th=bgThumb(x.id); h+='<button class="vs-bgt mobile-keep'+(cur===x.id?' on':'')+'" data-a="bgTpl" data-id="'+esc(T+'|'+x.id)+'" title="'+esc(x.name)+'"'+(th?' style="background-image:url('+th+')"':'')+'><span>'+esc(x.name)+'</span></button>'; });
+  return h+(gp?'</div>':'');
+}
+function bgSwatches(T,cur){ return '<div class="vs-sws">'+BG_PAL.map(c=>'<button class="vs-sw mobile-keep'+(String(cur||'').toLowerCase()===c?' on':'')+'" data-a="bgSw" data-id="'+esc(T+'|'+c)+'" style="background:'+c+'" title="'+c+'"></button>').join('')+'</div>'; }
+function bgGradBtns(T){ return '<div class="vs-sws">'+BG_GR.map(x=>'<button class="vs-sw gr mobile-keep" data-a="bgGr" data-id="'+esc(T+'|'+x[0])+'" style="background:linear-gradient(135deg,'+x[2]+','+x[3]+')" title="'+esc(x[1])+'"></button>').join('')+'</div>'; }
+function bgChooser(T){   /* 장면 배경('scene') · 화면 배경(클립 id) 고르기 — 같은 모양·같은 동작 */
+  const tg=bgTarget(T); if(!tg) return ''; const scene=T==='scene', g=tg.g, sp=tg.get(), kind=bgKindOf(T), pre='bg:'+T+':';
+  if(!scene&&isOver(g.mode)) return '<div class="hint pad">겹치기 형태(카드·띠·배지)는 늘 장면 화면 위에 얹혀서 배경을 따로 고르지 않아요.</div>';
+  const opts=scene?[['def','기본 — 스타일 바탕'],['solid','단색'],['grad','그라데이션'],['tpl','템플릿(배경 모음)'],['img','이미지(붙여넣기·파일)'],['vid','동영상(파일)']]
+    :[['none','투명(기본) — 장면 배경이 비쳐요'],['solid','단색'],['grad','그라데이션'],['tpl','템플릿(배경 모음)'],['img','이미지(붙여넣기·파일)'],['vid','동영상(파일)'],['over','장면 화면 위에 겹침(어둡게)']];
+  let h='<div class="vs-bgc" data-bgt="'+esc(T)+'">'+F.row('배경',F.sel(pre+'k',kind,opts));
+  if(kind==='solid') h+=F.row('색',F.col(pre+'c1',(sp&&sp.c1)||'#0b1220')+'<span class="hint">아래 색을 눌러도 돼요</span>')+bgSwatches(T,sp&&sp.c1);
+  else if(kind==='grad') h+=F.row('색',F.col(pre+'c1',(sp&&sp.c1)||'#0f172a')+'<span class="hint">→</span>'+F.col(pre+'c2',(sp&&sp.c2)||'#1d4ed8')+F.num(pre+'ang',sp&&sp.ang!=null?sp.ang:135,{min:0,max:360,step:15}),'각도(°) — 0 위로 · 90 오른쪽으로 · 135 오른쪽 아래로')+'<div class="vs-bgg">모음(눌러서 바로 쓰기)</div>'+bgGradBtns(T);
+  else if(kind==='tpl') h+=bgTplGrid(T,(sp&&sp.id)||'style');
+  else if(kind==='img'||kind==='vid'){
+    const has=sp&&sp.bid, isImg=kind==='img';
+    if(isImg) h+='<div class="vs-pz mobile-keep" tabindex="0" data-a="bgPz" title="누른 뒤 Ctrl+V — 화면을 캡처(Win+Shift+S)해 두었다가 붙여넣어요">'+(has&&sp.poster?'<img src="'+esc(sp.poster)+'" alt="">':'')+'<span>'+(has?'<b>'+esc(sp.name||'이미지')+'</b><br>':'')+'여기를 누른 뒤 <b>Ctrl+V</b> — 캡처한 이미지를 붙여넣어요</span></div>';
+    else if(has) h+='<div class="vs-pz static">'+(sp.poster?'<img src="'+esc(sp.poster)+'" alt="">':'')+'<span><b>'+esc(sp.name||'동영상')+'</b><br>'+(sp.w?sp.w+'×'+sp.h:'')+(sp.dur?' · '+sp.dur+'초 · 소리 없이 반복':'')+'</span></div>';
+    h+='<div class="vs-btns">'+F.btn('bgUp',isImg?'📎 이미지 파일 올리기':'🎞 동영상 파일 올리기',{d:T+'|'+kind,c:has?'':'pri'})+(isImg?F.btn('bgPaste','📋 클립보드에서 붙여넣기',{d:T,title:'화면을 캡처한 뒤 이 단추를 눌러도 돼요(브라우저가 클립보드 읽기를 물어볼 수 있어요)'}):'')+(has?F.btn('bgClr','지우기',{d:T,c:'dng'}):'')+'</div>';
+    if(!isImg) h+='<div class="hint pad">동영상은 소리 없이 반복 재생돼요 — 길이가 달라도 이어서 돌아요.</div>';
+  }
+  if(kind!=='none'&&kind!=='over') h+=F.row('투명도',F.rng(pre+'a',Math.round(((sp&&sp.a!=null)?sp.a:1)*100),0,100,5),scene?'% — 100 = 그대로 · 낮추면 어두워져요(밝은 그림 위에서 글이 안 묻히게)':'% — 100 = 불투명 · 낮추면 장면 배경이 비쳐요');
+  if(kind!=='none'&&kind!=='over'&&kind!=='def') h+='<div class="hint pad">밝은 배경이면 글자가 자동으로 어두운 색이 돼요(어두우면 밝은 색).</div>';
+  if(scene) h+='<div class="vs-btns">'+(kind!=='def'?F.btn('bgDef','↺ 기본(스타일 바탕)으로',{d:T,title:'장면 배경을 인포그래픽 스타일의 바탕으로 되돌려요'}):'')+'</div>';
+  else h+='<div class="vs-btns">'+F.btn('bgAll','↹ 모든 화면에 이 배경 적용',{d:T,title:'전체 화면형 인포그래픽(왼쪽·오른쪽 패널·전체·큰 수치) 모두에 이 배경을 적용해요'})+'</div>';
+  return h+'</div>';
+}
+function bgSection(T){   /* 탭 안에 넣는 모양(제목 + 고르기) */
+  if(T==='scene') return '<div class="vs-sec">🎨 장면 배경 <span class="hint">영상 전체가 같은 배경 — 화면(인포그래픽)이 바뀌는 사이에 비쳐요</span></div>'+bgChooser('scene')+'<div class="hint pad">카드 배경색을 직접 고른 장면과 AI 그림·영상이 깔린 장면은 그대로예요. 화면의 배경은 [인포] 탭에서 따로 골라요(기본 투명).</div>';
+  return bgChooser(T);
+}
+function scrSel(path,val,dflt){   /* 화면 전환 고르기 — dflt=true 면 프로젝트 기본값 고르기(장면 전환과 같게 포함), 아니면 화면 하나(기본값 따름 포함) */
+  let h='<select class="vs-in mobile-keep" data-f="'+path+'">'; if(!dflt) h+='<option value="inherit"'+(val==='inherit'?' selected':'')+'>기본값 따름</option>';
+  h+='<option value="legacy"'+(val==='legacy'?' selected':'')+'>부드럽게 나타남·사라짐(지금처럼)</option>'; if(dflt) h+='<option value="scene"'+(val==='scene'?' selected':'')+'>장면 전환과 같게</option>';
+  let gp=''; TRANS.forEach(x=>{ if(x[2]!==gp){ if(gp) h+='</optgroup>'; gp=x[2]; h+='<optgroup label="'+esc(gp)+'">'; } h+='<option value="'+x[0]+'"'+(val===x[0]?' selected':'')+'>'+x[3]+' '+esc(x[1])+'</option>'; });
+  return h+'</optgroup></select>';
+}
+function scrTransRows(g){   /* [인포] 편집창 '화면 전환' 줄 */
+  if(!scrIsFrame(g)) return '';
+  const tr=g.trans||{}, cf=P.cfg.info||{}, pre='ig:'+g.id+'::';
+  return F.row('화면 전환',scrSel(pre+'trans',tr.t||'inherit',false)+F.num(pre+'transd',tr.d>0?tr.d:'',{min:0.1,max:3,step:0.05,ph:String(r2(cf.xd>0?cf.xd:0.6))}),'초 — 이 화면이 시작할 때 앞 화면에서 넘어오는 효과(장면 전환과 같은 종류) · 앞 화면이 없으면 장면 배경 위로 나타나요')
+    +'<div class="vs-btns">'+F.btn('bgTransPrev','▶ 전환 미리보기',{d:g.id,title:'앞 화면부터 이어서 재생해 이 화면의 전환을 봐요'})+F.btn('bgTransAll','↹ 모든 화면에 전환 적용',{d:g.id,title:'이 화면의 전환 종류·시간을 전체 화면형 인포그래픽 모두에 적용해요'})+'</div>';
+}
+function setBgField(path,v,final){   /* bg:<대상>:<k|c1|c2|ang|a> */
+  const a=path.split(':'), T=a[1], k=a[2], tg=bgTarget(T); if(!tg) return 'draw';
+  if(k==='k'){ bgSetKind(T,v); setTimeout(()=>{ renderInspector(true); if(T==='scene') renderScenes(); igPostersAll(); },0); return 'draw'; }
+  let sp=tg.get(); if(!sp){ if(T==='scene'&&k==='a') sp={k:'tpl',id:'style'}; else return 'draw'; }
+  if(k==='c1'||k==='c2') sp[k]=String(v||'#000000'); else if(k==='ang') sp.ang=v==null?135:(((+v%360)+360)%360); else if(k==='a') sp.a=r2(clamp((+v||0)/100,0,1));
+  tg.set(sp); if(final){ if(T==='scene') renderScenes(); igPostersAll(); if(k==='a'&&T==='scene') setTimeout(()=>renderInspector(true),0); } return 'draw';
+}
+function bgLumOfUrl(u){   /* 작은 그림(데이터 URL)의 평균 밝기 0~1 — 못 읽으면 null */
+  return new Promise(res=>{ if(!u) return res(null); const im=new Image(); im.onload=()=>{ try{ const c=document.createElement('canvas'); c.width=c.height=8; const g=c.getContext('2d'); g.drawImage(im,0,0,8,8); const d=g.getImageData(0,0,8,8).data; let s=0; for(let i=0;i<d.length;i+=4) s+=(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2])/255; res(+(s/64).toFixed(2)); }catch(e){ res(null); } }; im.onerror=()=>res(null); im.src=u; });
+}
+async function bgFromFile(T,file,how){
+  const tg=bgTarget(T); if(!tg||!file) return; const vk=/^video\//.test(file.type)?'vid':/^image\//.test(file.type)?'img':'';
+  if(!vk){ toast('이미지나 동영상 파일을 선택해 주세요'); return; }
+  try{
+    const old=tg.get(), a=old&&old.a!=null?old.a:null; let info,bid;
+    if(vk==='vid'){ info=await probeVideo(file); bid=putBlob(file); } else{ const r=await probeImage(file); info=r.info; bid=putBlob(file); IMG.set(bid,r.im); }
+    const sp={k:vk,bid,name:how==='paste'?'붙여넣은 이미지':String(file.name||'파일').slice(0,60),w:info.w,h:info.h,poster:info.poster}; if(vk==='vid') sp.dur=info.dur; if(a!=null) sp.a=a;
+    const lm=await bgLumOfUrl(info.poster); if(lm!=null) sp.lum=lm;   /* 평균 밝기 — 글 색 자동 맞춤에 씀 */
+    if(T!=='scene'&&tg.g&&tg.g.bg==='scene'&&!isOver(tg.g.mode)) tg.g.bg='solid';
+    tg.set(sp); commit('배경 '+(vk==='vid'?'동영상':'이미지')); renderAll(); igPostersAll(true); paintFrame(ENG.pos); toast((T==='scene'?'장면':'화면')+' 배경에 '+(vk==='vid'?'동영상':'이미지')+'를 넣었어요');
+  }catch(e){ toast('파일을 읽지 못했어요: '+((e&&e.message)||'')); }
+}
+function bgPasteTarget(){   /* Ctrl+V 로 붙인 이미지가 갈 곳 — 포커스가 안에 있는 고르기 화면, 없으면 '이미지' 칸이 보이는 고르기 화면(하나일 때, 복사해 둔 구성요소(TLCB)가 없을 때만 — 있으면 Ctrl+V 는 구성요소 붙여넣기) */
+  const ac=document.activeElement, c=ac&&ac.closest&&ac.closest('.vs-bgc'); if(c) return c.dataset.bgt||'';
+  if(TLCB) return ''; const all=[...document.querySelectorAll('#vsInsp .vs-bgc')].filter(z=>z.querySelector('.vs-pz[data-a="bgPz"]')); return all.length===1?(all[0].dataset.bgt||''):'';
+}
+async function bgAct(a,id,btn){
+  const p=String(id||'').split('|'), T=p[0], tg=bgTarget(T), done=lb=>{ commit(lb); renderAll(); igPostersAll(true); paintFrame(ENG.pos); };
+  switch(a){
+    case 'bgTpl': if(tg){ const old=tg.get(); if(T!=='scene'&&tg.g&&tg.g.bg==='scene'&&!isOver(tg.g.mode)) tg.g.bg='solid'; tg.set(Object.assign({k:'tpl',id:p[1]},(old&&old.a!=null)?{a:old.a}:{})); done('배경 템플릿'); } break;
+    case 'bgSw': if(tg){ const old=tg.get(); tg.set(Object.assign({k:'solid',c1:p[1]},(old&&old.a!=null)?{a:old.a}:{})); done('배경 단색'); } break;
+    case 'bgGr': if(tg){ const x=BG_GR.find(q=>q[0]===p[1]); if(x){ const old=tg.get(); tg.set(Object.assign({k:'grad',c1:x[2],c2:x[3],ang:x[4]},(old&&old.a!=null)?{a:old.a}:{})); done('배경 그라데이션'); } } break;
+    case 'bgPz': { if(btn&&btn.focus) btn.focus(); break; }
+    case 'bgUp': { UI.bgTgt=T; const inp=$('vsFBg'); if(inp){ inp.accept=p[1]==='vid'?'video/*':'image/*'; inp.click(); } break; }
+    case 'bgPaste': {
+      if(!(navigator.clipboard&&navigator.clipboard.read)){ toast('Ctrl+V 로 붙여넣어 주세요'); break; }
+      try{ const its=await navigator.clipboard.read(); for(const it of its){ const ty=it.types.find(x=>/^image\//.test(x)); if(ty){ const b=await it.getType(ty); await bgFromFile(T,new File([b],'paste.'+(ty.split('/')[1]||'png'),{type:ty}),'paste'); return; } } toast('클립보드에 이미지가 없어요 — 화면을 캡처(Win+Shift+S)한 뒤 다시 눌러 주세요'); }
+      catch(e){ toast('클립보드를 읽지 못했어요 — 붙여넣기 칸을 누르고 Ctrl+V 를 눌러 주세요'); } break; }
+    case 'bgClr': if(tg){ const old=tg.get(); if(old){ const n={k:old.k}; if(old.a!=null) n.a=old.a; tg.set(n); done('배경 지우기'); } } break;
+    case 'bgDef': if(tg){ tg.del(); done('장면 배경 기본'); } break;
+    case 'bgAll': { const g0=igById(T); if(!g0) break; const sp=g0.bgs?JSON.parse(JSON.stringify(g0.bgs)):null, over0=g0.bg==='scene'&&!isOver(g0.mode); let n=0;
+      (P.igs||[]).forEach(g=>{ if(!scrIsFrame(g)) return; if(sp) g.bgs=JSON.parse(JSON.stringify(sp)); else delete g.bgs; if(over0) g.bg='scene'; else if(g.bg==='scene') g.bg='solid'; n++; });
+      done('모든 화면 배경'); toast('전체 화면형 인포그래픽 '+n+'개에 배경을 적용했어요'); break; }
+    case 'bgTransPrev': { const g=igById(T); if(g){ const tr=scrTrans(g), s0=Math.max(0,g.s-1.2); UI.ig=g.id; startPlay(s0,'preview',Math.min(P.dur,g.s+Math.min(tr.d,2)+1.0)); } break; }
+    case 'bgTransAll': { const g0=igById(T); if(!g0) break; const t0=g0.trans&&g0.trans.t, d0=g0.trans&&g0.trans.d; let n=0; (P.igs||[]).forEach(g=>{ if(!scrIsFrame(g)) return; if(t0||d0>0){ g.trans={}; if(t0) g.trans.t=t0; if(d0>0) g.trans.d=d0; } else delete g.trans; n++; }); done('모든 화면 전환'); toast('전체 화면형 인포그래픽 '+n+'개의 전환을 맞췄어요'); break; }
+  }
+}
+/* Ctrl+V — 스튜디오의 키 처리(cbKey)가 Ctrl+V 를 '타임라인 붙여넣기'로 가로채고 브라우저 기본 동작(= paste 이벤트)을 막기 때문에,
+   배경 고르기가 이미지를 받을 수 있는 상태(bgPasteTarget)면 cbKey 가 비켜서고(UI.bgDefer 표시), 이 paste 이벤트에서 이미지면 배경으로, 이미지가 아니면 원래대로 cbPaste() 를 부름 */
+document.addEventListener('paste',e=>{
+  try{
+    if(!P||!_ov||!_ov.classList.contains('open')) return; const defer=!!UI.bgDefer&&Date.now()-UI.bgDefer<2500; UI.bgDefer=0;
+    const dl=$('vsDlg'); if((dl&&dl.classList.contains('on'))||UI.le) return;
+    const tg=e.target; if(tg&&tg.closest&&tg.closest('input:not([type=checkbox]):not([type=range]):not([type=color]):not([type=file]),textarea,select,[contenteditable="true"]')) return;
+    const cd=e.clipboardData; let f=null; if(cd){ [...(cd.files||[])].forEach(x=>{ if(!f&&/^image\//.test(x.type)) f=x; }); if(!f) [...(cd.items||[])].forEach(i=>{ if(!f&&i.kind==='file'&&/^image\//.test(i.type)) f=i.getAsFile(); }); }
+    const T=f?bgPasteTarget():''; if(f&&T&&bgTarget(T)){ e.preventDefault(); e.stopPropagation(); bgFromFile(T,f,'paste'); return; }
+    if(defer){ e.preventDefault(); e.stopPropagation(); cbPaste(); }   /* 이미지가 아니면 예전처럼 타임라인 붙여넣기 */
+  }catch(x){ if(window.__klStrict) throw x; }
+},true);
+/* ══ /v148 ══ */
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
 const VM=new Map();
 function vidEl(sc){
@@ -57797,8 +58170,9 @@ function syncMedia(t,playing){
     }
   });
   VM.forEach((e,id)=>{ if(!keep.has(id)){ e.pause(); e.removeAttribute('src'); try{ e.load(); }catch(x){} VM.delete(id); } });
+  bgSync(t,playing);   /* v148: 배경 영상 */
 }
-function stopVideos(){ VM.forEach(e=>{ e.pause(); }); }
+function stopVideos(){ VM.forEach(e=>{ e.pause(); }); bgStop(); }
 /* AI 영상에 들어 있는 소리(효과음·배경음) — 음량이 0 보다 클 때만 오디오 그래프로 보내 나레이션과 섞음(내보내기에도 포함) */
 function clipAudio(e,sc){
   const vol=sc.vis.vol!=null?sc.vis.vol:P.cfg.look.clipVol;
@@ -57942,7 +58316,7 @@ async function bufOf(bid){
   const buf=await getAc().decodeAudioData((await b.arrayBuffer()).slice(0)); BUF.set(bid,buf); return buf;
 }
 async function ensureBuffers(){ for(const k of P.chunks){ if(k.bid&&k.state==='done') await bufOf(k.bid); } if(P.cfg.bgm.bid) await bufOf(P.cfg.bgm.bid); }
-async function ensureImages(){ for(const sc of P.scenes){ if(sc.vis.kind==='image'&&sc.vis.bid) await loadImg(sc.vis.bid); } if(P.char&&P.char.bid) await loadImg(P.char.bid); }
+async function ensureImages(){ for(const sc of P.scenes){ if(sc.vis.kind==='image'&&sc.vis.bid) await loadImg(sc.vis.bid); } if(P.char&&P.char.bid) await loadImg(P.char.bid); await ensureBgImages(); }
 const TK={w:null,url:null,fn:null,iv:0};
 function tickStart(fn,fps){
   tickStop(); TK.fn=fn; const ms=Math.max(8,Math.round(1000/(fps||30)));
@@ -58263,7 +58637,7 @@ function modalHtml(){
    +'<button class="vs-mb mobile-keep" data-a="splitPh" title="재생헤드 위치에서 장면 나누기 (S)">✂ 여기서 나누기</button><button class="vs-mb mobile-keep" data-a="addX" title="재생헤드 위치에 자막 추가">＋ 자막</button><button class="vs-mb dng mobile-keep" id="vsTlDel" data-a="tlDel" disabled title="타임라인에서 요소를 눌러 고르면 지울 수 있어요">🗑 삭제</button><span class="hint" id="vsTlHint">요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정</span></div>'
    +'<div class="vs-tlw"><div class="vs-tll"><i style="height:22px"></i><i style="height:18px">타이틀</i><i style="height:40px">화면</i><i id="vsTllG" style="height:40px">인포</i><i id="vsTllC" style="height:22px">구성</i><i style="height:30px">자막</i><i style="height:42px">음성</i><i style="height:18px">BGM</i></div><div class="vs-tls" id="vsTls"><div class="vs-tli" id="vsTlIn"></div></div></div></div>'
    +'<div class="vs-dg" id="vsDlg"></div>'
-   +'<input type="file" id="vsFVis" accept="image/*,video/*" style="display:none"><input type="file" id="vsFAud" accept="audio/*,video/*" style="display:none"><input type="file" id="vsFBgm" accept="audio/*" style="display:none"><input type="file" id="vsFChar" accept="image/*" style="display:none">'
+   +'<input type="file" id="vsFVis" accept="image/*,video/*" style="display:none"><input type="file" id="vsFAud" accept="audio/*,video/*" style="display:none"><input type="file" id="vsFBgm" accept="audio/*" style="display:none"><input type="file" id="vsFChar" accept="image/*" style="display:none"><input type="file" id="vsFBg" accept="image/*,video/*" style="display:none">'
    +'</div>';
 }
 function paintSaved(){ const e=$('vsSaved'); if(e) e.textContent=UI.saved?'✓ 저장됨':'● 저장 안 됨'; if(e) e.className='vs-saved'+(UI.saved?'':' un'); }
@@ -58292,7 +58666,7 @@ function sceneItem(c,j){
   const v=c.vis||{}, k=v.kind||'none', g=v.gen, first=(sentsOf(P,c)[0]||{}).text||'';
   const st=g&&g.state==='run'?'<em class="run">생성 중</em>':g&&g.state==='err'?'<em class="err" title="'+esc(g.err)+'">⚠ 실패</em>':'';
   const ci=(P.sents[c.first]||{}).ci||0, hu=hueOf(ci), cd=v.card||{};
-  const pst=v.poster||v._poster, thStyle=pst?' style="background-image:url('+pst+')"':' style="background:linear-gradient(135deg,'+(cd.c1||'hsl('+hu+',55%,20%)')+','+(cd.c2||'hsl('+((hu+34)%360)+',58%,34%)')+')"';
+  const pst=v.poster||v._poster, thStyle=pst?' style="background-image:url('+pst+')"':' style="background:'+((cd.c1||cd.c2)?'linear-gradient(135deg,'+(cd.c1||'hsl('+hu+',55%,20%)')+','+(cd.c2||'hsl('+((hu+34)%360)+',58%,34%)')+')':sceneBgCss())+'"';   /* v148: 직접 고른 카드색이 없으면 장면 배경 */
   return '<div class="vs-sc k-'+k+(j===UI.sel?' sel':'')+(UI.ms&&UI.ms.has(c.id)?' msel':'')+(j===UI.cur?' cur':'')+'" data-j="'+j+'"><div class="th"'+thStyle+'>'+(pst?'':ICON[k])+'</div><div class="in"><div class="r1"><b>'+(j+1)+'</b><span>'+fmtT(c.s,1)+' · '+((c._ve>c.s?c._ve:c.e)-c.s).toFixed(1)+'초</span>'+st+(v.src==='ai'?'<em class="ai">AI</em>':'')+(igsOfScene(c).length?'<em class="ig" title="이 장면에 걸친 인포그래픽">📊'+igsOfScene(c).length+'</em>':'')+'</div><div class="r2">'+esc(c.name||first)+'</div></div></div>';
 }
 function renderScenes(){
@@ -58356,6 +58730,7 @@ const gapAfter=s=>{ const i=P.sents.indexOf(s), nx=P.sents[i+1]; return !nx?0:nx
 function inspVis(){
   const j=UI.sel, c=P.scenes[j]; if(!c) return ''; const v=c.vis, k=v.kind||'none', g=v.gen, D=(c._ve>c.s?c._ve:c.e)-c.s;
   let h='<div class="vs-ih"><b>장면 '+(j+1)+' 화면</b><span>'+KIND[k]+(v.src==='ai'?' · AI':v.src==='upload'?' · 내 파일':'')+(v.dur?' · '+v.dur+'초':'')+(v.w?' · '+v.w+'×'+v.h:'')+'</span></div>';
+  h+=bgSection('scene');   /* v148: 장면 배경(영상 전체) */
   if(g&&g.state==='run') h+='<div class="vs-note run">⏳ '+(g.kind==='video'?'AI 영상':g.kind==='info'?'인포그래픽':'AI 이미지')+' 만드는 중… '+fmtDur((Date.now()-g.t0)/1000)+' 경과'+F.btn('cancelGen','중단',{c:'dng'})+'</div>';
   if(g&&g.state==='err') h+='<div class="vs-note err">⚠ 만들지 못했어요 — '+esc(g.err||'')+'</div>';
   if(hasBoard(P)) h+='<div class="vs-sec">🎞 스토리보드 묘사 <span class="hint">'+(sbOn(P)?'📐 적용 켜짐 — 이 글이 AI 요청·카드·인포그래픽에 쓰여요':'📐 적용 꺼짐 — 지금은 쓰지 않아요')+'</span></div>'+F.ta('sb:desc:'+c.id,c.desc||'',{rows:3,ph:'(이 장면의 스토리보드 묘사 — 화면 글자는 큰따옴표로)'})+(sbOn(P)?sbBadge(c):'');
@@ -58375,7 +58750,7 @@ function inspVis(){
   if(k==='image'||k==='video'){ const f=v.filter||{b:1,c:1,s:1};
     h+='<div class="vs-sec">색 보정</div>'+F.row('밝기',F.rng('sc.fb',f.b,0.5,1.6,0.05))+F.row('대비',F.rng('sc.fc',f.c,0.5,1.6,0.05))+F.row('채도',F.rng('sc.fs',f.s,0,2,0.05)); }
   if(k==='none'||k==='card'){ const cd=v.card||{};
-    h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}),'줄바꿈: Shift+Enter(↵ 표시)')+F.row('배경색',F.col('sc.cc1',cd.c1||'#1b2a41')+F.col('sc.cc2',cd.c2||'#2f4a73')+F.btn('ccReset','자동색')); }
+    h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}),'줄바꿈: Shift+Enter(↵ 표시)')+F.row('배경색',F.col('sc.cc1',cd.c1||'#1b2a41')+F.col('sc.cc2',cd.c2||'#2f4a73')+F.btn('ccReset','자동색',{title:'직접 고른 색을 지우고 영상 전체의 장면 배경([화면] 탭 맨 위에서 고르는 것)을 따라요'})); }
   { const gs=igsOfScene(c); h+='<div class="vs-sec">이 장면의 인포그래픽 <span class="hint">'+gs.length+'개 — 타임라인 [인포] 줄에서 편집해요</span></div>'+(gs.length?'<div class="vs-btns">'+gs.map(x=>F.btn('igSel',esc(igName(x)),{d:x.id})).join('')+'</div>':'')+'<div class="vs-btns">'+F.btn('infoMk','📊 이 장면 자동 구성')+F.btn('igNew','＋ 인포그래픽 추가')+'</div>'; }
   h+='<div class="vs-sec">챕터 타이틀 <span class="hint">'+(titleOn(P)?'켜짐 · 기본 '+titleDur(P)+'초 소리 없이':'꺼짐')+'</span></div><div class="vs-btns">'+F.btn('tab','🏷 타이틀 설정',{d:'tt'})+'</div>';
   return h;
@@ -58573,7 +58948,8 @@ function setField(path,v,el,final){
   else if(path.indexOf('cfg.')===0){
     if(v===null&&isNum) return; const k=path.slice(4); setPath(P.cfg,k,v);
     if(k.indexOf('sub.')===0||k==='offs.sub') P._cues=null;
-    if(/^(gap\.|lead$|tail$|cpm$|offs\.vid$|title\.)/.test(k)){ redo='lay'; if(k.indexOf('title.')===0){ P.cfg.title.user=true; if(k==='title.dur') P.cfg.title.dur=clamp(+v||2.5,1,6); if(final) setTimeout(()=>renderInspector(true),0); } }
+    if(/^title\.(?:gk|lh|gs)$/.test(k)){ const kk=k.slice(6); P.cfg.title[kk]=ttgClamp(kk,v); (P._titles||[]).forEach(q=>{ q._ig=null; }); if(final) setTimeout(()=>renderInspector(true),0); }   /* v147: 타이틀 글 간격(공통) — 시간표는 그대로라 다시 짜지 않고 그림만 */
+    else if(/^(gap\.|lead$|tail$|cpm$|offs\.vid$|title\.)/.test(k)){ redo='lay'; if(k.indexOf('title.')===0){ P.cfg.title.user=true; if(k==='title.dur') P.cfg.title.dur=clamp(+v||2.5,1,6); if(final) setTimeout(()=>renderInspector(true),0); } }
     else if(k==='exp.prev'){ UI.cvScale=0; canvasSize(); }
     else if(k==='mix.narr'){ if(ENG.gN) ENG.gN.gain.value=v; }
     else if(k==='bgm.vol'||k==='mix.bgm'){ if(ENG.gB&&ENG.mode!=='export') ENG.gB.gain.value=P.cfg.bgm.vol*P.cfg.mix.bgm; }
@@ -58586,6 +58962,7 @@ function setField(path,v,el,final){
   else if(path.indexOf('sc.')===0&&c) redo=setSceneField(c,path.slice(3),v);
   else if(path.indexOf('ss:')===0) redo=setSentField(path,v);
   else if(path.indexOf('tt:')===0) redo=setTitleField(path,v);
+  else if(path.indexOf('bg:')===0) redo=setBgField(path,v,final);   /* v148: 장면 배경·화면 배경 고르기 */
   else if(path.indexOf('sb:')===0) redo=setSbField(path,v);   /* v107: 스토리보드 직접 고치기 */
   else if(path.indexOf('chap:')===0){ const ci=+path.slice(5); if(ci>=0&&ci<P.chap.length) P.chap[ci]=String(v||'').trim()||P.chap[ci]; redo='lay'; }
   else if(path.indexOf('xs:')===0){ const a=path.split(':'), x=P.xsubs.find(q=>q.id===a[1]); if(x){ if(a[2]==='text') x.text=String(v||''); else if(v!=null) x[a[2]]=Math.max(0,v); P._cues=null; } }
@@ -58626,6 +59003,7 @@ async function act(a,btn){
   if(/^le[A-Z]/.test(a)){ leAct(a,id); return; }   /* v113 */
   if(/^lr[A-Z]/.test(a)){ await lrAct(a,id,btn); return; }   /* v121: 🎓 AI학습 */
   if(a==='tmAlign'){ tmulApply(id); return; }
+  if(/^bg[A-Z]/.test(a)){ await bgAct(a,id,btn); return; }   /* v148: 배경 고르기·화면 전환 */
   switch(a){
     case 'close': closeStudio(); break;
     case 'undo': undo(); break; case 'redo': redo(); break;
@@ -58688,6 +59066,7 @@ async function act(a,btn){
     case 'ttNoOv': { let n=0; (P._titles||[]).filter(q=>q.ov).forEach(q=>{ P.ttl=P.ttl||{}; const o=P.ttl[q.ci]||(P.ttl[q.ci]={}); if(ttOvDef(P,q.ci)) o.ov=false; else delete o.ov; if(!Object.keys(o).length) delete P.ttl[q.ci]; n++; }); layout(P); commit('모든 타이틀 겹치지 않게'); renderAll(); toast(n?'타이틀 '+n+'개를 영상·음성·자막과 겹치지 않게 바꿨어요(소리 없이 끼워 넣기)':'겹쳐 얹은 타이틀이 없어요'); break; }   /* v136 */
     case 'ttReset': { ttResetKeys(id,['t','k','s','off']); layout(P); commit('챕터 타이틀 글'); renderAll(); break; }
     case 'ttTimeReset': { ttResetKeys(id,['dur','pre','post','ofs','ov']); layout(P); commit('챕터 타이틀 길이·위치'); renderAll(); break; }
+    case 'ttGapReset': { ttResetKeys(id,['gk','lh','gs']); if(id==='*'&&P.cfg.title){ ['gk','lh','gs'].forEach(k=>{ delete P.cfg.title[k]; }); savePref(P.cfg); } (P._titles||[]).forEach(q=>{ q._ig=null; }); commit('챕터 타이틀 간격'); renderAll(); break; }   /* v147: '*' 이면 공통 값도 지움 */
     case 'selPrev': selectScene(UI.sel-1,true); break; case 'selNext': selectScene(UI.sel+1,true); break;
     case 'startPh': { if(UI.sel>0){ setSceneStart(UI.sel,ENG.playing?nowT():ENG.pos); commit('장면 시작'); refresh('insp'); } break; }
     case 'splitPh': { const t=ENG.playing?nowT():ENG.pos, j=sceneIdx(t); if(splitScene(j,t)){ UI.sel=j+1; commit('장면 나누기'); renderAll(); } else toast('장면 가장자리에서 0.4초 이상 떨어진 곳에서 나눠 주세요'); break; }
@@ -59889,6 +60268,7 @@ function bindEvents(el){
   el.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-a]'); if(b&&!b.disabled){ act(b.dataset.a,b); return; } const sc=e.target.closest&&e.target.closest('.vs-sc'); if(sc&&P){ const j=+sc.dataset.j; if(!msClick(j,e)) selectScene(j,true); } });
   el.addEventListener('dblclick',e=>{ const sc=e.target.closest&&e.target.closest('.vs-sc'); if(sc&&P){ selectScene(+sc.dataset.j,false); startPlay(P.scenes[UI.sel].s); } });
   el.addEventListener('input',e=>{ const t=e.target; if(t.dataset&&t.dataset.f&&(t.type==='range'||t.type==='color')) onField(e,false); else if(t.dataset&&t.dataset.d!=null&&t.type==='range') onDlgField(e); });
+  el.addEventListener('focusin',e=>{ const t=e.target, f=t&&t.dataset&&t.dataset.f; if(!f||!P) return; const m=/^tt:(\d+):(?:gk|lh|gs)$/.exec(f); if(m) ttShow(+m[1]); else if(/^cfg\.title\.(?:gk|lh|gs)$/.test(f)) ttShow(null); });   /* v147: 간격 칸을 누르면 그 타이틀이 미리보기에 보이게 */
   el.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.f!=null&&t.dataset.f!=='') onField(e,true); else if(t.dataset&&t.dataset.d!=null) onDlgField(e); });
   const sk=$('vsSeek'); sk.addEventListener('input',()=>{ if(P) seekTo(sk.value/1000*P.dur); });
   const z=$('vsZoom'); z.addEventListener('input',()=>setZoom(+z.value));
@@ -59898,6 +60278,7 @@ function bindEvents(el){
   $('vsTls').addEventListener('wheel',e=>{ if(e.ctrlKey||e.metaKey){ e.preventDefault(); setZoom(UI.pps*(e.deltaY<0?1.2:1/1.2)); } },{passive:false});
   $('vsFVis').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P) visualFromFile(P.scenes[UI.sel],f); });
   $('vsFAud').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P){ if(P.chunks.some(k=>k.bid)&&!confirm('지금 있는 음성을 이 파일로 바꿀까요?')) return; importNarration(f); } });
+  $('vsFBg').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P&&UI.bgTgt) bgFromFile(UI.bgTgt,f); });   /* v148: 배경 이미지·동영상 올리기 */
   $('vsFChar').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P) charFromFile(f); });
   $('vsFBgm').addEventListener('change',async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f||!P) return; try{ const b=P.cfg.bgm, id=putBlob(f); BUF.delete(b.bid); b.bid=id; b.name=f.name.replace(/\.\w+$/,''); await bufOf(id); commit('배경음악'); renderAll(); }catch(x){ toast('음악 파일을 읽지 못했어요'); } });
 }
@@ -59973,7 +60354,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
-    agSpan,splitOpen,TTV,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
+    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
     SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
