@@ -2898,6 +2898,8 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-ov .vs-pz.static{cursor:default;border-style:solid;border-width:1px}
 .vs-ov .vs-pz:focus{outline:none;border-color:#f59e0b;background:#14233d;color:#fde68a}
 .vs-ov .vs-pz img{max-height:54px;max-width:96px;border-radius:5px;object-fit:cover}
+/* v149 — 카드 색 통일 견본 */
+.vs-ov .vs-cuw{display:inline-block;width:38px;height:18px;border-radius:5px;border:1px solid rgba(255,255,255,.3);vertical-align:middle;margin:0 6px}
 .vs-ov .vs-in{background:#0b1322;border:1px solid #2a3a56;color:#e2e8f0;border-radius:6px;padding:4px 8px;font-size:12px;min-height:28px;max-width:100%}   /* 앱 전역 input[type=…] 규칙(특이도 높음)을 이기려고 .vs-ov 를 붙임 */
 .vs-ov .vs-in[type=number]{width:78px}.vs-ov .vs-in.wide{flex:1 1 140px;min-width:100px}
 .vs-ov select.vs-in{max-width:100%}
@@ -47669,7 +47671,7 @@ function styleGallery(d){
 
 /* ── 메뉴별 공통 설정(한 번에 만들기·음성·자막·화면) — 모든 프로젝트에 같게 + 초기화 ── */
 const PREF_GROUPS={
-  auto:{n:'한 번에 만들기',paths:['dlg.avoice','dlg.asub','dlg.vkind','dlg.alearn']},
+  auto:{n:'한 번에 만들기',paths:['dlg.avoice','dlg.asub','dlg.vkind','dlg.alearn','dlg.aucard']},
   voice:{n:'음성',paths:['voice','mix.narr','gap','lead','tail']},
   sub:{n:'자막',paths:['sub','prompts.sub']},
   vis:{n:'화면',paths:['look','img','vid','info','prompts.info','dlg.vkind','title']}
@@ -47689,7 +47691,7 @@ function applyMenuPrefs(p){   /* 프로젝트를 열 때 — 저장해 둔 메�
 /* 대화상자(화면 만들기·한 번에 만들기)에서 바꾼 값은 바로 설정에 저장 — 취소해도 남음 */
 const DLG_PREF={
   vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
-  avoice:v=>{ P.cfg.dlg.avoice=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
+  avoice:v=>{ P.cfg.dlg.avoice=!!v; }, aucard:v=>{ P.cfg.dlg.aucard=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
   ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; },
   istyle:v=>{ if(ISTY[v]){ P.cfg.info.style=v; P.cfg.info.sv138=1; } }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; }, ionly:v=>{ P.cfg.info.only=String(v==null?'':v).slice(0,300); }, ibal:v=>{ P.cfg.info.bal=!!v; }, ibalm:v=>{ P.cfg.info.balm=(v==='tile'||v==='type')?v:'auto'; }, ifit:v=>{ P.cfg.info.fit=!!v; }, iguar:v=>{ P.cfg.info.guar=!!v; }, isum:v=>{ P.cfg.info.sum=!!v; },
   asb:v=>{ P.sb=P.sb||{}; P.sb.on=(v==='on'); commit('스토리보드 적용 '+(v==='on'?'켬':'끔')); }   /* v107: 스토리보드대로 / AI 가 알아서 — 프로젝트에 저장(AI 수정 패널과 같은 값) */
@@ -48232,7 +48234,7 @@ function sbMkCard(sc,o){
   if(!sbOn(P)) return false; o=o||{}; const sp=sbParse(sc), v=sc.vis=sc.vis||{kind:'none'}; if(['none','card'].indexOf(v.kind||'none')<0) return false;
   const cd=v.card=v.card||{}; let ch=false; const set=(k,x)=>{ if(cd[k]!==x){ cd[k]=x; ch=true; } };
   if(!o.noText&&sp.texts.length){ set('title',clipS(sp.texts[0],40)); const sub=sp.texts.slice(1,4).map(x=>clipS(x,30)).join(' · '); if(sub) set('sub',sub); else if(cd.sub!=null){ delete cd.sub; ch=true; } }
-  const col=sbColor(sp.text)||sbColor(sbGlobal(P).style); if(col){ set('c1',col.c1); set('c2',col.c2); }
+  if(!o.noColor){ const col=sbColor(sp.text)||sbColor(sbGlobal(P).style); if(col){ set('c1',col.c1); set('c2',col.c2); } }   /* v149: 한 번에 만들기는 noColor — 카드 색은 통일(cardUnify) */
   return ch;
 }
 /* 장면들에 스토리보드의 전환·이미지 움직임 지시를 반영(AI 호출 없음) — {tr,mo,lines:Map(장면 id → 바꾼 내용 글 목록)} */
@@ -48362,18 +48364,18 @@ async function sbFixAll(){
   await runSceneEdit({fit:true});
 }
 /* ── 대화상자의 [스토리보드] 줄 ── */
-function sbHow(kind){
-  return ({card:'카드 화면: 장면의 화면 글자(큰따옴표 글)를 카드의 큰 글자·작은 글로, 색 이름은 카드 색으로, 전환 지시는 전환 효과로 반영해요. 인물·배경 묘사는 AI 이미지·영상으로 만들 때 그려져요.',
+function sbHow(kind,uni){   /* v149: uni = 카드 색 통일(한 번에 만들기) */
+  return ({card:'카드 화면: 장면의 화면 글자(큰따옴표 글)를 카드의 큰 글자·작은 글로, '+(uni?'색 이름은 카드 색에 쓰지 않고(모든 카드를 같은 색으로 통일), ':'색 이름은 카드 색으로, ')+'전환 지시는 전환 효과로 반영해요. 인물·배경 묘사는 AI 이미지·영상으로 만들 때 그려져요.',
     image:'AI 이미지: 스타일·분위기·장면 묘사 전체(+화면 글자·피할 것)를 요청에 넣고, 카메라 지시는 이미지 움직임으로, 전환 지시는 전환 효과로 반영해요.',
     video:'AI 영상: 스타일·분위기·장면 묘사 전체를 Veo 요청에 넣고 피할 것은 제외 요청으로 보내요. 전환 지시는 전환 효과로 반영해요(요청 글이 너무 길면 Veo 가 일부를 무시할 수 있어요).',
-    info:'인포그래픽: 장면 묘사의 화면 글자·숫자·그래픽 종류(선 차트·지도·표…)를 AI 설계 요청에 지시로 넣고, 빠진 글자는 요점 블록으로 채워요. 인사·진행 멘트뿐인 장면도 스토리보드가 화면을 지시했으면 만들어요. 전환·색은 위와 같이 반영해요.',
+    info:'인포그래픽: 장면 묘사의 화면 글자·숫자·그래픽 종류(선 차트·지도·표…)를 AI 설계 요청에 지시로 넣고, 빠진 글자는 요점 블록으로 채워요. 인사·진행 멘트뿐인 장면도 스토리보드가 화면을 지시했으면 만들어요. '+(uni?'전환은 위와 같이 반영하고, 카드 색은 통일해요.':'전환·색은 위와 같이 반영해요.'),
     skip:'화면은 건드리지 않고 전환·이미지 움직임 지시만 반영해요.'})[kind]||'';
 }
-function sbRow(kind){
+function sbRow(kind,uni){
   if(!hasBoard(P)) return D_('스토리보드','<span class="hint">이 영상에는 스토리보드가 없어요 — 스크립트 만들기에서 ③ 스토리보드까지 만들어 영상으로 보내면 쓸 수 있어요</span>');
   const on=sbOn(P), n=P.scenes.filter(c=>sbBlocks(c).length).length;
   return D_('스토리보드',dsel('asb',on?'on':'off',[['on','스토리보드대로 만들기 (권장) — 장면 묘사·화면 글자·그래픽·카메라·전환·분위기를 그대로 따라요'],['off','AI 가 알아서 만들기 — 스토리보드는 쓰지 않고 나레이션만 보고 만들어요']]))
-    +'<div class="vs-note sm">'+(on?'📐 묘사가 있는 장면 <b>'+n+'/'+P.scenes.length+'</b>개. '+esc(sbHow(kind))+' 만든 뒤 ④ 싱크 점검에서 지시마다 반영됐는지 확인해 줘요.':'스토리보드를 쓰지 않아요(스타일·분위기·장면 묘사·화면 글자·전환 지시 모두). 만든 뒤에도 ✨ AI 수정의 [📐 스토리보드 적용]으로 다시 켤 수 있어요.')+'</div>';
+    +'<div class="vs-note sm">'+(on?'📐 묘사가 있는 장면 <b>'+n+'/'+P.scenes.length+'</b>개. '+esc(sbHow(kind,uni))+' 만든 뒤 ④ 싱크 점검에서 지시마다 반영됐는지 확인해 줘요.':'스토리보드를 쓰지 않아요(스타일·분위기·장면 묘사·화면 글자·전환 지시 모두). 만든 뒤에도 ✨ AI 수정의 [📐 스토리보드 적용]으로 다시 켤 수 있어요.')+'</div>';
 }
 /* ── 스크립트·스토리보드 직접 고치기 — 🎞/📜 보기의 [✏ 편집] ── */
 Object.assign(UI,{docEdit:false,docTab:'script'});
@@ -56838,7 +56840,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v148';
+const KL_BUILD='v149';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -58134,6 +58136,55 @@ document.addEventListener('paste',e=>{
   }catch(x){ if(window.__klStrict) throw x; }
 },true);
 /* ══ /v148 ══ */
+/* ══ v149 (2026-11-04) — 한 번에 만들기: 장면마다 스토리보드 색을 넣지 않고 모든 장면 카드를 한 색으로 통일 ═══════════════════════════════════════
+   요청: "한번에 만들기를 진행하면 카드 꾸미기를 각 장면마다 색상을 다 바꿔버리는데, 한번에 만들기를 클릭하면 모든 장면의 카드는 '화면'탭에 카드 꾸미기 설정 색상으로 통일해서 적용되게"
+   · 원인: autoMake → sbMkCard 가 장면의 스토리보드 묘사에 든 색 이름(SB_COL: 네이비·에메랄드·초록·빨강…)으로 장면마다 vis.card.c1·c2 를 따로 넣음 → v148 의 '영상 전체 통일 장면 배경(P.sbg)'을 장면 카드가 가림
+   · 고침: ① 한 번에 만들기(대화상자 '카드 색' 체크, 기본 켬 = cfg.dlg.aucard)는 sbMkCard 에 noColor 를 줘서 색 이름을 카드 색에 쓰지 않고
+          ② cardUnify — 통일할 색(cardUniSrc: 지금 고른 장면의 카드 꾸미기 색 → 없으면 [모든 장면에 적용]으로 저장해 둔 공통 색 cfg.look.cc1·cc2)이 있으면 장면 배경(P.sbg)을 그 색으로 바꾸고,
+            카드·빈 장면에 따로 정한 색(vis.card.c1·c2)은 지움 → 카드는 모두 장면 배경(P.sbg·없으면 스타일 바탕)을 따름
+   · 카드 꾸미기 '배경색' 칸은 직접 고른 색이 없으면 지금 장면 배경의 색을 보여 주고(cardEff), [↹ 모든 장면에 적용]으로 이 색을 모든 장면에 통일 + 공통 색으로 저장(모든 프로젝트 공통 — 다음 영상의 한 번에 만들기가 씀)
+   · 건드리지 않은 것: 장면 하나의 [🃏 카드로]·③ 화면 만들기·AI 수정은 예전처럼 스토리보드 색을 씀 ── */
+const CC_HEX=/^#[0-9a-f]{6}$/i;
+function cardEff(cd){   /* 카드 꾸미기 '배경색' 칸에 보일 두 색 — 직접 고른 색, 없으면 지금 장면 배경(단색·그라데이션·템플릿)의 색, 그것도 없으면 스타일 바탕 */
+  cd=cd||{}; let c1=CC_HEX.test(cd.c1||'')?cd.c1:'', c2=CC_HEX.test(cd.c2||'')?cd.c2:'';
+  if(!c1&&!c2){
+    const s=P&&P.sbg;
+    if(bgReady(s)){
+      if(s.k==='solid'&&CC_HEX.test(s.c1||'')){ c1=c2=s.c1; }
+      else if(s.k==='grad'&&CC_HEX.test(s.c1||'')&&CC_HEX.test(s.c2||'')){ c1=s.c1; c2=s.c2; }
+      else if(s.k==='tpl'){ const d=bgReg().map[s.id||'style']; if(d&&d.c1){ c1=d.c1; c2=d.c2; } }
+    }
+    if(!c1){ const pal=infoPal(0,sceneStyle()); if(CC_HEX.test(pal.bg1||'')){ c1=pal.bg1; c2=CC_HEX.test(pal.bg2||'')?pal.bg2:pal.bg1; } }
+  }
+  return {c1:c1||c2||'#1b2a41', c2:c2||c1||'#2f4a73'};
+}
+function cardUniSrc(){   /* 모든 장면 카드를 맞출 색 — 지금 고른 장면의 카드 꾸미기 색(직접 고른 게 있으면) → 없으면 [모든 장면에 적용]으로 저장해 둔 공통 색 → 없으면 null */
+  if(!P) return null; const sc=P.scenes[UI.sel], v=sc&&sc.vis, cd=v&&['none','card'].indexOf(v.kind||'none')>=0&&v.card;
+  if(cd&&(CC_HEX.test(cd.c1||'')||CC_HEX.test(cd.c2||''))){ const e=cardEff(cd); return {c1:e.c1,c2:e.c2,from:'scene'}; }
+  const lk=(P.cfg&&P.cfg.look)||{};
+  if(CC_HEX.test(lk.cc1||'')||CC_HEX.test(lk.cc2||'')){ const a=CC_HEX.test(lk.cc1||'')?lk.cc1:lk.cc2, b=CC_HEX.test(lk.cc2||'')?lk.cc2:lk.cc1; return {c1:a,c2:b,from:'common'}; }
+  return null;
+}
+function cardUnify(src,force){   /* 카드 색 통일 — 맞출 색(src)이 있으면 장면 배경(P.sbg)을 그 색으로(force 가 아니면 장면 배경을 직접 고르지 않았을 때만), 카드·빈 장면에 따로 정한 색은 지움 → 바꾼 곳 수 */
+  if(!P) return 0; let n=0;
+  if(src&&(force||sceneBgDef())){ const sp=src.c1===src.c2?{k:'solid',c1:src.c1}:{k:'grad',c1:src.c1,c2:src.c2,ang:135}; if(JSON.stringify(P.sbg||null)!==JSON.stringify(sp)){ P.sbg=sp; n++; } }
+  P.scenes.forEach(c=>{ const v=c.vis; if(!v||['none','card'].indexOf(v.kind||'none')<0||!v.card) return; if(v.card.c1!=null||v.card.c2!=null){ delete v.card.c1; delete v.card.c2; n++; } });
+  return n;
+}
+function cuRow(d){   /* 한 번에 만들기 대화상자의 '카드 색' 줄 — 카드를 만드는 방식(카드·인포그래픽)일 때만 */
+  if(!(d.akind==='card'||d.akind==='info')) return ''; const src=cardUniSrc(), on=d.aucard!==false;
+  const sw=src?'<span class="vs-cuw" style="background:linear-gradient(135deg,'+src.c1+','+src.c2+')" title="'+src.c1+' → '+src.c2+'"></span>':'';
+  const why=on?((src?(src.from==='scene'?'[화면] 탭 카드 꾸미기의 색(장면 '+(UI.sel+1)+')으로':'저장해 둔 공통 색으로'):'[화면] 탭 맨 위 \'장면 배경\'으로')+' 모든 카드를 통일해요 — 장면마다 따로 정한 카드 색은 지워지고, 스토리보드의 색 이름은 카드 색에 쓰지 않아요.')
+    :'꺼짐 — 스토리보드에 든 색 이름(네이비·초록…)으로 장면마다 다른 카드 색을 넣어요.';
+  return D_('카드 색',dchk('aucard',on,'모든 장면 카드를 같은 색으로 통일')+sw+'<div class="hint">'+why+'</div>');
+}
+function cardColorRows(cd){   /* [화면] 탭 카드 꾸미기의 '배경색' 줄 + 저장해 둔 공통 색 안내 */
+  const ec=cardEff(cd), lk=(P.cfg&&P.cfg.look)||{}, com=CC_HEX.test(lk.cc1||'')||CC_HEX.test(lk.cc2||'');
+  let h=F.row('배경색',F.col('sc.cc1',ec.c1)+F.col('sc.cc2',ec.c2)+F.btn('ccReset','자동색',{title:'직접 고른 색을 지우고 영상 전체의 장면 배경([화면] 탭 맨 위에서 고르는 것)을 따라요'})+F.btn('ccAll','↹ 모든 장면에 적용',{title:'이 두 색을 모든 장면 카드의 배경으로 통일해요(장면마다 따로 정한 색은 지워요). 다음 영상의 한 번에 만들기도 이 색을 써요(모든 프로젝트 공통)'}),'직접 고른 색이 없으면 지금 장면 배경의 색이 보여요');
+  if(com){ const a=CC_HEX.test(lk.cc1||'')?lk.cc1:lk.cc2, b=CC_HEX.test(lk.cc2||'')?lk.cc2:lk.cc1; h+='<div class="hint pad">저장해 둔 공통 색 <span class="vs-cuw" style="background:linear-gradient(135deg,'+a+','+b+')"></span> — 한 번에 만들 때 이 색으로 통일해요 '+F.btn('ccAllOff','해제',{title:'저장해 둔 공통 색을 지워요(이 프로젝트의 화면은 그대로)'})+'</div>'; }
+  return h;
+}
+/* ══ /v149 ══ */
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
 const VM=new Map();
 function vidEl(sc){
@@ -58750,7 +58801,7 @@ function inspVis(){
   if(k==='image'||k==='video'){ const f=v.filter||{b:1,c:1,s:1};
     h+='<div class="vs-sec">색 보정</div>'+F.row('밝기',F.rng('sc.fb',f.b,0.5,1.6,0.05))+F.row('대비',F.rng('sc.fc',f.c,0.5,1.6,0.05))+F.row('채도',F.rng('sc.fs',f.s,0,2,0.05)); }
   if(k==='none'||k==='card'){ const cd=v.card||{};
-    h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}),'줄바꿈: Shift+Enter(↵ 표시)')+F.row('배경색',F.col('sc.cc1',cd.c1||'#1b2a41')+F.col('sc.cc2',cd.c2||'#2f4a73')+F.btn('ccReset','자동색',{title:'직접 고른 색을 지우고 영상 전체의 장면 배경([화면] 탭 맨 위에서 고르는 것)을 따라요'})); }
+    h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}),'줄바꿈: Shift+Enter(↵ 표시)')+cardColorRows(cd); }
   { const gs=igsOfScene(c); h+='<div class="vs-sec">이 장면의 인포그래픽 <span class="hint">'+gs.length+'개 — 타임라인 [인포] 줄에서 편집해요</span></div>'+(gs.length?'<div class="vs-btns">'+gs.map(x=>F.btn('igSel',esc(igName(x)),{d:x.id})).join('')+'</div>':'')+'<div class="vs-btns">'+F.btn('infoMk','📊 이 장면 자동 구성')+F.btn('igNew','＋ 인포그래픽 추가')+'</div>'; }
   h+='<div class="vs-sec">챕터 타이틀 <span class="hint">'+(titleOn(P)?'켜짐 · 기본 '+titleDur(P)+'초 소리 없이':'꺼짐')+'</span></div><div class="vs-btns">'+F.btn('tab','🏷 타이틀 설정',{d:'tt'})+'</div>';
   return h;
@@ -58879,17 +58930,17 @@ async function dlgProjects(){
   dlg('📂 영상 프로젝트',list.length?'<div class="vs-pl">'+list.map(x=>'<div class="pj"><div class="m"><b>'+esc(x.title||'(이름 없음)')+langBadge(x.lang)+'</b><span>'+x.scenes+'장면 · '+fmtDur(x.dur||0)+' · '+new Date(x.updated).toLocaleString()+'</span></div><button class="vs-b pri mobile-keep" data-a="openProj" data-id="'+esc(x.id)+'">열기</button><button class="vs-b dng mobile-keep" data-a="delProj" data-id="'+esc(x.id)+'">삭제</button></div>').join('')+'</div>':'<div class="vs-empty">저장된 프로젝트가 없어요<br><span class="hint">스크립트 만들기 결과나 이력의 [🎞 영상 만들기]로 새 프로젝트를 시작하세요.</span></div>',[{t:'닫기',a:'dlgClose'}]);
 }
 function dlgAuto(){
-  const key=!!geminiKey(), ic=P.cfg.info||{}, dl=P.cfg.dlg||{}, pend=P.chunks.some(k=>k.state!=='done'||k.stale); const d=UI.dd={akind:dl.vkind||(key?'image':'card'),avoice:dl.avoice!=null?!!dl.avoice:(key&&pend),async:true,ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',asub:!!dl.asub,alearn:dl.alearn!==false,istyle:(ic.sv138?ic.style:'minimal')||'minimal'}; Object.assign(d,ttInit(P.cfg));   /* 각 메뉴에 저장된 설정으로 시작 */
+  const key=!!geminiKey(), ic=P.cfg.info||{}, dl=P.cfg.dlg||{}, pend=P.chunks.some(k=>k.state!=='done'||k.stale); const d=UI.dd={akind:dl.vkind||(key?'image':'card'),avoice:dl.avoice!=null?!!dl.avoice:(key&&pend),async:true,ilay:ic.lay||'auto',imode:(ic.mode==='rule'||!infoTextAi())?'rule':'ai',ichar:'keep',asub:!!dl.asub,aucard:dl.aucard!==false,alearn:dl.alearn!==false,istyle:(ic.sv138?ic.style:'minimal')||'minimal'}; Object.assign(d,ttInit(P.cfg));   /* 각 메뉴에 저장된 설정으로 시작 */
   slScan(); showAutoDlg();   /* v118: 학습할 영상 찾기(비동기 — 🧠 줄이 채워짐) */
 }
 function showAutoDlg(){
   const d=UI.dd, key=!!geminiKey(), todoV=P.chunks.filter(k=>k.state!=='done'||k.stale).length, items=d.akind==='card'?[]:genTargets('empty',d.akind), est=genEstimate(items,d.akind);
   dlg('🚀 한 번에 만들기',
-    '<div class="vs-note">음성 → 자막 → 화면 → 싱크 점검을 차례로 해요. 끝나면 ⑤ 내보내기만 누르면 돼요.<br>쓰는 AI — 글: <b>'+esc(studioAi().name)+'</b> '+(studioAi().key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' · 음성·이미지·영상: <b>Gemini</b> '+(key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' <span class="hint">(위쪽 🤖 버튼에서 바꾸고 요청 글을 쓸 수 있어요)</span></div>'+menuSummary()+sbRow(d.akind)+slRow(d)
+    '<div class="vs-note">음성 → 자막 → 화면 → 싱크 점검을 차례로 해요. 끝나면 ⑤ 내보내기만 누르면 돼요.<br>쓰는 AI — 글: <b>'+esc(studioAi().name)+'</b> '+(studioAi().key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' · 음성·이미지·영상: <b>Gemini</b> '+(key?'<span class="ok">✓ 연결됨</span>':'<span class="bad">✗ 키 없음</span>')+' <span class="hint">(위쪽 🤖 버튼에서 바꾸고 요청 글을 쓸 수 있어요)</span></div>'+menuSummary()+sbRow(d.akind,d.aucard!==false&&(d.akind==='card'||d.akind==='info'))+slRow(d)
     +D_('음성',dchk('avoice',d.avoice,'② AI 음성 만들기('+todoV+'묶음)')+(key?'':' <span class="bad">키 없음</span>'))
     +D_('자막',dchk('asub',d.asub,'AI 로 자막 다듬기 (글 AI: '+esc(studioAi().name)+' · 나레이션은 그대로, 되돌리기 가능)'))
     +D_('화면',dsel('akind',d.akind,[['card','카드 화면(무료)'],['image','AI 이미지(저렴)'],['video','AI 영상(비싸고 느려요)'],['info','인포그래픽 화면(수치·강조 + 캐릭터)'],['skip','건너뛰기']]))
-    +(d.akind==='info'?infoOptRows(d):'')+ttRow(d)+'<div class="vs-note">'+(d.akind==='info'?'인포그래픽 화면 '+items.length+'장면':d.akind==='image'?'AI 이미지 '+items.length+'장':d.akind==='video'?'AI 영상 '+items.length+'개 · 약 '+est.secs+'초 분량'+(est.cost?' · 예상 $'+est.cost.toFixed(2):''):'추가 비용 없음')+'</div>'+prefResetRow('auto'),
+    +(d.akind==='info'?infoOptRows(d):'')+cuRow(d)+ttRow(d)+'<div class="vs-note">'+(d.akind==='info'?'인포그래픽 화면 '+items.length+'장면':d.akind==='image'?'AI 이미지 '+items.length+'장':d.akind==='video'?'AI 영상 '+items.length+'개 · 약 '+est.secs+'초 분량'+(est.cost?' · 예상 $'+est.cost.toFixed(2):''):'추가 비용 없음')+'</div>'+prefResetRow('auto'),
     [{t:'시작',a:'autoGo',c:'pri'},{t:'취소',a:'dlgClose'}],d.akind==='info'?'wide':'');
 }
 
@@ -58915,8 +58966,8 @@ function setSceneField(c,k,v){
     case 'motion': vis.motion=v||''; return 'draw';
     case 'fb': case 'fc': case 'fs': { const f=vis.filter=vis.filter||{b:1,c:1,s:1}; f[k.slice(1)]=v; return 'draw'; }
     case 'ctitle': (vis.card=vis.card||{}).title=v||''; return 'draw';
-    case 'cc1': (vis.card=vis.card||{}).c1=v; return 'draw';
-    case 'cc2': (vis.card=vis.card||{}).c2=v; return 'draw';
+    case 'cc1': { const cd=(vis.card=vis.card||{}); if(!CC_HEX.test(cd.c2||'')) cd.c2=cardEff(cd).c2; cd.c1=v; return 'draw'; }   /* v149: 한쪽만 고쳐도 두 색이 다 정해져 칸에 보이는 색 그대로 그려짐 */
+    case 'cc2': { const cd=(vis.card=vis.card||{}); if(!CC_HEX.test(cd.c1||'')) cd.c1=cardEff(cd).c1; cd.c2=v; return 'draw'; }
   }
   return 'draw';
 }
@@ -59086,6 +59137,8 @@ async function act(a,btn){
     case 'toCard': { const c=P.scenes[UI.sel]; setCard(c); if(sbOn(P)) sbMkCard(c); commit('카드'); renderAll(); break; }
     case 'clearVis': { const c=P.scenes[UI.sel]; c.vis=Object.assign(keepLook(c.vis),{kind:'none'}); commit('화면 지움'); renderAll(); break; }
     case 'ccReset': { const c=P.scenes[UI.sel]; if(c.vis.card){ delete c.vis.card.c1; delete c.vis.card.c2; } commit('카드색'); renderInspector(true); paintFrame(ENG.pos); break; }
+    case 'ccAll': { const c=P.scenes[UI.sel], e=cardEff((c.vis&&c.vis.card)||{}); P.cfg.look.cc1=e.c1; P.cfg.look.cc2=e.c2; savePref(P.cfg); cardUnify({c1:e.c1,c2:e.c2,from:'scene'},true); commit('카드 색 통일'); renderAll(); igPostersAll(true); paintFrame(ENG.pos); toast('모든 장면 카드를 이 색으로 통일했어요 — 다음 영상의 한 번에 만들기도 이 색을 써요(해제는 [해제])'); break; }   /* v149 */
+    case 'ccAllOff': { delete P.cfg.look.cc1; delete P.cfg.look.cc2; savePref(P.cfg); renderInspector(true); toast('저장해 둔 공통 색을 지웠어요'); break; }
     case 'voiceAll': runVoice({}); break;
     case 'voiceSel': { const c=P.scenes[UI.sel], ids=[...new Set(sentsOf(P,c).map(s=>s.cid))]; runVoice({ids}); break; }
     case 'redoChunk': runVoice({ids:[id]}); break;
@@ -60159,11 +60212,12 @@ async function autoGo(){
   }finally{ UI.sl=null; }
 }
 async function autoMake(d,lp){
-  const sb=sbOn(P), pr=sb?sbPrepare():null, lt=lp?slTrans(lp):0; let lh=0;   /* v107: 스토리보드대로 — 전환·이미지 움직임 지시를 먼저 모든 장면에 반영 · v118: 그 위에 내가 늘 쓰던 챕터 첫 장면 전환(스토리보드가 정한 것은 그대로) */
+  const sb=sbOn(P), pr=sb?sbPrepare():null, lt=lp?slTrans(lp):0, cu=d.aucard!==false&&(d.akind==='card'||d.akind==='info'); let lh=0;   /* v149: cu = 카드 색 통일(카드·인포그래픽 방식일 때만 — 대화상자 '카드 색' 줄이 보이는 때) */   /* v107: 스토리보드대로 — 전환·이미지 움직임 지시를 먼저 모든 장면에 반영 · v118: 그 위에 내가 늘 쓰던 챕터 첫 장면 전환(스토리보드가 정한 것은 그대로) */
   if(d.avoice){ if(!geminiKey()) toast('Gemini 키가 없어 음성은 건너뛰어요'); else{ await runVoice({}); if(UI.aborted) return; } }
   if(d.asub){ await runSubs('all'); if(UI.aborted) return; }
-  if(d.akind==='card'){ P.scenes.forEach(c=>{ if((c.vis.kind||'none')==='none'){ setCard(c); if(sb) sbMkCard(c); } }); commit('카드'); }
-  else if(d.akind==='info'){ klCleanExisting(); const its=genTargets('empty','info'); if(its.length){ const before=new Set((P.igs||[]).map(g=>g.id)); await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,remember:true,style:d.istyle,sm:'auto'}); if(UI.aborted) return; if(lp){ const ids=new Set((P.igs||[]).filter(g=>!before.has(g.id)).map(g=>g.id)); lh=slReplay(lp,ids); if(lh){ igPostersAll(true); commit('내 스타일 손질'); } } } if(!its.length&&klSumOn()&&!(P.igs||[]).some(g=>g.sm)&&smSpan(P)){ await runInfo([],{lay:d.ilay,mode:d.imode,char:d.ichar,remember:false,style:d.istyle,sm:'auto'}); if(UI.aborted) return; } if(sb){ its.forEach(it=>{ const c=P.scenes.find(x=>x.id===it.id); if(c) sbTopUpInfo(c); }); P.scenes.forEach(c=>{ if(['none','card'].indexOf((c.vis&&c.vis.kind)||'none')>=0) sbMkCard(c,{noText:true}); }); } }
+  if(cu){ const us=cardUniSrc(), n=cardUnify(us,!!(us&&us.from==='scene')); if(n){ commit('카드 색 통일'); igPostersAll(true); } }   /* v149: 모든 장면 카드를 한 색으로 — 맞출 색이 있으면 장면 배경으로(지금 고른 장면의 카드 색은 장면 배경을 직접 골랐어도 그 위에, 저장해 둔 공통 색은 장면 배경이 기본일 때만), 장면마다 따로 정한 색은 지움 */
+  if(d.akind==='card'){ P.scenes.forEach(c=>{ if((c.vis.kind||'none')==='none'){ setCard(c); if(sb) sbMkCard(c,cu?{noColor:true}:undefined); } }); commit('카드'); }
+  else if(d.akind==='info'){ klCleanExisting(); const its=genTargets('empty','info'); if(its.length){ const before=new Set((P.igs||[]).map(g=>g.id)); await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,remember:true,style:d.istyle,sm:'auto'}); if(UI.aborted) return; if(lp){ const ids=new Set((P.igs||[]).filter(g=>!before.has(g.id)).map(g=>g.id)); lh=slReplay(lp,ids); if(lh){ igPostersAll(true); commit('내 스타일 손질'); } } } if(!its.length&&klSumOn()&&!(P.igs||[]).some(g=>g.sm)&&smSpan(P)){ await runInfo([],{lay:d.ilay,mode:d.imode,char:d.ichar,remember:false,style:d.istyle,sm:'auto'}); if(UI.aborted) return; } if(sb){ its.forEach(it=>{ const c=P.scenes.find(x=>x.id===it.id); if(c) sbTopUpInfo(c); }); P.scenes.forEach(c=>{ if(['none','card'].indexOf((c.vis&&c.vis.kind)||'none')>=0) sbMkCard(c,{noText:true,noColor:cu}); }); } }
   else if(d.akind==='image'||d.akind==='video'){ if(!geminiKey()) toast('키가 없어 화면은 카드로 둬요'); else{ await qRun(genTargets('empty',d.akind)); if(UI.aborted) return; } }
   if(sb) commit('스토리보드 적용'); if(lt) commit('내 스타일 전환');
   renderAll(); const rep=syncReport(); if(d.akind==='info'){ UI.upHint=true; paintUpBtn(); } progress(1,'한 번에 만들기 끝 · 점검 '+rep.length+'건'+(d.akind==='info'?' · ✨ 화면 구성 업그레이드로 다듬어 볼 수 있어요':'')+(sb?' · 📐 스토리보드 적용(전환 '+pr.tr+'곳 · 이미지 움직임 '+pr.mo+'곳)':'')+(lp?' · 🧠 내 스타일 반영(영상 '+lp.n+'개'+(lp.ai?' · AI 요약':'')+(lh?' · 인포그래픽 손질 '+lh+'곳':'')+(lt?' · 챕터 전환 '+lt+'곳':'')+')':'')); dlgSync();
@@ -60354,7 +60408,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
-    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
+    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
     SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
