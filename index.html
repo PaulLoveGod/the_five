@@ -2983,7 +2983,6 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .tl-au canvas{display:block;width:100%;height:100%}
 .tl-au.has{cursor:grab;z-index:1}.tl-au .e{position:absolute;top:0;bottom:0;width:6px;cursor:ew-resize;z-index:3}.tl-au .e.l{left:0}.tl-au .e.r{right:0}.tl-au .e:hover{background:rgba(255,255,255,.35)}
 .tl-au.vcx{border-color:#f59e0b}.tl-au.slot{background:transparent;border:1px dashed #475569;pointer-events:none;z-index:0}.tl-au.gone{background:repeating-linear-gradient(45deg,#3b2323,#3b2323 4px,#2a1818 4px,#2a1818 8px);border:1px dashed #ef4444;z-index:1;cursor:pointer}
-.vs-ck2 i.cutm{color:#fdba74}
 /* v157 — 음성 프롬프트 문구 고쳐 저장 */
 .vs-vpre{margin:0 0 8px}
 .vs-vpre .vs-btns{margin:0 0 6px}
@@ -3065,6 +3064,7 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-tlbar b{white-space:nowrap;flex:none}
 .tl-mq{position:absolute;z-index:9;box-sizing:border-box;border:1px dashed #38bdf8;background:rgba(56,189,248,.14);border-radius:2px;pointer-events:none}
 .tl-ic.tpre,.tl-ig.tpre{outline:2px dashed #38bdf8;outline-offset:1px;z-index:6}
+.tl-tt.tpre,.tl-sc.tpre,.tl-cu.tpre,.tl-au.tpre,.tl-bg.tpre{outline:2px dashed #38bdf8;outline-offset:1px;z-index:6}   /* v159 */
 .vs-cm{position:fixed;z-index:40;min-width:190px;background:#101a2e;border:1px solid #2f4468;border-radius:9px;box-shadow:0 8px 30px rgba(0,0,0,.55);padding:4px}
 .vs-cm .t{padding:5px 9px 6px;font-size:10.5px;color:#9fb0c9;border-bottom:1px solid #243149;margin-bottom:3px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs-cm button{display:block;width:100%;text-align:left;padding:6px 10px;border:0;background:transparent;color:#e2e8f0;font-size:12px;border-radius:6px;cursor:pointer}
@@ -44902,7 +44902,7 @@ const VOICES=[['Charon','차분·정보 전달'],['Kore','단호'],['Puck','경�
 const RES=[['1280x720','1280×720 (HD 가로)'],['1920x1080','1920×1080 (풀HD 가로)'],['1080x1920','1080×1920 (쇼츠·세로)'],['1080x1080','1080×1080 (정사각)']];
 const DEF_CFG={
   w:1280,h:720,fps:30,cpm:330,lead:0.4,tail:1.2,gap:{sent:0,para:0.25,chap:0.7},
-  voice:{prov:'gemini',name:'Charon',style:'',model:'gemini-2.5-flash-preview-tts',mode:'chunk',guard:true},
+  voice:{prov:'gemini',name:'Charon',style:'',model:'gemini-2.5-flash-preview-tts',mode:'chunk'},
   img:{model:'gemini-2.5-flash-image'},
   vid:{model:'veo-3.1-generate-preview',res:'720p',dur:'auto',conc:2,price:0},
   sub:{on:true,font:FONTS[0][0],size:46,color:'#ffffff',stroke:'#000000',strokeW:7,bg:'#000000',bgA:0,pos:'bottom',off:7,maxW:84,lines:2,bold:true,anim:'fade'},
@@ -44910,7 +44910,7 @@ const DEF_CFG={
   bgm:{bid:'',name:'',vol:0.16,duck:0.35,fadeIn:1.5,fadeOut:3,loop:true},
   mix:{narr:1,bgm:1},offs:{sub:0,vid:0},exp:{fmt:'auto',q:'mid',burn:true,prev:1},info:{theme:'dark',ud:'kr',accent:'',count:true,bob:true,flip:false,cs:1,cut:true,lay:'auto',mode:'ai',base:'',item:'',open:true,news:true,style:'minimal',nochar:false,rich:true,ltpl:true,detail:true,bal:true,fit:true},prompts:{info:'',sub:''},dlg:{vkind:'',avoice:null,asub:false,alearn:true},title:{on:true,dur:2.5,keepBgm:false,user:false}
 };
-function loadPref(lang){ let p={}; try{ p=JSON.parse(localStorage.getItem(LS_PREF)||'{}')||{}; }catch(e){} const cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); if(!(p.cfg&&p.cfg.info&&p.cfg.info.sv138)) cfg.info.style='minimal'; return (lang&&lang!=='ko')?langOverlay(cfg,lang,true):cfg; }
+function loadPref(lang){ let p={}; try{ p=JSON.parse(localStorage.getItem(LS_PREF)||'{}')||{}; }catch(e){} const cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); if(cfg.voice) delete cfg.voice.guard; if(!(p.cfg&&p.cfg.info&&p.cfg.info.sv138)) cfg.info.style='minimal';   /* v158: 없앤 '프롬프트 점검'(v156) 설정 값 정리 */ return (lang&&lang!=='ko')?langOverlay(cfg,lang,true):cfg; }
 function savePref(cfg){
   try{
     const c=clone(cfg); delete c.bgm; delete c.offs; const lang=(P&&P.lang)||'ko';
@@ -45349,13 +45349,13 @@ function fixPartAnchors(p){
   return n;
 }
 function fixProject(p){   /* 옛 형식 보정 */
-  const hadTt=!!(p.cfg&&p.cfg.title&&typeof p.cfg.title==='object'); p.cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); if(!hadTt){ p.cfg.title.on=false; p.cfg.title.user=false; } p.ttl=p.ttl||{}; p.xsubs=p.xsubs||[]; p.chunks=p.chunks||[]; p.scenes=p.scenes||[];
+  const hadTt=!!(p.cfg&&p.cfg.title&&typeof p.cfg.title==='object'); p.cfg=deepMerge(clone(DEF_CFG),p.cfg||{}); if(p.cfg.voice) delete p.cfg.voice.guard; if(!hadTt){ p.cfg.title.on=false; p.cfg.title.user=false; } p.ttl=p.ttl||{}; p.xsubs=p.xsubs||[]; p.chunks=p.chunks||[]; p.scenes=p.scenes||[];
   p.lang=V.norm(p.lang);   /* v108: 영상 언어(옛 프로젝트는 한국어) */
   p.sb=(p.sb&&typeof p.sb==='object')?p.sb:{on:true};   /* v107: 스토리보드 적용(켬이 기본 — 스토리보드가 없으면 sbOn 이 늘 꺼진 것으로 침) */
   p.scenes.forEach(c=>{ c.vis=c.vis||{kind:'none'}; c.trans=c.trans||{t:'inherit',d:0}; c.alt=c.alt||[]; });
   p.sents.forEach(s=>{ s.sub=s.sub||{text:null,ds:0,de:0,hide:false}; }); p.char=p.char||null; p.igs=p.igs||[]; igMigrate(p); p.igs.forEach(g=>{ if(!g.sty) g.sty='news'; }); p.igs=p.igs.filter(g=>!(g.nf&&!(g.items&&g.items.length)));   /* v153: 구성요소가 없는 '틀 없는' 인포그래픽은 보이지도 눌리지도 않으니 정리 */
   { const fx=fixPartAnchors(p); if(fx) setTimeout(()=>{ try{ toast('예전 편집 오류로 시점이 망가진 목록 항목 '+fx+'개를 다시 잡았어요 — [인포] 탭에서 시점이 맞는지 확인해 주세요'); }catch(e){} },900); }   /* v115 */
-  p.chunks.forEach(k=>{ if(k.state==='run') k.state=k.bid?'done':'none'; });
+  p.chunks.forEach(k=>{ if(k.state==='run') k.state=k.bid?'done':'none'; delete k.cut; delete k.gd; });   /* v158: 없앤 '프롬프트 점검'(v156)이 남긴 표시 값 정리 */
   p.scenes.forEach(c=>{ if(c.vis.gen&&c.vis.gen.state==='run') c.vis.gen.state='err',c.vis.gen.err='중단됨(창을 닫았어요)'; });
   return p;
 }
@@ -47330,7 +47330,7 @@ async function aiPing(){
 const VOICE_PRESETS=[['뉴스 앵커','저녁 뉴스 앵커처럼 차분하고 또렷하게, 숫자와 고유명사는 천천히 정확하게 읽는다'],['속보 톤','속보를 전하듯 빠르고 긴박하게, 핵심 수치는 힘을 주어 읽는다'],['친근한 해설','친구에게 설명하듯 부드럽고 자연스럽게, 문장 사이 쉬는 곳을 충분히 둔다'],['마감 브리핑','낮고 안정적인 톤으로 신뢰감 있게, 문장 끝을 단정하게 맺는다']];
 function inspVoicePrompt(){
   const v=P.cfg.voice;
-  return F.row('음성 프롬프트',F.ta('cfg.voice.style',v.style,{rows:3,ph:'음성 AI 에게 요구할 말투·속도·억양 — 예) 저녁 뉴스 앵커처럼 차분하고 또렷하게, 숫자는 천천히'}),'(선택) 글 앞에 붙여 AI 가 읽는 방식을 알려요 — 가끔 이 문장이 소리로 읽혀요(아래 ‘프롬프트 점검’이 감지해 잘라내요)')
+  return F.row('음성 프롬프트',F.ta('cfg.voice.style',v.style,{rows:3,ph:'음성 AI 에게 요구할 말투·속도·억양 — 예) 저녁 뉴스 앵커처럼 차분하고 또렷하게, 숫자는 천천히'}),'(선택) 글 앞에 붙여 AI 가 읽는 방식을 알려요')
     +vpBox();   /* v157: 문구 단추 + [💾 저장] 줄 */
 }
 
@@ -56873,7 +56873,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v157';
+const KL_BUILD='v159';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -57107,9 +57107,10 @@ function tselPaint(){   /* 타임라인의 테두리·도구줄(삭제 단추·�
   if(UI.tsel&&P){ const els=tselEls(); if(!els.length) UI.tsel=null; else{ els.forEach(e=>e.classList.add('tsel')); lab=tselLabel(); } }
   const multi=!!(P&&UI.tmul&&UI.tmul.length>1); if(multi){ const me=tmulEls(); me.forEach(e=>e.classList.add('tsel')); if(!me.length) UI.tmul=[]; }   /* v113: Ctrl/⌘+클릭으로 고른 여러 개 */
   const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?(UI.tsel.k==='clip'?'고른 화면(인포그래픽 틀)을 지워요 — 안의 구성요소는 그대로 남아요 (Delete 키 · Shift+Delete = 구성요소까지 · 되돌리기 가능)':'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)'):'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
+  if(b&&multi&&!tlSameCC(UI.tmul)) b.title='고른 요소 '+UI.tmul.length+'개('+tlKindSum(UI.tmul)+')를 한꺼번에 지워요 (Delete 키 · 되돌리기 가능)';   /* v159 */
   const h=$('vsTlHint'); if(h){   /* v140: 복사·붙여넣기 안내 */
     const cp=TLCB?' · 📋 '+cbLabel()+' 복사됨':'', cc=(UI.tsel&&(UI.tsel.k==='comp'||UI.tsel.k==='clip'))?'Ctrl+C·Ctrl+끌기 복사 · ←→ 0.5초(Ctrl 0.1초) 이동 · 양 끝을 끌어 길이 · ':(UI.tsel&&UI.tsel.k==='sub'?'←→ 0.5초(Ctrl 0.1초) 이동 · ':(UI.tsel&&UI.tsel.k==='aud'?'끌어서 이동 · 양 끝을 끌어 길이(줄이면 그 구간 음성은 빠지고 다시 늘리면 돌아와요) · ✂ 음성 자르기 · ←→ 0.5초(Ctrl 0.1초) 이동 · ':''));   /* v150 */
-    if(multi&&UI.tmul.length>1) h.innerHTML='선택: <b>'+esc(TSEL_KIND[UI.tmul[0].k])+' '+UI.tmul.length+'개</b> <i>· 끌면 함께 이동 · ←→ 0.5초(Ctrl 0.1초) · Ctrl+끌기·Ctrl+C 복사 · 오른쪽 클릭 → 길이 동일·정렬·일렬배치 · Delete 로 삭제 · Ctrl(⌘)+클릭으로 더하거나 빼요'+cp+'</i>';
+    if(multi&&UI.tmul.length>1) h.innerHTML=tlMultiHint(cp);
     else h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · ←→ 0.5초(Ctrl 0.1초) 이동 · Delete 로 끄기':cc+(UI.tsel.k==='clip'?'Delete 로 화면만 삭제(구성요소는 남아요) · Shift+Delete 로 구성요소까지':(UI.tsel.k==='aud'?'Delete 로 이 음성만 삭제(다른 요소는 그대로) · Shift+Delete 로 문장 통째로(자막·뒤 내용 당김)':'Delete 로 삭제')))+cp+'</i>':(TLCB?'📋 <b>'+esc(cbLabel())+'</b> 복사됨 <i>· 붙여넣을 곳에 재생 위치를 놓고 Ctrl+V</i>':'요소를 눌러 고르고 Ctrl+C/V 로 복사·붙여넣기 · <i>오른쪽 버튼으로 끌어 범위 선택 · Delete 로 삭제</i>');
     h.title=h.textContent;
   }
@@ -57512,16 +57513,17 @@ function tmulToggle(k,id,pi){   /* Ctrl/⌘+클릭 — 같은 종류(구성요�
   const d={k,id:String(id),pi:pi==null?-1:pi};
   if(!UI.tmul) UI.tmul=[];
   if(!UI.tmul.length&&UI.tsel&&UI.tsel.k===k) UI.tmul=[{k:UI.tsel.k,id:UI.tsel.id,pi:UI.tsel.pi}];
-  if(UI.tmul.length&&UI.tmul[0].k!==k) UI.tmul=[];
+  if(UI.tmul.length&&UI.tmul[0].k!==k&&tlSameCC(UI.tmul)) UI.tmul=[];   /* v159: 이미 종류가 섞여 있으면(오른쪽 끌기) 그대로 두고 더하고 뺌 */
   const key=tmKey(d), i=UI.tmul.findIndex(x=>tmKey(x)===key); if(i>=0) UI.tmul.splice(i,1); else UI.tmul.push(d);
   UI.tsel=UI.tmul.length?UI.tmul[UI.tmul.length-1]:null; tselPaint();
 }
 function tmulHit(target){   /* 오른쪽 클릭한 요소가 지금 여러 개 고른 것 중 하나면 그 요소 */
   if(!target||!target.closest||!UI.tmul||UI.tmul.length<2) return null; const ic=target.closest('.tl-ic'), gi=target.closest('.tl-ig'); let d=null;
-  if(ic) d={k:'comp',id:ic.dataset.i,pi:ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1}; else if(gi) d={k:'clip',id:gi.dataset.id,pi:-1}; if(!d) return null;
+  if(ic) d={k:'comp',id:ic.dataset.i,pi:ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1}; else if(gi) d={k:'clip',id:gi.dataset.id,pi:-1}; else d=mqKeyAt(target); if(!d) return null;   /* v159: 자막·음성·장면·타이틀·배경음악도 */
   return UI.tmul.some(x=>tmKey(x)===tmKey(d))?d:null;
 }
 function tmulMenu(e,ref){
+  if(!tlSameCC(UI.tmul)){ tmulMenuMix(e,ref); return; }   /* v159: 섞인 선택 */
   const sel=UI.tmul, n=sel.length, nm=sel[0].k==='comp'?'구성요소':'인포그래픽', comp=sel[0].k==='comp';
   const b=(op,ic,t,tip)=>'<button class="mobile-keep" data-a="tmAlign" data-id="'+op+'" title="'+esc(tip)+'"><i>'+ic+'</i> '+t+'</button>';
   const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; UI.tmRef=ref;
@@ -57581,12 +57583,14 @@ function clipAlign(sel,op,ref){   /* 인포그래픽 클립들 정렬 */
 function tmulApply(op){
   const sel=(UI.tmul||[]).slice(); if(sel.length<2){ toast('Ctrl(⌘)+클릭으로 요소를 두 개 이상 골라 주세요'); return; }
   if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; } if(ENG.playing) pausePlay();
+  if(!tlSameCC(sel)){ toast('정렬은 구성요소끼리 또는 인포그래픽끼리 골랐을 때만 할 수 있어요'); return; }   /* v159 */
   const ref=UI.tmRef||null, msg=sel[0].k==='comp'?compAlign(sel,op,ref):clipAlign(sel,op,ref); UI.tmRef=null;
   if(!msg){ toast('바뀐 것이 없어요 — 이미 그렇게 놓여 있거나, 이 정렬을 할 수 없는 선택이에요'); return; }
   layout(P); sortClips(P); igPostersAll(true); commit('타임라인 정렬 — '+msg); renderAll(); toastUndo(msg);
 }
 function tmulDelete(all){   /* 여러 개 고른 구성요소·인포그래픽을 한 번에 지움 — 지웠으면 true */
   const sel=(UI.tmul||[]).slice(); if(sel.length<2) return false; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 지워 주세요'); return false; } if(ENG.playing) pausePlay();
+  if(!tlSameCC(sel)) return tmulDeleteMix(sel,all===true);   /* v159: 섞인 선택 */
   let n=0, gone=0, keep=0;
   if(sel[0].k==='clip'){ sel.forEach(d=>{ const g=igById(d.id); if(g){ keep+=igDropFrame(g,all===true); n++; } }); }   /* v153: 화면만 지우고 구성요소는 틀 없이 남김 */
   else{
@@ -57628,7 +57632,7 @@ function cbAnchor(o,m,sh){ if(m==null||!isFinite(m)) return; const a=anchorAtTim
 /* ── ① 복사 ── */
 function cbCopy(){   /* 고른 구성요소·인포그래픽을 복사해 둠 — 복사한 개수(0 = 복사할 것이 없음) */
   if(!P) return 0; const sel=cbSelList().filter(d=>d.k==='comp'||d.k==='clip'); if(!sel.length) return 0;
-  const kind=sel[0].k, list=sel.filter(d=>d.k===kind);
+  const kind=sel.some(d=>d.k==='clip')?'clip':sel[0].k, list=sel.filter(d=>d.k===kind);   /* v159: 인포그래픽과 구성요소가 같이 골라졌으면 인포그래픽(구성요소는 그 안에 들어 있음) */
   if(kind==='clip'){
     const gs=list.map(d=>igById(d.id)).filter(Boolean).sort((a,b)=>(a.s-b.s)||(a.e-b.e)); if(!gs.length) return 0;
     TLCB={k:'clip',n:gs.length,ref:gs[0].s,clips:gs.map(g=>({g:cbClone(g),s0:g.s,e0:g.e,men:g.items.map(cbMen)}))};
@@ -57649,7 +57653,7 @@ function cbCopy(){   /* 고른 구성요소·인포그래픽을 복사해 둠 �
 }
 function cbDoCopy(){
   const n=cbCopy(); if(!n){ toast('복사할 구성요소·인포그래픽을 먼저 눌러 골라 주세요'); return 0; }
-  toast(cbLabel()+'를 복사했어요 — 붙여넣을 위치에 재생 위치를 두고 Ctrl+V'); tselPaint(); return n;
+  toast(cbLabel()+'를 복사했어요 — 붙여넣을 위치에 재생 위치를 두고 Ctrl+V'+tlCopyNote()); tselPaint(); return n;
 }
 
 /* ── ① 붙여넣기 ── */
@@ -57746,19 +57750,11 @@ function mqRect(){   /* 상자 — 타임라인 안쪽(#vsTlIn) 좌표라 스크
   const host=$('vsTlIn'), hr=host.getBoundingClientRect(), W=host.offsetWidth, H=host.offsetHeight, x=clamp(MQ.cx-hr.left,0,W), y=clamp(MQ.cy-hr.top,0,H), x0=clamp(MQ.x0,0,W), y0=clamp(MQ.y0,0,H);
   return {l:Math.min(x0,x),t:Math.min(y0,y),r:Math.max(x0,x),b:Math.max(y0,y),hr};
 }
-function mqHits(R){   /* 상자에 걸친 요소 — [구성] 줄의 칩이 하나라도 있으면 구성요소, 없으면 [인포] 줄의 막대(시간 순) */
-  const host=$('vsTlIn'), L=R.hr.left+R.l, T=R.hr.top+R.t, RR=R.hr.left+R.r, B=R.hr.top+R.b, byX=(a,b)=>(parseFloat(a.style.left)||0)-(parseFloat(b.style.left)||0);
-  const inBox=el=>{ const q=el.getBoundingClientRect(); return q.right>L&&q.left<RR&&q.bottom>T&&q.top<B; };
-  const ics=[...host.querySelectorAll('.tl-ic')].filter(inBox).sort(byX);
-  if(ics.length) return {k:'comp',els:ics,list:ics.map(el=>({k:'comp',id:el.dataset.i,pi:el.dataset.p!=null&&el.dataset.p!==''?+el.dataset.p:-1}))};
-  const igs=[...host.querySelectorAll('.tl-ig')].filter(inBox).sort(byX);
-  return {k:'clip',els:igs,list:igs.map(el=>({k:'clip',id:el.dataset.id,pi:-1}))};
-}
 function mqPaint(){
   const host=$('vsTlIn'); if(!host||!MQ||!MQ.moved||MQ.cancel) return; let el=$('vsMq'); if(!el||!host.contains(el)){ el=document.createElement('div'); el.id='vsMq'; el.className='tl-mq'; host.appendChild(el); }   /* 타임라인을 다시 그려 상자가 사라졌으면 다시 만듦 */
   const R=mqRect(); el.style.left=R.l+'px'; el.style.top=R.t+'px'; el.style.width=(R.r-R.l)+'px'; el.style.height=(R.b-R.t)+'px';
   const h=MQ.hit=mqHits(R); host.querySelectorAll('.tpre').forEach(e=>{ if(h.els.indexOf(e)<0) e.classList.remove('tpre'); }); h.els.forEach(e=>e.classList.add('tpre'));
-  const hint=$('vsTlHint'); if(hint){ hint.innerHTML='범위 안: <b>'+(h.list.length?esc(TSEL_KIND[h.k])+' '+h.list.length+'개':'없음')+'</b> <i>· 놓으면 선택돼요 · Ctrl/Shift = 지금 선택에 더하기 · Esc = 취소</i>'; hint.title=hint.textContent; }
+  const hint=$('vsTlHint'); if(hint){ hint.innerHTML='범위 안: <b>'+(h.list.length?esc(tlKindSum(h.list)):'없음')+'</b> <i>· 놓으면 선택돼요 · Ctrl/Shift = 지금 선택에 더하기 · Esc = 취소</i>'; hint.title=hint.textContent; }
 }
 function mqAuto(){   /* 상자를 가장자리로 끌면 타임라인이 따라 움직임 */
   if(!MQ||!MQ.moved||MQ.cancel) return; const s=$('vsTls'); if(!s) return; const r=s.getBoundingClientRect(), E=28, sp=d=>Math.min(36,6+d*0.9); let dx=0, dy=0;
@@ -57795,7 +57791,7 @@ function mqEnd(e,up){   /* up=true: 버튼을 놓음 → 선택 / false: 취소(
   else if(m.ctx&&up&&e){ mqCtxOff(); const t=document.elementFromPoint(e.clientX,e.clientY); tlMenu({target:t||host,clientX:e.clientX,clientY:e.clientY,preventDefault(){}}); }   /* mac/Linux — 누를 때 이미 contextmenu 가 와서 막았으니 끌지 않았으면 여기서 메뉴를 띄움 */
   else mqCtxOff();   /* Windows — 놓은 뒤에 오는 contextmenu 는 예전대로 tlMenu 가 받음 */
   if(!h||(m.add&&!h.list.length)){ tselPaint(); return; }   /* 더하기로 끌었는데 걸린 게 없으면 지금 선택 그대로 */
-  let list=h.list; if(m.add){ const cur=cbSelList().filter(d=>d.k===h.k), seen=new Set(cur.map(tmKey)); list=cur.concat(list.filter(d=>!seen.has(tmKey(d)))); }
+  let list=h.list; if(m.add){ const cur=cbSelList(), seen=new Set(cur.map(tmKey));   /* v159: 종류 상관없이 지금 선택에 더함 */ list=cur.concat(list.filter(d=>!seen.has(tmKey(d)))); }
   cbSetSel(list);
 }
 /* ══ /v140 ══ */
@@ -58234,13 +58230,16 @@ function cardColorRows(cd){   /* [화면] 탭 카드 꾸미기의 '배경색' �
 const TL_MOVABLE={clip:1,comp:1,sub:1,title:1,aud:1};
 const TL_NM={clip:'인포그래픽',comp:'구성요소',sub:'자막',title:'챕터 타이틀',aud:'음성'};
 function tlMovSel(){   /* 방향키·끌기로 옮길 수 있는 지금 선택 — 목록(여럿이면 같은 종류) 또는 null */
-  if(!P) return null; const l=cbSelList(); if(!l.length||!TL_MOVABLE[l[0].k]) return null; if(l.length>1&&l.some(d=>d.k!==l[0].k)) return null; return l;
+  if(!P) return null; const l=cbSelList(); if(!l.length) return null;
+  if(l.length>1&&!tlSameCC(l)) return l.some(d=>TL_MIXMV[d.k])?l:null;   /* v159: 종류가 섞인 선택·자막/음성 여럿 — 옮길 수 있는 게 하나라도 있으면 */
+  if(!TL_MOVABLE[l[0].k]) return null; if(l.length>1&&l.some(d=>d.k!==l[0].k)) return null; return l;
 }
 function tlSnapPts(ids){   /* 달라붙을 시각 — igSnapPts 와 같되 옮기는 인포그래픽들 자신의 가장자리는 뺌 */
   const a=[0,P.dur]; P.scenes.forEach(c=>a.push(c.s)); P.sents.forEach(s=>{ a.push(s.s,s.vs,s.ve); }); (P.igs||[]).forEach(g=>{ if(ids.indexOf(g.id)<0&&!g.nf) a.push(g.s,g.e); }); return a.filter(x=>isFinite(x)).sort((x,y)=>x-y);
 }
 function tlMvPlan(sel){   /* 옮길 요소들의 지금 시각과 한 번에 움직일 수 있는 양의 범위 → {k,ents,lo,hi,t0} (lo ≤ 0 ≤ hi — 이미 바깥이면 더 바깥으로만 못 감) */
-  if(!sel||!sel.length||!P) return null; const k=sel[0].k; const ents=[]; let lo=-1e9, hi=1e9, t0=null;
+  if(!sel||!sel.length||!P) return null; if(sel.length>1&&!tlSameCC(sel)) return tlMvPlanMix(sel);   /* v159: 섞인 선택·자막/음성 여럿 */
+  const k=sel[0].k; const ents=[]; let lo=-1e9, hi=1e9, t0=null;
   if(k==='clip'){
     sel.forEach(d=>{ const g=igById(d.id); if(g) ents.push({g,t0:g.s,e0:g.e,d}); }); if(!ents.length) return null;
     const mn=Math.min.apply(null,ents.map(x=>x.t0)), mx=Math.max.apply(null,ents.map(x=>x.e0)); lo=Math.min(0,-mn); hi=Math.max(0,P.dur-mx); t0=mn;
@@ -58270,7 +58269,7 @@ function tlMvApply(pl,dt){   /* plan 의 요소들을 dt 초 옮김(범위 안�
       touched.add(o.g); });
     touched.forEach(g=>sortItems(g));
   }
-  else if(pl.k==='sub'){ const x=pl.ents[0]; if(x.x){ const len=x.e0-x.t0; x.x.s=Math.max(0,r2(x.x.s+dt)); x.x.e=r2(x.x.s+len); } else if(x.s){ x.s.sub.ds=r2((x.s.sub.ds||0)+dt); x.s.sub.de=r2((x.s.sub.de||0)+dt); } P._cues=null; }
+  else if(pl.k==='sub'){ pl.ents.forEach(x=>{ if(x.x){ const len=x.e0-x.t0; x.x.s=Math.max(0,r2(x.x.s+dt)); x.x.e=r2(x.x.s+len); } else if(x.s){ x.s.sub.ds=r2((x.s.sub.ds||0)+dt); x.s.sub.de=r2((x.s.sub.de||0)+dt); } }); P._cues=null; }   /* v159: 자막 여럿 */
   else if(pl.k==='aud'){ pl.ents.forEach(x=>{ vcMoveBy(x.id,dt); }); }   /* v156: 음성 박스는 문장 칸·자막·다른 요소는 그대로 두고 소리만 옮김 */
   else if(pl.k==='title'){ const q=pl.ents[0].q, d={k:'ttm',ci:q.ci,q0:{ci:q.ci,ta:q.ta,tb:q.tb,te:q.te,L:q.L,a:q.a,b:q.b,a0:q.a0,E:q.E,g:q.g,open:!!q.open,ov:!!q.ov},tpts:[],lpts:[]}; ttApply(d.q0,ttDragCalc(d,dt,false)); }
   return touched;
@@ -58281,12 +58280,12 @@ function commitMerge(label,key){   /* 같은 선택을 연달아 옮길 때(방�
   commit(label); H._mk=key; H._mc=H.cur; H._mt=now; return true;
 }
 function tlMvDo(pl,dt,nudge){   /* 옮기기 — 끌어 놓기·방향키 공통. 바뀌었으면 true */
-  if(ENG.playing) pausePlay(); if(pl.k==='comp') return tlCompsMove(pl,dt,nudge);   /* v151: 구성요소는 놓인 시각에 따라 제자리·늘리기·다른 인포그래픽으로 */
+  if(ENG.playing) pausePlay(); if(pl.k==='mix') return tlMvDoMix(pl,dt,nudge); /* v159 */ if(pl.k==='comp') return tlCompsMove(pl,dt,nudge);   /* v151: 구성요소는 놓인 시각에 따라 제자리·늘리기·다른 인포그래픽으로 */
   return tlMvFinish(pl,dt,nudge,tlMvApply(pl,dt));
 }
 function tlMvFinish(pl,dt,nudge,touched){   /* 옮긴 뒤 마무리 — 시간표·그림·되돌리기·다시 그리기 */
   layout(P); sortClips(P); touched.forEach(g=>{ try{ igPoster(g); }catch(x){ if(window.__klStrict) throw x; } });
-  const n=pl.ents.length, label='타임라인 이동 — '+TL_NM[pl.k]+(n>1?' '+n+'개':'')+' ('+(dt>=0?'+':'')+r2(dt)+'초)'; let ch;
+  const n=pl.ents.length, label=pl.label||('타임라인 이동 — '+TL_NM[pl.k]+(n>1?' '+n+'개':'')+' ('+(dt>=0?'+':'')+r2(dt)+'초)'); let ch;
   if(nudge) ch=commitMerge(label,pl.k+'|'+pl.ents.map(x=>x.d.id+':'+(x.d.pi==null?-1:x.d.pi)).join(','));
   else{ const b=H.cur; commit(label); ch=H.cur!==b; }
   renderAll(); if(pl.k==='title'&&UI.tab==='tt') renderInspector(true);
@@ -58315,6 +58314,7 @@ function tlDragSet(list,key,snap){   /* 끌 요소들의 계획·화면 요소·
 }
 function tlGrpDt(G,d,e){   /* 포인터 위치 → 옮길 양(초) — 달라붙기(누른 요소 기준) 뒤 범위 안으로(복사는 구성요소를 다른 인포그래픽에도 놓을 수 있어 영상 안으로만) */
   const pl=G.plan, pr=G.pr, th=8/UI.pps; let dt=(e.clientX-d.x0)/UI.pps;
+  if(pl.k==='mix'){ if(G.snap&&G.pr0!=null){ const s0=G.pr0; dt=snapTo(G.pts,s0+dt,th)-s0; } return clamp(dt,pl.lo,pl.hi); }   /* v159: 섞인 선택 — 누른 요소의 시작 기준으로 달라붙기 */
   if(G.snap){
     if(pl.k==='clip'){ const s=pr.t0+dt, e2=pr.e0+dt, a=snapTo(G.pts,s,th)-s, b=snapTo(G.pts,e2,th)-e2, sh=Math.abs(a)<=Math.abs(b)?a:b; if(Math.abs(sh)<=th) dt+=sh; }
     else dt=(snapTo(G.pts,pr.t0+dt+G.off,th)-G.off)-pr.t0;
@@ -58327,11 +58327,12 @@ function tlGrpPaint(G,dt,verb){   /* 끄는 동안 — 요소(복사면 그림�
   arr.forEach(o=>{ o.el.style.left=(o.k==='clip'?(o.t0+dt)*pps:Math.round((o.t0+dt)*pps))+'px'; });
   const g=$('vsGuide'); if(g){ const x=G.plan.t0+dt, n=G.plan.ents.length; g.style.display='block'; g.style.left=(x*pps)+'px'; g.setAttribute('data-t',fmtT(x,1)+' · '+(dt>=0?'+':'')+dt.toFixed(2)+'초'+(n>1?' · '+n+'개':'')+' '+verb+tlGrpHint(G,dt)); }
 }
-function tlDownGrp(d,t,e){   /* 여러 개 고른 것 중 하나를 왼쪽 버튼으로 눌렀으면 함께 끌 준비(d.grp) — 맞으면 true(선택은 그대로 둠) */
-  if(!d||(d.k!=='igm'&&d.k!=='ic')||!UI.tmul||UI.tmul.length<2||e.ctrlKey||e.metaKey) return false;
-  const key=d.k==='igm'?{k:'clip',id:d.id,pi:-1}:{k:'comp',id:d.i,pi:d.pi};
-  if(UI.tmul[0].k!==key.k||!UI.tmul.some(x=>tmKey(x)===tmKey(key))) return false;
-  const G=tlDragSet(UI.tmul.slice(),key,d.snap); if(!G) return false; G.tgt=t; d.grp=G; return true;
+function tlDownGrp(d,t,e){   /* 여러 개 고른 것 중 하나를 왼쪽 버튼으로 눌렀으면 함께 끌 준비(d.grp) — 맞으면 true(선택은 그대로 둠) · v159: 자막·음성도, 섞인 선택도 */
+  if(!d||(d.k!=='igm'&&d.k!=='ic'&&d.k!=='cm'&&d.k!=='am')||!UI.tmul||UI.tmul.length<2||e.ctrlKey||e.metaKey) return false;
+  const key=d.k==='igm'?{k:'clip',id:d.id,pi:-1}:d.k==='ic'?{k:'comp',id:d.i,pi:d.pi}:d.k==='cm'?{k:'sub',id:d.sid,pi:-1}:{k:'aud',id:d.vc,pi:-1};
+  if(!UI.tmul.some(x=>tmKey(x)===tmKey(key))) return false;
+  if(tlSameCC(UI.tmul)){ if(UI.tmul[0].k!==key.k) return false; const G=tlDragSet(UI.tmul.slice(),key,d.snap); if(!G) return false; G.tgt=t; d.grp=G; return true; }   /* 구성요소끼리·인포그래픽끼리(예전 그대로) */
+  const G=tlDragSetMix(UI.tmul.slice(),key,d.snap==null?!e.altKey:d.snap); if(!G) return false; G.tgt=t; d.grp=G; return true;   /* v159 */
 }
 function tlGrpMove(d,e){
   const G=d.grp; if(!G.on){ if(Math.abs(e.clientX-d.x0)<4&&Math.abs(e.clientY-d.y0)<4) return; G.on=true; try{ const sl=window.getSelection&&window.getSelection(); if(sl&&sl.removeAllRanges) sl.removeAllRanges(); }catch(x){} }
@@ -58347,9 +58348,9 @@ function tlGrpUp(d,e){   /* 놓았을 때 — true = 처리함(옮겼거나 취�
 /* ── Ctrl(⌘)+끌기 = 복사 ── */
 function tlCpInit(e,ic,gi){   /* Ctrl 을 누른 채 구성요소·인포그래픽을 눌렀을 때 — 끌면 복사, 끌지 않고 떼면 예전처럼 여럿 고르기. 준비됐으면 true */
   const key=ic?{k:'comp',id:ic.dataset.i,pi:ic.dataset.p!=null&&ic.dataset.p!==''?+ic.dataset.p:-1}:{k:'clip',id:gi.dataset.id,pi:-1};
-  const inSel=!!(UI.tmul&&UI.tmul.length>1&&UI.tmul[0].k===key.k&&UI.tmul.some(x=>tmKey(x)===tmKey(key)));
-  const G=tlDragSet(inSel?UI.tmul.slice():[key],key,!e.altKey); if(!G) return false;
-  G.cp=true; G.gid=ic?ic.dataset.g:gi.dataset.id; G.list=inSel?UI.tmul.slice():[key];
+  const inSel=!!(UI.tmul&&UI.tmul.length>1&&UI.tmul.some(x=>tmKey(x)===tmKey(key))), lst=inSel?UI.tmul.filter(x=>x.k===key.k):[key];   /* v159: 선택이 섞여 있어도 누른 것과 같은 종류만 복사 */
+  const G=tlDragSet(lst,key,!e.altKey); if(!G) return false;
+  G.cp=true; G.gid=ic?ic.dataset.g:gi.dataset.id; G.list=lst;
   DRAG={k:'cp',cp:G,x0:e.clientX,y0:e.clientY,pid:e.pointerId}; try{ $('vsTlIn').setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); return true;
 }
 function tlGhosts(G){   /* 복사하며 끄는 동안 따라오는 그림자 — 원본의 복제(데이터 속성은 떼서 다른 코드가 원본 대신 집지 않게) · 끄는 동안 마우스 모양은 '복사' */
@@ -58395,7 +58396,7 @@ function tlCompHint(g,nt){   /* 칩을 끄는 동안 안내선에 덧붙일 말 
   if(!g) return ''; const p=tlCompPlace({g},nt);
   return p.m==='to'?' · ↪ "'+clipS(igName(p.g),12)+'" 인포그래픽으로':p.m==='new'?' · ↪ 새 인포그래픽':p.m==='ext'?' · 인포그래픽이 늘어나요':'';
 }
-function tlGrpHint(G,dt){ return (G.plan.k==='comp'&&!G.cp)?tlCompHint(G.pr.g,G.pr.t0+dt):''; }   /* 여럿 끌기 — 누른 칩 기준 */
+function tlGrpHint(G,dt){ return (G.plan.k==='comp'&&!G.cp)?tlCompHint(G.pr.g,G.pr.t0+dt):((G.plan.k==='mix'&&G.plan.skip)?' · 장면·타이틀·배경음악 '+G.plan.skip+'개는 제자리':''); }   /* 여럿 끌기 — 누른 칩 기준 */
 function tlCompsRemove(refs){   /* 칩들을 원래 인포그래픽에서 뺌([{g,it,pi}]) — 항목을 전부 옮기면 블록째, 일부면 그 항목만 → 바뀐 인포그래픽 집합 */
   const by=new Map(); refs.forEach(r=>{ if(!by.has(r.it)) by.set(r.it,{g:r.g,pis:[]}); by.get(r.it).pis.push(r.pi); }); const touched=new Set();
   by.forEach((o,it)=>{ const np=(it.parts||[]).length;
@@ -58548,7 +58549,7 @@ function vtKeep(){ const a=$('vsVtFind'), b=$('vsVtRepl'); if(a) UI.vtFind=a.val
 function vtOpen(id){ if(P&&UI.vtkP!==P.id){ UI.vtk={}; UI.vtkP=P.id; } return !!UI.vtk[id]; }   /* 글 편집을 펼쳐 둔 묶음인가 — 프로젝트가 바뀌면 기억을 비움(묶음 이름 k1·k2…이 프로젝트마다 겹쳐서) */
 function vtChunkHtml(k,key){   /* 음성 묶음 줄 + (펼쳤으면) 글 편집 */
   const open=vtOpen(k.id), sm=sentMap(), any=k.sids.some(id=>vDiff(sm.get(id)));
-  return '<div class="vs-ck2 '+k.state+(k.stale?' stale':'')+'" data-k="'+k.id+'"><b>'+k.id+'</b><span>'+k.sids.length+'문장 · '+k.n+'자'+(k.dur?' · '+k.dur.toFixed(1)+'초':'')+'</span><em>'+(k.state==='done'?(k.stale?'고침':'완료'):k.state==='run'?'만드는 중':k.state==='err'?'실패':'아직')+'</em>'+(k.imported?'<i title="'+esc(k.imported)+'">가져옴</i>':'')+'<i class="vt-mark'+(any?'':' vt-off')+'" title="말할 글을 고친 문장이 있어요">✎ 글 고침</i>'+(k.cut?'<i class="cutm" title="음성 프롬프트가 소리로 읽혀서 맨 앞 '+k.cut+'초를 잘라냈어요">✂ 프롬프트 '+(Math.round(k.cut*10)/10)+'초 제거</i>':'')+(k.gd==='resynth'?'<i class="cutm" title="음성 프롬프트가 읽혀서 프롬프트 없이 다시 만들었어요(이 묶음은 말투 지시가 빠졌어요)">프롬프트 없이 다시 만듦</i>':'')+'<span class="vs-sp"></span>'+F.btn('vtToggle',open?'글 ▴':'글 ▾',{d:k.id,title:'이 묶음에서 말할 글을 보고 고쳐요'})+F.btn('redoChunk','다시',{d:k.id,dis:!key||!!k.imported})+'</div>'+(k.err?'<div class="vs-note err sm">'+esc(k.err)+'</div>':'')+(open?vtEditor(k,key):'');
+  return '<div class="vs-ck2 '+k.state+(k.stale?' stale':'')+'" data-k="'+k.id+'"><b>'+k.id+'</b><span>'+k.sids.length+'문장 · '+k.n+'자'+(k.dur?' · '+k.dur.toFixed(1)+'초':'')+'</span><em>'+(k.state==='done'?(k.stale?'고침':'완료'):k.state==='run'?'만드는 중':k.state==='err'?'실패':'아직')+'</em>'+(k.imported?'<i title="'+esc(k.imported)+'">가져옴</i>':'')+'<i class="vt-mark'+(any?'':' vt-off')+'" title="말할 글을 고친 문장이 있어요">✎ 글 고침</i><span class="vs-sp"></span>'+F.btn('vtToggle',open?'글 ▴':'글 ▾',{d:k.id,title:'이 묶음에서 말할 글을 보고 고쳐요'})+F.btn('redoChunk','다시',{d:k.id,dis:!key||!!k.imported})+'</div>'+(k.err?'<div class="vs-note err sm">'+esc(k.err)+'</div>':'')+(open?vtEditor(k,key):'');
 }
 function vtVoiceSec(key){   /* [음성] 탭의 '음성 글' 구역 — 찾아 바꾸기 + 묶음 목록 */
   const nd=P.sents.filter(vDiff).length;
@@ -58563,54 +58564,13 @@ function vtSceneHtml(s){   /* [장면] 탭 문장 아래 '🔈 음성 글' */
   return '<details class="vs-vtdet"'+(df?' open':'')+'><summary>🔈 음성 글 <em class="'+off+'" data-vs="'+s.id+'">· 원문과 달라요</em></summary>'+F.ta('ss:'+s.id+':vt',vText(s),{rows:2})+'<div class="r sm"><span class="'+off+'" data-vs="'+s.id+'">'+F.btn('vtReset','↺ 원문대로',{d:s.id})+'</span>'+F.btn('redoChunk','🔈 이 묶음 다시 만들기',{d:s.cid,dis:!geminiKey()||!k||!!k.imported,title:'이 문장이 든 묶음의 음성을 위 글로 새로 합성해요'})+'</div></details>';
 }
 /* ══ /v155 ══ */
-/* ══ v156 (2026-11-04) — ① 음성 프롬프트가 소리로 읽히면 감지해 잘라냄 ② 타임라인 음성 박스 편집(이동·삭제·자르기·길이 조절·복구) ═══════════════════════════════════════════════════
-   ① 음성 프롬프트(cfg.voice.style)가 음성으로 만들어져 들어간다 — 원인: PRV.tts 가 프롬프트를 나레이션 글 앞에 '프롬프트: 글' 로 붙여 한 덩어리 글로 보냄. Gemini TTS 에는 지시문을 따로 받는 칸이 없어서(말투 지시도 같은 글 안에 쓰는 방식)
-      AI 가 맨 앞 문장을 '지시'가 아니라 '읽을 글'로 받아들이면 그대로 읽어 버림. 앱의 기본 프롬프트 4개는 '…읽는다' 꼴의 설명문이라 글처럼 보여 더 잘 읽히고, 묶음(최대 10문장)마다 따로 합성하니 묶음마다 일어날 수 있음.
-      읽힌 소리는 묶음 소리 맨 앞에 붙고 문장 경계 맞춤이 첫 문장의 소리로 잡아 버림.
-      막기 — 합성한 소리의 앞부분을 Gemini 로 받아 적게 해서(PRV.listen) 프롬프트와 같은 말이 들어 있으면(gdMatch) 그 끝 침묵(gdCutTime)에서 앞을 잘라낸 소리를 저장(k.cut = 잘라낸 초).
-      끝을 못 찾으면 프롬프트 없이 다시 합성(k.gd='resynth'). 프롬프트를 안 쓰거나 [음성] 탭 '프롬프트 점검'을 끄면 안 함(cfg.voice.guard, 기본 켬). 점검이 안 되면(네트워크·모델) 예전처럼 그대로 쓰고 알림.
+/* ══ v156 (2026-11-04) — 타임라인 음성 박스 편집(이동·삭제·자르기·길이 조절·복구) ═══════════════════════════════════════════════════
+   (v156 에 함께 들어갔던 '프롬프트 읽힘 점검'(guardLead·PRV.listen·cfg.voice.guard)은 v158 에서 통째로 없앴음. 참고로 원인 — PRV.tts 가 음성 프롬프트(cfg.voice.style)를
+      나레이션 글 앞에 '프롬프트: 글' 로 붙여 한 덩어리 글로 보내서(Gemini TTS 에는 지시문 칸이 없음) 가끔 그 맨 앞 문장을 읽을 글로 받아들여 소리로 읽어 버림.)
    ② 음성 조각 s.vc — 문장의 음성이 타임라인에서 차지하는 조각들 [{id,a,b,dt}] (a·b = 그 묶음 소리의 원본 위치(초), dt = 처음 자리에서 옮긴 초). 없으면 처음 그대로 한 조각(문장 칸 전체, id = 문장 id).
       문장 칸(s.s·s.e)·자막·장면·구성요소는 그대로 — 음성 박스만 따로 움직임. 이동 = dt, 앞뒤 끌기 = a·b(처음 문장 구간·이웃 조각 안에서만 — 줄이면 그 구간 음성이 빠지고 다시 늘리면 돌아옴),
       자르기 = 조각을 둘로(vcCutAt, 재생 위치), 삭제 = 조각 하나만 뺌(vcRemove), 복구 = s.vc 지움(문장 우클릭·[장면] 탭 [↺ 음성 복구]). 그 묶음 음성을 다시 만들면 편집은 처음 상태로.
       재생·내보내기(startPlay)·나레이션 WAV·배경음악 낮춤(speechSpans)·캐릭터 입(speechLevel)·타임라인 파형(drawWaves)이 모두 vcSegs 를 씀 — 편집 안 한 문장은 예전과 똑같은 값. Delete = 이 음성만, Shift+Delete = 문장 통째(예전 동작: 자막·뒤 내용 당김) ── */
-/* ── ① 프롬프트 읽힘 점검 ── */
-const gdNorm=s=>String(s==null?'':s).toLowerCase().replace(/[\s .,!?;:'"“”‘’()\[\]{}<>\-–—·…~`\/\\|*_#@%^&+=]+/g,'');
-function gdLev(a,b){ const n=a.length, m=b.length; if(!n) return m; if(!m) return n; let prev=new Array(m+1), cur=new Array(m+1); for(let j=0;j<=m;j++) prev[j]=j;
-  for(let i=1;i<=n;i++){ cur[0]=i; for(let j=1;j<=m;j++){ const c=a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1; cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+c); } const t=prev; prev=cur; cur=t; } return prev[m]; }
-function gdMatch(style,tr){   /* 받아 적은 글 앞부분이 프롬프트와 같은가 → {spoken, n(받아 적은 글에서 프롬프트가 차지한 글자 수), sim, total}. 프롬프트를 일부만 읽은 경우도 앞 40% 이상이 같으면 읽힌 것으로 */
-  const P0=gdNorm(style), T0=gdNorm(tr), tot=T0.length; if(P0.length<4||tot<4) return {spoken:false,n:0,sim:0,total:tot};
-  let best={sim:0,n:0,f:0};
-  [1,0.85,0.7,0.55,0.4].forEach(f=>{ const l=Math.round(P0.length*f); if(l<4) return; const p=P0.slice(0,l);
-    for(let L=Math.max(3,Math.floor(l*0.8));L<=Math.min(tot,Math.ceil(l*1.25));L++){ const sim=1-gdLev(p,T0.slice(0,L))/Math.max(l,L); if(sim>best.sim+1e-9||(Math.abs(sim-best.sim)<1e-9&&f>best.f)) best={sim,n:L,f}; } });
-  return {spoken:best.sim>=0.7&&(best.f>=0.7||best.n>=6),n:best.n,sim:+best.sim.toFixed(2),total:tot};
-}
-function gdCutTime(an,frac,secs){   /* 프롬프트 읽기가 끝난 시각 근처(말한 양 비율로 어림)의 침묵 한가운데 → {t,tEnd} · 못 찾으면 null */
-  const hop=an.hop, nf=Math.min(an.n,Math.round(secs/hop)); let tot=0; const cum=new Float32Array(nf);
-  for(let i=0;i<nf;i++){ if(an.rms[i]>an.thr) tot++; cum[i]=tot; }
-  if(tot<5) return null; const target=clamp(frac,0.02,0.98)*tot; let fe=0; while(fe<nf-1&&cum[fe]<target) fe++; const tEnd=fe*hop; let best=null;
-  for(const s of an.sil){ if(s.len<0.15) continue; if(s.a>secs) break; if(s.a<an.vs+0.5) continue; const d=Math.abs(s.a-tEnd); if(d>1.8) continue; const sc=d-Math.min(s.len,0.8)*0.5; if(!best||sc<best.sc) best={sc,t:s.c,len:s.len}; }
-  return best?{t:best.t,tEnd,len:best.len}:null;
-}
-function gdResample(a,from,to){ if(from===to) return a; const n=Math.max(1,Math.floor(a.length*to/from)), o=new Float32Array(n), k=from/to; for(let i=0;i<n;i++){ const p=i*k, i0=Math.floor(p), f=p-i0, x0=a[i0]||0, x1=a[Math.min(a.length-1,i0+1)]||0; o[i]=x0+(x1-x0)*f; } return o; }
-function gdB64(blob){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>{ const s=String(fr.result||''), i=s.indexOf(','); res(i>=0?s.slice(i+1):s); }; fr.onerror=()=>rej(fr.error||new Error('인코딩 실패')); fr.readAsDataURL(blob); }); }
-PRV.listen=async function(pcm,sr,secs,o){   /* 소리 앞 secs 초를 Gemini 로 받아 적어 글로 돌려줌 */
-  o=o||{}; const key=needKey(), model=o.model||'gemini-2.5-flash', n=Math.min(pcm.length,Math.round(secs*sr)), wav=f32ToWav(gdResample(pcm.subarray(0,n),sr,16000),16000), b64=await gdB64(wav);
-  const body={contents:[{parts:[{inlineData:{mimeType:'audio/wav',data:b64}},{text:'이 오디오에서 들리는 말을 처음부터 있는 그대로 받아 적어 주세요. 요약·교정·번역을 하지 말고 들리는 그대로 적고, 다른 설명 없이 JSON 한 줄로만 답하세요: {"text":"받아 적은 글"}'}]}],generationConfig:{responseMimeType:'application/json',temperature:0}};
-  const r=await fetchRetry(GBASE+'/models/'+model+':generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:o.signal},{tries:2});
-  const j=await r.json(), parts=(((j.candidates||[])[0]||{}).content||{}).parts||[], raw=parts.map(p=>p.text||'').join('');
-  try{ const x=JSON.parse(raw.replace(/^\s*```(?:json)?\s*|\s*```\s*$/g,'')); return String(x&&x.text!=null?x.text:''); }catch(e){ return raw; }
-};
-async function guardLead(r,txt,v,sig,say){   /* 방금 합성한 소리(r = {pcm,sr}) 앞에 프롬프트가 읽혔으면 잘라냄 → {cut(초, 0 = 안 읽힘·못 잘랐음), how('' | 'trim' | 'resynth'), err} */
-  const style=String(v.style||'').replace(/\s+/g,' ').trim(); if(!style||v.guard===false) return {cut:0,how:''};
-  const m0=gdNorm(style).length, secs=Math.min(14,Math.max(6,m0*0.18+4)); let tr='';
-  try{ if(say) say('음성 프롬프트 읽힘 점검 중'); tr=await PRV.listen(r.pcm,r.sr,secs,{signal:sig,model:v.guardModel}); }
-  catch(e){ if(e&&e.name==='AbortError') throw e; return {cut:0,how:'',err:(e&&e.message)||String(e)}; }
-  const g=gdMatch(style,tr); if(!g.spoken) return {cut:0,how:'',tr,sim:g.sim};
-  const an=analyzeAudio(r.pcm,r.sr), cut=gdCutTime(an,g.n/Math.max(1,g.total),secs);
-  if(cut&&cut.t>0.3&&cut.t<r.pcm.length/r.sr-1){ r.pcm=r.pcm.subarray(Math.round(cut.t*r.sr)); return {cut:r2(cut.t),how:'trim',tr,sim:g.sim}; }
-  if(say) say('프롬프트가 읽혔어요 — 프롬프트 없이 다시 만드는 중');
-  const rx=await PRV.tts(txt,{name:v.name,style:'',model:v.model,signal:sig}); r.pcm=rx.pcm; r.sr=rx.sr; return {cut:0,how:'resynth',tr,sim:g.sim};
-}
 /* ── ② 음성 조각 ── */
 function vcSegs(s){   /* 이 문장의 음성이 타임라인에서 차지하는 조각들 → [{id,t0,t1,off,dur,def}] — 편집 안 했으면 처음 그대로 한 조각(문장 칸 전체) */
   if(!s||!s.has||!s.al) return [];
@@ -58747,6 +58707,146 @@ function vpDoReset(){   /* [↺ 처음 문구로] — 고른 문구의 고친 �
   UI.vpSel=i; vpSync(); toast('‘'+d[0]+'’ 문구를 처음 글로 되돌렸어요');
 }
 /* ══ /v157 ══ */
+/* ══ v159 (2026-11-04) — 타임라인 오른쪽 버튼 끌기 범위 선택 = 타임라인의 모든 요소 ═══════════════════════════════════════════════════
+   요청: "타임라인에서 마우스 우클릭으로 드래그해서 범위내 요소들을 선택하는 기능이 지금은 인포그래픽만 선택되는데, 타임라인에 있는 모든 요소들을 선택할수 있게 수정해줘."
+   · 원인: v140 mqHits 는 [구성] 줄 칩이 걸리면 구성요소, 없으면 [인포] 줄 막대만 골랐음(한 번에 한 종류) — 챕터 타이틀·장면(화면)·자막·음성·배경음악은 아예 안 봄.
+     여러 개 선택(UI.tmul)도 같은 종류(구성요소끼리·인포그래픽끼리)만 가정하고 있었음(정렬·삭제·함께 이동·복사).
+   · 이제 mqHits 가 상자에 걸친 모든 요소(TL_PICK: 챕터 타이틀·장면·인포그래픽·구성요소·자막·음성·배경음악)를 시간 순으로 고름 — 종류가 섞일 수 있고, Ctrl/Shift 로 끌면 지금 선택에 종류 상관없이 더함.
+     한 종류만 걸리면 예전과 똑같음(구성요소끼리·인포그래픽끼리는 정렬 메뉴·길이 동일·함께 이동·복사 등 v113·v150·v151 그대로 — tlSameCC).
+   · 구성요소끼리·인포그래픽끼리가 아닌 선택(섞였거나 자막·음성·장면·타이틀·배경음악 여럿)은 이렇게 다룸:
+       표시 — 도구줄 안내 '인포그래픽 2 · 구성요소 5 · 자막 8 (모두 15개)'(tlKindSum), 끄는 동안 점선(.tpre)도 모든 종류에.
+       삭제(Delete·[🗑]·오른쪽 메뉴) — tmulDeleteMix: 종류마다 하나만 지울 때(tlDelete)와 같은 규칙 — 구성요소=그 칩만 · 인포그래픽=화면만(Shift 면 구성요소까지) · 자막=숨김(추가 자막은 삭제) · 음성=그 박스만 ·
+         챕터 타이틀=끔 · 배경음악=지움 · 장면=이웃 장면이 구간을 이어받음(마지막 한 장면은 남김) — 한 번에, 되돌리기 1번.
+       옮기기(왼쪽 끌기·←→ 0.5초/Ctrl 0.1초) — tlMvPlanMix: 인포그래픽·구성요소·자막·음성만 같은 양으로(한 요소라도 한계에 닿으면 그룹이 멈춤), 장면·챕터 타이틀·배경음악은 제자리.
+         구성요소는 자기 틀(인포그래픽)이 함께 옮겨지면 따라가고, 아니면 예전 규칙(tlCompsMove: 제자리·늘리기·다른 인포그래픽으로). 되돌리기 1번.
+       복사(Ctrl+C·Ctrl+끌기) — 구성요소·인포그래픽만(둘 다 있으면 인포그래픽) · 나머지는 안내. 오른쪽 클릭 메뉴 — 정렬은 없이 복사·재생·삭제(tmulMenuMix). ── */
+const TSEL_ORDER=['title','scene','clip','comp','sub','aud','bgm'];   /* 타임라인 위→아래 줄 순서 */
+const TL_PICK=[['title','.tl-tt'],['scene','.tl-sc'],['clip','.tl-ig'],['comp','.tl-ic'],['sub','.tl-cu'],['aud','.tl-au'],['bgm','.tl-bg']];   /* 범위 선택이 보는 화면 요소 */
+const TL_MIXMV={clip:1,comp:1,sub:1,aud:1};   /* 섞인 선택을 함께 옮길 수 있는 종류 — 장면·챕터 타이틀·배경음악은 제자리 */
+function tlSameCC(l){ return !!(l&&l.length&&l.every(d=>d.k===l[0].k)&&(l[0].k==='comp'||l[0].k==='clip')); }   /* 구성요소끼리 또는 인포그래픽끼리(예전 여러 개 선택) */
+function tlKindSum(l){   /* '인포그래픽 2 · 구성요소 5 · 자막 8 (모두 15개)' — 한 종류면 '구성요소 5개' */
+  const c={}; (l||[]).forEach(d=>{ c[d.k]=(c[d.k]||0)+1; }); const ks=TSEL_ORDER.filter(k=>c[k]);
+  if(ks.length<=1) return ks.length?TSEL_KIND[ks[0]]+' '+c[ks[0]]+'개':'';
+  return ks.map(k=>TSEL_KIND[k]+' '+c[k]).join(' · ')+' (모두 '+l.length+'개)';
+}
+function mqKey(k,el){   /* 화면 요소 → 선택 항목 {k,id,pi} — 고를 수 없는 것(음성 없는 문장·지운 음성·처음 자리 점선·끌 때 따라오는 그림자)은 null */
+  const ds=el.dataset||{};
+  switch(k){
+    case 'title': return ds.ci!=null&&ds.ci!==''?{k,id:ds.ci,pi:-1}:null;
+    case 'scene': { const c=P.scenes[+ds.j]; return c?{k,id:c.id,pi:-1}:null; }
+    case 'clip': return ds.id?{k,id:ds.id,pi:-1}:null;
+    case 'comp': return ds.i?{k,id:ds.i,pi:ds.p!=null&&ds.p!==''?+ds.p:-1}:null;
+    case 'sub': return ds.sid?{k,id:ds.sid,pi:-1}:null;
+    case 'aud': return (el.classList.contains('has')&&ds.vc)?{k,id:ds.vc,pi:-1}:null;
+    case 'bgm': return {k,id:'bgm',pi:-1};
+  }
+  return null;
+}
+function mqKeyAt(target){   /* 누른 곳의 구성요소·인포그래픽이 아닌 요소(자막·음성·장면·타이틀·배경음악) → 선택 항목 */
+  for(let i=0;i<TL_PICK.length;i++){ const x=TL_PICK[i]; if(x[0]==='comp'||x[0]==='clip') continue; const el=target.closest(x[1]); if(el){ const d=mqKey(x[0],el); if(d) return d; } }
+  return null;
+}
+function mqHits(R){   /* v159: 상자에 걸친 모든 요소 — 시간 순(같은 시각이면 위 줄부터) → {k: 한 종류면 그 종류·섞이면 'mix'·없으면 '', els, list} */
+  const host=$('vsTlIn'), L=R.hr.left+R.l, T=R.hr.top+R.t, RR=R.hr.left+R.r, B=R.hr.top+R.b, found=[], seen=new Set();
+  const inBox=el=>{ const q=el.getBoundingClientRect(); return q.right>L&&q.left<RR&&q.bottom>T&&q.top<B; };
+  TL_PICK.forEach((x,ri)=>{ host.querySelectorAll(x[1]).forEach(el=>{ if(!inBox(el)) return; const d=mqKey(x[0],el); if(d) found.push({el,d,ri,t:(parseFloat(el.style.left)||0)}); }); });
+  found.sort((a,b)=>(a.t-b.t)||(a.ri-b.ri));
+  const els=[], list=[], ks=[]; found.forEach(f=>{ els.push(f.el); const key=tmKey(f.d); if(!seen.has(key)){ seen.add(key); list.push(f.d); if(ks.indexOf(f.d.k)<0) ks.push(f.d.k); } });   /* 자막이 쪽으로 나뉜 것은 화면 요소는 여럿이어도 선택 항목은 하나 */
+  return {k:ks.length===1?ks[0]:(ks.length?'mix':''),els,list};
+}
+function tlMultiHint(cp){   /* 여러 개 골랐을 때 도구줄 안내 — 구성요소끼리·인포그래픽끼리는 예전 글 그대로 */
+  const sel=UI.tmul, n=sel.length;
+  if(tlSameCC(sel)) return '선택: <b>'+esc(TSEL_KIND[sel[0].k])+' '+n+'개</b> <i>· 끌면 함께 이동 · ←→ 0.5초(Ctrl 0.1초) · Ctrl+끌기·Ctrl+C 복사 · 오른쪽 클릭 → 길이 동일·정렬·일렬배치 · Delete 로 삭제 · Ctrl(⌘)+클릭으로 더하거나 빼요'+cp+'</i>';
+  const mv=sel.some(d=>TL_MIXMV[d.k]), cc=sel.some(d=>d.k==='comp'||d.k==='clip'), skip=sel.some(d=>!TL_MIXMV[d.k]);
+  return '선택: <b>'+esc(tlKindSum(sel))+'</b> <i>· '+(mv?'끌면 함께 이동'+(skip?'(장면·챕터 타이틀·배경음악은 제자리)':'')+' · ←→ 0.5초(Ctrl 0.1초) · ':'')+(cc?'Ctrl+C 복사(구성요소·인포그래픽만) · ':'')+'Delete 로 삭제(음성은 그 박스만) · 오른쪽 클릭 메뉴 · Ctrl/Shift+오른쪽 끌기로 더해요'+cp+'</i>';
+}
+function tlCopyNote(){   /* 복사한 것 말고 선택에 남은 요소 안내 — 인포그래픽을 복사했으면 구성요소는 그 안에 들어가므로 뺌 */
+  if(!TLCB) return ''; const oth=cbSelList().filter(d=>d.k!==TLCB.k&&!(TLCB.k==='clip'&&d.k==='comp'));
+  return oth.length?' · 선택한 나머지('+tlKindSum(oth)+')는 복사 대상이 아니에요':'';
+}
+function tmulMenuMix(e,ref){   /* 종류가 섞인(또는 자막·음성·장면·타이틀·배경음악을 포함한) 여러 개를 오른쪽 클릭 — 정렬 없이 복사·재생·삭제 */
+  const sel=UI.tmul, n=sel.length, nClip=sel.filter(d=>d.k==='clip').length, nComp=sel.filter(d=>d.k==='comp').length;
+  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; UI.tmRef=ref;
+  m.innerHTML='<div class="t">'+esc('선택 '+n+'개 · '+tlKindSum(sel))+'</div>'
+    +((nClip||nComp)?cbMenuHtml(nClip?'clip':'comp',nClip||nComp):'')
+    +'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button>'
+    +'<button class="mobile-keep dng" data-a="tlDel" title="종류마다 요소 하나만 지우는 규칙대로 — 음성은 그 박스만, 인포그래픽은 화면(틀)만 지워요">🗑 선택 '+n+'개 삭제</button>'
+    +(nClip?'<button class="mobile-keep dng" data-a="tlDelAll" title="인포그래픽은 안의 구성요소까지 지워요 (Shift+Delete)">🗑 선택 '+n+'개 삭제 (인포그래픽은 구성요소까지)</button>':'');
+  _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
+}
+function tmulDeleteMix(sel,all){   /* 종류가 섞인 여러 개 지우기 — 종류마다 '그 요소만' 지우는 규칙(tlDelete)대로. 지웠으면 true */
+  const by=k=>sel.filter(d=>d.k===k), cnt={}, add=k=>{ cnt[k]=(cnt[k]||0)+1; }; let keep=0, sceneKeep=0;
+  { const m=new Map(); by('comp').forEach(d=>{ const f=findItem(d.id); if(f){ if(!m.has(f.g)) m.set(f.g,[]); m.get(f.g).push({it:f.it,pi:d.pi,d}); } });   /* ① 구성요소 — 항목 칩은 번호가 밀리지 않게 뒤에서부터 */
+    m.forEach((arr,g)=>{
+      const pcs=arr.filter(x=>x.pi>=0&&x.it.parts&&x.it.parts.length>1);   /* 항목이 둘 이상인 블록의 항목 칩 */
+      pcs.sort((a,b)=>b.pi-a.pi).forEach(x=>{ if(x.it.parts[x.pi]) x.it.parts.splice(x.pi,1); x.done=1; });
+      arr.filter(x=>!x.done).forEach(x=>{ if(g.items.indexOf(x.it)>=0) g.items=g.items.filter(q=>q!==x.it); x.done=1; });   /* 블록 칩(또는 항목이 하나뿐인 블록) */
+      const empty=new Set(); pcs.forEach(x=>{ if(!(x.it.parts&&x.it.parts.length)) empty.add(x.it); }); if(empty.size) g.items=g.items.filter(q=>!empty.has(q));   /* 항목을 전부 지웠으면 블록도 */
+      arr.forEach(x=>{ if(x.done) add('comp'); }); });
+    UI.igIt=''; UI.igPt=-1; }
+  by('clip').forEach(d=>{ const g=igById(d.id); if(g){ keep+=igDropFrame(g,all===true); add('clip'); } });   /* ② 인포그래픽 — 화면(틀)만, all 이면 구성요소까지 */
+  by('sub').forEach(d=>{ const id=String(d.id);   /* ③ 자막 — 추가 자막은 삭제, 문장 자막은 숨김 */
+    if(id.indexOf('x:')===0){ const xid=id.slice(2); if((P.xsubs||[]).some(x=>x.id===xid)){ P.xsubs=P.xsubs.filter(x=>x.id!==xid); add('sub'); } }
+    else{ const s=P.sents.find(x=>x.id===id); if(s){ s.sub.hide=true; add('sub'); } } });
+  by('aud').forEach(d=>{ if(vcFind(d.id)){ vcRemove(d.id); add('aud'); } });   /* ④ 음성 — 그 박스만(문장·자막·뒤 내용은 그대로) */
+  by('title').forEach(d=>{ const ci=+d.id; P.ttl=P.ttl||{}; (P.ttl[ci]=P.ttl[ci]||{}).off=true; add('title'); });   /* ⑤ 챕터 타이틀 끔 */
+  if(by('bgm').length&&P.cfg.bgm.bid){ P.cfg.bgm.bid=''; P.cfg.bgm.name=''; add('bgm'); }   /* ⑥ 배경음악 */
+  { const idx=by('scene').map(d=>P.scenes.findIndex(c=>c.id===d.id)).filter(j=>j>=0).sort((a,b)=>b-a);   /* ⑦ 장면 — 큰 번호부터(번호가 안 밀리게) · 마지막 한 장면은 남김 */
+    idx.forEach(j=>{ if(P.scenes.length<=1){ sceneKeep++; return; } deleteScene(j); add('scene'); }); UI.ms=null; }
+  const total=TSEL_ORDER.reduce((a,k)=>a+(cnt[k]||0),0);
+  if(!total){ tselClear(); toast(sceneKeep?'마지막 남은 장면은 지울 수 없어요':'지울 수 있는 요소가 없었어요(이미 지워졌어요)'); return false; }
+  UI.tmul=[]; UI.tsel=null; layout(P); sortClips(P); P._cues=null; UI.sel=clamp(UI.sel,0,P.scenes.length-1); UI.msA=null; commit('삭제 — 여러 개'); renderAll(); igPostersAll();
+  if(ENG.pos>P.dur) seekTo(P.dur); else{ syncMedia(ENG.pos,false); paintFrame(ENG.pos); }
+  toastUndo('선택한 요소 '+total+'개를 지웠어요 ('+TSEL_ORDER.filter(k=>cnt[k]).map(k=>TSEL_KIND[k]+' '+cnt[k]).join(' · ')+')'+(keep?' — 안의 구성요소 '+keep+'개는 틀 없이 그대로 남겨 뒀어요(같이 지우려면 Shift+Delete)':'')+(sceneKeep?' · 마지막 남은 장면은 지울 수 없어서 남겨 뒀어요':''));
+  return true;
+}
+/* ── 섞인 선택 옮기기 ── */
+function tlMvPlanSubs(list){   /* 자막(문장·추가 자막) 여럿 → 계획 {k:'sub',ents,lo,hi,t0} — 한 개일 때(tlMvPlan)와 같은 규칙 */
+  const ents=[]; list.forEach(d=>{ const id=String(d.id); let s0, e0, ref;
+    if(id.indexOf('x:')===0){ const x=(P.xsubs||[]).find(q=>q.id===id.slice(2)); if(!x) return; s0=x.s; e0=x.e; ref={x}; }
+    else{ const s=P.sents.find(q=>q.id===id), cs=cuesOf().filter(q=>q.sid===id); if(!s||!cs.length) return; s0=Math.min.apply(null,cs.map(q=>q.s)); e0=Math.max.apply(null,cs.map(q=>q.e)); ref={s}; }
+    ents.push(Object.assign({t0:s0,e0,d},ref)); });
+  if(!ents.length) return null;
+  const mn=Math.min.apply(null,ents.map(x=>x.t0)), mx=Math.max.apply(null,ents.map(x=>x.e0));
+  return {k:'sub',ents,lo:Math.min(0,-mn),hi:Math.max(0,P.dur-mx),t0:mn};
+}
+function tlMvPlanAuds(list){   /* 음성 박스 여럿 → 계획 {k:'aud',ents,lo,hi,t0} */
+  const ents=[]; list.forEach(d=>{ const g=vcFind(d.id); if(g) ents.push({g,s:g.s,id:g.id,t0:g.t0,e0:g.t1,d}); });
+  if(!ents.length) return null;
+  const mn=Math.min.apply(null,ents.map(x=>x.t0)), mx=Math.max.apply(null,ents.map(x=>x.e0));
+  return {k:'aud',ents,lo:Math.min(0,-mn),hi:Math.max(0,P.dur-mx),t0:mn};
+}
+function tlMvPlanMix(sel){   /* 종류가 섞인(또는 자막·음성 여럿) 선택 → {k:'mix',parts,ents,lo,hi,t0,skip} — skip = 제자리에 두는 장면·타이틀·배경음악 수 */
+  if(!sel||!sel.length||!P) return null;
+  const clips=sel.filter(d=>d.k==='clip'), cids=new Set(clips.map(d=>String(d.id)));
+  const comps=sel.filter(d=>{ if(d.k!=='comp') return false; const f=findItem(d.id); return !(f&&cids.has(String(f.g.id))); });   /* 자기 틀(인포그래픽)이 함께 옮겨지는 칩은 틀을 따라감 */
+  const subs=sel.filter(d=>d.k==='sub'), auds=sel.filter(d=>d.k==='aud'), parts=[];
+  if(clips.length){ const p=tlMvPlan(clips); if(p) parts.push(p); }
+  if(comps.length){ const p=tlMvPlan(comps); if(p) parts.push(p); }
+  if(subs.length){ const p=tlMvPlanSubs(subs); if(p) parts.push(p); }
+  if(auds.length){ const p=tlMvPlanAuds(auds); if(p) parts.push(p); }
+  if(!parts.length) return null;
+  const ents=[]; parts.forEach(p=>p.ents.forEach(x=>ents.push(x)));
+  let lo=Math.max.apply(null,parts.map(p=>p.lo)), hi=Math.min.apply(null,parts.map(p=>p.hi)); if(lo>hi){ lo=0; hi=0; }
+  return {k:'mix',parts,ents,lo,hi,t0:Math.min.apply(null,parts.map(p=>p.t0)),skip:sel.filter(d=>!TL_MIXMV[d.k]).length};
+}
+function tlMvDoMix(pl,dt,nudge){   /* 섞인 선택 옮기기 — 구성요소 말고는 먼저 옮기고, 구성요소는 예전 규칙(tlCompsMove: 제자리·늘리기·다른 인포그래픽으로)으로 마지막에 — 되돌리기는 한 번 */
+  if(ENG.playing) pausePlay();
+  const pc=pl.parts.find(p=>p.k==='comp'), touched=new Set(), label='타임라인 이동 — 선택 '+pl.ents.length+'개 ('+(dt>=0?'+':'')+r2(dt)+'초)';
+  pl.parts.forEach(p=>{ if(p.k!=='comp') tlMvApply(p,dt).forEach(g=>touched.add(g)); });
+  if(!pc) return tlMvFinish(Object.assign({},pl,{label}),dt,nudge,touched);
+  layout(P); sortClips(P); touched.forEach(g=>{ try{ igPoster(g); }catch(x){ if(window.__klStrict) throw x; } });
+  return tlCompsMove(Object.assign({},pc,{label,t0:pl.t0}),dt,nudge);
+}
+function tlDragSetMix(list,key,snap){   /* 섞인 선택을 함께 끌 준비 → G (옮길 게 없으면 null) — 달라붙기는 누른 요소의 시작 기준(누른 요소가 틀을 따라가는 칩이면 없음) */
+  const pl=tlMvPlanMix(list); if(!pl) return null;
+  const pk=tmKey(key), me=pl.ents.find(x=>x.d&&tmKey(x.d)===pk), els=[], ids=[];
+  list.forEach(d=>{ if(TL_MIXMV[d.k]) tselEls(d).forEach(el=>els.push({el,k:d.k,t0:(parseFloat(el.style.left)||0)/UI.pps})); });
+  pl.parts.forEach(p=>{ if(p.k==='clip') p.ents.forEach(x=>ids.push(x.g.id)); });
+  if(!els.length) return null;
+  return {plan:pl,pr:me||null,pr0:me?me.t0:null,els,pts:tlSnapPts(ids),snap:!!snap&&!!me,key,on:false,dt:0};
+}
+/* ══ /v159 ══ */
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
 const VM=new Map();
 function vidEl(sc){
@@ -59066,7 +59166,7 @@ async function runVoice(o){
   const ids=o.ids||P.chunks.filter(k=>k.state!=='done'||k.stale).map(k=>k.id), todo=P.chunks.filter(k=>ids.indexOf(k.id)>=0);
   if(!todo.length){ toast('만들 음성이 없어요 — 이미 모두 만들어져 있어요'); return true; }
   UI.busy='voice'; UI.ctl=new AbortController(); paintBusy();
-  const sm=sentMap(), v=P.cfg.voice; let ok=true, gdN=0, gdE='';   /* v156: 프롬프트가 읽혀 고친 묶음 수 · 점검 오류 */
+  const sm=sentMap(), v=P.cfg.voice; let ok=true;
   try{
     for(let i=0;i<todo.length;i++){
       if(UI.ctl.signal.aborted){ ok=false; break; }
@@ -59075,9 +59175,7 @@ async function runVoice(o){
       try{
         const txt=ss.map(vText).join(' ');   /* v155: 나레이션 글이 아니라 음성 글(없으면 나레이션 글)로 말함 */
         const r=await PRV.tts(txt,{name:v.name,style:v.style,model:v.model,signal:UI.ctl.signal,onWait:(a,m)=>progress(i/todo.length,'AI 서버가 바빠요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+m+')')});
-        const gd=await guardLead(r,txt,v,UI.ctl.signal,m=>progress(i/todo.length,m+' '+(i+1)+'/'+todo.length));   /* v156: 프롬프트가 소리로 읽혔으면 앞을 잘라냄(못 자르면 프롬프트 없이 다시 합성) */
-        if(gd.err&&!gdE) gdE=gd.err; if(gd.how) gdN++;
-        applyChunkAudio(k,ss,r.pcm,r.sr); k.tts=txt; if(chunkTts(k)!==txt) k.stale=true; if(gd.how==='trim') k.cut=gd.cut; else delete k.cut; if(gd.how==='resynth') k.gd='resynth'; else delete k.gd;   /* v155: 실제로 보낸 글을 저장(만드는 동안 글을 또 고쳤으면 고침으로 남김) */
+        applyChunkAudio(k,ss,r.pcm,r.sr); k.tts=txt; if(chunkTts(k)!==txt) k.stale=true;   /* v155: 실제로 보낸 글을 저장(만드는 동안 글을 또 고쳤으면 고침으로 남김) */
       }catch(e){
         if(e&&e.name==='AbortError'){ k.state=k.bid?'done':'none'; ok=false; break; }
         k.state=k.bid?'done':'err'; k.err=(e&&e.message)||String(e); ok=false; toast('음성 오류: '+k.err.slice(0,90));
@@ -59086,9 +59184,7 @@ async function runVoice(o){
       if(i<todo.length-1) await sleepA(o.pace==null?500:o.pace,UI.ctl.signal).catch(()=>{});
     }
   }finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
-  progress(1,ok?'음성 만들기 완료':'음성 만들기가 끝났어요(일부 실패·중단)'); commit('음성');
-  if(gdN) toast('음성 프롬프트가 소리로 읽힌 묶음 '+gdN+'개를 찾아 고쳤어요 — 앞부분을 잘라내거나 프롬프트 없이 다시 만들었어요'); else if(gdE) toast('음성 프롬프트 읽힘 점검을 못 한 묶음이 있어요('+String(gdE).slice(0,60)+') — 그대로 썼어요. 프롬프트가 읽혔으면 [음성] 탭의 ‘프롬프트 점검’을 확인하세요');
-  return ok;
+  progress(1,ok?'음성 만들기 완료':'음성 만들기가 끝났어요(일부 실패·중단)'); commit('음성'); return ok;
 }
 async function importNarration(file){
   if(!P||UI.busy||!file) return false; UI.busy='voice'; paintBusy(); progress(0.1,'음성 파일 읽는 중…');
@@ -59111,7 +59207,7 @@ async function importNarration(file){
 async function previewVoice(){
   if(!P||UI.busy) return; const v=P.cfg.voice; UI.busy='voice'; paintBusy(); progress(0.2,'목소리 시험 중…');
   try{
-    const smp='안녕하세요. 오늘의 시황 분석을 시작하겠습니다.', r=await PRV.tts(smp,{name:v.name,style:v.style,model:v.model}); try{ await guardLead(r,smp,v,undefined,m=>progress(0.6,m)); }catch(e){ if(window.__klStrict) throw e; } const ac=getAc(); await ac.resume();
+    const r=await PRV.tts('안녕하세요. 오늘의 시황 분석을 시작하겠습니다.',{name:v.name,style:v.style,model:v.model}); const ac=getAc(); await ac.resume();
     const src=ac.createBufferSource(); src.buffer=f32Buffer(r.pcm,r.sr); src.connect(ac.destination); src.start(); progress(1,'목소리 미리듣기');
   }catch(e){ progress(0,''); toast('목소리 시험 실패: '+((e&&e.message)||'')); }
   finally{ UI.busy=''; paintBusy(); }
@@ -59408,7 +59504,6 @@ function inspVoice(){
   h+=(key?'':'<div class="vs-note err">Gemini API Key 가 없어요 — 관리 메뉴 › 🧩 AI 공급자에서 입력하세요. (파일로 가져오기는 키 없이 가능)</div>');
   h+=F.row('목소리',F.sel('cfg.voice.name',v.name,VOICES.map(x=>[x[0],x[0]+' · '+x[1]]))+F.btn('voiceTest','🔈 들어보기'));
   h+=inspVoicePrompt();
-  h+=F.row('프롬프트 점검',F.chk('cfg.voice.guard',v.guard!==false,'프롬프트가 소리로 읽히면 자동으로 잘라내요'),'음성을 만들 때 묶음마다 AI 호출이 하나 더 들어가요(프롬프트를 쓸 때만) · 읽힌 것을 못 자르면 프롬프트 없이 다시 만들어요');
   h+=F.row('모델',F.txt('cfg.voice.model',v.model,{list:'vsDlTts'})+'<datalist id="vsDlTts">'+((UI.models&&UI.models.tts)||[]).map(m=>'<option value="'+esc(m)+'">').join('')+'</datalist>','출력 탭의 [모델 찾기]로 확인');
   h+=F.row('합성 방식',F.sel('cfg.voice.mode',v.mode,[['chunk','묶음(빠름 · 침묵을 찾아 문장 경계를 맞춤)'],['sent','문장별(정확 · AI 호출이 많음)']]));
   h+='<div class="vs-sec">간격·여백 <span class="hint">TTS 가 넣은 자연스러운 쉼 위에 더해져요</span></div>';
@@ -61028,7 +61123,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
-    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,gdMatch,gdCutTime,gdNorm,guardLead,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
+    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,tlSameCC,tlKindSum,mqKey,mqKeyAt,tlMultiHint,tlCopyNote,tmulMenuMix,tmulDeleteMix,tlMvPlanSubs,tlMvPlanAuds,tlMvPlanMix,tlMvDoMix,tlDragSetMix,TL_PICK,TL_MIXMV,tlMvFinish,tlCompsMove,tlDownGrp,tlMenu,tlSelFrom,tselPaint,tlDelete,tselClear,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
     SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
