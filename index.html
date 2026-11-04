@@ -45295,7 +45295,7 @@ function swapVis(j,dir){ const p=P, k=j+dir; if(k<0||k>=p.scenes.length) return 
 
 /* ═════════ 되돌리기·저장 ═════════ */
 function commit(label){   /* 바꾼 직후 호출 — 되돌리기 기록에 쌓고 자동 저장 예약 */
-  if(!P) return; const s=serialize(P); if(s===H.cur) return;
+  if(!P) return; nfPrune(); const s=serialize(P); if(s===H.cur) return;   /* v153: 칩을 다 지운/옮긴 '틀 없는' 빈 그릇은 여기서 정리 */
   if(H.cur) H.undo.push(H.cur); if(H.undo.length>60) H.undo.shift(); H.redo.length=0; H.cur=s;
   P.updated=Date.now(); UI.saved=false; paintSaved(); scheduleSave();
 }
@@ -45339,7 +45339,7 @@ function fixProject(p){   /* 옛 형식 보정 */
   p.lang=V.norm(p.lang);   /* v108: 영상 언어(옛 프로젝트는 한국어) */
   p.sb=(p.sb&&typeof p.sb==='object')?p.sb:{on:true};   /* v107: 스토리보드 적용(켬이 기본 — 스토리보드가 없으면 sbOn 이 늘 꺼진 것으로 침) */
   p.scenes.forEach(c=>{ c.vis=c.vis||{kind:'none'}; c.trans=c.trans||{t:'inherit',d:0}; c.alt=c.alt||[]; });
-  p.sents.forEach(s=>{ s.sub=s.sub||{text:null,ds:0,de:0,hide:false}; }); p.char=p.char||null; p.igs=p.igs||[]; igMigrate(p); p.igs.forEach(g=>{ if(!g.sty) g.sty='news'; });
+  p.sents.forEach(s=>{ s.sub=s.sub||{text:null,ds:0,de:0,hide:false}; }); p.char=p.char||null; p.igs=p.igs||[]; igMigrate(p); p.igs.forEach(g=>{ if(!g.sty) g.sty='news'; }); p.igs=p.igs.filter(g=>!(g.nf&&!(g.items&&g.items.length)));   /* v153: 구성요소가 없는 '틀 없는' 인포그래픽은 보이지도 눌리지도 않으니 정리 */
   { const fx=fixPartAnchors(p); if(fx) setTimeout(()=>{ try{ toast('예전 편집 오류로 시점이 망가진 목록 항목 '+fx+'개를 다시 잡았어요 — [인포] 탭에서 시점이 맞는지 확인해 주세요'); }catch(e){} },900); }   /* v115 */
   p.chunks.forEach(k=>{ if(k.state==='run') k.state=k.bid?'done':'none'; });
   p.scenes.forEach(c=>{ if(c.vis.gen&&c.vis.gen.state==='run') c.vis.gen.state='err',c.vis.gen.err='중단됨(창을 닫았어요)'; });
@@ -46240,7 +46240,7 @@ function drawHead(E,L,ig,lt,o){   /* 제목·윗글 — 스타일마다 다름(�
 }
 function drawFoot(E,L,ig,o){   /* 슬라이드: 아래 줄 — 영상 제목 · 쪽 번호 */
   const g=E.g, pal=E.pal, font=E.font, B=L.B, F0=L.foot; if(!F0) return;
-  const full=(P.igs||[]).filter(x=>!isOver(x.mode)&&x.mode!=='title').sort((a,b)=>(a.s-b.s)||(a.e-b.e)), n=full.indexOf(ig)+1, ty=F0.y+F0.h*0.5;
+  const full=(P.igs||[]).filter(x=>!isOver(x.mode)&&x.mode!=='title'&&!x.nf).sort((a,b)=>(a.s-b.s)||(a.e-b.e)), n=full.indexOf(ig)+1, ty=F0.y+F0.h*0.5;
   g.save(); g.fillStyle=alphaOf(pal.mute,0.35); g.fillRect(F0.x,F0.y,F0.w,1);
   dtf(g,String(P.title||'').slice(0,40),F0.x,ty+0.004*B,F0.w*0.7,0.024*B,'600',pal.mute,font,'left','middle',0.6);
   if(n>0&&full.length>1) dtx(g,n+' / '+full.length,F0.x+F0.w,ty+0.004*B,0.026*B,'800',pal.accent,font,'right','middle');
@@ -46253,15 +46253,15 @@ function drawClip(g,w,h,ig,t,o){
   const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all,sty,sk,cells:L.cells};
   E.sinceAt=tm=>{ if(E.all) return 99; if(tm==null) return t-ig.s; return tm<ig.s-0.05?99:t-Math.max(tm,ig.s); };
   E.sinceBlock=it=>E.sinceAt(blockT0(P,it));
-  g.save(); g.globalAlpha*=al; const own=scrOwn(ig,L); if(own===1) drawBgSpec(g,w,h,ig.bgs,{ci,t,ig,L}); g.drawImage(igBack(w,h,ig,L,pal,ci,own!==2),0,0);   /* v148: 화면 배경 — 0 투명(기본) · 1 고른 배경 · 2 예전 자기 스타일 바탕 */
-  if(L.col) drawInfoChar(g,L,t,pal,o);
-  if(L.mode==='title'){ drawTitleCard(E,L,ig); g.restore(); return; }
-  drawHead(E,L,ig,lt,o);
+  g.save(); g.globalAlpha*=al; const own=scrOwn(ig,L), nf=!!ig.nf; if(!nf){ if(own===1) drawBgSpec(g,w,h,ig.bgs,{ci,t,ig,L}); g.drawImage(igBack(w,h,ig,L,pal,ci,own!==2),0,0); }   /* v153: 틀 없는 인포그래픽(nf)은 배경·패널을 안 그리고 구성요소만 */   /* v148: 화면 배경 — 0 투명(기본) · 1 고른 배경 · 2 예전 자기 스타일 바탕 */
+  if(L.col&&!nf) drawInfoChar(g,L,t,pal,o);
+  if(L.mode==='title'){ if(!nf) drawTitleCard(E,L,ig); g.restore(); return; }
+  if(!nf) drawHead(E,L,ig,lt,o);
   if(L.panel&&!isOver(L.mode)){ g.save(); g.beginPath(); roundRect(g,L.panel.x,L.panel.y,L.panel.w,L.panel.h,L.panel.r); g.clip(); }
   L.cells.forEach(c=>{ const it=E.items[c.i]; if(!it) return; const f=DRAW[c.t]; if(!f) return; const lf=duLeft(it,t,E.all); if(lf<=0) return; if(lf<0.25){ g.save(); g.globalAlpha*=lf/0.25; f(E,c,it); g.restore(); } else f(E,c,it); });   /* v113: 표시 길이(it.du)가 지난 구성요소는 사라짐 */
-  if(L.foot) drawFoot(E,L,ig,o);
+  if(L.foot&&!nf) drawFoot(E,L,ig,o);
   if(L.panel&&!isOver(L.mode)) g.restore();
-  if(L.badge){ const b=L.badge, s=E.sinceAt(blockT0(P,E.items[0]||{})); const k=o.all?1:rv(lt,0.4); g.save(); g.globalAlpha*=k; roundRect(g,b.x,b.y,b.w,b.h,b.h*0.22); g.fillStyle=pal.accent; g.fill(); dtf(g,b.text,b.x+b.w/2,b.y+b.h/2,b.w-0.03*B,b.fs,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle',0.5); g.restore(); void s; }
+  if(L.badge&&!nf){ const b=L.badge, s=E.sinceAt(blockT0(P,E.items[0]||{})); const k=o.all?1:rv(lt,0.4); g.save(); g.globalAlpha*=k; roundRect(g,b.x,b.y,b.w,b.h,b.h*0.22); g.fillStyle=pal.accent; g.fill(); dtf(g,b.text,b.x+b.w/2,b.y+b.h/2,b.w-0.03*B,b.fs,'800',pal.dark?'#0b1220':'#ffffff',font,'center','middle',0.5); g.restore(); void s; }
   L.chips.forEach(r=>{ const it=E.items[r.i]; if(!it) return; const lf=duLeft(it,t,E.all); if(lf<=0) return; if(lf<0.25){ g.save(); g.globalAlpha*=lf/0.25; drawChip(E,r,it,r.sz); g.restore(); } else drawChip(E,r,it,r.sz); });
   g.restore();
 }
@@ -46727,7 +46727,7 @@ async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐�
 
 /* ── 클립 편집 — 시간 옮기기·나누기·복제·삭제 ── */
 const igById=id=>(P.igs||[]).find(g=>g.id===id)||null;
-function igSnapPts(skip){ const a=[0,P.dur]; P.scenes.forEach(c=>a.push(c.s)); P.sents.forEach(s=>{ a.push(s.s,s.vs,s.ve); }); (P.igs||[]).forEach(g=>{ if(g.id!==skip) a.push(g.s,g.e); }); return a.filter(x=>isFinite(x)).sort((x,y)=>x-y); }
+function igSnapPts(skip){ const a=[0,P.dur]; P.scenes.forEach(c=>a.push(c.s)); P.sents.forEach(s=>{ a.push(s.s,s.vs,s.ve); }); (P.igs||[]).forEach(g=>{ if(g.id!==skip&&!g.nf) a.push(g.s,g.e); }); return a.filter(x=>isFinite(x)).sort((x,y)=>x-y); }
 function snapTo(pts,t,th){ let best=t, bd=th; for(let i=0;i<pts.length;i++){ const dd=Math.abs(pts[i]-t); if(dd<bd){ bd=dd; best=pts[i]; } else if(pts[i]>t+th) break; } return best; }
 const igsOfScene=sc=>(P.igs||[]).filter(g=>{ const mid=(g.s+g.e)/2; return mid>=sc.s&&mid<sc.e; });
 function igSetTimes(g,s,e){ s=Math.max(0,s); e=Math.min(P.dur,Math.max(s+0.5,e)); g.a=anchorAtTime(P,s); g.b=anchorAtTime(P,e); layout(P); }
@@ -46901,7 +46901,8 @@ function igBlockHtml(g,it){
 }
 function igEditor(g){
   const pre='ig:'+g.id+'::';
-  let h='<div class="vs-sec">선택한 인포그래픽 <span class="hint">'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+r2(g.e-g.s)+'초 · '+(g.src==='ai'?'AI 가 요약':g.src==='hand'?'직접 만듦':'규칙으로 추출')+'</span></div>';
+  let h=''; if(g.nf) h=igNfRows(g); else{
+  h+='<div class="vs-sec">선택한 인포그래픽 <span class="hint">'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+r2(g.e-g.s)+'초 · '+(g.src==='ai'?'AI 가 요약':g.src==='hand'?'직접 만듦':'규칙으로 추출')+'</span></div>';
   h+=F.row('이름',F.txt(pre+'name',g.name||'',{ph:'(선택) 타임라인에 보일 이름'}));
   h+=F.row('형태',F.sel(pre+'mode',g.mode,MODES.map(m=>[m[0],m[2]+' '+m[1]])));
   h+=F.row('스타일',F.sel(pre+'sty',styOf(g),STY_ORDER.map(k=>[k,ISTY[k].ic+' '+ISTY[k].n])),'이 인포그래픽의 모양 — 새로 만들 때 기본 스타일은 아래 [캐릭터·모양]에서');
@@ -46913,7 +46914,7 @@ function igEditor(g){
   h+=F.row('제목 크기',F.rng(pre+'fz.title',fzVal(g,'title'),40,250,5),'% — 기본 100')+F.row('윗글 크기',F.rng(pre+'fz.kicker',fzVal(g,'kicker'),40,250,5),'% — 기본 100');
   h+=F.row('요청 글',F.ta('cfg.prompts.info',P.cfg.prompts.info,{rows:2,ph:'(선택) [🔄 AI 로 다시] 때 AI 에게 요구할 내용 — 예) 숫자는 크게, 속보 헤드라인처럼 짧게'}),'모든 인포그래픽 공통 · 🤖 AI 창에서도 써요');
   { const ok=igBoxOK(g); h+=F.row('크기·배치','<span class="'+(ok?'ok':'hint')+'">'+(ok?'직접 정함'+(g.tpl?' · 템플릿 '+esc(g.tpl):''):'자동 배치')+'</span>'+F.btn('leOpen','📐 크기/배치 수정',{d:g.id,c:'pri',title:'구성요소를 미리보기 위에 상자로 띄워 끌어서 옮기고 크기를 바꿔요 — 템플릿 '+LTPL.length+'개'})+F.btn('igLayAI','🧩 AI 배치 고르기',{d:g.id,title:'구성요소 개수·모양·중요도를 보고 템플릿 '+LTPL.length+'개 중 가장 알맞은 배치를 골라 적용해요(되돌리기 가능)'}),LE_MODES[g.mode]?'':'이 형태는 칸 배치가 아니에요 — 누르면 전체 화면 패널로 바꿀지 물어요'); }
-  h+='<div class="vs-btns">'+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igAI','🔄 AI 로 다시',{d:g.id,title:'이 구간의 나레이션을 AI 가 다시 요약해 블록을 새로 만들어요'})+F.btn('igRule','🧮 규칙으로 다시',{d:g.id,title:'숫자·업종·일정을 규칙으로 뽑아요(무료)'})+F.btn('igNews','📰 뉴스체로',{d:g.id,title:'이 인포그래픽의 글을 TV 뉴스 자막처럼 명사형 헤드라인체로 다듬어요'})+F.btn('igSplit','✂ 재생헤드에서 나누기',{d:g.id})+F.btn('igDup','⧉ 복제',{d:g.id,title:'바로 뒤에 같은 길이로 복제'})+F.btn('igDel','🗑 삭제',{d:g.id,c:'dng'})+'</div>';
+  h+='<div class="vs-btns">'+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igAI','🔄 AI 로 다시',{d:g.id,title:'이 구간의 나레이션을 AI 가 다시 요약해 블록을 새로 만들어요'})+F.btn('igRule','🧮 규칙으로 다시',{d:g.id,title:'숫자·업종·일정을 규칙으로 뽑아요(무료)'})+F.btn('igNews','📰 뉴스체로',{d:g.id,title:'이 인포그래픽의 글을 TV 뉴스 자막처럼 명사형 헤드라인체로 다듬어요'})+F.btn('igSplit','✂ 재생헤드에서 나누기',{d:g.id})+F.btn('igDup','⧉ 복제',{d:g.id,title:'바로 뒤에 같은 길이로 복제'})+F.btn('igDel','🗑 화면 삭제',{d:g.id,c:'dng',title:'화면(틀)만 지우고 안의 구성요소는 틀 없이 그대로 남겨요'})+F.btn('igDelAll','🗑 구성요소까지 삭제',{d:g.id,c:'dng',title:'화면과 안의 구성요소를 모두 지워요 (Shift+Delete)'})+'</div>'; }
   h+='<div class="vs-sec">블록 ('+g.items.length+') <span class="hint">말하는 시점이 되면 차례로 나타나요 · 타임라인 [구성] 줄의 칩을 끌어 시점을 바꿔요 · 글 칸에서 Shift+Enter = 그 자리에서 줄바꿈(↵)</span></div>';
   h+='<div class="vs-btns">'+F.sel('ui.igType',UI.igType||'stat',btOpts())+F.btn('igAddIt','＋ 블록 추가',{d:g.id})+'</div>';
   if(g.items.length>1){ const ok=alOK(g); h+='<div class="vs-al all"><i title="이 인포그래픽의 모든 구성요소 글 위치를 한꺼번에 — 구성요소마다 따로 고르려면 아래 각 블록의 [글 위치]">모든 구성요소 글 위치</i>'+alBtns('igAl',g.id+':*:',g.items,!ok,ok?'':'하단 띠·상단 띠·모서리 배지·타이틀 형태는 글 위치를 바꿀 수 없어요')+'</div>'; }
@@ -46921,10 +46922,10 @@ function igEditor(g){
   return h;
 }
 function inspIg(){
-  const igs=P.igs||[], cur=igs.find(x=>x.id===UI.ig)||null, t=ENG.playing?nowT():ENG.pos;
+  const igs0=P.igs||[], igs=igs0.filter(g=>!g.nf), cur=igs0.find(x=>x.id===UI.ig)||null, t=ENG.playing?nowT():ENG.pos;   /* v153: 틀 없는 인포그래픽은 목록에서 빼고, 칩을 눌러 고른 것(cur)은 편집창에 */
   let h='<div class="vs-ih"><b>인포그래픽</b><span>'+igs.length+'개 · 타임라인 [인포] 줄에서 끌어 옮기고 늘이고 줄여요</span></div>';
   h+='<div class="vs-btns">'+F.btn('igNew','＋ 인포그래픽 추가',{c:'pri',title:'재생헤드 위치에 새 인포그래픽'})+F.btn('infoMk','📊 이 장면 자동 구성',{title:'선택한 장면의 나레이션으로 자동 구성(마지막에 쓴 설정)'})+F.btn('igOv','📋 개요 만들기',{title:'오프닝의 "오늘 다룰 내용" 안내 문장에 개요(목차) 인포그래픽을 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSum','📝 3줄 요약 만들기',{title:'마무리의 "핵심 요약" 문장(첫째·둘째·셋째)을 찾아 한 화면에 줄마다 말하는 순서·타이밍대로 나타나게 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('upgrade','✨ 화면 구성 업그레이드',{c:'pri',title:'AI 가 영상 전체를 파악한 뒤 장면마다 화면 구성이 단순하고 명료한지 검토하고, 모자란 장면은 삭제·수정·보완해 다시 구성해요'})+(UI.up?F.btn('upReport','📋 업그레이드 결과',{title:'마지막 화면 구성 업그레이드의 장면별 점수·이유·바뀐 내용'}):'')+'</div>';
-  h+='<div class="vs-iglist" id="vsIgList">'+(igs.length?igs.map(g=>{ const on=t>=g.s&&t<g.e, m=MODE_OF[g.mode]||MODES[0]; return '<div class="vs-igr'+(g.id===UI.ig?' sel':'')+(on?' now':'')+'" data-a="igSel" data-id="'+g.id+'"><span class="th"'+(g._poster?' style="background-image:url('+g._poster+')"':'')+'>'+(g._poster?'':m[2])+'</span><span class="m"><b>'+esc(igName(g))+'</b><i>'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+m[2]+' '+MODE_SHORT[g.mode]+' · '+ISTY[styOf(g)].ic+'</i></span>'+F.btn('igPlay','▶',{d:g.id,title:'이 구간 재생'})+F.btn('igDel','🗑',{d:g.id,c:'dng',title:'삭제'})+'</div>'; }).join(''):'<div class="vs-empty sm">아직 없어요 — ＋ 로 추가하거나 ③ 화면 만들기에서 \'인포그래픽 화면\'을 고르면 장면마다 자동으로 만들어요</div>')+'</div>';
+  h+='<div class="vs-iglist" id="vsIgList">'+(igs.length?igs.map(g=>{ const on=t>=g.s&&t<g.e, m=MODE_OF[g.mode]||MODES[0]; return '<div class="vs-igr'+(g.id===UI.ig?' sel':'')+(on?' now':'')+'" data-a="igSel" data-id="'+g.id+'"><span class="th"'+(g._poster?' style="background-image:url('+g._poster+')"':'')+'>'+(g._poster?'':m[2])+'</span><span class="m"><b>'+esc(igName(g))+'</b><i>'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+m[2]+' '+MODE_SHORT[g.mode]+' · '+ISTY[styOf(g)].ic+'</i></span>'+F.btn('igPlay','▶',{d:g.id,title:'이 구간 재생'})+F.btn('igDel','🗑',{d:g.id,c:'dng',title:'화면 삭제 — 안의 구성요소는 틀 없이 그대로 남아요 (구성요소까지 지우려면 편집창의 [구성요소까지 삭제])'})+'</div>'; }).join(''):'<div class="vs-empty sm">아직 없어요 — ＋ 로 추가하거나 ③ 화면 만들기에서 \'인포그래픽 화면\'을 고르면 장면마다 자동으로 만들어요</div>')+'</div>';
   if(cur) h+=igEditor(cur); else if(igs.length) h+='<div class="hint pad">위 목록에서 고르거나 타임라인의 인포 줄을 눌러 선택하세요.</div>';
   return h+inspInfoLook(!cur);
 }
@@ -47003,7 +47004,11 @@ async function infoAct(a,id,btn){
     case 'igOv': { const ic=P.cfg.info; await runInfo([],{lay:ic.lay,mode:ic.mode,char:'keep',open:ic.open!==false,style:ic.style,ov:true}); break; }
     case 'igSum': { const ic=P.cfg.info; await runInfo([],{lay:ic.lay,mode:ic.mode,char:'keep',open:ic.open!==false,style:ic.style,sm:true}); break; }
     case 'igGo': await igGo(); break;
-    case 'igDel': if(g){ P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; commit('인포그래픽 삭제'); renderAll(); } break;
+    case 'igDel': case 'igDelAll': if(g){ const all=a==='igDelAll';   /* v153: igDel = 화면(틀)만(구성요소는 틀 없이 남음) · igDelAll = 구성요소까지 */
+      if(g.nf&&!all){ toast('이미 화면(틀)이 없는 구성요소예요 — 타임라인 [구성] 줄의 칩을 눌러 지우거나, [인포] 탭의 [구성요소까지 삭제]를 써요'); break; }
+      const kept=igDropFrame(g,all); layout(P); sortClips(P); commit(kept?'화면 삭제':'인포그래픽 삭제'); renderAll(); igPostersAll();
+      toastUndo(kept?'화면 삭제 — 안의 구성요소 '+kept+'개는 그대로 남겨 뒀어요 (같이 지우려면 [구성요소까지 삭제])':'인포그래픽 삭제'); } break;
+    case 'igFrame': if(g&&g.nf){ delete g.nf; layout(P); sortClips(P); UI.ig=g.id; commit('화면 되살리기'); renderAll(); igPostersAll(); tselSet('clip',g.id); toast('화면(틀)을 되살렸어요 — 배경·제목·전환은 지우기 전 그대로예요'); } break;
     case 'igDup': if(g){ const n=igDup(g); if(n){ UI.ig=n.id; igPoster(n); commit('인포그래픽 복제'); renderAll(); } else toast('뒤에 복제할 자리가 없어요'); } break;
     case 'igSplit': if(g){ const n=igSplit(g,t); if(n){ UI.ig=n.id; igPoster(g); igPoster(n); commit('인포그래픽 나누기'); renderAll(); } else toast('인포그래픽 가장자리에서 0.4초 이상 떨어진 곳에서 나눠 주세요'); } break;
     case 'igPhS': if(g){ igSetTimes(g,t,g.e); done('인포그래픽 시작'); } break;
@@ -56846,7 +56851,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v152';
+const KL_BUILD='v153';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -57079,11 +57084,11 @@ function tselPaint(){   /* 타임라인의 테두리·도구줄(삭제 단추·�
   let lab='';
   if(UI.tsel&&P){ const els=tselEls(); if(!els.length) UI.tsel=null; else{ els.forEach(e=>e.classList.add('tsel')); lab=tselLabel(); } }
   const multi=!!(P&&UI.tmul&&UI.tmul.length>1); if(multi){ const me=tmulEls(); me.forEach(e=>e.classList.add('tsel')); if(!me.length) UI.tmul=[]; }   /* v113: Ctrl/⌘+클릭으로 고른 여러 개 */
-  const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)':'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
+  const b=$('vsTlDel'); if(b){ b.disabled=!UI.tsel||!!UI.busy; b.title=UI.tsel?(UI.tsel.k==='clip'?'고른 화면(인포그래픽 틀)을 지워요 — 안의 구성요소는 그대로 남아요 (Delete 키 · Shift+Delete = 구성요소까지 · 되돌리기 가능)':'고른 요소('+TSEL_KIND[UI.tsel.k]+')를 지워요 (Delete 키 · 되돌리기 가능)'):'타임라인에서 요소를 눌러 고르면 지울 수 있어요'; }
   const h=$('vsTlHint'); if(h){   /* v140: 복사·붙여넣기 안내 */
     const cp=TLCB?' · 📋 '+cbLabel()+' 복사됨':'', cc=(UI.tsel&&(UI.tsel.k==='comp'||UI.tsel.k==='clip'))?'Ctrl+C·Ctrl+끌기 복사 · ←→ 0.5초(Ctrl 0.1초) 이동 · 양 끝을 끌어 길이 · ':(UI.tsel&&UI.tsel.k==='sub'?'←→ 0.5초(Ctrl 0.1초) 이동 · ':'');   /* v150 */
     if(multi&&UI.tmul.length>1) h.innerHTML='선택: <b>'+esc(TSEL_KIND[UI.tmul[0].k])+' '+UI.tmul.length+'개</b> <i>· 끌면 함께 이동 · ←→ 0.5초(Ctrl 0.1초) · Ctrl+끌기·Ctrl+C 복사 · 오른쪽 클릭 → 길이 동일·정렬·일렬배치 · Delete 로 삭제 · Ctrl(⌘)+클릭으로 더하거나 빼요'+cp+'</i>';
-    else h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · ←→ 0.5초(Ctrl 0.1초) 이동 · Delete 로 끄기':cc+'Delete 로 삭제')+cp+'</i>':(TLCB?'📋 <b>'+esc(cbLabel())+'</b> 복사됨 <i>· 붙여넣을 곳에 재생 위치를 놓고 Ctrl+V</i>':'요소를 눌러 고르고 Ctrl+C/V 로 복사·붙여넣기 · <i>오른쪽 버튼으로 끌어 범위 선택 · Delete 로 삭제</i>');
+    else h.innerHTML=UI.tsel?'선택: <b>'+esc(TSEL_KIND[UI.tsel.k])+'</b> '+esc(lab)+' <i>· '+(UI.tsel.k==='title'?'몸통을 끌어 위치·양 끝을 끌어 길이 · ←→ 0.5초(Ctrl 0.1초) 이동 · Delete 로 끄기':cc+(UI.tsel.k==='clip'?'Delete 로 화면만 삭제(구성요소는 남아요) · Shift+Delete 로 구성요소까지':'Delete 로 삭제'))+cp+'</i>':(TLCB?'📋 <b>'+esc(cbLabel())+'</b> 복사됨 <i>· 붙여넣을 곳에 재생 위치를 놓고 Ctrl+V</i>':'요소를 눌러 고르고 Ctrl+C/V 로 복사·붙여넣기 · <i>오른쪽 버튼으로 끌어 범위 선택 · Delete 로 삭제</i>');
     h.title=h.textContent;
   }
 }
@@ -57137,8 +57142,8 @@ function toastUndo(msg){   /* 지운 뒤 알림 — [되돌리기] 단추가 있
   try{ if(window.BTMSecDrag&&typeof BTMSecDrag.toast==='function'){ BTMSecDrag.toast(msg,false,[['되돌리기',()=>{ undo(); }]]); return; } }catch(e){}
   toast(msg+' (Ctrl+Z 로 되돌려요)');
 }
-function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
-  if(P&&UI.tmul&&UI.tmul.length>1) return tmulDelete();
+function tlDelete(all){   /* 고른 요소를 지움 — 지웠으면 true. v153: 화면(클립)은 틀만 지우고 구성요소는 남김(all===true 면 구성요소까지) */
+  if(P&&UI.tmul&&UI.tmul.length>1) return tmulDelete(all===true);
   const t=UI.tsel; if(!t||!P) return false;
   if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 지워 주세요'); return false; }
   if(ENG.playing) pausePlay();
@@ -57149,12 +57154,12 @@ function tlDelete(){   /* 고른 요소를 지움 — 지웠으면 true */
       if(P.scenes.length<=1){ toast('마지막 남은 장면은 지울 수 없어요'); return false; }
       deleteScene(j); UI.sel=clamp(UI.sel,0,P.scenes.length-1); UI.ms=null;
       msg='장면 '+(j+1)+' 삭제 — 그 구간은 '+(j===0?'다음':'앞')+' 장면이 이어받아요(나레이션·자막은 그대로)'; break; }
-    case 'clip': { const g=igById(t.id); if(!g) break; P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; UI.igIt=''; msg='인포그래픽 "'+lab+'" 삭제'; break; }
+    case 'clip': { const g=igById(t.id); if(!g) break; const kept=igDropFrame(g,all===true); msg=kept?'화면 "'+lab+'" 삭제 — 안의 구성요소 '+kept+'개는 그대로 남겨 뒀어요 (같이 지우려면 Shift+Delete)':'인포그래픽 "'+lab+'" 삭제'; break; }
     case 'comp': {
       const f=findItem(t.id); if(!f) break; const g=f.g, it=f.it;
       if(t.pi>=0&&it.parts&&it.parts.length>1&&it.parts[t.pi]){ it.parts.splice(t.pi,1); msg='항목 "'+lab+'" 삭제'; }
       else{ g.items=g.items.filter(x=>x!==it); msg='구성요소 "'+lab+'" 삭제'; }
-      if(!g.items.length) msg+=' — 마지막 구성요소를 지워도 인포그래픽(화면 요소)은 비어 있는 채로 남겨 뒀어요';   /* v114: 구성요소가 0개여도 인포그래픽은 독립된 화면 요소로 남음 — 지우려면 [인포] 줄에서 따로 */
+      if(!g.items.length&&!g.nf) msg+=' — 마지막 구성요소를 지워도 인포그래픽(화면 요소)은 비어 있는 채로 남겨 뒀어요';   /* v114: 구성요소가 0개여도 인포그래픽은 독립된 화면 요소로 남음 — 지우려면 [인포] 줄에서 따로 */
       UI.igIt=''; UI.igPt=-1; break; }
     case 'sub': {
       if(String(t.id).indexOf('x:')===0){ const id=String(t.id).slice(2); if(!(P.xsubs||[]).some(x=>x.id===id)) break; P.xsubs=P.xsubs.filter(x=>x.id!==id); msg='추가 자막 "'+lab+'" 삭제'; }
@@ -57174,7 +57179,7 @@ function tlMenuClose(){ const m=$('vsCm'); if(m) m.remove(); }
 function tlMenu(e){
   if(!P||UI.busy==='export') return; const hit=tmulHit(e.target); if(hit){ e.preventDefault(); tlMenuClose(); tmulMenu(e,hit); return; }   /* v113: 여러 개 고른 것 위에서는 정렬 메뉴 */
   const k=tlSelFrom(e.target); if(!k){ cbPasteMenu(e); return; } e.preventDefault(); tlMenuClose();
-  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc(TSEL_KIND[k]+' · '+tselLabel())+'</div>'+cbMenuHtml(k,1)+'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 삭제</button>';
+  const m=document.createElement('div'); m.id='vsCm'; m.className='vs-cm'; m.innerHTML='<div class="t">'+esc(TSEL_KIND[k]+' · '+tselLabel())+'</div>'+cbMenuHtml(k,1)+'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button>'+(k==='clip'?'<button class="mobile-keep dng" data-a="tlDel" title="화면(틀)만 지우고 안의 구성요소는 틀 없이 그대로 남겨요">🗑 화면 삭제 (구성요소는 남김)</button><button class="mobile-keep dng" data-a="tlDelAll" title="화면과 안의 구성요소를 모두 지워요 (Shift+Delete)">🗑 화면과 구성요소 모두 삭제</button>':'<button class="mobile-keep dng" data-a="tlDel">🗑 삭제</button>');
   _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
 }
 /* ══ /v102 ══ */
@@ -57502,7 +57507,7 @@ function tmulMenu(e,ref){
     +b('rowEq','▤','동일길이로 일렬배치','같은 길이로 나눠 차례로 이어 붙여요')
     +b('dist','⇹','간격 균등','처음과 끝은 그대로 두고 사이 요소의 시작 간격을 같게 해요')
     +cbMenuHtml(sel[0].k,n)
-    +'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button><button class="mobile-keep dng" data-a="tlDel">🗑 선택 '+n+'개 삭제</button>';
+    +'<button class="mobile-keep" data-a="tlPlay">▶ 여기부터 재생</button>'+(comp?'<button class="mobile-keep dng" data-a="tlDel">🗑 선택 '+n+'개 삭제</button>':'<button class="mobile-keep dng" data-a="tlDel" title="화면(틀)만 지우고 안의 구성요소는 틀 없이 그대로 남겨요">🗑 화면 '+n+'개 삭제 (구성요소는 남김)</button><button class="mobile-keep dng" data-a="tlDelAll" title="화면과 안의 구성요소를 모두 지워요 (Shift+Delete)">🗑 화면 '+n+'개와 구성요소 모두 삭제</button>');
   _ov.appendChild(m); m.style.left=Math.max(4,Math.min(e.clientX,innerWidth-m.offsetWidth-6))+'px'; m.style.top=Math.max(4,Math.min(e.clientY,innerHeight-m.offsetHeight-6))+'px';
 }
 function compAlign(sel,op,ref){   /* 구성요소 칩들 정렬 — 돌려주는 글 = 한 일('' = 안 바뀜). 시작 = 화면에 나타나는 시각(클립이 시작하기 전에 나온 것은 클립 시작부터 보임), 끝 = 시작 + 보이는 길이 */
@@ -57555,21 +57560,21 @@ function tmulApply(op){
   if(!msg){ toast('바뀐 것이 없어요 — 이미 그렇게 놓여 있거나, 이 정렬을 할 수 없는 선택이에요'); return; }
   layout(P); sortClips(P); igPostersAll(true); commit('타임라인 정렬 — '+msg); renderAll(); toastUndo(msg);
 }
-function tmulDelete(){   /* 여러 개 고른 구성요소·인포그래픽을 한 번에 지움 — 지웠으면 true */
+function tmulDelete(all){   /* 여러 개 고른 구성요소·인포그래픽을 한 번에 지움 — 지웠으면 true */
   const sel=(UI.tmul||[]).slice(); if(sel.length<2) return false; if(UI.busy||Q.on){ toast('다른 작업이 끝난 뒤에 지워 주세요'); return false; } if(ENG.playing) pausePlay();
-  let n=0, gone=0;
-  if(sel[0].k==='clip'){ sel.forEach(d=>{ const g=igById(d.id); if(g){ P.igs=P.igs.filter(x=>x!==g); n++; if(UI.ig===g.id) UI.ig=''; } }); }
+  let n=0, gone=0, keep=0;
+  if(sel[0].k==='clip'){ sel.forEach(d=>{ const g=igById(d.id); if(g){ keep+=igDropFrame(g,all===true); n++; } }); }   /* v153: 화면만 지우고 구성요소는 틀 없이 남김 */
   else{
     const by=new Map(); sel.forEach(d=>{ const f=findItem(d.id); if(f){ if(!by.has(f.g)) by.set(f.g,[]); by.get(f.g).push({it:f.it,pi:d.pi}); } });
     by.forEach((arr,g)=>{
       arr.filter(x=>x.pi>=0&&x.it.parts&&x.it.parts.length>1).sort((a,b)=>b.pi-a.pi).forEach(x=>{ if(x.it.parts[x.pi]){ x.it.parts.splice(x.pi,1); n++; } });   /* 항목 칩은 번호가 밀리지 않게 뒤에서부터 */
       arr.filter(x=>x.pi<0||!(x.it.parts&&x.it.parts.length>1)).forEach(x=>{ if(g.items.indexOf(x.it)>=0){ g.items=g.items.filter(q=>q!==x.it); n++; } });
-      if(!g.items.length) gone++;   /* v114: 비어도 인포그래픽은 남김 */
+      if(!g.items.length&&!g.nf) gone++;   /* v114: 비어도 인포그래픽은 남김(틀 없는 빈 그릇은 commit 에서 정리) */
     });
     UI.igIt=''; UI.igPt=-1;
   }
   UI.tmul=[]; UI.tsel=null; layout(P); sortClips(P); commit('삭제 — 여러 개'); renderAll(); igPostersAll();
-  toastUndo((sel[0].k==='clip'?'인포그래픽 ':'구성요소 ')+n+'개 삭제'+(gone?' — 비어 버린 인포그래픽 '+gone+'개는 그대로 남겨 뒀어요':'')); return true;
+  toastUndo((sel[0].k==='clip'?(keep?'화면 ':'인포그래픽 '):'구성요소 ')+n+'개 삭제'+(keep?' — 안의 구성요소 '+keep+'개는 그대로 남겨 뒀어요 (같이 지우려면 Shift+Delete)':'')+(gone?' — 비어 버린 인포그래픽 '+gone+'개는 그대로 남겨 뒀어요':'')); return true;
 }
 /* ══ /v113 ══ */
 /* ══ v140 (2026-11-03) — 타임라인 인포그래픽 복사·붙여넣기 + 오른쪽 버튼 끌기 범위 선택 ═══════════════════════════════════════════════════
@@ -57614,7 +57619,7 @@ function cbCopy(){   /* 고른 구성요소·인포그래픽을 복사해 둠 �
     return {it:b,t0:e.t0,men:{m,p:mp}};
   });
   const ref=es[0].t0, g0=es[0].g;
-  TLCB={k:'comp',n,ref,span:Math.max(0.8,Math.max.apply(null,es.map(e=>e.ve))-ref),src:{mode:g0.mode,bg:g0.bg,sty:g0.sty},blocks};
+  TLCB={k:'comp',n,ref,span:Math.max(0.8,Math.max.apply(null,es.map(e=>e.ve))-ref),src:{mode:g0.mode,bg:g0.bg,sty:g0.sty,nf:g0.nf?1:0},blocks};
   return n;
 }
 function cbDoCopy(){
@@ -57625,16 +57630,17 @@ function cbDoCopy(){
 /* ── ① 붙여넣기 ── */
 function cbTarget(tp){   /* 구성요소를 끼워 넣을 인포그래픽 — 재생 위치를 덮는 것(마지막으로 누른 것 > 전체 틀 > 겹침 띠·타이틀 카드), 없으면 같은 장면에서 1.5초 안에 시작하는 것, 그것도 없으면 null(새로 만듦) */
   const gs=P.igs||[], cov=gs.filter(g=>tp>=g.s-0.05&&tp<g.e);
-  if(cov.length){ const pri=g=>(g.id===UI.ig?0:4)+((isOver(g.mode)||g.mode==='title')?2:0); return cov.slice().sort((a,b)=>(pri(a)-pri(b))||(a.s-b.s))[0]; }
-  const sc=P.scenes[sceneIdx(tp)], soon=gs.filter(g=>g.s>tp&&g.s-tp<=1.5&&g.mode!=='title'&&(!sc||g.s<sc.e-0.05)).sort((a,b)=>a.s-b.s);
+  if(cov.length){ const pri=g=>(g.id===UI.ig?0:4)+((isOver(g.mode)||g.mode==='title')?2:0)+(g.nf?3:0);   /* v153: 같은 시각을 덮는 클립이 여럿이면 틀 있는 쪽이 먼저 */ return cov.slice().sort((a,b)=>(pri(a)-pri(b))||(a.s-b.s))[0]; }
+  const sc=P.scenes[sceneIdx(tp)], soon=gs.filter(g=>g.s>tp&&g.s-tp<=1.5&&g.mode!=='title'&&!g.nf&&(!sc||g.s<sc.e-0.05)).sort((a,b)=>a.s-b.s);
   return soon[0]||null;
 }
 function cbNewClip(cb,tp){   /* 재생 위치에서 시작하는 빈 인포그래픽 — 복사한 구성요소가 있던 인포그래픽의 형태·바탕·스타일을 따르고, 제목은 비움 */
   const s=cb.src||{}, mode=MODE_OF[s.mode]?s.mode:'left', sc=P.scenes[sceneIdx(tp)]; let e=tp+Math.max(1.0,cb.span||0);
   if(sc&&sc.e-tp>=0.8) e=Math.min(e,sc.e);   /* 그 장면 안에서 */
-  if(!isOver(mode)){ const nx=(P.igs||[]).filter(x=>x.s>tp+0.05&&!isOver(x.mode)&&x.mode!=='title').map(x=>x.s).sort((a,b)=>a-b)[0]; if(nx!=null&&nx-tp>=0.8) e=Math.min(e,nx); }   /* 전체 틀끼리 겹치지 않게 다음 것 앞까지 */
+  if(!isOver(mode)){ const nx=(P.igs||[]).filter(x=>x.s>tp+0.05&&!isOver(x.mode)&&x.mode!=='title'&&!x.nf).map(x=>x.s).sort((a,b)=>a-b)[0]; if(nx!=null&&nx-tp>=0.8) e=Math.min(e,nx); }   /* 전체 틀끼리 겹치지 않게 다음 것 앞까지 */
   e=Math.min(P.dur,Math.max(e,tp+0.8));
   const g={id:uid('g'),name:'',mode,bg:s.bg||(isOver(mode)?'scene':'solid'),a:anchorAtTime(P,tp),b:anchorAtTime(P,e),title:'',kicker:'',source:'',items:[],src:'hand',sty:s.sty||(P.cfg.info&&P.cfg.info.style)||'news'};
+  if(s.nf) g.nf=1;   /* v153: 틀 없는 인포그래픽의 칩을 빈 곳으로 옮기면 새 그릇도 틀 없음 */
   (P.igs=P.igs||[]).push(g); layout(P); return g;
 }
 function cbPasteComps(cb,tp,o){   /* v151: o.move = 원래 자리에서 빼는 함수(칩 옮기기) */
@@ -57668,7 +57674,7 @@ function cbPasteClips(cb,tp){
     (P.igs=P.igs||[]).push(n); out.push(n);
   });
   layout(P); sortClips(P); out.forEach(igPoster);
-  const solid=x=>!isOver(x.mode)&&x.mode!=='title', crash=out.some(n=>solid(n)&&P.igs.some(x=>out.indexOf(x)<0&&solid(x)&&x.s<n.e-0.05&&x.e>n.s+0.05));
+  const solid=x=>!isOver(x.mode)&&x.mode!=='title'&&!x.nf, crash=out.some(n=>solid(n)&&P.igs.some(x=>out.indexOf(x)<0&&solid(x)&&x.s<n.e-0.05&&x.e>n.s+0.05));
   cbSelAssign(out.map(n=>({k:'clip',id:n.id,pi:-1}))); UI.ig=out[0].id; UI.igIt=''; UI.igPt=-1;
   commit('붙여넣기 — 인포그래픽 '+out.length+'개'); renderAll(); seekTo(Math.min(P.dur,out[0].s+0.05));
   toastUndo('인포그래픽 '+out.length+'개를 붙여넣었어요 ('+fmtT(out[0].s,1)+')'+(crash?' · 다른 인포그래픽과 시간이 겹쳐요 — 끌어서 옮겨 주세요':''));
@@ -57966,7 +57972,7 @@ function bgCovered(sc,lt){   /* 이 장면 시각에 장면 배경을 가리는 
   const t=sc.s+lt; return (P.igs||[]).some(g=>scrIsFrame(g)&&g.bg!=='scene'&&t>=g.s&&t<g.e);
 }
 function scrOwn(ig,L){   /* 화면이 자기 배경을 그리는 방식 — 0 투명(장면 배경이 비침, 기본) · 1 고른 배경(ig.bgs) · 2 예전 자기 스타일 바탕(스타일이 장면 배경과 다른 옛 클립) */
-  if(isOver(L.mode)||ig.bg==='scene') return 0; if(bgReady(ig.bgs)) return 1;
+  if(isOver(L.mode)||ig.bg==='scene'||ig.nf) return 0; if(bgReady(ig.bgs)) return 1;
   return (sceneBgDef()&&styOf(ig)!==sceneStyle())?2:0;
 }
 const _bgth=new Map();
@@ -57981,7 +57987,7 @@ function sceneBgCss(){   /* 장면 목록 작은 그림 배경 */
   if(sp.k==='tpl'){ const u=bgThumb(sp.id); return u?'url('+u+') center/cover':'#111'; } if(sp.poster) return 'url('+sp.poster+') center/cover'; return '#111';
 }
 /* ── 화면 간 전환 ── */
-const scrIsFrame=g=>!!g&&!isOver(g.mode)&&g.mode!=='title';
+const scrIsFrame=g=>!!g&&!g.nf&&!isOver(g.mode)&&g.mode!=='title';   /* v153: 틀 없는 인포그래픽은 화면(틀)이 아님 */
 function scrTrans(g){   /* 이 화면이 시작할 때의 전환 → {t,d,legacy} — legacy = 예전처럼 부드럽게 나타나고 사라짐 */
   const tr=g.trans||{}, cf=(P.cfg&&P.cfg.info)||{}, lk=P.cfg.look; let t=(tr.t&&tr.t!=='inherit')?tr.t:(cf.xt||'legacy'), d=tr.d>0?tr.d:(cf.xd>0?cf.xd:0.6);
   if(t==='scene'){ t=lk.trans; if(!(tr.d>0)) d=lk.transDur||0.6; }   /* 장면 전환과 같게 */
@@ -58206,7 +58212,7 @@ function tlMovSel(){   /* 방향키·끌기로 옮길 수 있는 지금 선택 �
   if(!P) return null; const l=cbSelList(); if(!l.length||!TL_MOVABLE[l[0].k]) return null; if(l.length>1&&l.some(d=>d.k!==l[0].k)) return null; return l;
 }
 function tlSnapPts(ids){   /* 달라붙을 시각 — igSnapPts 와 같되 옮기는 인포그래픽들 자신의 가장자리는 뺌 */
-  const a=[0,P.dur]; P.scenes.forEach(c=>a.push(c.s)); P.sents.forEach(s=>{ a.push(s.s,s.vs,s.ve); }); (P.igs||[]).forEach(g=>{ if(ids.indexOf(g.id)<0) a.push(g.s,g.e); }); return a.filter(x=>isFinite(x)).sort((x,y)=>x-y);
+  const a=[0,P.dur]; P.scenes.forEach(c=>a.push(c.s)); P.sents.forEach(s=>{ a.push(s.s,s.vs,s.ve); }); (P.igs||[]).forEach(g=>{ if(ids.indexOf(g.id)<0&&!g.nf) a.push(g.s,g.e); }); return a.filter(x=>isFinite(x)).sort((x,y)=>x-y);
 }
 function tlMvPlan(sel){   /* 옮길 요소들의 지금 시각과 한 번에 움직일 수 있는 양의 범위 → {k,ents,lo,hi,t0} (lo ≤ 0 ≤ hi — 이미 바깥이면 더 바깥으로만 못 감) */
   if(!sel||!sel.length||!P) return null; const k=sel[0].k; const ents=[]; let lo=-1e9, hi=1e9, t0=null;
@@ -58385,6 +58391,34 @@ function tlCompsMove(pl,dt,nudge){   /* 구성요소 칩 옮기기(끌어 놓기
   return cbPasteComps(cb,tp,{move:()=>tlCompsRemove(refs)});
 }
 /* ══ /v151 ══ */
+/* ══ v153 (2026-11-04) — 화면(인포그래픽 틀)만 지우고 안의 구성요소(인포그래픽)는 그대로 ═══════════════════════════════════════════════════
+   요청: "초록색 오프닝 화면을 삭제하면 그 화면에 속한 모든 인포그래픽도 함께 삭제가 되고 있어. 화면을 삭제하면 화면만 삭제되고 인포그래픽은 그대로 유지될 수 있게."
+   용어 — 화면 = 타임라인 [인포] 줄의 막대(P.igs 의 클립: 배경·패널·제목·윗글·캐릭터·화면 전환을 가진 '틀'), 인포그래픽 = 그 안의 구성요소(g.items — [구성] 줄의 칩)
+   ① 화면을 지우면(Delete · 🗑 삭제 단추 · 오른쪽 클릭 · [인포] 탭 🗑) 구성요소가 있는 클립은 g.nf=1('틀 없음')이 됨 — [인포] 줄의 막대와 배경·패널·제목·윗글·캐릭터·화면 전환·쪽 번호가 사라지고,
+      구성요소는 같은 칸·같은 시각에 장면 위에 그대로 그려짐([구성] 줄 칩도 그대로). 제목·배경·전환 같은 틀 설정은 지우지 않고 남겨 둬서 [▣ 화면 되살리기]로 그대로 돌아옴. 구성요소가 없던 클립은 예전처럼 그냥 지워짐.
+   ② 틀 없는 인포그래픽은 눈에 안 보이는 그릇 — 칩을 눌러 [인포] 탭에서 [▣ 화면 되살리기]. 칩을 다 지우거나 다른 인포그래픽으로 옮기면 그릇은 저절로 정리됨(nfPrune: commit·fixProject).
+      칩을 빈 곳으로 끌어 새 인포그래픽이 생길 때도 틀 없음을 이어받음(cbCopy 의 src.nf → cbNewClip). 붙여넣을 때 같은 시각을 덮는 클립이 여럿이면 틀 있는 쪽이 먼저(cbTarget).
+   ③ 예전처럼 한꺼번에 지우려면 Shift+Delete · 오른쪽 클릭 '화면과 구성요소 모두 삭제' · [인포] 편집창 '구성요소까지 삭제' (tlDelete(true) · tmulDelete(true) · igDelAll)
+   그리기 — scrIsFrame 은 nf 를 틀로 안 침(화면 전환·장면 카드 글 숨김 대상이 아님), scrOwn=0, drawClip 은 igBack·캐릭터·머리말·타이틀 카드·쪽 번호·모서리 배지를 건너뛰고 구성요소만 그림 ── */
+const nfCount=g=>(g.items||[]).reduce((a,it)=>a+((it.parts&&it.parts.length>1)?it.parts.length:1),0);   /* 구성요소 수 — [구성] 줄 칩 개수와 같게(항목이 여럿인 블록은 항목마다) */
+function nfPrune(){   /* 구성요소가 하나도 없는 '틀 없는' 인포그래픽(보이지도 눌리지도 않는 빈 그릇)을 정리 — 지운 개수 */
+  if(!P||!P.igs) return 0; const gone=P.igs.filter(g=>g.nf&&!(g.items&&g.items.length)); if(!gone.length) return 0;
+  P.igs=P.igs.filter(g=>gone.indexOf(g)<0); if(UI.ig&&!P.igs.some(g=>g.id===UI.ig)) UI.ig=''; return gone.length;
+}
+function igDropFrame(g,all){   /* 화면(틀)만 지움 — 구성요소가 있으면 '틀 없음'으로 남기고(남긴 구성요소 수를 돌려줌), 없거나 all 이면 클립째 지움(0) */
+  const n=all?0:nfCount(g);
+  if(!n) P.igs=P.igs.filter(x=>x!==g); else{ g.nf=1; delete g._poster; }
+  if(UI.ig===g.id) UI.ig=''; UI.igIt=''; UI.igPt=-1;
+  return n;
+}
+function igNfRows(g){   /* 틀 없는 인포그래픽의 편집창 윗부분 — 틀 설정(이름·형태·배경·제목…)은 숨기고 되살리기·재생·배치만 */
+  let h='<div class="vs-sec">틀 없는 구성요소 <span class="hint">'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+r2(g.e-g.s)+'초 · 구성요소 '+nfCount(g)+'개</span></div>';
+  h+='<div class="hint pad">화면(틀)을 지워서 배경·패널·제목·캐릭터 없이 구성요소만 장면 위에 그대로 나오고 있어요. 타임라인에는 [구성] 줄의 칩으로만 보여요 — 칩을 끌어 다른 화면으로 옮기거나 지울 수 있어요.</div>';
+  { const ok=igBoxOK(g); h+=F.row('크기·배치','<span class="'+(ok?'ok':'hint')+'">'+(ok?'직접 정함'+(g.tpl?' · 템플릿 '+esc(g.tpl):''):'자동 배치')+'</span>'+F.btn('leOpen','📐 크기/배치 수정',{d:g.id,c:'pri',title:'구성요소를 미리보기 위에 상자로 띄워 끌어서 옮기고 크기를 바꿔요 — 템플릿 '+LTPL.length+'개'}),LE_MODES[g.mode]?'':'이 형태는 칸 배치가 아니에요 — 누르면 전체 화면 패널로 바꿀지 물어요'); }
+  h+='<div class="vs-btns">'+F.btn('igFrame','▣ 화면 되살리기',{d:g.id,c:'pri',title:'지운 화면(틀)을 다시 씌워요 — 배경·제목·화면 전환 같은 설정은 지우기 전 그대로예요'})+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igDelAll','🗑 구성요소까지 삭제',{d:g.id,c:'dng',title:'안의 구성요소를 모두 지워요'})+'</div>';
+  return h;
+}
+/* ══ /v153 ══ */
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
 const VM=new Map();
 function vidEl(sc){
@@ -58837,7 +58871,7 @@ function syncReport(){
     if(late) add('warn',g.s,'인포그래픽 "'+nm+'" 의 블록 '+late+'개가 끝난 뒤에 나와요 — 시점을 고치거나 길이를 늘려 주세요');
     if(orph) add('warn',g.s,'인포그래픽 "'+nm+'" 의 블록 '+orph+'개의 문장을 찾지 못했어요 — 시점을 다시 지정해 주세요');
     if(g.e-g.s<1) add('warn',g.s,'인포그래픽 "'+nm+'" 가 1초도 안 돼요');
-    if(!isOver(g.mode)&&g.mode!=='title'&&g.bg!=='scene'){ const ov=(p.igs||[]).find((h,hi)=>hi>gi&&!isOver(h.mode)&&h.mode!=='title'&&h.bg!=='scene'&&h.s<g.e-0.4&&h.e>g.s+0.4); if(ov) add('info',g.s,'전체 틀 인포그래픽 "'+nm+'" 와 "'+igName(ov)+'" 가 겹쳐 있어요 — 뒤의 것이 위에 그려져요'); }
+    if(!g.nf&&!isOver(g.mode)&&g.mode!=='title'&&g.bg!=='scene'){ const ov=(p.igs||[]).find((h,hi)=>hi>gi&&!h.nf&&!isOver(h.mode)&&h.mode!=='title'&&h.bg!=='scene'&&h.s<g.e-0.4&&h.e>g.s+0.4); if(ov) add('info',g.s,'전체 틀 인포그래픽 "'+nm+'" 와 "'+igName(ov)+'" 가 겹쳐 있어요 — 뒤의 것이 위에 그려져요'); }
   });
   if(!p.char&&!p.cfg.info.nochar&&(p.igs||[]).some(g=>g.mode==='left'||g.mode==='right')) add('info',0,'인포그래픽의 캐릭터는 기본 캐릭터예요 — 화면 탭에서 AI 캐릭터를 그리거나 내 그림을 올릴 수 있어요');
   const cues=cuesOf(p); let short=0,fast=0,over=0;
@@ -58936,9 +58970,9 @@ function renderTimeline(){
   const trow=(P._titles||[]).map(q=>{ const sp0=titleSpec(P,q.ci), sp=Object.assign({},sp0,{t:nlFlat(sp0.t)}), wd=px(q.tb)-px(q.ta), tail=q.ov?0:px(q.te)-px(q.tb);   /* 블록 = 소리 없는 구간 [ta,tb], 뒤 쉼 동안 그림만 남는 구간 [tb,te] 은 옅은 꼬리. 겹쳐 얹은 타이틀(ov)은 다른 줄과 겹쳐 있는 구간 */
     return '<div class="tl-tt'+(q.ov?' ov':'')+(q.ci===UI.ttSel?' sel':'')+'" data-ci="'+q.ci+'" style="left:'+px(q.ta)+'px;width:'+Math.max(6,wd-1)+'px" title="'+esc((q.open?'오프닝 타이틀':'챕터 타이틀')+' · '+sp.t+' — '+(q.ov?'영상·음성·자막 위에 겹쳐 ':'소리 없이 ')+(q.tb-q.ta).toFixed(1)+'초'+' · 끌어서 옮기고, 양 끝을 끌어 길이를 바꿔요'+' (Alt = 달라붙지 않음, Delete = 끔)')+'">'+'<i class="e l"></i>'+'<span>'+(wd>34?(q.ov?'⧉ ':'🔇 ')+esc(sp.t):'')+'</span><i class="e r"></i></div>'+(tail>1?'<div class="tl-tt-x" style="left:'+(px(q.tb)-1)+'px;width:'+(tail+1)+'px"></div>':''); }).join('');
   const vrow=P.scenes.map((c,j)=>'<div class="tl-sc k-'+(c.vis.kind||'none')+(j===UI.sel?' sel':'')+'" data-j="'+j+'" style="left:'+px(c.s)+'px;width:'+Math.max(3,px(c._ve>c.s?c._ve:c.e)-px(c.s)-1)+'px">'+(pps>=14||(c.e-c.s)*pps>26?'<span>'+(j+1)+'</span>':'')+(j>0?'<i class="tl-h" data-j="'+j+'" title="끌어서 장면 시작 위치 바꾸기 · 전환: '+esc(trName(transOf(c,j).t))+'"></i>':'')+(j>0&&transOf(c,j).t!=='cut'&&px(c.e)-px(c.s)>22?'<em class="tl-tr" title="'+esc('전환: '+trName(transOf(c,j).t)+' · '+r2(transOf(c,j).d)+'초')+'">'+trIc(transOf(c,j).t)+'</em>':'')+'</div>').join('');
-  const lanes=[]; (P.igs||[]).slice().sort((a,b)=>a.s-b.s).forEach(g=>{ let k=lanes.findIndex(x=>x<=g.s+0.02); if(k<0){ k=lanes.length; lanes.push(0); } lanes[k]=g.e; g._lane=k; });
+  const lanes=[]; (P.igs||[]).filter(g=>!g.nf).slice().sort((a,b)=>a.s-b.s).forEach(g=>{ let k=lanes.findIndex(x=>x<=g.s+0.02); if(k<0){ k=lanes.length; lanes.push(0); } lanes[k]=g.e; g._lane=k; });
   const gh=Math.max(40,Math.max(1,lanes.length)*24+8); const comps=compList(), nlc=compLayout(comps,pps), chh=Math.max(22,nlc*18+6); host.style.height=(170+gh+chh)+'px'; { const lb=$('vsTllG'); if(lb) lb.style.height=gh+'px'; const lc=$('vsTllC'); if(lc) lc.style.height=chh+'px'; }
-  const grow=(P.igs||[]).map(g=>{ const m=MODE_OF[g.mode]||MODES[0]; return '<div class="tl-ig m-'+g.mode+(g.id===UI.ig?' sel':'')+'" data-id="'+g.id+'" style="left:'+px(g.s)+'px;width:'+Math.max(6,px(g.e)-px(g.s)-1)+'px;top:'+(4+(g._lane||0)*24)+'px" title="'+esc(igName(g)+' · '+m[1]+' — 끌어서 옮기고, 양 끝을 끌어 늘이고 줄여요 (Alt = 달라붙지 않음, Ctrl(⌘)+끌기 = 복사, ←→ = 0.5초 이동·Ctrl 0.1초, Delete = 삭제)')+'"><i class="e l"></i><span>'+m[2]+' '+esc(igName(g))+'</span><i class="e r"></i></div>'; }).join('');
+  const grow=(P.igs||[]).filter(g=>!g.nf).map(g=>{ const m=MODE_OF[g.mode]||MODES[0]; return '<div class="tl-ig m-'+g.mode+(g.id===UI.ig?' sel':'')+'" data-id="'+g.id+'" style="left:'+px(g.s)+'px;width:'+Math.max(6,px(g.e)-px(g.s)-1)+'px;top:'+(4+(g._lane||0)*24)+'px" title="'+esc(igName(g)+' · '+m[1]+' — 끌어서 옮기고, 양 끝을 끌어 늘이고 줄여요 (Alt = 달라붙지 않음, Ctrl(⌘)+끌기 = 복사, ←→ = 0.5초 이동·Ctrl 0.1초, Delete = 화면만 삭제(안의 구성요소는 남아요), Shift+Delete = 구성요소까지 삭제)')+'"><i class="e l"></i><span>'+m[2]+' '+esc(igName(g))+'</span><i class="e r"></i></div>'; }).join('');
   const cues=cuesOf(), crow=cues.map((q,i)=>'<div class="tl-cu" data-i="'+i+'" data-sid="'+esc(q.sid)+'" style="left:'+px(q.s)+'px;width:'+Math.max(4,px(q.e)-px(q.s)-1)+'px" title="'+esc(q.text.replace(/\n/g,' '))+'"><i class="e l"></i><span>'+esc(q.text.replace(/\n/g,' '))+'</span><i class="e r"></i></div>').join('');
   const cm=new Map(P.chunks.map(k=>[k.id,k]));
   const arow=P.sents.map(s=>{ const k=cm.get(s.cid), low=s.has&&s.al&&s.al.conf<0.35; return '<div class="tl-au'+(s.has?' has':' no')+(low?' low':'')+(k&&k.stale?' stale':'')+'" data-sid="'+s.id+'" style="left:'+px(s.s)+'px;width:'+Math.max(2,px(s.e)-px(s.s)-1)+'px" title="'+esc(s.text)+'">'+(s.has?'<canvas></canvas>':'')+'</div>'; }).join('');
@@ -59002,7 +59036,7 @@ function inspVis(){
     h+='<div class="vs-sec">색 보정</div>'+F.row('밝기',F.rng('sc.fb',f.b,0.5,1.6,0.05))+F.row('대비',F.rng('sc.fc',f.c,0.5,1.6,0.05))+F.row('채도',F.rng('sc.fs',f.s,0,2,0.05)); }
   if(k==='none'||k==='card'){ const cd=v.card||{};
     h+='<div class="vs-sec">카드 꾸미기</div>'+F.row('큰 글자',F.txt('sc.ctitle',cd.title||'',{ph:titleOn(P)?'비우면 글자 없음(챕터 제목은 타이틀 화면에 나와요)':'비우면 챕터 첫 장면만 챕터 제목'}),'줄바꿈: Shift+Enter(↵ 표시)')+cardColorRows(cd); }
-  { const gs=igsOfScene(c); h+='<div class="vs-sec">이 장면의 인포그래픽 <span class="hint">'+gs.length+'개 — 타임라인 [인포] 줄에서 편집해요</span></div>'+(gs.length?'<div class="vs-btns">'+gs.map(x=>F.btn('igSel',esc(igName(x)),{d:x.id})).join('')+'</div>':'')+'<div class="vs-btns">'+F.btn('infoMk','📊 이 장면 자동 구성')+F.btn('igNew','＋ 인포그래픽 추가')+'</div>'; }
+  { const gs=igsOfScene(c).filter(x=>!x.nf); h+='<div class="vs-sec">이 장면의 인포그래픽 <span class="hint">'+gs.length+'개 — 타임라인 [인포] 줄에서 편집해요</span></div>'+(gs.length?'<div class="vs-btns">'+gs.map(x=>F.btn('igSel',esc(igName(x)),{d:x.id})).join('')+'</div>':'')+'<div class="vs-btns">'+F.btn('infoMk','📊 이 장면 자동 구성')+F.btn('igNew','＋ 인포그래픽 추가')+'</div>'; }
   h+='<div class="vs-sec">챕터 타이틀 <span class="hint">'+(titleOn(P)?'켜짐 · 기본 '+titleDur(P)+'초 소리 없이':'꺼짐')+'</span></div><div class="vs-btns">'+F.btn('tab','🏷 타이틀 설정',{d:'tt'})+'</div>';
   return h;
 }
@@ -59279,6 +59313,7 @@ async function act(a,btn){
     case 'playScene': { const c=P.scenes[UI.sel]; if(c) startPlay(c.s,'preview',c.e); break; }
     case 'playSent': { const s=P.sents.find(x=>x.id===id); if(s) startPlay(Math.max(0,s.s-0.3)); break; }
     case 'tlDel': tlDelete(); break;
+    case 'tlDelAll': tlDelete(true); break;   /* v153: 화면과 구성요소까지 */
     case 'tlCopy': cbDoCopy(); break;   /* v140 */
     case 'tlPaste': cbPaste(id!=null&&id!==''&&isFinite(+id)?{t:+id}:null); break;
     case 'tlPlay': { const t0=tselStart(); if(t0!=null) startPlay(Math.max(0,t0-0.2)); break; }
@@ -60579,7 +60614,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='s'||e.key==='S'){ act('splitPh'); }
   else if(e.key==='ArrowUp'){ e.preventDefault(); selectScene(UI.sel-1,true); }
   else if(e.key==='ArrowDown'){ e.preventDefault(); selectScene(UI.sel+1,true); }
-  else if(e.key==='Delete'||e.key==='Backspace'){ if(UI.tsel){ e.preventDefault(); tlDelete(); } else if(e.key==='Delete'&&UI.ig&&igById(UI.ig)){ e.preventDefault(); act('igDel',{dataset:{id:UI.ig}}); } }
+  else if(e.key==='Delete'||e.key==='Backspace'){ if(UI.tsel){ e.preventDefault(); tlDelete(e.shiftKey); } else if(e.key==='Delete'&&UI.ig&&igById(UI.ig)){ e.preventDefault(); act(e.shiftKey?'igDelAll':'igDel',{dataset:{id:UI.ig}}); }   /* v153: Shift+Delete = 구성요소까지 */ }
 },true);
 async function startProject(p,isNew){
   if(UI.le){ leDrop(); UI.le=null; } UI.tmul=[];
@@ -60622,7 +60657,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
-    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
+    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
     SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
