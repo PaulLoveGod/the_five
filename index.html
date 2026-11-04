@@ -2984,6 +2984,15 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .tl-au.has{cursor:grab;z-index:1}.tl-au .e{position:absolute;top:0;bottom:0;width:6px;cursor:ew-resize;z-index:3}.tl-au .e.l{left:0}.tl-au .e.r{right:0}.tl-au .e:hover{background:rgba(255,255,255,.35)}
 .tl-au.vcx{border-color:#f59e0b}.tl-au.slot{background:transparent;border:1px dashed #475569;pointer-events:none;z-index:0}.tl-au.gone{background:repeating-linear-gradient(45deg,#3b2323,#3b2323 4px,#2a1818 4px,#2a1818 8px);border:1px dashed #ef4444;z-index:1;cursor:pointer}
 .vs-ck2 i.cutm{color:#fdba74}
+/* v157 — 음성 프롬프트 문구 고쳐 저장 */
+.vs-vpre{margin:0 0 8px}
+.vs-vpre .vs-btns{margin:0 0 6px}
+.vs-vpre .vs-mb.on{background:#d97706;border-color:#d97706;color:#fff}
+.vs-vpre .vs-mb.ed:not(.on){border-color:#b45309;color:#fcd34d}
+.vpr-sv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border:1px dashed #2a3a56;border-radius:8px}
+.vpr-l{font-size:11px;font-weight:700;color:#9fb0c9;cursor:help}
+.vs-ov .vpr-sv select.vpr-sel{width:auto;min-width:104px;min-height:26px;padding:2px 6px;font-size:11.5px}
+.vpr-h{flex:1 1 100%;font-size:10.5px;line-height:1.55;color:#8da0bf}.vpr-h b{color:#fcd34d;font-weight:700}
 .tl-row.t{height:18px}
 .tl-tt{position:absolute;top:2px;bottom:2px;border-radius:4px;background:repeating-linear-gradient(135deg,#7c2d12,#7c2d12 6px,#92400e 6px,#92400e 12px);border:1px solid #f59e0b;color:#fef3c7;font-size:10px;line-height:12px;padding:0 5px;overflow:hidden;white-space:nowrap;cursor:grab;user-select:none}
 .tl-tt.sel{box-shadow:0 0 0 2px #fbbf24;z-index:2}
@@ -47045,7 +47054,9 @@ async function infoAct(a,id,btn){
     case 'aiPing': await aiPing(); break;
     case 'aiSubs': await runSubs(id==='scene'?'scene':'all'); break;
     case 'aiSubsReset': resetSubs(id==='scene'?'scene':'all'); break;
-    case 'aiVoicePreset': { const x=voicePresets()[+id]; if(x){ P.cfg.voice.style=x[1]; savePref(P.cfg); commit('음성 프롬프트'); const dg=$('vsDlg'); if(dg&&dg.classList.contains('on')&&dg.querySelector('.vs-aisum')) showAiDlg(); renderInspector(true); } } break;
+    case 'aiVoicePreset': vpPreset(+id); break;   /* v157: 통째로 다시 그리지 않고 제자리 갱신(스크롤·클릭 보존) */
+    case 'aiVoiceSave': vpDoSave(); break;
+    case 'aiVoiceReset': vpDoReset(); break;
     case 'prefReset': resetPref(id||'all'); break;
     case 'istySel': { const d0=UI.dd; if(d0&&ISTY[id]){ d0.istyle=id; DLG_PREF.istyle(id); savePref(P.cfg); if('vmode' in d0) showVisualDlg(); else if('akind' in d0) showAutoDlg(); } } break;
     case 'infoAccAuto': P.cfg.info.accent=''; savePref(P.cfg); commit('강조색'); igPostersAll(); renderInspector(true); if(!ENG.playing) paintFrame(ENG.pos); break;
@@ -47297,7 +47308,7 @@ function showAiDlg(){
     +F.row('인포그래픽',F.ta('cfg.prompts.info',P.cfg.prompts.info,{rows:3,ph:'예) 숫자는 크게, 업종 이야기는 히트맵으로, 전망은 시나리오로 정리해 줘. 문체는 속보 헤드라인처럼 짧게.'}),'인포그래픽을 AI 로 만들 때 함께 보내요')
     +F.row('자막',F.ta('cfg.prompts.sub',P.cfg.prompts.sub,{rows:3,ph:'예) 줄당 14자 이내로 끊고, 숫자와 지수 이름은 그대로 두고, 군더더기 없이 보도체로.'}),'② 자막 탭의 [AI 로 자막 다듬기]에 써요')
     +F.row('음성',F.ta('cfg.voice.style',P.cfg.voice.style,{rows:3,ph:'예) 저녁 뉴스 앵커처럼 차분하고 또렷하게, 숫자와 고유명사는 천천히.'}),'음성 AI 에게 말투·속도·억양을 요청해요')
-    +'<div class="vs-btns">'+voicePresets().map((x,i)=>F.btn('aiVoicePreset',x[0],{d:String(i),title:x[1]})).join('')+'</div>',
+    +vpBox(),   /* v157 */
     [{t:'닫기',a:'dlgClose',c:'pri'}],'wide');
 }
 async function aiPing(){
@@ -47320,7 +47331,7 @@ const VOICE_PRESETS=[['뉴스 앵커','저녁 뉴스 앵커처럼 차분하고 �
 function inspVoicePrompt(){
   const v=P.cfg.voice;
   return F.row('음성 프롬프트',F.ta('cfg.voice.style',v.style,{rows:3,ph:'음성 AI 에게 요구할 말투·속도·억양 — 예) 저녁 뉴스 앵커처럼 차분하고 또렷하게, 숫자는 천천히'}),'(선택) 글 앞에 붙여 AI 가 읽는 방식을 알려요 — 가끔 이 문장이 소리로 읽혀요(아래 ‘프롬프트 점검’이 감지해 잘라내요)')
-    +'<div class="vs-btns" style="margin-top:0">'+voicePresets().map((x,i)=>F.btn('aiVoicePreset',x[0],{d:String(i),title:x[1]})).join('')+'</div>';
+    +vpBox();   /* v157: 문구 단추 + [💾 저장] 줄 */
 }
 
 /* ── AI 자막 — 나레이션 문장을 화면 자막으로 다듬어 문장별 자막 글(sub.text)에 넣음(원문은 그대로 있고 되돌릴 수 있음) ── */
@@ -48453,7 +48464,7 @@ const KW=n=>isKo()?n:Math.round(n*LG().tw);   /* 글 칸 길이(글자 수)를 �
 const langBadge=l=>(l&&l!=='ko')?' <i class="vs-lgb">'+esc(V.get(l).short)+'</i>':'';
 const cueWord=()=>isKo()?'화면':LG().cue;
 const pauseEq=()=>isKo()?PAUSE_EQ:PAUSE_EQ*LG().cpm/330;
-const voicePresets=()=>isKo()?VOICE_PRESETS:(LG().presets||VOICE_PRESETS);
+const voicePresets=()=>vpList();   /* v157: 처음 문구 + 내가 고쳐 저장한 글(영상 언어별) */
 const geoDisp=g=>isKo()?g.n:V.geoName(g.n,P.lang);
 const gzName=(preset,i,ko)=>{ if(isKo()) return ko; const a=LG().gz&&LG().gz[LG().gz[preset]?preset:'plain']; return (a&&a[i])||ko; };
 /* ── 언어별 설정 기억 · 언어 맞춤 ── */
@@ -48464,8 +48475,8 @@ function langOverlay(cfg,lang,force){   /* 자막 글꼴·음성 말투 기본�
   const defFonts=V.order.map(x=>V.get(x).font).concat([FONTS[0][0]]);
   if(cfg.sub&&(force||defFonts.indexOf(cfg.sub.font)>=0)) cfg.sub.font=lp.font||lg.font;
   if(cfg.voice){
-    const st=String(cfg.voice.style||'').trim(); let idx=-1; V.order.forEach(x=>{ ((x==='ko'?VOICE_PRESETS:V.get(x).presets)||[]).forEach((p,i)=>{ if(p[1]===st) idx=i; }); });
-    const ps=(lang==='ko'?VOICE_PRESETS:lg.presets)||[];
+    const st=String(cfg.voice.style||'').trim(); let idx=-1; V.order.forEach(x=>{ const ef=vpList(x); ((x==='ko'?VOICE_PRESETS:V.get(x).presets)||[]).forEach((p,i)=>{ if(p[1]===st||(ef[i]&&ef[i][1]===st)) idx=i; }); });   /* v157: 고쳐 저장한 문구도 같은 번호끼리 짝지음 */
+    const ps=vpList(lang);
     if(idx>=0&&ps[idx]) cfg.voice.style=ps[idx][1]; else if(!st&&lp.vstyle) cfg.voice.style=lp.vstyle;
   }
   return cfg;
@@ -56862,7 +56873,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v156';
+const KL_BUILD='v157';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -58642,6 +58653,100 @@ function vcRowHtml(px,cm){   /* 타임라인 [음성] 줄의 상자들 — 문�
     return h; }).join('');
 }
 /* ══ /v156 ══ */
+/* ══ v157 (2026-11-04) — 음성 프롬프트 문구(뉴스 앵커·속보 톤·친근한 해설·마감 브리핑)를 고쳐서 저장 ═══════════════════════════════
+   예전: 문구 단추를 누르면 정해진 글(VOICE_PRESETS)이 [음성 프롬프트] 칸에 들어갈 뿐이라, 문구 자체는 코드에 박혀 있어 못 고쳤음.
+   이제: 문구 단추를 누르면 칸에 글이 들어가고 그 문구가 '고른' 것이 됨 → 칸의 글을 고친 뒤 [💾 저장] → 그 문구의 글이 바뀜 → 다음부터 그 단추를 누르면 고친 글이 들어감.
+   · 고친 문구는 localStorage 'BTMVideoVoicePresets' = {언어:{번호:글}} 에 모든 프로젝트 공통으로 저장 — 고친 것만 적고, 없거나 비면 처음 문구(VOICE_PRESETS / 언어표 presets).
+   · 영상 언어(ko·en·zh·ja)마다 따로 — voicePresets() 가 지금 프로젝트 언어의 문구 4개(고친 것 반영)를 돌려줌. langOverlay 가 언어를 바꿀 때도 같은 번호끼리 짝지음(고친 글 포함).
+   · [↺ 처음 문구로] = 고친 글을 지우고 처음 문구로(칸의 글도 처음 문구로). 문구 이름(뉴스 앵커 …)은 고정.
+   · 이미 만든 프로젝트의 프롬프트(cfg.voice.style)는 저장해도 안 바뀜 — 문구 단추를 다시 누를 때부터 새 글이 들어감. 고친 문구는 음성 초기화([↺ 음성 초기화])로도 안 지워짐.
+   · 화면은 제자리에서만 갱신(.vs-vpre 안만 다시 그림, 글 칸은 값만 바꿈): 인스펙터·대화상자를 통째로 다시 그리면 스크롤이 튀고, 바로 이어 누른 [저장] 단추 클릭이 사라짐.
+   · 칸의 글을 고치는 동안([저장] 단추 색·안내)은 단추를 새로 만들지 않고 클래스·글자만 바꿈(vpTouch).
+   ═══════════════════════════════════════════════════════════════════════════════ */
+function vpUi(){ if(UI.vpPid!==P.id){ UI.vpPid=P.id; UI.vpSel=null; } }   /* 프로젝트가 바뀌면 '고른 문구'를 비움 */
+function vpLang(l){ return V.norm(l||(P&&P.lang)||'ko'); }
+function vpDefs(l){ l=vpLang(l); return l==='ko'?VOICE_PRESETS:(V.get(l).presets||VOICE_PRESETS); }   /* 처음 문구 4개 */
+function vpAll(){ const o=lsJ('BTMVideoVoicePresets'); return (o&&typeof o==='object'&&!Array.isArray(o))?o:{}; }
+function vpUserOf(l){ const o=vpAll()[vpLang(l)]; return (o&&typeof o==='object'&&!Array.isArray(o))?o:{}; }   /* 이 언어에서 내가 고친 글 {번호:글} */
+function vpList(l){ const u=vpUserOf(l); return vpDefs(l).map((x,i)=>{ const s=typeof u[i]==='string'?u[i].trim():''; return s?[x[0],s]:x; }); }   /* 지금 쓰는 문구 4개 [이름,글] — voicePresets() 가 이걸 돌려줌 */
+function vpEdited(i,l){ const d=vpDefs(l)[i], u=vpUserOf(l)[i]; return !!(d&&typeof u==='string'&&u.trim()&&u.trim()!==d[1]); }
+function vpWrite(all){ try{ if(Object.keys(all).length) localStorage.setItem('BTMVideoVoicePresets',JSON.stringify(all)); else localStorage.removeItem('BTMVideoVoicePresets'); return true; }catch(e){ return false; } }
+function vpSave(i,text,l){   /* 문구 i 의 글을 저장 → 'ok'(저장) · 'same'(이미 그 글) · 'def'(처음 문구와 같아 고친 기록만 지움) · 'empty'(빈 글) · 'bad'(저장 실패) */
+  l=vpLang(l); const d=vpDefs(l)[i]; if(!d) return 'bad';
+  const s=String(text==null?'':text).trim(); if(!s) return 'empty';
+  if(s===vpList(l)[i][1]) return 'same';
+  const all=vpAll(), u=(all[l]&&typeof all[l]==='object'&&!Array.isArray(all[l]))?all[l]:{};
+  if(s===d[1]) delete u[i]; else u[i]=s;
+  if(Object.keys(u).length) all[l]=u; else delete all[l];
+  if(!vpWrite(all)) return 'bad';
+  return s===d[1]?'def':'ok';
+}
+function vpReset(i,l){   /* 고친 글을 지우고 처음 문구로 → 지울 게 있었으면 true */
+  l=vpLang(l); const all=vpAll(), u=all[l]; if(!u||typeof u!=='object'||Array.isArray(u)||!(i in u)) return false;
+  delete u[i]; if(!Object.keys(u).length) delete all[l];
+  return vpWrite(all);
+}
+function vpSel(){   /* 지금 '고른' 문구 번호 — 단추를 누르거나 고른 것 · 없으면 칸의 글과 똑같은 문구(찾으면 기억해 둠 — 글을 고쳐도 그 문구가 유지되게) · 없으면 -1 */
+  vpUi(); const ps=vpList();
+  if(UI.vpSel!=null&&ps[UI.vpSel]) return UI.vpSel;
+  const st=String(P.cfg.voice.style||'').trim(), k=st?ps.findIndex(x=>x[1]===st):-1;
+  UI.vpSel=k>=0?k:null; return k;
+}
+function vpHint(cur,st,ps){   /* 저장 줄 아래 안내 글(HTML) */
+  if(cur<0||!ps[cur]) return '저장하려면 위에서 바꿀 문구를 누르거나 ‘문구 저장’ 칸에서 고르세요 — 문구를 누르면 그 글이 칸에 들어가요.';
+  const nm='<b>‘'+esc(ps[cur][0])+'’</b>';
+  if(!st) return '칸이 비어 있어요 — '+nm+' 문구로 저장할 글을 써 주세요.';
+  if(st!==ps[cur][1]) return '칸의 글이 '+nm+' 문구와 달라요 — <b>[💾 저장]</b>을 눌러야 이 문구의 글이 바뀌어요(누르지 않으면 이 프로젝트에만 적용돼요).';
+  return nm+' 문구와 같은 글이에요'+(vpEdited(cur)?'(내가 고친 글)':'')+'. 칸의 글을 고친 뒤 <b>[💾 저장]</b>을 누르면 문구가 바뀌고, 다음부터 이 단추를 누르면 고친 글이 들어가요.';
+}
+function vpInner(val){   /* 문구 단추 4개 + 저장 줄 — val = 칸의 글(안 주면 프로젝트에 저장된 글) */
+  const ps=vpList(), cur=vpSel(), st=String(val==null?P.cfg.voice.style:val).trim(), has=cur>=0&&!!ps[cur], dirty=has&&!!st&&st!==ps[cur][1];
+  return '<div class="vs-btns">'+ps.map((x,i)=>F.btn('aiVoicePreset',x[0]+(vpEdited(i)?' ✎':''),{d:String(i),c:(i===cur?'on':'')+(vpEdited(i)?' ed':''),title:x[1]+(vpEdited(i)?'\n✎ 내가 고친 문구예요 — [↺ 처음 문구로]로 되돌릴 수 있어요':'')})).join('')+'</div>'
+    +'<div class="vpr-sv"><span class="vpr-l" title="저장한 문구는 모든 프로젝트에서 똑같이 쓰여요(영상 언어마다 따로 저장돼요). 이미 만든 프로젝트의 음성 프롬프트는 바뀌지 않고, 이 단추를 다시 누를 때부터 새 글이 들어가요.">문구 저장</span>'
+    +'<select class="vs-in mobile-keep vpr-sel" data-f="ui.vpSel" aria-label="칸의 글을 저장할 문구" title="칸의 글을 저장할 문구">'+optHtml((has?[]:[['-1','문구 고르기…']]).concat(ps.map((x,i)=>[String(i),x[0]])),String(has?cur:-1))+'</select>'
+    +F.btn('aiVoiceSave','💾 저장',{c:dirty?'pri':'',dis:!(has&&st),title:'칸의 글을 고른 문구로 저장해요 — 다음부터 그 단추를 누르면 이 글이 들어가요'})
+    +F.btn('aiVoiceReset','↺ 처음 문구로',{dis:!(has&&(vpEdited(cur)||dirty)),title:'고른 문구를 처음 글로 되돌리고 칸도 그 글로 바꿔요'})
+    +'<span class="vpr-h">'+vpHint(cur,st,ps)+'</span></div>';
+}
+function vpBox(){ return '<div class="vs-vpre">'+vpInner()+'</div>'; }
+function vpPaintAll(){ if(!P) return; document.querySelectorAll('.vs-vpre').forEach(b=>{ b.innerHTML=vpInner(); }); }
+function vpSync(){   /* 칸(인스펙터·대화상자 어느 쪽이든)의 글과 문구 줄을 지금 값으로 — 통째로 다시 그리지 않음 */
+  if(!P) return; document.querySelectorAll('textarea[data-f="cfg.voice.style"]').forEach(ta=>{ if(ta.value!==P.cfg.voice.style) ta.value=P.cfg.voice.style; });
+  vpPaintAll();
+}
+function vpTouch(val,sync){   /* 칸의 글이 바뀌는 동안 — [저장] 단추 색·활성·안내 글만 제자리에서 바꿈(단추를 새로 만들면 바로 이어 누른 클릭이 사라져서) */
+  if(!P) return; const boxes=document.querySelectorAll('.vs-vpre');
+  if(boxes.length){
+    const st=String(val==null?P.cfg.voice.style:val).trim(), ps=vpList(), cur=vpSel(), has=cur>=0&&!!ps[cur], dirty=has&&!!st&&st!==ps[cur][1];
+    boxes.forEach(b=>{
+      const sv=b.querySelector('[data-a="aiVoiceSave"]'), rs=b.querySelector('[data-a="aiVoiceReset"]'), h=b.querySelector('.vpr-h');
+      if(sv){ sv.classList.toggle('pri',dirty); sv.disabled=!(has&&st); }
+      if(rs) rs.disabled=!(has&&(vpEdited(cur)||dirty));
+      if(h) h.innerHTML=vpHint(cur,st,ps);
+    });
+  }
+  if(sync) document.querySelectorAll('textarea[data-f="cfg.voice.style"]').forEach(ta=>{ if(ta!==document.activeElement&&ta.value!==P.cfg.voice.style) ta.value=P.cfg.voice.style; });   /* 다른 쪽 칸(인스펙터↔대화상자)도 같은 글로 */
+}
+function vpPreset(i){   /* 문구 단추 — 그 글을 칸(음성 프롬프트)에 넣고 그 문구를 '고른' 것으로 */
+  const x=voicePresets()[i]; if(!x) return;
+  vpUi(); UI.vpSel=i; P.cfg.voice.style=x[1]; savePref(P.cfg); commit('음성 프롬프트'); vpSync();
+}
+function vpPick(v){ vpUi(); UI.vpSel=(+v>=0)?+v:null; vpPaintAll(); }   /* ‘문구 저장’ 칸에서 고름 — 칸의 글은 그대로, 저장할 곳만 바뀜 */
+function vpDoSave(){   /* [💾 저장] — 칸의 글(프로젝트에 저장된 값)을 고른 문구의 글로 */
+  const ps=vpList(), i=vpSel(); if(i<0||!ps[i]){ toast('저장할 문구를 먼저 고르세요'); return; }
+  const nm=ps[i][0], r=vpSave(i,P.cfg.voice.style);
+  toast(r==='ok'?'‘'+nm+'’ 문구를 저장했어요 — 다음부터 이 단추를 누르면 이 글이 들어가요'
+     :r==='def'?'‘'+nm+'’ 문구가 처음 글과 같아서 고친 기록을 지웠어요'
+     :r==='same'?'‘'+nm+'’ 문구와 같은 글이에요 — 글을 고친 뒤 눌러 주세요'
+     :r==='empty'?'칸이 비어 있어요 — 문구로 저장할 글을 써 주세요':'저장하지 못했어요(브라우저 저장 공간을 쓸 수 없어요)');
+  vpPaintAll();
+}
+function vpDoReset(){   /* [↺ 처음 문구로] — 고른 문구의 고친 글을 지우고 칸도 처음 글로 */
+  const i=vpSel(), d=vpDefs()[i]; if(i<0||!d) return;
+  vpReset(i); if(String(P.cfg.voice.style||'').trim()!==d[1]){ P.cfg.voice.style=d[1]; savePref(P.cfg); commit('음성 프롬프트'); }
+  UI.vpSel=i; vpSync(); toast('‘'+d[0]+'’ 문구를 처음 글로 되돌렸어요');
+}
+/* ══ /v157 ══ */
 /* 장면의 영상 파일을 읽는 <video> 는 지금·다음 장면 것만 둠(메모리·재생 부담) */
 const VM=new Map();
 function vidEl(sc){
@@ -59456,6 +59561,7 @@ function setSentField(path,v){
 }
 function setField(path,v,el,final){
   let redo='draw'; const c=P.scenes[UI.sel], isNum=el&&el.dataset.t==='n';
+  if(path==='ui.vpSel'){ if(final) vpPick(v); return; }   /* v157: ‘문구 저장’ 칸에서 저장할 문구 고르기(화면 상태만) */
   if(path==='p.title'){ P.title=v||''; redo=''; }
   else if(path==='p.lang'){ applyLang(v); redo='lay'; setTimeout(()=>renderInspector(true),0); }   /* v108: 영상 언어 */
   else if(path==='cfg.res'){ const a=String(v).split('x').map(Number); P.cfg.w=a[0]; P.cfg.h=a[1]; P._cues=null; UI.cvScale=0; canvasSize(); redo='lay'; }
@@ -59467,7 +59573,7 @@ function setField(path,v,el,final){
     }
   }
   else if(path.indexOf('cfg.')===0){
-    if(v===null&&isNum) return; const k=path.slice(4); setPath(P.cfg,k,v);
+    if(v===null&&isNum) return; const k=path.slice(4); setPath(P.cfg,k,v); if(k==='voice.style') vpTouch(v,true);   /* v157: 음성 프롬프트 칸이 바뀌면 [저장] 줄 상태를 제자리에서 */
     if(k.indexOf('sub.')===0||k==='offs.sub') P._cues=null;
     if(/^title\.(?:gk|lh|gs)$/.test(k)){ const kk=k.slice(6); P.cfg.title[kk]=ttgClamp(kk,v); (P._titles||[]).forEach(q=>{ q._ig=null; }); if(final) setTimeout(()=>renderInspector(true),0); }   /* v147: 타이틀 글 간격(공통) — 시간표는 그대로라 다시 짜지 않고 그림만 */
     else if(/^(gap\.|lead$|tail$|cpm$|offs\.vid$|title\.)/.test(k)){ redo='lay'; if(k.indexOf('title.')===0){ P.cfg.title.user=true; if(k==='title.dur') P.cfg.title.dur=clamp(+v||2.5,1,6); if(final) setTimeout(()=>renderInspector(true),0); } }
@@ -60834,6 +60940,7 @@ function bindEvents(el){
   el.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-a]'); if(b&&!b.disabled){ act(b.dataset.a,b); return; } const sc=e.target.closest&&e.target.closest('.vs-sc'); if(sc&&P){ const j=+sc.dataset.j; if(!msClick(j,e)) selectScene(j,true); } });
   el.addEventListener('dblclick',e=>{ const sc=e.target.closest&&e.target.closest('.vs-sc'); if(sc&&P){ selectScene(+sc.dataset.j,false); startPlay(P.scenes[UI.sel].s); } });
   el.addEventListener('input',e=>{ const t=e.target; if(t.dataset&&t.dataset.f&&(t.type==='range'||t.type==='color')) onField(e,false); else if(t.dataset&&t.dataset.d!=null&&t.type==='range') onDlgField(e); });
+  el.addEventListener('input',e=>{ const t=e.target; if(P&&t.dataset&&t.dataset.f==='cfg.voice.style') vpTouch(t.value); });   /* v157: 음성 프롬프트 칸을 고치는 동안 [저장] 단추 색·안내 */
   el.addEventListener('focusin',e=>{ const t=e.target, f=t&&t.dataset&&t.dataset.f; if(!f||!P) return; const m=/^tt:(\d+):(?:gk|lh|gs)$/.exec(f); if(m) ttShow(+m[1]); else if(/^cfg\.title\.(?:gk|lh|gs)$/.test(f)) ttShow(null); });   /* v147: 간격 칸을 누르면 그 타이틀이 미리보기에 보이게 */
   el.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.f!=null&&t.dataset.f!=='') onField(e,true); else if(t.dataset&&t.dataset.d!=null) onDlgField(e); });
   const sk=$('vsSeek'); sk.addEventListener('input',()=>{ if(P) seekTo(sk.value/1000*P.dur); });
@@ -60921,7 +61028,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     igLay,drawClip,drawClips,ruleBlocks,ruleSpecs,aiSpecs,normBlock,normSpecs,buildClips,runInfo,itemTime,blockT0,anchT,spokenW,anchorOf,anchorAtTime,sortItems,cutoutBlob,setCharBlob,speechLevel,igPoster,igPostersAll,parseJsonLoose,infoAct,charFromFile,drawMascot,setIgField,FAILED,itemTone,igById,igSetTimes,shiftTimes,igSplit,igDup,defaultBlock,convertItem,newClip,igMigrate,igsOfScene,varyClips,resolveMode,MODES,BT,BT_ORDER,STY_B,STY_I,newsify,newsLabel,newsT,isFiller,ISTY,STY_ORDER,STY_SAMPLE,styOf,geoFind,geoScan,geoRaster,GEO,mapView,applyMenuPrefs,resetPref,PREF_GROUPS,menuSummary,styleThumb,styleRules,infoPal,cardBox,igFlow,buildIgLay,contentOf,hasSubstance,leadOf,whenOf,mentionOf,mentionT0,partMention,studioAi,studioMapKey,FZ,FZK,setFz,fzHtml,hzf,chipOf,TRANS,TRK,COMP,transOf,oldFrame,composeTrans,trName,titleOn,titleDur,titleLen,ttNum,ttDragCalc,ttApply,ttSelect,ttResetKeys,titleSpec,titleDef,titleAt,titleIg,drawTitle,applyTitle,titleMutes,inspTitle,scheduleBgm,tselSet,tselClear,tlDelete,deleteSentence,tselLabel,tlSelFrom,tlMenu,findItem,selScenes,msClick,msPaint,runSceneEdit,applyEditToScene,applyInfoEdit,sceneInfoSpec,edUser,SYS_EDIT,compList,compLayout,shiftItem,dlgDoc,docText,stageSplit,fixStages,mergeSpecs,paintEd,phraseAt,runSubs,showAiDlg,paintAiBtn,aiPing,LEAD_DEF,FRAME_PRE,PRE_ROLL,HOLD,
     V,isKo,LG,TX,KW,langOverlay,applyLang,sysInfo,sysEditBase,sysSubHeadL,subRulesL,ruleBlocksX,labelBeforeX,dirAdjX,geoDisp,gzName,voicePresets,pauseEq,loadPref,savePref,keyClause,
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
-    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,gdMatch,gdCutTime,gdNorm,guardLead,speechSpans,speechLevel,narrationWav,startPlay,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
+    agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,gdMatch,gdCutTime,gdNorm,guardLead,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
     SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
