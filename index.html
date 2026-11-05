@@ -46970,7 +46970,11 @@ function inspInfoLook(open){
 }
 
 /* ── 값 고치기(data-f) — ig:클립id:블록id:필드 / igp:클립id:블록id:번호:필드 ── */
-function setIgField(path,v){
+function setIgField(path,v){   /* v160: 인스펙터 글 칸으로 직접 고친 블록은 it.ed=1 — 열 때·내보내기 전 자동 정리(klCleanExisting)가 건드리지 않음 */
+  const r=setIgField0(path,v); try{ const a=String(path).split(':'), g=igById(a[1]), it=g&&a[2]?(g.items||[]).find(x=>x.id===a[2]):null; if(it) edMark(it); }catch(e){ if(window.__klStrict) throw e; }
+  return r;
+}
+function setIgField0(path,v){
   const a=path.split(':'), g=igById(a[1]); if(!g) return 'draw';
   if(a[0]==='ig'){
     const k=a[3], itId=a[2];
@@ -47033,22 +47037,22 @@ async function infoAct(a,id,btn){
     case 'igSplit': if(g){ const n=igSplit(g,t); if(n){ UI.ig=n.id; igPoster(g); igPoster(n); commit('인포그래픽 나누기'); renderAll(); } else toast('인포그래픽 가장자리에서 0.4초 이상 떨어진 곳에서 나눠 주세요'); } break;
     case 'igPhS': if(g){ igSetTimes(g,t,g.e); done('인포그래픽 시작'); } break;
     case 'igPhE': if(g){ igSetTimes(g,g.s,t); done('인포그래픽 끝'); } break;
-    case 'igAddIt': if(g){ const ty=UI.igType||'stat', tt=(t>g.s&&t<g.e-0.3)?t:g.s+(g.e-g.s)*0.3; const was=igBoxOK(g); g.items.push(defaultBlock(ty,tt)); sortItems(g); if(was){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; toast('블록이 늘어서 직접 정한 크기/배치를 자동 배치로 되돌렸어요 — [📐 크기/배치 수정]에서 다시 정해 주세요'); } done('블록 추가'); } break;
+    case 'igAddIt': if(g){ const ty=UI.igType||'stat', tt=(t>g.s&&t<g.e-0.3)?t:g.s+(g.e-g.s)*0.3; const was=igBoxOK(g); g.items.push(edMark(defaultBlock(ty,tt))); sortItems(g); if(was){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; toast('블록이 늘어서 직접 정한 크기/배치를 자동 배치로 되돌렸어요 — [📐 크기/배치 수정]에서 다시 정해 주세요'); } done('블록 추가'); } break;
     case 'igDelIt': if(g){ g.items=g.items.filter(x=>x.id!==ids[1]); done('블록 삭제'); } break;
     case 'igPlayIt': if(g){ const it=g.items.find(x=>x.id===ids[1]), tm=it&&blockT0(P,it); if(tm!=null) startPlay(Math.max(0,tm-1),'preview',Math.min(P.dur,Math.max(tm+4,g.e))); } break;
-    case 'igNudge': if(g){ const it=g.items.find(x=>x.id===ids[1]), dl=parseFloat(ids[2]); if(it&&isFinite(dl)){ shiftItem(it,dl); sortItems(g); UI.igIt=it.id; done('구성요소 시점'); } } break;
-    case 'igPhIt': if(g){ const it=g.items.find(x=>x.id===ids[1]), at=anchorAtTime(P,t); if(it&&at){ it.at={sid:at.sid,f:at.f}; it.dt=at.dt; sortItems(g); done('블록 시점'); } } break;
-    case 'igAddPt': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it&&it.parts){ const d=defaultBlock(it.type,t).parts, last=it.parts[it.parts.length-1], p=Object.assign({},d[Math.min(d.length-1,it.parts.length)]||d[0]), tm=last?(partMention(P,last)||t)+0.9:t, at=anchorAtTime(P,tm); if(at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; } it.parts.push(p); done('항목 추가'); } } break;
-    case 'igDelPt': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it&&it.parts){ it.parts.splice(+ids[2],1); done('항목 삭제'); } } break;
-    case 'igPhPt': if(g){ const it=g.items.find(x=>x.id===ids[1]), p=it&&it.parts&&it.parts[+ids[2]], at=anchorAtTime(P,t); if(p&&at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; sortItems(g); done('항목 시점'); } } break;
+    case 'igNudge': if(g){ const it=g.items.find(x=>x.id===ids[1]), dl=parseFloat(ids[2]); if(it&&isFinite(dl)){ shiftItem(it,dl); sortItems(g); UI.igIt=it.id; edMark(it); done('구성요소 시점'); } } break;
+    case 'igPhIt': if(g){ const it=g.items.find(x=>x.id===ids[1]), at=anchorAtTime(P,t); if(it&&at){ it.at={sid:at.sid,f:at.f}; it.dt=at.dt; sortItems(g); edMark(it); done('블록 시점'); } } break;
+    case 'igAddPt': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it&&it.parts){ const d=defaultBlock(it.type,t).parts, last=it.parts[it.parts.length-1], p=Object.assign({},d[Math.min(d.length-1,it.parts.length)]||d[0]), tm=last?(partMention(P,last)||t)+0.9:t, at=anchorAtTime(P,tm); if(at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; } it.parts.push(p); edMark(it); done('항목 추가'); } } break;
+    case 'igDelPt': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it&&it.parts){ it.parts.splice(+ids[2],1); edMark(it); done('항목 삭제'); } } break;
+    case 'igPhPt': if(g){ const it=g.items.find(x=>x.id===ids[1]), p=it&&it.parts&&it.parts[+ids[2]], at=anchorAtTime(P,t); if(p&&at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; sortItems(g); edMark(it); done('항목 시점'); } } break;
     case 'igAI': case 'igRule': if(g) await igRegen(g,a==='igAI'?'ai':'rule'); break;
     case 'igLayAI': if(g){ if(!LE_MODES[g.mode]){ toast('이 형태는 칸 배치가 아니에요 — [📐 크기/배치 수정]에서 전체 화면 패널로 바꿔 주세요'); break; } const pk=layoutApply(g,{force:true}); if(pk){ done('AI 배치'); toast('배치 "'+pk.t.nm+'"('+pk.t.id+')를 골랐어요 — [📐 크기/배치 수정]에서 더 고칠 수 있어요'); } else toast('이 인포그래픽에는 배치 템플릿을 쓸 수 없어요(구성요소 1~7개만)'); } break;
     case 'igNews': if(g){ newsAll(g); done('뉴스체'); } break;
     case 'igAl': if(g){   /* v114: 글 위치 — ids = 클립:블록(또는 *):축(h·v·x):값 */
       const its=ids[1]==='*'?g.items:g.items.filter(x=>x.id===ids[1]);
-      if(alApply(its,ids[2],ids[3])){ if(ids[2]==='v'&&!igBoxOK(g)) toast('상하 위치는 상자가 글보다 클 때 눈에 보여요 — [📐 크기/배치 수정]에서 상자를 키워 보세요'); done('글 위치'); }
+      if(alApply(its,ids[2],ids[3])){ its.forEach(x=>edMark(x)); if(ids[2]==='v'&&!igBoxOK(g)) toast('상하 위치는 상자가 글보다 클 때 눈에 보여요 — [📐 크기/배치 수정]에서 상자를 키워 보세요'); done('글 위치'); }
     } break;
-    case 'igFzReset': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it){ delete it.fz; (it.parts||[]).forEach(p=>{ delete p.fz; }); done('글자 크기'); } } break;
+    case 'igFzReset': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it){ delete it.fz; (it.parts||[]).forEach(p=>{ delete p.fz; }); edMark(it); done('글자 크기'); } } break;
     case 'aiPanel': showAiDlg(); break;
     case 'aiPick': setStudioProvider(id); paintAiBtn(); showAiDlg(); renderInspector(true); break;
     case 'aiPing': await aiPing(); break;
@@ -56676,6 +56680,7 @@ function klNumClip(items){   /* 한 clip 의 블록들 — 블록이 큰 수치�
   items.forEach((it,i)=>{ const sid=it.at&&it.at.sid; if(sid==null||!own[i].size) return; let s=bySid.get(sid); if(!s){ s=new Set(); bySid.set(sid,s); } own[i].forEach(k=>s.add(k)); });
   const out=[];
   items.forEach((it,i)=>{
+    if(it&&it.ed){ out.push(it); return; }   /* v160: 직접 고친 블록은 글을 안 고침 */
     if(typeof it.value==='string'&&typeof it.delta==='string'&&it.delta){ const kv=klFigKey(it.value), kd=klFigKey(it.delta); if(kv&&kd&&kv===kd) it.delta=''; }   /* 변화 칸이 수치와 똑같으면 비움 */
     const sid=it.at&&it.at.sid, keys=new Set(own[i]); if(sid!=null&&bySid.has(sid)) bySid.get(sid).forEach(k=>keys.add(k));   /* 다른 문장에서 우연히 같은 수치가 나온 블록은 건드리지 않음 */
     if(keys.size) KL_NUMTXT.forEach(f=>{ if(typeof it[f]!=='string'||!it[f]) return; const t=klNumStrip(it[f],keys); if(t!==it[f]){ it[f]=t; if(f==='text'&&Array.isArray(it.hl)) it.hl=it.hl.filter(h=>t.indexOf(h)>=0); } });
@@ -56694,8 +56699,8 @@ function klDetailItems(items,ss,ctx,rule,c){
   if(c&&c.mode==='title') return items;   /* v131: 타이틀 형태 clip 은 제목 블록이 본문 — 거르지 않음 */
   if(rule) items=klMergeLevel(items);
   const keys=klSecKeys(ss,ctx,c), refs=klRefs(ss,ctx,c), out=[]; refs.lost=[]; refs.gone=[]; refs.parts=0;
-  klPoolFix(items,refs);   /* v130: 따로 만든 짧은 이름 칩·요점이 모여 자막 낱말로 채워지면 주제 나열 */
-  items.forEach(it=>{ const r=klDetailFix(it,keys,ss,refs); if(r) out.push(r); else{ KL_DROP.n++; refs.gone.push.apply(refs.gone,klAllStrs(it)); } });
+  klPoolFix(items.filter(x=>!(x&&x.ed)),refs);   /* v130: 따로 만든 짧은 이름 칩·요점이 모여 자막 낱말로 채워지면 주제 나열 · v160: 직접 고친 블록(ed)은 뺌 */
+  items.forEach(it=>{ if(it&&it.ed){ out.push(it); return; } const r=klDetailFix(it,keys,ss,refs); if(r) out.push(r); else{ KL_DROP.n++; refs.gone.push.apply(refs.gone,klAllStrs(it)); } });   /* v160: 직접 고친 블록(ed)은 검사·수정 없이 그대로 */
   klNumClipInto(out,refs);   /* v141: 같은 수치는 한 번만 */
   KL_DROP.n+=refs.parts;
   if(refs.lost.length){   /* 지운 글에 수치가 있었는데 그 수치를 보여 주는 카드가 없으면, 수치만 숫자 카드로 */
@@ -56739,21 +56744,21 @@ function klCleanExisting(only){
 }
 function klCleanExisting0(only){
   if(!klDetailOn()||!P||!(P.igs||[]).length) return 0;
-  let removed=0, cleaned=0;
+  let removed=0, cleaned=0; const lost=[], hit=[];
   (P.igs||[]).slice().forEach(g=>{
     if(!g||(only&&g!==only)||g.ov||g.sm||g.src==='hand'||g.mode==='title'||!(g.items||[]).length) return;
     const sc=P.scenes[sceneIdx(g.s)]; if(!sc) return;
-    const all=sentsOf(P,sc), ctx=Object.assign(igCtx(sc),{ss:all,all}), sig0=g.items.map(i=>i.id).join(','), txt0=klTextSig(g.items);
+    const all=sentsOf(P,sc), ctx=Object.assign(igCtx(sc),{ss:all,all}), sig0=g.items.map(i=>i.id).join(','), txt0=klTextSig(g.items), snap=g.items.map(it=>({it,ps:(it.parts||[]).slice()}));
     let out; try{ out=klDetailItems(g.items.slice(),all,ctx,false,{title:g.title}); }catch(e){ if(window.__klStrict) throw e; return; }
-    if(!out.length){ if(klGuarOn()&&klSceneOnly(g,sc)) return; P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; removed++; return; }   /* v143: 장면에 하나뿐인 클립은 남김 */
+    if(!out.length){ if(klGuarOn()&&klSceneOnly(g,sc)) return; P.igs=P.igs.filter(x=>x!==g); if(UI.ig===g.id) UI.ig=''; removed++; hit.push(g.id); klLostAdd(lost,snap,out); return; }   /* v143: 장면에 하나뿐인 클립은 남김 */
     if(out.map(i=>i.id).join(',')!==sig0){
       const wasTpl=!!g.tpl;   /* tpl 이 있으면 사용자가 상자를 만지지 않은 템플릿 배치(만지면 tpl 이 비워짐) — 구성요소 수가 줄었으니 개수에 맞는 템플릿으로 다시 */
-      g.items=out; sortItems(g);
+      hit.push(g.id); klLostAdd(lost,snap,out); g.items=out; sortItems(g);
       if(g.items.some(it=>it.bx)&&(wasTpl||!igBoxOK(g))){ g.items.forEach(it=>{ delete it.bx; }); g.tpl=''; if(klLtpl()){ try{ layoutApply(g,{force:true}); }catch(e){ if(window.__klStrict) throw e; } } }
       try{ igPoster(g); }catch(e){} cleaned++;
-    } else if(klTextSig(g.items)!==txt0){ try{ igPoster(g); }catch(e){} cleaned++; }   /* v141: 글만 고쳐진 클립(겹친 수치 정리) */
+    } else if(klTextSig(g.items)!==txt0){ hit.push(g.id); klLostAdd(lost,snap,out); try{ igPoster(g); }catch(e){} cleaned++; }   /* v141: 글만 고쳐진 클립(겹친 수치 정리) */
   });
-  if(removed||cleaned){ layout(P); commit('인포그래픽 중복 정리'); renderAll(); toast('🧹 이미 만든 인포그래픽에서 자막·제목과 같은 구성요소나 겹친 수치를 정리했어요 — 클립 '+removed+'개 지우고 '+cleaned+'개 고쳤어요'); }
+  if(removed||cleaned){ layout(P); commit('인포그래픽 중복 정리'); renderAll(); klCleanToast(hit,'🧹 이미 만든 인포그래픽에서 자막·제목과 같은 구성요소나 겹친 수치를 정리했어요 — 클립 '+removed+'개 지우고 '+cleaned+'개 고쳤어요'+(lost.length?' · 뺀 글: '+lost.slice(0,3).map(x=>'"'+clipS(x,14)+'"').join(', ')+(lost.length>3?' 외 '+(lost.length-3)+'개':''):'')); }   /* v160: 뺀 글을 보여 주고 [되돌리기] */
   return removed+cleaned;
 }
 /* AI 요청 글 — [표기 판단] 뒤에 '세부 내용 위주' 규칙을 끼우고, 분류어로 보이는 예시 머리말은 설명형으로 바꿔 줌 */
@@ -56873,7 +56878,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v159';
+const KL_BUILD='v160';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -56939,7 +56944,7 @@ function klPartsEcho(it,keys,refs){   /* 수치·날짜 없는 항목(이름·�
 function klTitleEchoFix(g){   /* 제목·윗글을 손으로 고쳐 본문 글과 똑같아졌으면 그 블록을 뺌(자동 생성 클립만) — 바꿨으면 true */
   if(!klDetailOn()||!g||g.src==='hand'||g.ov||g.sm||g.mode==='title'||!Array.isArray(g.items)||!g.items.length) return false;
   const keys=[g.title,g.kicker].map(t=>klNK(cleanChap(t))).filter(k=>k.length>=2); if(!keys.length) return false;
-  const bad=it=>{ if(!it||it.type==='agenda') return false; const d=klOf(it.type), fid=d?d.fid:''; return (it.type==='point'||it.type==='quote'||it.type==='title'||fid==='x')?klExact(it.text,keys):(klTextCard(it)&&klExact(it.value,keys)); };
+  const bad=it=>{ if(!it||it.type==='agenda'||it.ed) return false; const d=klOf(it.type), fid=d?d.fid:''; return (it.type==='point'||it.type==='quote'||it.type==='title'||fid==='x')?klExact(it.text,keys):(klTextCard(it)&&klExact(it.value,keys)); };
   const gone=g.items.filter(bad); if(!gone.length) return false;
   if(klGuarOn()&&gone.length>=g.items.length){ const sc0=P.scenes[sceneIdx(g.s)]; if(sc0&&klSceneOnly(g,sc0)) return false; }   /* v143: 장면에 하나뿐인 클립이 통째로 사라지면 그대로 둠 */
   const wasTpl=!!g.tpl; g.items=g.items.filter(it=>!bad(it));
@@ -56949,6 +56954,23 @@ function klTitleEchoFix(g){   /* 제목·윗글을 손으로 고쳐 본문 글�
   try{ igPoster(g); }catch(e){}
   toast('🧹 제목과 똑같은 글이라 본문에서 '+gone.length+'개를 뺐어요(↶ 되돌리기로 복구)'); return true;
 }
+/* ══ v160 (2026-11-05) — 직접 고친 구성요소는 열 때·내보내기 전 자동 정리가 건드리지 않음 ══
+   증상: [인포] 탭에서 픽토그램 줄의 항목을 2개 → 3개로 늘리고 스튜디오를 닫았다 다시 열면 3번째 항목이 사라져 2개로 돌아가 있음(다른 픽토그램도 같음). 저장은 정상이었음(닫을 때 DB 에는 3개).
+   원인: 프로젝트를 열 때 startProject 가 klCleanExisting(v128~v131 '자막·제목과 같은 뜻 거르기')을 돌림 — AI·규칙이 만든 클립의 모든 블록·항목에 똑같이 걸리고 '사용자가 직접 넣은 글'을 가리는 표시가 없었음.
+        새 항목이 분류어뿐인 글('경제 일정'·'시황'·'섹터' … — 픽토그램 낱말 칸을 비워 두면 특히)이거나 자막·제목과 같은 뜻이면 열자마자 조용히 지워졌음(내보내기 직전 정리·한 번에 만들기 시작 때도 같음).
+   고침: 사용자가 손댄 블록에 it.ed=1 을 저장 — setIgField(인스펙터 글 칸)·[＋ 항목 추가]·[× 항목 지우기]·[＋ 블록 추가]·시점·글 위치·글자 크기·타임라인 붙여넣기·칩 옮기기.
+        klDetailItems·klNumClip·klPoolFix·klTitleEchoFix 가 ed 블록은 검사도 수정도 안 함. 안 만진 블록은 예전과 똑같이 정리됨(새로 만들 때 결과도 그대로).
+        정리가 무엇을 뺐는지 알림에 글을 보여 주고 [되돌리기] 단추를 붙임(klCleanExisting0 → klLostAdd·klCleanToast) — 단추로 되돌리면 그 화면의 구성요소에 ed 가 붙어 다시 안 지움. 검색: edMark · it.ed ── */
+function edMark(it){ if(it&&typeof it==='object'&&!Array.isArray(it)&&it.ed!==1) it.ed=1; return it; }
+function klLostAdd(lost,snap,out){   /* 정리가 뺀 글을 알림에 보이려고 모음 — 블록째 빠진 것은 그 블록의 첫 글, 항목만 빠진 것은 그 항목의 첫 글 */
+  try{ (snap||[]).forEach(s=>{ if((out||[]).indexOf(s.it)<0){ const a=klAllStrs(s.it); if(a.length) lost.push(a[0]); return; } s.ps.forEach(p=>{ if((s.it.parts||[]).indexOf(p)<0){ const a=klStrs(p).map(x=>x.s); if(a.length) lost.push(a[0]); } }); }); }catch(e){ if(window.__klStrict) throw e; }
+}
+function klCleanToast(ids,msg){   /* 정리 알림 — [되돌리기]를 누르면 되돌린 화면의 구성요소를 '직접 둔 것'(ed)으로 표시해 다음에 열 때·내보낼 때 또 지우지 않음(Ctrl+Z 로 되돌리면 표시가 안 붙으니 알림 단추를 쓰게 함) */
+  const back=()=>{ const n=H.undo.length; undo(); if(H.undo.length>=n) return; try{ let k=0; (P.igs||[]).forEach(g=>{ if(ids.indexOf(g.id)>=0) (g.items||[]).forEach(x=>{ if(x&&x.ed!==1){ x.ed=1; k++; } }); }); if(k) commit('되돌린 구성요소 보호'); }catch(e){ if(window.__klStrict) throw e; } };
+  try{ if(window.BTMSecDrag&&typeof BTMSecDrag.toast==='function'){ BTMSecDrag.toast(msg,false,[['되돌리기',back]]); return; } }catch(e){}
+  toast(msg);
+}
+/* ══ /v160 ══ */
 /* ══ /v127 detail ══ */
 
 /* ══ /v126 ══ */
@@ -57677,7 +57699,7 @@ function cbPasteComps(cb,tp,o){   /* v151: o.move = 원래 자리에서 빼는 �
   if(!g){ tp=Math.min(tp,Math.max(0,P.dur-1.0)); g=cbNewClip(cb,tp); made=true; }
   const lo=Math.max(0,g.s), hi=Math.max(g.s+0.3,g.e-0.3), base=clamp(tp,lo,hi), D=base-cb.ref, was=!made&&igBoxOK(g); let clamped=0; const news=[];
   cb.blocks.forEach(b=>{
-    const n=cbClone(b.it); n.id=uid('i'); delete n.bx; const ld=leadOf(n), multi=!!(n.parts&&n.parts.length>1), fit=t=>clamp(t,lo,hi)-t;   /* fit = 인포그래픽 안으로 들어가게 맞출 양(초) — 끝을 넘는 항목이 안 보이는 일이 없게 항목마다 */
+    const n=cbClone(b.it); n.id=uid('i'); n.ed=1; delete n.bx; const ld=leadOf(n), multi=!!(n.parts&&n.parts.length>1), fit=t=>clamp(t,lo,hi)-t;   /* fit = 인포그래픽 안으로 들어가게 맞출 양(초) — 끝을 넘는 항목이 안 보이는 일이 없게 항목마다 */
     const ex=fit(b.t0+D); cbAnchor(n,b.men.m,D+ex); if(!multi&&Math.abs(ex)>0.004) clamped++;
     (n.parts||[]).forEach((q,i)=>{ const pm=b.men.p[i]; if(pm==null) return; let sh=D+ex; if(multi){ const ep=fit(pm-ld+D); if(Math.abs(ep)>0.004) clamped++; sh=D+ep; } cbAnchor(q,pm,sh); });
     g.items.push(n); news.push(n);
@@ -57699,7 +57721,7 @@ function cbPasteClips(cb,tp){
   gs.forEach(c=>{
     const n=cbClone(c.g); n.id=uid('g'); const sN=Math.max(0,c.s0+D), eN=Math.min(P.dur,c.e0+D);
     n.a=anchorAtTime(P,sN); n.b=anchorAtTime(P,Math.max(sN+0.5,eN));
-    n.items.forEach((it,i)=>{ it.id=uid('i'); const m=c.men[i]||{m:null,p:[]}; cbAnchor(it,m.m,D); (it.parts||[]).forEach((q,k)=>cbAnchor(q,m.p[k],D)); if(it.ue){ const ua=m.u!=null?anchorAtTime(P,m.u+D):null; if(ua) it.ue={sid:ua.sid,f:ua.f,dt:ua.dt}; else delete it.ue; } });   /* v154: 붙잡은 끝도 같이 옮김 */
+    n.items.forEach((it,i)=>{ it.id=uid('i'); it.ed=1; const m=c.men[i]||{m:null,p:[]}; cbAnchor(it,m.m,D); (it.parts||[]).forEach((q,k)=>cbAnchor(q,m.p[k],D)); if(it.ue){ const ua=m.u!=null?anchorAtTime(P,m.u+D):null; if(ua) it.ue={sid:ua.sid,f:ua.f,dt:ua.dt}; else delete it.ue; } });   /* v154: 붙잡은 끝도 같이 옮김 */
     (P.igs=P.igs||[]).push(n); out.push(n);
   });
   layout(P); sortClips(P); out.forEach(igPoster);
@@ -58400,7 +58422,7 @@ function tlGrpHint(G,dt){ return (G.plan.k==='comp'&&!G.cp)?tlCompHint(G.pr.g,G.
 function tlCompsRemove(refs){   /* 칩들을 원래 인포그래픽에서 뺌([{g,it,pi}]) — 항목을 전부 옮기면 블록째, 일부면 그 항목만 → 바뀐 인포그래픽 집합 */
   const by=new Map(); refs.forEach(r=>{ if(!by.has(r.it)) by.set(r.it,{g:r.g,pis:[]}); by.get(r.it).pis.push(r.pi); }); const touched=new Set();
   by.forEach((o,it)=>{ const np=(it.parts||[]).length;
-    if(np>1&&o.pis.every(pi=>pi>=0)&&o.pis.length<np) o.pis.slice().sort((a,b)=>b-a).forEach(pi=>{ if(it.parts[pi]) it.parts.splice(pi,1); });   /* 일부 항목만 — 뒤에서부터(번호가 안 밀리게) */
+    if(np>1&&o.pis.every(pi=>pi>=0)&&o.pis.length<np) { o.pis.slice().sort((a,b)=>b-a).forEach(pi=>{ if(it.parts[pi]) it.parts.splice(pi,1); }); edMark(it); }   /* 일부 항목만 — 뒤에서부터(번호가 안 밀리게) */
     else o.g.items=o.g.items.filter(x=>x!==it);
     touched.add(o.g); });
   return touched;
@@ -61125,7 +61147,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,tlSameCC,tlKindSum,mqKey,mqKeyAt,tlMultiHint,tlCopyNote,tmulMenuMix,tmulDeleteMix,tlMvPlanSubs,tlMvPlanAuds,tlMvPlanMix,tlMvDoMix,tlDragSetMix,TL_PICK,TL_MIXMV,tlMvFinish,tlCompsMove,tlDownGrp,tlMenu,tlSelFrom,tselPaint,tlDelete,tselClear,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
