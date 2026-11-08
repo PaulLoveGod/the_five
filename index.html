@@ -6509,9 +6509,51 @@ async function _skLatestRaw(){
 function _skSave(){
   if(_skBlocked) return;
   if(!_skLoaded){ _skDeferred=true; return; }          /* 시작 때 저장본을 읽어 적용하기 전에는 빈 화면으로 덮어쓰지 않음 */
+  if(window.__BTM_FULL!==true) return;                 /* 페이지가 일부만 로드된 화면(모듈 일부 없음)으로 자동저장본을 덮어쓰지 않음(v164) — 문서 맨 끝 완료 표식이 있어야 저장 */
   let json; try{ json=JSON.stringify(collectData({mmSaved:true})); }catch(e){ console.warn('[자동저장] 직렬화 실패:',e); return; }   /* 마인드맵은 💾 Save 한 상태만 — 저장 전 수정은 창을 닫으면 사라짐 */
   _skWrite(json);
 }
+/* ──────── 화면이 '완전히' 시작됐는지 점검 (2026-11-08, v164) ────────
+   사고(2026-11-08 오전): 시작 처리(DOMContentLoaded)가 중간에 멈춘 반쪽짜리 화면 — 주요지수 칸·행간·숨김·섹션 배치가 아직 없는 상태 — 에서
+   '기록조회 → Report 불러오기'(현재 리포트를 Archive 에 자동 보존한 뒤 불러옴)를 연달아 하자, 그 빈 화면이 11-02·03·05·06 기록 위에 덮어써져
+   주요지수 수치·숨김 목록·행간·섹션 배치가 사라졌음(→ fixArchiveDamage20261108 이 복구). 그래서 아래 셋 중 하나라도 안 갖춰졌으면
+   Archive 저장·불러오기·새 리포트·자동저장을 막고 경고 배너로 알림:
+     ① 문서 맨 끝의 완료 표식 window.__BTM_FULL — 페이지가 일부만 받아졌으면 없음   ② _skLoaded — 시작 처리가 자동저장본 불러오기까지 끝남   ③ 주요지수 칸이 만들어져 있음 */
+function _btmIncomplete(){   /* → 덜 시작된 이유(문장), 정상이면 '' */
+  if(window.__BTM_FULL!==true) return '페이지가 끝까지 로드되지 않았어요';
+  if(!_skLoaded) return '시작 처리(자동저장본 불러오기)가 아직 끝나지 않았어요';
+  if(!document.querySelector('#indicesGrid .idx-card')) return '주요지수 칸이 만들어지지 않았어요';
+  return '';
+}
+function _btmInitFail(name,e){   /* 시작 처리 한 단계가 오류로 멈췄을 때 — 이름·메시지를 남겨 경고 배너·차단 안내에 보임 */
+  try{ (window._btmInitErr=window._btmInitErr||[]).push(name+': '+String((e&&e.message)||e).slice(0,120)); }catch(_){}
+  try{ console.error('[시작 처리 오류] '+name,e); }catch(_){}
+}
+function _btmBlockIfIncomplete(what){   /* 사용자가 누른 저장·불러오기·새 리포트 앞에서 부름 — 덜 시작된 화면이면 알리고 true(중단) */
+  const why=_btmIncomplete(); if(!why) return false;
+  const er=(window._btmInitErr&&window._btmInitErr.length)?'\n(시작 중 오류: '+window._btmInitErr.join(' / ')+')':'';
+  alert('⚠ 화면이 아직 완전히 준비되지 않았어요 — '+why+'.'+er+'\n\n이 상태에서 '+what+' 주요지수·숨김·행간 같은 값이 빈 채로 저장돼 기록이 손상될 수 있어서 중단했어요.\n페이지를 새로고침(Ctrl+F5)한 뒤 다시 시도해 주세요.');
+  return true;
+}
+(function(){   /* 로드가 끝난 뒤에도 덜 시작된 상태면 화면 위에 경고 배너 — 회복되면 사라짐 */
+  let n=0;
+  function check(){
+    const why=_btmIncomplete(); let el=document.getElementById('btmIncompleteBanner');
+    if(!why){ if(el) el.remove(); return; }
+    if(!el){
+      el=document.createElement('div'); el.id='btmIncompleteBanner'; el.className='pdf-export-hide';
+      el.style.cssText='position:fixed;top:0;left:0;right:0;z-index:100000;background:#b91c1c;color:#fff;font-size:12.5px;font-weight:700;padding:9px 14px;text-align:center;line-height:1.55;box-shadow:0 2px 8px rgba(0,0,0,.35)';
+      const t=document.createElement('span'); t.id='btmIncompleteMsg'; el.appendChild(t);
+      const b=document.createElement('button'); b.type='button'; b.textContent='새로고침'; b.style.cssText='margin-left:12px;padding:3px 12px;font-size:12px;font-weight:700;border:0;border-radius:6px;background:#fff;color:#b91c1c;cursor:pointer';
+      b.onclick=()=>location.reload(); el.appendChild(b);
+      (document.body||document.documentElement).appendChild(el);
+    }
+    const er=(window._btmInitErr&&window._btmInitErr.length)?' · 시작 중 오류: '+window._btmInitErr.join(' / '):'';
+    const t=el.querySelector('#btmIncompleteMsg'); if(t) t.textContent='⚠ 이 화면은 완전히 시작되지 않았어요 — '+why+er+'. 기록 보호를 위해 저장·불러오기·새 리포트를 막아 두었어요.';
+    if(++n<20) setTimeout(check,5000);
+  }
+  window.addEventListener('load',()=>setTimeout(check,8000));
+})();
 function _skWrite(json){
   if(_skBlocked) return;
   _skLast=json; _skNext=json;
@@ -14964,6 +15006,7 @@ function closeNewReportModal(){
 }
 
 async function confirmNewReport(){
+  if(_btmBlockIfIncomplete('새 리포트를 만들면')) return;   /* 덜 시작된 화면(지수·숨김 등이 빈 상태)을 이월해 새 리포트를 만들지 않음(v164) */
   const datePick = document.getElementById('newReportDatePick');
   const selectedDate = datePick.value;
   if(!selectedDate){ alert('날짜를 선택해주세요.'); return; }
@@ -15426,6 +15469,7 @@ function _renderRqCal(){
 async function loadReportByDate(){
   const date=_rqCalDate;
   if(!date){ g('reportQueryStatus').textContent='❌ 날짜를 선택해주세요.'; return; }
+  if(_btmBlockIfIncomplete('기록을 불러오면')) return;   /* 덜 시작된 화면에서는 불러오지도, 현재 화면을 자동 보존하지도 않음(v164) */
   const all=await getAllArchives();
   const record=all.find(r=>r.date===date);
   if(!record){
@@ -15513,7 +15557,7 @@ function _saveReportBodyMemo(reportDate){
   if(typeof renderMemoList==='function') renderMemoList();
 }
 
-async function archiveReport(isPublish=false, auto=false){   /* auto: 다른 날짜를 불러오기 직전의 자동 보존 — 마인드맵은 💾 Save 한 상태 그대로(저장 전 수정은 확정하지 않음) */
+async function archiveReport(isPublish=false, auto=false){ { const _why=_btmIncomplete(); if(_why){ console.warn('[Archive 저장 중단] '+_why); if(!auto) _btmBlockIfIncomplete('저장하면'); return; } }   /* 덜 시작된 화면으로 기록을 덮어쓰지 않음(v164) — 자동 보존(auto)은 조용히 건너뜀 */   /* auto: 다른 날짜를 불러오기 직전의 자동 보존 — 마인드맵은 💾 Save 한 상태 그대로(저장 전 수정은 확정하지 않음) */
   try{ if(window.MM&&typeof MM.flush==='function') MM.flush(); }catch(_){}   /* 글 편집 중인 마인드맵 주제가 있으면 먼저 확정(Ctrl+S 등 포커스가 안 빠지는 경우) */
   const data=collectData(auto?{mmSaved:true}:undefined);
   /* 도넛차트 이미지 캡처 */
@@ -26004,6 +26048,60 @@ function fixArchivePfReturn(){
   return fixed;
 }
 
+/* ═══ 손상된 Archive 기록 복구 (2026-11-08, v164) ═══
+   사고: 2026-11-08 오전, 시작 처리가 중간에 멈춘 반쪽짜리 화면에서 '기록조회 → Report 불러오기'(현재 리포트 자동 보존)가 연달아 실행돼
+   2026-11-02·03·05·06 기록이 '주요지수 수치(val·chg·hl)가 빈 값 · 숨김 목록(boxDeleted)·행간(lineHeights)·섹션 배치(secLayout)·요약(Fear&Greed·환율)이 없는' 상태로
+   덮어써졌음(주요지수 스파크라인 closes 는 그대로 남음) — 그 기록을 다시 불러오면 지수 칸이 비고 숨겼던 박스가 모두 보였던 이유.
+   복구 — 시작할 때 한 번, 사고 흔적(주요지수 값이 전부 비었는데 closes 만 남은 기록)이 있는 기록에서 '비어 있는 것만' 채움(값이 있으면 안 건드림 · 날짜별 완료 표시 BTMFix20261108 · 바꾸기 전 값은 BTMFix20261108Undo 에 남김):
+     ① 주요지수 val·chg·hl·rating — 남은 스파크라인(closes)에서 앱이 지수를 갱신할 때 쓰는 규칙(_parseYahooResponse·_fetchAndApplyIdx) 그대로 다시 계산:
+        val = closes 마지막(현재가), hl = 최고·최저, chg = (현재가 / 전일 종가 − 1) — 현재가가 끝에 덧붙여져 전일 종가는 closes[끝-3]. 사고 전 정상 기록 4건·지수 44개 전부 원본과 일치 확인
+     ② 숨김 목록·행간·섹션 배치·요약(Fear&Greed·환율) — 사고 전(2026-11-06 전체백업)의 값(아래 표). 11-06 기록은 그 항목이 남아 있어 지수만 복구
+   11-08 기록은 스파크라인이 11-02 리포트에서 이월된 것(갱신 전)이라 대상이 아님 — UPDATE ALL 로 지수를 새로 채우면 됨.
+   표 키: bd=boxDeleted, lh=lineHeights, sl=secLayout, fg=Fear&Greed 등급(원본), sum=요약 값 */
+const _FIX_DAMAGE_1108={"2026-11-02":{"bd":{"v":1,"list":[{"id":"aiStockRadar","h":{"sectorAnalysis":797}},{"id":"tradingStrategy","h":{"technicalAnalysis":613}},{"id":"technicalAnalysis","h":{"sectorAnalysis":1349}},{"id":"watchlistNote","h":{}},{"id":"footprintContent","h":{"myLifeContent":332}}]},"lh":{"qtBibleDisplay":1.55,"prayerContent":2,"keyWord":2,"warrenKim":2.4,"tradingStrategy":1.9},"sl":{"v":1,"root":["b_routine","row_hm","row_ec","b_market","b_portfolio","b_trade"],"cols":{"rtL":["bible","meditation"],"rtR":["row_rtTop","mylife","gratitude","books"],"rtA":["dib"],"rtB":["kw","sb"],"hmL":["heatmap"],"hmR":["indices"],"ecL":["eco","watch","is"],"ecR":["sum","mm"],"mkL":["mkt","warren"],"mkR":["theme","radar","tech","trading"]}},"fg":"Fear","sum":{"fearGreed":26,"fearGreedRating":"Fear","usdKrw":1341,"usdKrwDate":"20261104"}},"2026-11-03":{"lh":{"qtBibleDisplay":1.55,"prayerContent":2,"keyWord":2,"warrenKim":2.4,"tradingStrategy":1.9},"sl":{"v":1,"root":["b_routine","row_hm","row_ec","b_market","b_portfolio","b_trade"],"cols":{"rtL":["bible","meditation"],"rtR":["row_rtTop","mylife","gratitude","books"],"rtA":["dib"],"rtB":["kw","sb"],"hmL":["heatmap"],"hmR":["indices"],"ecL":["eco","watch","is"],"ecR":["sum","mm"],"mkL":["mkt","warren"],"mkR":["theme","radar","tech","trading"]}},"fg":"Extreme Fear","sum":{"fearGreed":23,"fearGreedRating":"Extreme Fear","usdKrw":1341,"usdKrwDate":"20261104"}},"2026-11-05":{"bd":{"v":1,"list":[{"id":"aiStockRadar","h":{"sectorAnalysis":797}},{"id":"tradingStrategy","h":{"sectorAnalysis":338}},{"id":"technicalAnalysis","h":{"sectorAnalysis":736}},{"id":"myLifeContent","h":{"sbCard":427,"dibCard":426}},{"id":"footprintContent","h":{"sbCard":554,"dibCard":554}},{"id":"warrenKim","h":{"marketAnalysis":158}}]},"lh":{"qtBibleDisplay":1.55,"prayerContent":2,"keyWord":2,"warrenKim":2.4,"tradingStrategy":1.9},"sl":{"v":1,"root":["b_routine","row_hm","row_ec","b_market","b_portfolio","b_trade"],"cols":{"rtL":["bible","gratitude"],"rtR":["row_rtTop","meditation","mylife","books"],"rtA":["dib"],"rtB":["kw","sb"],"hmL":["heatmap"],"hmR":["indices"],"ecL":["eco","watch","is"],"ecR":["sum","mm"],"mkL":["mkt","warren"],"mkR":["theme","radar","tech","trading"]}},"fg":"Fear","sum":{"fearGreed":27,"fearGreedRating":"Fear","usdKrw":1341,"usdKrwDate":"20261105"}},"2026-11-06":{}};
+function _idxFromCloses(idx,ix,fgRating){   /* 앱이 지수를 갱신할 때 쓰는 규칙(_fetchAndApplyIdx) 그대로 — 스파크라인(closes)에서 val·chg·hl 을 다시 계산 */
+  const c=ix.closes, n=c.length, dec=(idx.dec===undefined?2:idx.dec), f=v=>Number(v.toFixed(dec)).toLocaleString();
+  if(idx.ticker==='__FNG__'){ const sc=Math.round(c[n-1]); ix.val=String(sc); ix.chg=''; ix.hl=''; ix.rating=fgRating||_fngRating(sc); return; }
+  ix.val=f(c[n-1]);
+  if(n>=3&&c[n-3]){ const p=(c[n-1]/c[n-3]-1)*100; ix.chg=(p>=0?'▲'+p.toFixed(2):'▼'+Math.abs(p).toFixed(2))+'%'; }
+  ix.hl='고점:'+f(Math.max(...c))+' / 저점:'+f(Math.min(...c));
+}
+function fixArchiveDamage20261108(){   /* → 복구한 기록 수 */
+  const KEY='BTMFix20261108', UKEY='BTMFix20261108Undo';
+  let done={}, undo={};
+  try{ done=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(_){ done={}; }
+  try{ undo=JSON.parse(localStorage.getItem(UKEY)||'{}')||{}; }catch(_){ undo={}; }
+  const cache=_arcLoad(), fixed=[];
+  Object.keys(_FIX_DAMAGE_1108).forEach(date=>{
+    if(done[date]) return;
+    const rec=cache[date]; if(!rec||!rec.data) return;   /* 이 브라우저에 그 날짜 기록이 없으면 건너뜀(완료 표시도 안 함 — 나중에 가져오면 다시 점검) */
+    const d=rec.data, fx=_FIX_DAMAGE_1108[date], was={}, cp=o=>JSON.parse(JSON.stringify(o));
+    let ch=false;
+    const ix=Array.isArray(d.indices)?d.indices:null;
+    /* 사고 흔적 = 주요지수 값(val)이 전부 비었는데 스파크라인(closes)만 남음. 이 흔적이 있는 기록만 고침 — 값이 하나라도 있는 기록(정상·직접 고친 기록·다른 기기의 옛 사본)은 아예 안 건드림 */
+    if(!(ix&&ix.length&&ix.every(i=>!String((i&&i.val)||'').trim())&&ix.some(i=>i&&Array.isArray(i.closes)&&i.closes.length>=2))){ done[date]=1; return; }
+    was.indices=ix.map(i=>({key:i.key,val:i.val||'',chg:i.chg||'',hl:i.hl||'',rating:i.rating}));
+    ix.forEach(i=>{ const idx=INDICES.find(x=>x.key===(i&&i.key)); if(idx&&Array.isArray(i.closes)&&i.closes.length>=2) _idxFromCloses(idx,i,fx.fg); });
+    ch=true;
+    if(fx.bd&&!d.boxDeleted){ was.boxDeleted=null; d.boxDeleted=cp(fx.bd); ch=true; }
+    if(fx.lh&&!d.lineHeights){ was.lineHeights=null; d.lineHeights=cp(fx.lh); ch=true; }
+    if(fx.sl&&!d.secLayout){ was.secLayout=null; d.secLayout=cp(fx.sl); ch=true; }
+    const s=rec.summary||(rec.summary={}), fg=ix&&ix.find(i=>i&&i.key==='feargreed'), sw={};
+    if(!s.fearGreed&&fg&&String(fg.val||'').trim()) sw.fearGreed=Math.round(parseFloat(fg.val))||0;
+    if(!s.fearGreedRating&&fg&&fg.rating) sw.fearGreedRating=fg.rating;
+    if(fx.sum){ if(!s.usdKrw&&fx.sum.usdKrw) sw.usdKrw=fx.sum.usdKrw; if(!s.usdKrwDate&&fx.sum.usdKrwDate) sw.usdKrwDate=fx.sum.usdKrwDate; }
+    Object.keys(sw).forEach(k=>{ (was.summary=was.summary||{})[k]=(s[k]===undefined?null:s[k]); s[k]=sw[k]; ch=true; });
+    if(ch){ undo[date]=was; _arcPutOne(rec); fixed.push(date); }
+    done[date]=1;
+  });
+  try{ localStorage.setItem(KEY,JSON.stringify(done)); if(fixed.length) localStorage.setItem(UKEY,JSON.stringify(undo)); }catch(_){}
+  if(fixed.length){
+    console.info('[Archive 기록 복구] '+fixed.join(', '));
+    try{ _showMainToast('🩹 손상된 Archive 기록 '+fixed.length+'건('+fixed.map(x=>x.slice(5)).join('·')+')의 주요지수·숨김 정보를 복구했어요'); }catch(_){}
+  }
+  return fixed.length;
+}
+
 function _mergeAndPutRecords(records){
   const map=_arcLoad();
   let saved=0, merged=0;
@@ -29622,31 +29720,33 @@ window.BTMSecDrag=(()=>{   /* 클래식 스크립트의 const 는 window 속성�
 
 window.addEventListener('DOMContentLoaded',async ()=>{
   /* 포트폴리오 테이블 변경 감지 → Guest 마스킹 자동 재적용 */
-  const _hb=g('holdingsBody');
-  if(_hb) _guestMaskObs.observe(_hb,{childList:true,subtree:true});
+  /* 시작 처리 단계마다 오류를 가둠(v164) — 한 단계가 오류를 내도 뒤 단계(섹션 배치·주요지수 칸 만들기·자동저장본 불러오기 등)가 멈추지 않게.
+     실패한 단계의 이름·메시지는 _btmInitErr 에 남겨 경고 배너·저장 차단 안내에 보임(예전엔 한 단계가 던지면 그 뒤가 통째로 안 돌아 '반쪽 시작' 화면이 됐고, 그 화면으로 한 저장·불러오기가 기록을 망가뜨렸음) */
+  const _ini=(name,fn)=>{ try{ const r=fn(); if(r&&typeof r.catch==='function') r.catch(e=>_btmInitFail(name,e)); return r; }catch(e){ _btmInitFail(name,e); } };
+  _ini('guestMaskObs',()=>{ const _hb=g('holdingsBody'); if(_hb) _guestMaskObs.observe(_hb,{childList:true,subtree:true}); });
 
-  _initDlHandles();
-  _initMemoDb();
-  _migrateFromIDB().then(()=>{ try{ fixArchivePfReturn(); }catch(e){ console.warn('수익률 보정 실패:',e); } renderSummaryChart(); });
+  _ini('_initDlHandles',()=>_initDlHandles());
+  _ini('_initMemoDb',()=>_initMemoDb());
+  _ini('_migrateFromIDB',()=>_migrateFromIDB().then(()=>{ try{ fixArchivePfReturn(); }catch(e){ console.warn('수익률 보정 실패:',e); } try{ fixArchiveDamage20261108(); }catch(e){ console.warn('손상 기록 복구 실패:',e); } renderSummaryChart(); }));
   /* 텍스트박스 높이 동기화 (어느 쪽을 드래그해도 같이 조절) */
-  _initRoutineSync();          /* 오늘의 말씀 ↔ 나의 묵상 높이 연동 */
-  _initImgResize();            /* rich-editor 이미지 리사이즈 핸들 */
+  _ini('_initRoutineSync',()=>_initRoutineSync());          /* 오늘의 말씀 ↔ 나의 묵상 높이 연동 */
+  _ini('_initImgResize',()=>_initImgResize());            /* rich-editor 이미지 리사이즈 핸들 */
   /* Daily Inbody Check / Snowball / Key-Word 카드 우측하단 모서리 자유 리사이즈 */
-  _initBoxFreeResize('dibCardGrip','dibCard');
-  _initBoxFreeResize('kwCardGrip','kwCard',false);
-  _initBoxFreeResize('sbCardGrip','sbCard',false);
+  _ini('_initBoxFreeResize(dib)',()=>_initBoxFreeResize('dibCardGrip','dibCard'));
+  _ini('_initBoxFreeResize(kw)',()=>_initBoxFreeResize('kwCardGrip','kwCard',false));
+  _ini('_initBoxFreeResize(sb)',()=>_initBoxFreeResize('sbCardGrip','sbCard',false));
   /* 묵상·삶·Footprints 하단 드래그 핸들 (밑변만 이동, 아래 항목 위치 연동) */
-  _initTextBotResize('qtMemoGrip',    'qtMemo');
-  _initTextBotResize('myLifeGrip',        'myLifeContent');
-  _initTextBotResize('footprintGrip',    'footprintContent');
-  _initTextBotResize('prayerCornerGrip',    'prayerContent');   /* 감사와 간구 우측하단 독립 리사이즈 */
-  _initTextBotResize('watchlistNoteGrip',   'watchlistNote');   /* 관심종목 메모 높이 조절 */
-  try{ BTMSecDrag.init(); }catch(e){ console.error('BTMSecDrag.init',e); }   /* 섹션 제목 끌어 옮기기 + 열 밑변 싱크(감사와 간구↔Footprints · Daily Inbody↔Snowball · 시장분석 두 열) — 옛 _initPrayerFpSync/_initDibSbSync/_initMarketSync 를 일반화해 대체 */
-  _initEcoSumResize();                               /* 경제일정 ↔ 투자현황 좌우 너비 드래그 */
-  initSectionResize();
-  _initBottomRowResize();                           /* 관심종목 · Investor Status/MindMap(밑변 공유) 높이 조절 */
-  _initPfColResize();                               /* 포트폴리오 열 너비 드래그 조절 */
-  _initWlColResize();                               /* 관심종목 열 너비 드래그 조절 */
+  _ini('_initTextBotResize(qtMemo)',()=>_initTextBotResize('qtMemoGrip',    'qtMemo'));
+  _ini('_initTextBotResize(myLife)',()=>_initTextBotResize('myLifeGrip',        'myLifeContent'));
+  _ini('_initTextBotResize(footprint)',()=>_initTextBotResize('footprintGrip',    'footprintContent'));
+  _ini('_initTextBotResize(prayer)',()=>_initTextBotResize('prayerCornerGrip',    'prayerContent'));   /* 감사와 간구 우측하단 독립 리사이즈 */
+  _ini('_initTextBotResize(watchlistNote)',()=>_initTextBotResize('watchlistNoteGrip',   'watchlistNote'));   /* 관심종목 메모 높이 조절 */
+  try{ BTMSecDrag.init(); }catch(e){ console.error('BTMSecDrag.init',e); _btmInitFail('BTMSecDrag.init',e); }   /* 섹션 제목 끌어 옮기기 + 열 밑변 싱크(감사와 간구↔Footprints · Daily Inbody↔Snowball · 시장분석 두 열) — 옛 _initPrayerFpSync/_initDibSbSync/_initMarketSync 를 일반화해 대체 */
+  _ini('_initEcoSumResize',()=>_initEcoSumResize());                               /* 경제일정 ↔ 투자현황 좌우 너비 드래그 */
+  _ini('initSectionResize',()=>initSectionResize());
+  _ini('_initBottomRowResize',()=>_initBottomRowResize());                           /* 관심종목 · Investor Status/MindMap(밑변 공유) 높이 조절 */
+  _ini('_initPfColResize',()=>_initPfColResize());                               /* 포트폴리오 열 너비 드래그 조절 */
+  _ini('_initWlColResize',()=>_initWlColResize());                               /* 관심종목 열 너비 드래그 조절 */
   document.addEventListener('click', e => {
     const list = g('memoCatDropList');
     const wrap = g('memoCatDropWrap');
@@ -29656,15 +29756,15 @@ window.addEventListener('DOMContentLoaded',async ()=>{
       if(arrow) arrow.style.transform = '';
     }
   });
-  _initInvestorStatus();                             /* Investor Status 스코어 아이템 렌더링 */
-  initAutoFiveCount();        /* toolbar 다음 FIVE카운팅 자동 표시 */
-  updateHeadlineDateDisplay(); /* 헤드라인 날짜 텍스트 초기화 */
-  _loadPrevArchive();  /* 직전 archive 로드 → 전일비 표시 */
-  loadExRate();        /* smbs.biz 환율 자동 조회 → 포트폴리오 KRW 반영 */
-  buildIndicesGrid();
-  _refreshIdxMemoBadges();
-  _idxMemoScrollInit();
-  buildEcoTable();
+  _ini('_initInvestorStatus',()=>_initInvestorStatus());                             /* Investor Status 스코어 아이템 렌더링 */
+  _ini('initAutoFiveCount',()=>initAutoFiveCount());        /* toolbar 다음 FIVE카운팅 자동 표시 */
+  _ini('updateHeadlineDateDisplay',()=>updateHeadlineDateDisplay()); /* 헤드라인 날짜 텍스트 초기화 */
+  _ini('_loadPrevArchive',()=>_loadPrevArchive());  /* 직전 archive 로드 → 전일비 표시 */
+  _ini('loadExRate',()=>loadExRate());        /* smbs.biz 환율 자동 조회 → 포트폴리오 KRW 반영 */
+  _ini('buildIndicesGrid',()=>buildIndicesGrid());
+  _ini('_refreshIdxMemoBadges',()=>_refreshIdxMemoBadges());
+  _ini('_idxMemoScrollInit',()=>_idxMemoScrollInit());
+  _ini('buildEcoTable',()=>buildEcoTable());
   await loadData();   /* 자동저장본은 IndexedDB(비동기)에서 읽음 — 읽어 적용한 뒤에 아래 단계들이 이어짐 */
   autoFillFromLatestArchive();   /* (원래 위쪽에 있던 호출을 이동) 자동저장본을 적용한 '다음에' 최신 Archive 값으로 덮어쓰는 기존 순서 유지 */
   {const _sd=localStorage.getItem('BTMSinceDate');const _sl=g('sinceDateLabel');if(_sl&&_sd)_sl.innerHTML=_sd;}
@@ -30635,6 +30735,7 @@ function _showSearchResults(kw, results){
 
 async function _loadFromSearch(i){
   const r=_searchResults[i]; if(!r) return;
+  if(_btmBlockIfIncomplete('기록을 불러오면')) return;   /* v164 */
   let _mmUn=false; try{ _mmUn=!!(window.MM&&MM.hasUnsaved&&MM.hasUnsaved()); }catch(_){}
   if(!confirm(`[${r.date}] Archive를 불러올까요?\n현재 리포트는 자동으로 Archive에 보존됩니다.`+(_mmUn?'\n(마인드맵은 💾 Save 한 상태까지만 보존돼요 — 저장 전 수정은 사라집니다)':''))) return;
   _closeSearchModal();
@@ -44838,7 +44939,7 @@ window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
    · 열기: 스크립트 만들기 팝업의 [🎞 영상 만들기]·이력 상세의 [🎞 영상 만들기]·상단 영상제작 메뉴 [🎥 영상 스튜디오] → openVideoStudio({ctx})
    · 원리 — '음성이 시간의 기준'. 문장 단위 시간표(sents)가 전부의 뿌리이고, 장면(scenes)은 '어느 문장에서 시작하나(first)+오프셋(off)' 로 붙어 있어서
        음성을 다시 만들어도 자막·장면 전환이 문장을 따라 움직임. 자막은 문장마다 1개(sub 보정값 ds·de), 화면 길이 맞춤은 fitPlan 이 계산.
-   · 음성: Gemini TTS(묶음 또는 문장별 합성) / 외부 음성 파일 가져오기 → analyzeAudio(침묵 분석)+alignSentences(글자 수 예측+가장 가까운 긴 침묵에 맞춤, 말 속도 보정)로 문장 경계 확정.
+   · 음성: Gemini TTS(묶음 또는 문장별 합성) / 외부 음성 파일 가져오기 → analyzeAudio(침묵 분석)+alignDP(v165: 쉼 후보 전체를 [문장 길이 정합+쉼 길이 증거]로 한꺼번에 최적화·경계마다 사후확률, 모호한 묶음은 문장별 재합성)로 문장 경계 확정(가져온 음성 파일은 예전 alignSentences: 글자 수 예측+가장 가까운 긴 침묵, 말 속도 보정).
    · 화면: AI 영상(Veo)·AI 이미지(Gemini)·파일 올리기·카드(무료). 모두 Gemini 키(localStorage BTMGeminiApiKey)로 브라우저에서 직접 호출, 모델 이름은 설정에서 고칠 수 있음.
    · 재생·내보내기: 오디오 시계(AudioContext)가 기준 → 캔버스에 그리고(Worker 타이머라 창이 가려져도 진행) → MediaRecorder 로 MP4/WebM 녹화(영상 길이만큼 걸림).
    · 저장: IndexedDB 'BTM_VideoDB'(projects·blobs). 수정 요령: 이 블록(표식 BTMVIDEO-JS-BEGIN~END)과 BTMVIDEO-CSS 블록만 고치면 됨
@@ -44904,7 +45005,7 @@ const VOICES=[['Charon','차분·정보 전달'],['Kore','단호'],['Puck','경�
 const RES=[['1280x720','1280×720 (HD 가로)'],['1920x1080','1920×1080 (풀HD 가로)'],['1080x1920','1080×1920 (쇼츠·세로)'],['1080x1080','1080×1080 (정사각)']];
 const DEF_CFG={
   w:1280,h:720,fps:30,cpm:330,lead:0.4,tail:1.2,gap:{sent:0,para:0.25,chap:0.7},
-  voice:{prov:'gemini',name:'Charon',style:'',model:'gemini-2.5-flash-preview-tts',mode:'chunk'},
+  voice:{prov:'gemini',name:'Charon',style:'',model:'gemini-2.5-flash-preview-tts',mode:'chunk',fix:true},
   img:{model:'gemini-2.5-flash-image'},
   vid:{model:'veo-3.1-generate-preview',res:'720p',dur:'auto',conc:2,price:0},
   sub:{on:true,font:FONTS[0][0],size:46,color:'#ffffff',stroke:'#000000',strokeW:7,bg:'#000000',bgA:0,pos:'bottom',off:7,maxW:84,lines:2,bold:true,anim:'fade'},
@@ -44978,7 +45079,7 @@ function analyzeAudio(data,sr){
   let f1=n-1; while(f1>f0&&rms[f1]<=thr) f1--;
   const sil=[]; let i=f0;
   while(i<=f1){
-    if(rms[i]<=thr){ let j=i; while(j<=f1&&rms[j]<=thr) j++; const len=(j-i)*hop; if(len>=0.09) sil.push({a:i*hop,b:j*hop,len,c:(i+j)/2*hop}); i=j; }
+    if(rms[i]<=thr){ let j=i; while(j<=f1&&rms[j]<=thr) j++; const len=(j-i)*hop; if(len>=0.09) sil.push({a:i*hop,b:j*hop,len,c:(i+j)/2*hop,i0:i,i1:j}); i=j; }
     else i++;
   }
   return {hop,rms,thr,vs:f0*hop,ve:(f1+1)*hop,sil,n,dur:data.length/sr};
@@ -45010,6 +45111,61 @@ function alignSentences(an,items,eq){
   for(let k=0;k<n;k++){ out[k].a=k===0?Math.max(0,out[k].vs-0.1):cuts[k-1].c; out[k].b=k===n-1?Math.min(an.dur,out[k].ve+0.18):cuts[k].c; }
   return out;
 }
+/* ══ v165 (2026-11-08) — 문장 경계 전역 정렬 alignDP ═══════════════════════════════════════════════════════════
+   문제: 묶음(chunk) 합성은 소리 하나에 문장이 여러 개라 경계를 '침묵을 찾아' 추정한다. 예전 alignSentences 는 앞에서부터 쉼을 하나씩 골랐다(글자 수로 끝 시각 예측 → 가까운 긴 침묵 → 말 속도 보정).
+        TTS 가 문장 사이를 0.1~0.2초밖에 안 쉬는 대목에서 ① 문장 안쪽의 더 긴 쉼(쉼표·절 경계)을 문장 끝으로 착각하거나 ② 후보 쉼이 없으면 말 한가운데 에너지 최저점에 경계를 긋고, 한 번 틀리면 뒤 문장이 줄줄이 밀렸다.
+        실제 내보내기 영상(Five-Minute Market Brief (4))에서 31·36·37번 문장의 자막·장면 전환이 실제 말보다 0.4~0.7초 먼저 나오고 31번 자막은 말이 끝나기 1.3초 전에 사라짐.
+        자막·장면 컷·인포그래픽 항목 시각이 모두 같은 문장 시각(s.vs·s.ve)에서 나오므로 한 문장의 경계가 틀리면 셋이 함께 어긋남.
+   해결: ① alignDP — 경계를 한꺼번에 최적화: 안쪽 쉼 후보 전체에서 [문장마다 '말한 시간(쉼 제외)이 글자 수(종류별 가중치 dpLen)에 비례'하는 정도(로그정규 σ=0.13 = 실측) + 쉼이 길수록 경계일 증거(LLR=−4.24+10.78·길이)]를
+          동적계획(전방·후방)으로 풀어 최적 경로와 경계마다 사후확률을 구함. 정답을 아는 실제 음성(11월 내보내기 3개 · 청크 18개)에서 청크 단위로 틀린 것 0(예전 방식은 같은 자료에서 경계 85.6%만 정확).
+        ② 확신 규칙 — 모든 경계가 사후확률 ≥ 0.9 이고 고른 쉼이 ≥ 0.2초일 때만 ok. 쉼을 일부러 0.09~0.3초로 줄인(실제보다 훨씬 모호한) 합성 묶음 90개에서도 거짓 승인 0.
+        ③ ok 가 아닌 묶음은 runVoice 가 문장별로 다시 합성(voiceSplit — 문장 하나 = 소리 하나라 경계가 정확) · 설정 cfg.voice.fix(기본 켬, [음성] 탭 '경계 확인')
+   items=[글자 수] → {al:[{vs,ve,a,b,conf,bad}], ok, min} · 정할 수 없으면 null(쉼이 모자라거나 계산이 너무 큼 → 예전 alignSentences) ═══════════════════════════════════════════════════════════ */
+const DP_SIG=0.13, DP_B=10.78, DP_L0=0.394, DP_POST=0.9, DP_MINLEN=0.2;
+/* 문장 길이(=말하는 시간) 어림용 글자 가중치 — 실제 TTS 음성 309문장(내보내기 영상 7개)에서 '쉼을 뺀 말한 시간'에 맞춰 구함(한글 1 기준: 정수 숫자 1.26·소수 자리 1.85·% 3·대문자 1.2·소문자 0.35·& 2.9). 이 모델로 문장 길이 예측 σ 0.135 → 0.13,
+   같은 자료에서 '믿을 수 없음' 판정이 자연 묶음의 33% → 22% 로 줄었고 거짓 승인은 그대로 0. 한국어 영상만(다른 언어는 예전처럼 글자 수 vNum). 기호는 소리 나는 것만(수식 1·통화 2), 따옴표·괄호 등은 0 */
+function dpTxt(t){ let w=0; for(let i=0;i<t.length;i++){ const ch=t[i]; if(ch>='가'&&ch<='힣') w+=1; else if(ch==='%') w+=3; else if(ch>='A'&&ch<='Z') w+=1.2; else if(ch>='a'&&ch<='z') w+=0.35; else if(ch==='&') w+=2.9; else if('+-−▲▼'.indexOf(ch)>=0) w+=1; else if('$₩'.indexOf(ch)>=0) w+=2; } return w; }
+function dpLen(s){
+  if(!isKo()) return vNum(s);
+  const t=vText(s), re=/\d+(?:[.,]\d+)*/g; let w=0, last=0, m;
+  while((m=re.exec(t))){ w+=dpTxt(t.slice(last,m.index)); const x=m[0]; if(x.indexOf('.')>=0&&x.indexOf(',')<0){ const a=x.split('.',2); w+=1.26*a[0].length+1.85*(a[1]||'').length; } else w+=1.26*x.replace(/[.,]/g,'').length; last=m.index+x.length; }
+  w+=dpTxt(t.slice(last)); return Math.max(1,w);
+}
+function dpLse(a,n){ let m=-Infinity; for(let i=0;i<n;i++) if(a[i]>m) m=a[i]; if(m===-Infinity) return -Infinity; let s=0; for(let i=0;i<n;i++) s+=Math.exp(a[i]-m); return m+Math.log(s); }
+function alignDP(an,items){
+  const n=items.length; if(n<2) return null;
+  const sil=an.sil.filter(s=>s.i0!=null&&s.a>an.vs+0.25&&s.b<an.ve-0.25), m=sil.length;
+  if(m<n-1||n*m*m>4e6) return null;
+  const hop=an.hop, nF=an.n, f0=Math.round(an.vs/hop), f1=Math.round(an.ve/hop)-1, lg=new Uint8Array(nF+1);
+  an.sil.forEach(s=>{ if(s.i0==null) return; for(let i=s.i0;i<s.i1&&i<nF;i++) lg[i]=1; });
+  const C=new Float64Array(nF+1); for(let i=0;i<nF;i++) C[i+1]=C[i]+((i<f0||i>f1||lg[i])?0:hop);   /* C[i] = 앞 i 프레임까지의 '말한 시간'(긴 쉼 제외 — 0.09초 안쪽의 짧은 끊김은 말로 침) */
+  const L=items.map(x=>Math.max(1,+x||1)), sumL=L.reduce((a,b)=>a+b,0), p0=C[Math.min(nF,f0)], pend=C[Math.min(nF,f1+1)], r=Math.max(0.2,pend-p0)/sumL;
+  const p=sil.map(s=>C[s.i0]), ev=sil.map(s=>DP_B*(Math.min(s.len,1)-DP_L0));
+  const ll=(k,tau)=>{ const z=(Math.log(Math.max(tau,0.025))-Math.log(r*L[k]))/DP_SIG; return -0.5*z*z; };
+  const NEG=-Infinity, F=[], G=[], V=[], B=[], tmp=new Float64Array(m);
+  for(let k=0;k<n-1;k++){ F.push(new Float64Array(m).fill(NEG)); G.push(new Float64Array(m).fill(NEG)); V.push(new Float64Array(m).fill(NEG)); B.push(new Int32Array(m).fill(-1)); }
+  for(let i=0;i<m;i++){ F[0][i]=ll(0,p[i]-p0)+ev[i]; V[0][i]=F[0][i]; }
+  for(let k=1;k<n-1;k++) for(let i=k;i<m;i++){
+    let c=0, bv=NEG, bj=-1;
+    for(let j=k-1;j<i;j++){ const fj=F[k-1][j]; if(fj===NEG) continue; const w=ll(k,p[i]-p[j]); tmp[c++]=fj+w; const vj=V[k-1][j]; if(vj!==NEG&&vj+w>bv){ bv=vj+w; bj=j; } }
+    if(c){ F[k][i]=dpLse(tmp,c)+ev[i]; V[k][i]=bv+ev[i]; B[k][i]=bj; }
+  }
+  for(let i=0;i<m;i++) G[n-2][i]=ll(n-1,pend-p[i]);
+  for(let k=n-3;k>=0;k--) for(let i=k;i<m;i++){
+    let c=0; for(let j=i+1;j<m;j++){ const gj=G[k+1][j]; if(gj===NEG) continue; tmp[c++]=ll(k+1,p[j]-p[i])+ev[j]+gj; }
+    if(c) G[k][i]=dpLse(tmp,c);
+  }
+  let bi=-1, bt=NEG; for(let i=0;i<m;i++){ if(V[n-2][i]===NEG) continue; const x=V[n-2][i]+ll(n-1,pend-p[i]); if(x>bt){ bt=x; bi=i; } }
+  if(bi<0) return null;
+  const path=[bi]; for(let k=n-2;k>0;k--){ bi=B[k][bi]; if(bi<0) return null; path.push(bi); } path.reverse();
+  const post=[]; for(let k=0;k<n-1;k++){ const v=new Float64Array(m); for(let i=0;i<m;i++) v[i]=F[k][i]+G[k][i]; const Z=dpLse(v,m); post.push(Z===-Infinity?0:Math.exp(v[path[k]]-Z)); }
+  const cuts=path.map(i=>sil[i]), out=[]; let cur=an.vs, mn=1, ok=true;
+  for(let k=0;k<n-1;k++){ const s=cuts[k], pp=post[k], bad=pp<DP_POST||s.len<DP_MINLEN; if(pp<mn) mn=pp; if(bad) ok=false; out.push({vs:cur,ve:s.a,conf:pp,bad}); cur=Math.max(s.b,s.a); }
+  out.push({vs:cur,ve:Math.max(an.ve,cur+0.1),conf:1,bad:false});
+  for(let k=0;k<n;k++){ out[k].a=k===0?Math.max(0,out[k].vs-0.1):cuts[k-1].c; out[k].b=k===n-1?Math.min(an.dur,out[k].ve+0.18):cuts[k].c; }
+  return {al:out,ok,min:mn};
+}
+/* ══ /v165 alignDP ══ */
 /* 소리 크기 맞춤 배율 — 말하는 구간의 평균 크기를 일정하게(청크마다 달라도 같은 크기로 들리게) */
 function loudGain(data,an){ let s=0,c=0,pk=0; for(let i=0;i<an.n;i++){ if(an.rms[i]>an.thr){ s+=an.rms[i]*an.rms[i]; c++; } } const r=Math.sqrt(s/(c||1)); for(let i=0;i<data.length;i+=4){ const v=Math.abs(data[i]); if(v>pk) pk=v; } let g=r>0?0.12/r:1; g=clamp(g,0.4,3); if(pk>0&&pk*g>0.97) g=0.97/pk; return r2(g); }
 
@@ -45255,7 +45411,11 @@ function buildCues(p){
 const cuesOf=p=>{ p=p||P; if(!p._cues) p._cues=buildCues(p); return p._cues; };
 function cueAt(t){ const a=cuesOf(); if(!a.length) return null; let lo=0, hi=a.length-1; while(lo<hi){ const m=(lo+hi+1)>>1; if(a[m].s<=t) lo=m; else hi=m-1; } for(let i=lo;i>=Math.max(0,lo-3);i--){ if(a[i].s<=t&&t<a[i].e) return a[i]; } return null; }
 function srtTime(t,vtt){ t=Math.max(0,t); const h=Math.floor(t/3600), m=Math.floor(t%3600/60), s=Math.floor(t%60), ms=Math.round((t-Math.floor(t))*1000); return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+(vtt?'.':',')+String(ms).padStart(3,'0'); }
-function toSrt(p,vtt){ const a=cuesOf(p), o=vtt?['WEBVTT','']:[]; a.forEach((q,i)=>{ if(!vtt) o.push(String(i+1)); o.push(srtTime(q.s,vtt)+' --> '+srtTime(q.e,vtt)); o.push(q.text); o.push(''); }); return o.join('\n'); }
+function toSrt(p,vtt,shift){   /* v165: 다음 자막과 겹치는 끝은 다음 자막 시작으로 자름(외부 플레이어에서 두 줄이 같이 뜨던 것) · shift = 내보낸 영상 앞부분의 녹화 지연(초)만큼 모든 시각을 늦춤 */
+  const a=cuesOf(p), sh=+shift||0, o=vtt?['WEBVTT','']:[];
+  a.forEach((q,i)=>{ const nx=a[i+1]; let e=q.e; if(nx&&nx.s<e) e=Math.max(q.s+0.2,nx.s); if(!vtt) o.push(String(i+1)); o.push(srtTime(q.s+sh,vtt)+' --> '+srtTime(e+sh,vtt)); o.push(q.text); o.push(''); });
+  return o.join('\n');
+}
 
 /* ═════════ 영상 길이 맞춤 — 장면 길이(D)에 원본 길이(L)를 어떻게 맞출지(속도·정지·반복) ═════════ */
 function fitPlan(sc){
@@ -56883,7 +57043,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v162';
+const KL_BUILD='v165';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -59252,7 +59412,7 @@ async function startPlay(from,mode,endAt){
   ENG.gB=ac.createGain(); ENG.gB.gain.value=0; ENG.gB.connect(ENG.gT);
   ENG.gC=ac.createGain(); ENG.gC.gain.value=1; ENG.gC.connect(out);
   await ensureBuffers(); await ensureImages();
-  ENG.T0=ac.currentTime+0.15; ENG.from=from; ENG.playing=true; ENG.pos=from;
+  ENG.T0=ac.currentTime+0.15; ENG.from=from; ENG.playing=true; ENG.pos=from; ENG.lat=ENG.mode==='export'?0:latOf(ac);
   const cm=new Map(P.chunks.map(k=>[k.id,k]));
   P.sents.forEach(s=>{
     const k=cm.get(s.cid); if(!s.has||!k||!BUF.has(k.bid)) return;
@@ -59268,7 +59428,8 @@ async function startPlay(from,mode,endAt){
   tickStart(onTick,Math.min(30,P.cfg.fps));
   uiPlayState();
 }
-function nowT(){ if(!ENG.playing) return ENG.pos; return Math.min(ENG.end,ENG.from+Math.max(0,ENG.ac.currentTime-ENG.T0)); }
+function nowT(){ if(!ENG.playing) return ENG.pos; return Math.min(ENG.end,ENG.from+Math.max(0,ENG.ac.currentTime-ENG.T0-(ENG.lat||0))); }
+const latOf=a=>{ try{ const v=+a.outputLatency; return (isFinite(v)&&v>=0.06)?Math.min(0.45,v-0.03):0; }catch(e){ return 0; } };   /* v165: 블루투스 등 소리가 늦게 나오는 장치(출력 지연 ≥0.06초)에서는 화면도 그만큼 늦춰 그림(유선·스피커는 그대로) — 미리보기만, 내보내기는 0 */
 const EXPORT_LEAD=-0.055;   /* 녹화 경로에서는 화면이 소리보다 평균 0.05초 먼저 기록돼서(실측), 내보낼 때만 화면을 그만큼 늦춰 그림. 더 맞추려면 출력 탭의 '화면 보정' */
 function onTick(){
   if(!ENG.playing||!P) return; const t=nowT(); ENG.pos=t;
@@ -59294,7 +59455,7 @@ async function exportRun(o){
   if(ENG.playing) pausePlay();
   UI.cvScale=1; canvasSize(1);
   const subOn=P.cfg.sub.on; if(o.burn===false) P.cfg.sub.on=false;
-  let cancelled=false, rec=null, tracks=[], stopped=Promise.resolve(), bps=0; const parts=[];
+  let cancelled=false, rec=null, tracks=[], stopped=Promise.resolve(), bps=0, lag=0; const parts=[];
   UI.exp={from,to,t:from,cancel:()=>{ cancelled=true; if(ENG.onEnd){ const f=ENG.onEnd; ENG.onEnd=null; f(); } }};
   try{
     await prewarm(from);   /* 시작 위치의 화면을 먼저 그려 둔 다음에 녹화용 스트림을 만들어야 파일 맨 앞이 그 화면이 됨 */
@@ -59306,8 +59467,8 @@ async function exportRun(o){
     rec.ondataavailable=e=>{ if(e.data&&e.data.size) parts.push(e.data); };
     stopped=new Promise(r=>{ rec.onstop=r; });
     const done=new Promise(r=>{ ENG.onEnd=r; });
-    rec.start(1000);
-    await startPlay(from,'export',to);
+    const recAt=ac.currentTime; rec.start(1000);
+    await startPlay(from,'export',to); lag=Math.max(0,ENG.T0-recAt); UI.expLag=lag;   /* v165: 파일의 0초 = 녹화를 시작한 순간, 영상 시간표의 시작(from) = 소리가 시작하는 순간(ENG.T0) — 그 차이만큼 파일 속 소리·화면이 시간표(SRT)보다 늦음(실측 0.15초) */
     await done;
     await sleep(350);
   }finally{
@@ -59316,7 +59477,7 @@ async function exportRun(o){
     await stopped; pausePlay(); try{ tracks.forEach(t=>t.stop()); }catch(e){} UI.exp=null; UI.cvScale=0; canvasSize();
   }
   if(cancelled) return null;
-  const type=mime.split(';')[0]; return {blob:new Blob(parts,{type}),ext:type==='video/mp4'?'mp4':'webm',mime,bps};
+  const type=mime.split(';')[0]; return {blob:new Blob(parts,{type}),ext:type==='video/mp4'?'mp4':'webm',mime,bps,lag:r3(lag)};
 }
 /* 녹화를 시작하기 전에 소리·이미지·시작 위치의 영상을 미리 준비 — 안 하면 첫 내보내기 맨 앞에 멈춘 화면·무음이 섞임 */
 async function prewarm(t){
@@ -59345,28 +59506,94 @@ const aspectOf=()=>P.cfg.h>P.cfg.w?'9:16':'16:9';
 
 /* ═════════ 음성 — 묶음마다 합성(또는 가져온 파일) → 침묵 분석 → 문장 경계 ═════════ */
 function applyChunkAudio(k,ss,pcm,sr){
-  const buf=f32Buffer(pcm,sr), an=analyzeAudio(pcm,sr);
-  const al=ss.length===1?[{vs:an.vs,ve:an.ve,a:Math.max(0,an.vs-0.1),b:Math.min(buf.duration,an.ve+0.18),conf:1}]:alignSentences(an,ss.map(s=>({n:vNum(s)})),pauseEq());   /* v155: 말할 글(음성 글) 길이로 경계를 맞춤 */
+  const buf=f32Buffer(pcm,sr), an=analyzeAudio(pcm,sr); let al, rs=null; k._amb=false;
+  if(ss.length===1) al=[{vs:an.vs,ve:an.ve,a:Math.max(0,an.vs-0.1),b:Math.min(buf.duration,an.ve+0.18),conf:1}];
+  else{   /* v165: 경계를 한꺼번에 최적화(alignDP) — 정할 수 없을 때만 예전 방식. 믿기 어려우면 k._amb(저장 안 함) → runVoice 가 문장별로 다시 합성 */
+    rs=alignDP(an,ss.map(dpLen)); al=rs?rs.al:alignSentences(an,ss.map(s=>({n:vNum(s)})),pauseEq()); k._amb=!(rs&&rs.ok);   /* v155: 말할 글(음성 글) 길이로 경계를 맞춤 */
+  }
   const old=k.bid, bid=putBlob(f32ToWav(pcm,sr)); BUF.set(bid,buf);
   if(old){ BL.delete(old); BUF.delete(old); const u=URLS.get(old); if(u){ URL.revokeObjectURL(u); URLS.delete(old); } }
   k.bid=bid; k.dur=r3(buf.duration); k.gain=loudGain(pcm,an); k.peaks=peaksOf(pcm,sr,25); k.state='done'; k.stale=false; k.err='';
-  ss.forEach((s,i)=>{ delete s.vc; s.al={a:r3(al[i].a),b:r3(Math.min(al[i].b,buf.duration)),vs:r3(al[i].vs),ve:r3(al[i].ve),conf:r2(al[i].conf)}; });   /* v156: 새 음성이면 자르기·이동·삭제 편집은 처음 상태로 */
+  ss.forEach((s,i)=>{ delete s.vc; s.al={a:r3(al[i].a),b:r3(Math.min(al[i].b,buf.duration)),vs:r3(al[i].vs),ve:r3(al[i].ve),conf:r2(al[i].bad?Math.min(al[i].conf,0.34):al[i].conf)}; });   /* v156: 새 음성이면 자르기·이동·삭제 편집은 처음 상태로 · v165: 믿기 어려운 경계는 conf 를 낮춰 ④ 싱크 점검·타임라인에 표시 */
+}
+/* v165: 경계를 믿기 어려운 묶음을 문장별로 다시 합성 — 문장 하나가 소리 하나라 경계가 정확하다. 문장이 모두 성공했을 때만 묶음을 바꾸고(하나라도 실패하면 원래 묶음 그대로) 만든 묶음 개수를 돌려줌(실패 0) */
+async function voiceSplit(k,ss,v,sig,tick,onWait){
+  const res=[];
+  for(let j=0;j<ss.length;j++){
+    if(sig.aborted){ const e=new Error('중단'); e.name='AbortError'; throw e; }
+    const s=ss[j], txt=vText(s);
+    try{ const r=await PRV.tts(txt,{name:v.name,style:v.style,model:v.model,signal:sig,onWait}); res.push({s,txt,pcm:r.pcm,sr:r.sr}); }
+    catch(e){ if(e&&e.name==='AbortError') throw e; toast('문장별 다시 만들기를 마치지 못해 원래 묶음을 그대로 써요: '+String((e&&e.message)||e).slice(0,70)); return 0; }
+    tick(j+1,ss.length);
+    if(j<ss.length-1) await sleepA(500,sig).catch(()=>{});
+  }
+  const idx=P.chunks.indexOf(k); if(idx<0) return 0;
+  let mx=0; P.chunks.forEach(c=>{ const n=parseInt(String(c.id).replace(/\D/g,''),10); if(n>mx) mx=n; });
+  const nk=res.map((x,j)=>({id:'k'+(mx+1+j),ci:x.s.ci,sids:[x.s.id],n:x.s.n,bid:'',dur:0,state:'none',gain:1,peaks:null,stale:false,err:''}));
+  if(k.bid){ BL.delete(k.bid); BUF.delete(k.bid); const u=URLS.get(k.bid); if(u){ URL.revokeObjectURL(u); URLS.delete(k.bid); } }
+  P.chunks.splice(idx,1,...nk);
+  res.forEach((x,j)=>{ x.s.cid=nk[j].id; applyChunkAudio(nk[j],[x.s],x.pcm,x.sr); nk[j].tts=x.txt; if(chunkTts(nk[j])!==x.txt) nk[j].stale=true; });
+  return nk.length;
+}
+/* v165: 이미 만든 음성의 문장 경계를 다시 맞춤 — 저장된 소리를 다시 분석(AI 호출 없음)해 alignDP 로 경계를 바로잡는다. 예전 방식(alignSentences)으로 만든 프로젝트의 어긋난 자막·화면·인포그래픽 시점이 문장을 따라 함께 바로잡힘.
+   경계를 믿기 어려운 묶음은(키가 있으면) 물어본 뒤 문장별로 다시 합성. 음성 박스를 손본 문장(s.vc)이 있는 묶음은 건너뜀. 되돌리기 가능 */
+async function realignVoice(){
+  if(!P||UI.busy) return; if(Q.on){ toast('다른 작업이 끝난 뒤에 해 주세요'); return; }
+  const v=P.cfg.voice; UI.busy='voice'; UI.ctl=new AbortController(); paintBusy(); progress(0.05,'저장된 소리를 다시 분석하는 중…');
+  let nch=0, nsen=0, skipEdit=0, fixed=0; const bad=[];
+  try{
+    await ensureBuffers(); const sm=sentMap(), todo=P.chunks.filter(k=>k.state==='done'&&k.bid&&!k.imported&&k.sids.length>1);
+    for(let i=0;i<todo.length;i++){
+      const k=todo[i], ss=k.sids.map(id=>sm.get(id)).filter(Boolean), buf=BUF.get(k.bid); if(!buf||ss.length<2) continue;
+      if(ss.some(s=>s.vc)){ skipEdit++; continue; }
+      progress(0.05+0.45*i/Math.max(1,todo.length),'문장 경계 다시 맞추는 중 '+(i+1)+'/'+todo.length);
+      const an=analyzeAudio(monoOf(buf),buf.sampleRate), rs=alignDP(an,ss.map(dpLen)); await sleep(0);
+      if(!rs){ bad.push(k); continue; }
+      ss.forEach((s,j)=>{ const al=rs.al[j], o=s.al, nw={a:r3(al.a),b:r3(Math.min(al.b,buf.duration)),vs:r3(al.vs),ve:r3(al.ve),conf:r2(al.bad?Math.min(al.conf,0.34):al.conf)}; if(!o||Math.abs(o.vs-nw.vs)>0.05||Math.abs(o.ve-nw.ve)>0.05) nsen++; s.al=nw; });
+      nch++; if(!rs.ok) bad.push(k);
+    }
+    layout(P); renderAll();
+    if(bad.length&&geminiKey()&&v.fix!==false){
+      const calls=bad.reduce((a,k)=>a+k.sids.length,0);
+      if(confirm('문장 경계를 믿기 어려운 묶음이 '+bad.length+'개 있어요(문장 사이 쉼이 짧거나 모호한 곳).\n이 묶음들을 문장별로 다시 합성해 경계를 정확히 맞출까요?\n(AI 음성 호출 '+calls+'번 · 이 묶음의 소리가 새로 만들어져요)')){
+        let done=0; const wait=(a,m)=>progress(0.5+0.5*done/calls,'AI 서버가 바빠요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+m+')');
+        for(const k of bad){
+          if(UI.ctl.signal.aborted) break; if(P.chunks.indexOf(k)<0) continue;
+          const ss=k.sids.map(id=>sm.get(id)).filter(Boolean); progress(0.5+0.5*done/calls,'모호한 묶음을 문장별로 다시 만드는 중 '+(done+1)+'/'+calls);
+          let nn=0; try{ nn=await voiceSplit(k,ss,v,UI.ctl.signal,()=>{ done++; progress(0.5+0.5*done/calls,'모호한 묶음을 문장별로 다시 만드는 중 '+done+'/'+calls); },wait); }catch(e){ if(e&&e.name==='AbortError') break; }
+          if(nn) fixed++; else done+=ss.length;
+          layout(P); renderAll();
+        }
+      }
+    }
+  }catch(e){ toast('문장 경계를 다시 맞추지 못했어요: '+((e&&e.message)||e)); }
+  finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
+  layout(P); commit('문장 경계 다시 맞추기'); renderAll();
+  const left=bad.length-fixed;
+  progress(1,'문장 경계 다시 맞추기 완료 · 묶음 '+nch+'개 분석 · 바뀐 문장 '+nsen+'개'+(fixed?' · 모호한 묶음 '+fixed+'개는 문장별로 다시 합성':'')+(left>0?' · 아직 모호한 묶음 '+left+'개(④ 싱크 점검에 표시)':'')+(skipEdit?' · 음성을 손본 묶음 '+skipEdit+'개는 건너뜀':''));
+  toast('문장 경계를 다시 맞췄어요 — 바뀐 문장 '+nsen+'개'+(fixed?' · 모호한 묶음 '+fixed+'개는 문장별로 다시 합성':'')+(left>0?' · 아직 모호한 묶음 '+left+'개':'')+' (되돌리기 가능)');
 }
 async function runVoice(o){
   o=o||{}; if(!P||UI.busy) return false;
   const ids=o.ids||P.chunks.filter(k=>k.state!=='done'||k.stale).map(k=>k.id), todo=P.chunks.filter(k=>ids.indexOf(k.id)>=0);
   if(!todo.length){ toast('만들 음성이 없어요 — 이미 모두 만들어져 있어요'); return true; }
   UI.busy='voice'; UI.ctl=new AbortController(); paintBusy();
-  const sm=sentMap(), v=P.cfg.voice; let ok=true;
+  const sm=sentMap(), v=P.cfg.voice; let ok=true, fixed=0, kept=0, calls=todo.length, done=0;   /* v165: calls = 합성 요청 수(경계가 모호해 문장별로 다시 만들면 늘어남) */
+  const wait=(a,m)=>progress(done/calls,'AI 서버가 바빠요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+m+')');
   try{
     for(let i=0;i<todo.length;i++){
       if(UI.ctl.signal.aborted){ ok=false; break; }
       const k=todo[i], ss=k.sids.map(id=>sm.get(id)).filter(Boolean);
-      k.state='run'; k.err=''; renderTracks(); progress(i/todo.length,'음성 만드는 중 '+(i+1)+'/'+todo.length);
+      k.state='run'; k.err=''; renderTracks(); progress(done/calls,'음성 만드는 중 '+(done+1)+'/'+calls);
       try{
         const txt=ss.map(vText).join(' ');   /* v155: 나레이션 글이 아니라 음성 글(없으면 나레이션 글)로 말함 */
-        const r=await PRV.tts(txt,{name:v.name,style:v.style,model:v.model,signal:UI.ctl.signal,onWait:(a,m)=>progress(i/todo.length,'AI 서버가 바빠요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+m+')')});
+        const r=await PRV.tts(txt,{name:v.name,style:v.style,model:v.model,signal:UI.ctl.signal,onWait:wait}); done++;
         applyChunkAudio(k,ss,r.pcm,r.sr); k.tts=txt; if(chunkTts(k)!==txt) k.stale=true;   /* v155: 실제로 보낸 글을 저장(만드는 동안 글을 또 고쳤으면 고침으로 남김) */
+        if(k._amb&&ss.length>1&&v.fix!==false){   /* v165: 경계를 믿기 어려움 → 문장별로 다시 합성해 정확하게 */
+          calls+=ss.length; progress(done/calls,'문장 경계가 모호해요 — 이 묶음('+ss.length+'문장)을 문장별로 다시 만드는 중');
+          const nn=await voiceSplit(k,ss,v,UI.ctl.signal,()=>{ done++; progress(done/calls,'문장 경계가 모호한 묶음을 문장별로 다시 만드는 중 '+(done)+'/'+calls); },wait);
+          if(nn) fixed++; else{ kept++; done+=ss.length; }
+        }
       }catch(e){
         if(e&&e.name==='AbortError'){ k.state=k.bid?'done':'none'; ok=false; break; }
         k.state=k.bid?'done':'err'; k.err=(e&&e.message)||String(e); ok=false; toast('음성 오류: '+k.err.slice(0,90));
@@ -59375,7 +59602,10 @@ async function runVoice(o){
       if(i<todo.length-1) await sleepA(o.pace==null?500:o.pace,UI.ctl.signal).catch(()=>{});
     }
   }finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
-  progress(1,ok?'음성 만들기 완료':'음성 만들기가 끝났어요(일부 실패·중단)'); commit('음성'); return ok;
+  progress(1,(ok?'음성 만들기 완료':'음성 만들기가 끝났어요(일부 실패·중단)')+(fixed?' · 경계가 모호한 '+fixed+'개 묶음은 문장별로 다시 만들어 싱크를 맞췄어요':'')); commit('음성');
+  if(fixed) toast('문장 경계가 모호한 묶음 '+fixed+'개를 문장별로 다시 합성해 자막·화면·인포그래픽 싱크를 정확히 맞췄어요');
+  if(kept) toast('문장 경계가 모호한 묶음 '+kept+'개가 남았어요 — ④ 싱크 점검에서 확인하세요');
+  return ok;
 }
 async function importNarration(file){
   if(!P||UI.busy||!file) return false; UI.busy='voice'; paintBusy(); progress(0.1,'음성 파일 읽는 중…');
@@ -59476,6 +59706,7 @@ function syncReport(){
   if(noA.length) add('warn',noA[0].s,'음성이 없는 문장 '+noA.length+'개 — 글자 수로 추정한 시간이에요(① 음성 만들기)');
   p.chunks.filter(k=>k.stale).forEach(k=>add('warn',(p.sents.find(s=>s.cid===k.id)||{s:0}).s,'대본을 고친 뒤 음성을 다시 만들지 않은 묶음이 있어요('+k.id+')'));
   p.chunks.filter(k=>k.state==='err').forEach(k=>add('err',(p.sents.find(s=>s.cid===k.id)||{s:0}).s,'음성 만들기에 실패한 묶음('+k.id+'): '+(k.err||'').slice(0,60)));
+  { const lows=p.sents.filter(s=>s.has&&s.al&&s.al.conf<0.35); if(lows.length>1) add('warn',lows[0].s,'문장 경계가 불확실한 곳이 '+lows.length+'곳 — [음성] 탭의 ↻ 문장 경계 다시 맞추기(AI 호출 없이 소리를 다시 분석)나 합성 방식 \'문장별\' 로 정확히 맞출 수 있어요'); }
   p.sents.forEach(s=>{ if(s.has&&s.al&&s.al.conf<0.35) add('warn',s.s,'문장 경계가 불확실해요 — "'+s.text.slice(0,24)+'…" (듣고 확인하세요)'); });
   p.scenes.forEach((c,j)=>{
     const D=c.e-c.s, v=c.vis||{}; if(D<1.2) add('warn',c.s,'장면 '+(j+1)+' 이(가) '+D.toFixed(1)+'초로 너무 짧아요');
@@ -59697,11 +59928,12 @@ function inspVoice(){
   h+=inspVoicePrompt();
   h+=F.row('모델',F.txt('cfg.voice.model',v.model,{list:'vsDlTts'})+'<datalist id="vsDlTts">'+((UI.models&&UI.models.tts)||[]).map(m=>'<option value="'+esc(m)+'">').join('')+'</datalist>','출력 탭의 [모델 찾기]로 확인');
   h+=F.row('합성 방식',F.sel('cfg.voice.mode',v.mode,[['chunk','묶음(빠름 · 침묵을 찾아 문장 경계를 맞춤)'],['sent','문장별(정확 · AI 호출이 많음)']]));
+  h+=F.row('경계 확인',F.chk('cfg.voice.fix',v.fix!==false,'모호하면 문장별로 다시'),'묶음 합성에서 문장 경계를 믿기 어려운 묶음(문장 사이 쉼이 짧은 곳)은 자동으로 문장 하나씩 다시 합성해 자막·화면·인포그래픽 싱크를 정확히 맞춰요');
   h+='<div class="vs-sec">간격·여백 <span class="hint">TTS 가 넣은 자연스러운 쉼 위에 더해져요</span></div>';
   h+=F.row('문장 사이',F.num('cfg.gap.sent',P.cfg.gap.sent,{min:0,max:5,step:0.05}),'초')+F.row('문단 사이',F.num('cfg.gap.para',P.cfg.gap.para,{min:0,max:5,step:0.05}),'초')+F.row('챕터 사이',F.num('cfg.gap.chap',P.cfg.gap.chap,{min:0,max:8,step:0.05}),'초')+F.row('맨 앞·뒤',F.num('cfg.lead',P.cfg.lead,{min:0,max:10,step:0.1})+F.num('cfg.tail',P.cfg.tail,{min:0,max:15,step:0.1}),'초(앞 · 뒤)');
   h+=F.row('음량',F.rng('cfg.mix.narr',P.cfg.mix.narr,0,2,0.05),'나레이션');
   h+=prefResetRow('voice');
-  h+='<div class="vs-btns">'+F.btn('voiceAll','① 음성 만들기(안 만든 것)',{c:'pri',dis:!key})+F.btn('voiceSel','이 장면만 다시',{dis:!key})+F.btn('importAud','📎 음성 파일 가져오기',{title:'다른 TTS·녹음 파일 한 개를 올리면 문장 경계를 자동으로 맞춰요'})+F.btn('wav','WAV 저장')+'</div>';
+  h+='<div class="vs-btns">'+F.btn('voiceAll','① 음성 만들기(안 만든 것)',{c:'pri',dis:!key})+F.btn('voiceSel','이 장면만 다시',{dis:!key})+F.btn('realign','↻ 문장 경계 다시 맞추기',{title:'이미 만든 음성의 소리를 다시 분석해 문장 경계(자막·화면·인포그래픽 시점의 기준)를 바로잡아요 — AI 호출 없음, 되돌리기 가능. 경계가 모호한 묶음은 물어본 뒤 문장별로 다시 합성해요',dis:!P.chunks.some(k=>k.state==='done')})+F.btn('importAud','📎 음성 파일 가져오기',{title:'다른 TTS·녹음 파일 한 개를 올리면 문장 경계를 자동으로 맞춰요'})+F.btn('wav','WAV 저장')+'</div>';
   h+=vtVoiceSec(key);   /* v155: 음성 글 — 찾아 바꾸기 + 묶음마다 [글 ▾] */
   return h;
 }
@@ -60005,6 +60237,7 @@ async function act(a,btn){
     case 'ccAll': { const c=P.scenes[UI.sel], e=cardEff((c.vis&&c.vis.card)||{}); P.cfg.look.cc1=e.c1; P.cfg.look.cc2=e.c2; savePref(P.cfg); cardUnify({c1:e.c1,c2:e.c2,from:'scene'},true); commit('카드 색 통일'); renderAll(); igPostersAll(true); paintFrame(ENG.pos); toast('모든 장면 카드를 이 색으로 통일했어요 — 다음 영상의 한 번에 만들기도 이 색을 써요(해제는 [해제])'); break; }   /* v149 */
     case 'ccAllOff': { delete P.cfg.look.cc1; delete P.cfg.look.cc2; savePref(P.cfg); renderInspector(true); toast('저장해 둔 공통 색을 지웠어요'); break; }
     case 'voiceAll': runVoice({}); break;
+    case 'realign': await realignVoice(); break;   /* v165 */
     case 'voiceSel': { const c=P.scenes[UI.sel], ids=[...new Set(sentsOf(P,c).map(s=>s.cid))]; runVoice({ids}); break; }
     case 'redoChunk': runVoice({ids:[id]}); break;
     case 'vtToggle': vtKeep(); UI.vtk[id]=!vtOpen(id); renderInspector(true); break;   /* v155: 음성 글 편집 펼치기·접기 */
@@ -60068,7 +60301,7 @@ async function expGo(){
     const r=await exportRun({from,to,fmt:d.efmt,q:d.eq,burn:d.eburn});
     if(r){
       const full=from<=0.01&&to>=P.dur-0.01, name=safeName(P.title)+(full?'':'_부분')+'.'+r.ext;
-      download(r.blob,name); if(d.esrt&&full) download(new Blob(['﻿'+toSrt(P)],{type:'text/plain;charset=utf-8'}),name.replace(/\.\w+$/,'.srt'));
+      download(r.blob,name); if(d.esrt&&full) download(new Blob(['﻿'+toSrt(P,false,r.lag)],{type:'text/plain;charset=utf-8'}),name.replace(/\.\w+$/,'.srt'));   /* v165: 내보낸 영상의 앞 지연만큼 늦춰 저장 */
       progress(1,'내보내기 완료 · '+name+' ('+(r.blob.size/1048576).toFixed(1)+'MB)'); toast('영상을 저장했어요');
     }else progress(0,'내보내기를 중단했어요');
   }catch(e){ progress(0,'내보내기 실패'); toast('내보내기 실패: '+((e&&e.message)||'')); }
@@ -61310,7 +61543,7 @@ async function closeStudio(force){
 window.openVideoStudio=opt=>openStudio(opt);
 window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classList.contains('open')),
   _dbg:{PRV,get P(){ return P; },get UI(){ return UI; },get ENG(){ return ENG; },get Q(){ return Q; },BL,BUF,IMG,VM,DEF_CFG,kpic,klPicFind,klPicAuto,klPicAutoScore,klPicDraw,klPicOf,klPicPost,klPicFillItems,klmNumFmt,klmCopyFix,klmMoveFix,klmNumHl,KLM_T,
-    newProject,layout,buildCues,cuesOf,fitPlan,analyzeAudio,alignSentences,applyChunkAudio,runVoice,importNarration,qRun,genOne,syncReport,exportRun,narrationWav,
+    newProject,layout,buildCues,cuesOf,fitPlan,analyzeAudio,alignSentences,alignDP,dpLen,voiceSplit,realignVoice,latOf,applyChunkAudio,runVoice,importNarration,qRun,genOne,syncReport,exportRun,narrationWav,
     startPlay,pausePlay,seekTo,nowT,drawFrame,paintFrame,startProject,saveProject,loadProject,setSceneStart,splitScene,mergeScene,deleteScene,swapVis,commit,undo,redo,
     toSrt,f32ToWav,f32Buffer,peaksOf,probeVideo,setVisualBlob,setCard,genTargets,genEstimate,makeChunks,makeScenes,dbListProjects,dbDelProject,dbGetProject,putBlob,serialize,fixProject,
     act,renderAll,selectScene,pickMime,scenePrompt,fullPrompt,negPrompt,sentsOf,usedBids,getBlob,bufOf,sceneIdx,paginate,wrapLines,setField,canvasSize,fmtT,loudGain,monoOf,
@@ -64838,5 +65071,7 @@ setTimeout(updateBadge,0);
 })();
 </script>
 <!-- BTMCMP-JS-END -->
+<!-- 문서 맨 끝 '완료 표식'(v164) — 페이지가 끝까지 로드됐을 때만 실행됨. 일부만 받아진 화면에서는 이게 없어서 _btmIncomplete() 가 저장·불러오기·새 리포트·자동저장을 막음. 이 줄은 반드시 맨 마지막 스크립트로 둘 것 -->
+<script>window.__BTM_FULL=true;</script>
 </body>
 </html>
