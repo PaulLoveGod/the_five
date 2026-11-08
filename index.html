@@ -3922,7 +3922,7 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
           <div id="sdAdminStatus" style="font-size:10.5px;color:#16a34a;min-height:14px"></div>
           <div style="height:1px;background:#e2e8f0;margin:8px 0 2px"></div>
           <div style="font-size:12px;font-weight:700;color:#1e293b">🗑 삭제한 텍스트박스</div>
-          <div style="font-size:11px;color:#64748b;line-height:1.6">텍스트박스에 마우스를 올리면 나오는 <b>휴지통 아이콘</b>으로 지운 박스는 <b>지금 작성 중인 리포트에서만</b> 사라져요(글은 그대로 보관). 여기서 되살릴 수 있고(<b>성장 Routine·시장 분석 제목 오른쪽의 알약</b>을 눌러도 돼요), <b>Create New</b> 를 하면 삭제 전 형식 그대로 새 리포트가 시작됩니다.</div>
+          <div style="font-size:11px;color:#64748b;line-height:1.6">텍스트박스에 마우스를 올리면 나오는 <b>휴지통 아이콘</b>으로 지운 박스는 화면에서 숨겨져요(글은 그대로 보관). 지운 상태는 리포트에 저장되고, <b>Create New</b> 로 새 리포트를 만들어도 <b>그대로 숨겨진 채</b> 시작돼요(이미 저장한 지난 리포트는 그대로). 여기서 되살릴 수 있고(<b>성장 Routine·시장 분석 제목 오른쪽의 알약</b>을 눌러도 돼요), 되살리면 그 뒤 새 리포트부터는 다시 보여요.</div>
           <div id="bdAdminList" style="display:flex;flex-direction:column;gap:6px"></div>
         </div>
 
@@ -4855,7 +4855,7 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
         onfocus="this.style.borderColor='#1e40af'" onblur="this.style.borderColor='#e2e8f0'"/>
       <div style="margin-top:10px;padding:10px 12px;background:#fefce8;border-radius:8px;font-size:11px;color:#92400e;line-height:1.6">
         🗑️ <b>초기화:</b> 오늘의 말씀, 묵상노트, 감사/간구, Footprints, 시황분석, 산업/테마분석<br>
-        ✅ <b>유지:</b> Daily Inbody Check(이미지·글), 포트폴리오, 경제일정, 지수, 매매일지, 총자산 등 나머지 전체
+        ✅ <b>유지:</b> Daily Inbody Check(이미지·글), 숨긴(삭제한) 텍스트박스, 포트폴리오, 경제일정, 지수, 매매일지, 총자산 등 나머지 전체
       </div>
     </div>
     <!-- 버튼 -->
@@ -13578,7 +13578,7 @@ function collectData(opt){   /* opt.mmSaved: 마인드맵은 화면의 수정본
     vzBodies:(window.BTMVz?BTMVz.bodies():{}), vzModes:(window.BTMVz?BTMVz.modes():{}),   /* 섹션 본문의 '인포그래픽' 쪽 내용·보기(인포그래픽 보기인 섹션만) — 글 쪽은 위의 섹션 필드 */
     boxHeights:Object.fromEntries(_BOX_HEIGHT_IDS.map(id=>{const el=g(id);return[id,el?.style?.height||''];})),
     boxFlex:Object.fromEntries(_BOX_FLEX_IDS.map(id=>{const el=g(id);return[id,{flex:el?.style?.flex||'',width:el?.style?.width||''}];})),
-    boxDeleted:(window.BTMBoxTools?BTMBoxTools.snapshot():undefined),   /* 삭제(숨김)한 텍스트박스 — 이 리포트에만 적용(Create New 는 prepareNew 로 지움). {v:1,list:[{id,to,add}]} */
+    boxDeleted:(window.BTMBoxTools?BTMBoxTools.snapshot():undefined),   /* 삭제(숨김)한 텍스트박스 — 리포트와 함께 저장, Create New 로 만든 새 리포트도 그대로 이어받음(prepareNew). {v:1,list:[{id,h}]} */
     lineHeights:(window.BTMBoxLH?BTMBoxLH.snapshot():undefined),   /* 텍스트박스별 행간격(바꾼 박스만) — 게스트 화면·다른 기기에서도 같게. 멤버 화면은 사용자 설정(BTMBoxLineH)이 우선 */
     secLayout:(window.BTMSecDrag&&BTMSecDrag.snapshot)?BTMSecDrag.snapshot():undefined,   /* 섹션 끌어 옮기기 배치(게스트 화면에서 같은 배치로 보이게) */
     keyWord: gv('keyWord')||'',
@@ -15057,7 +15057,9 @@ async function confirmNewReport(){
   }catch(_){}
   _updateVsDateHeader();
 
-  try{ if(window.BTMBoxTools) BTMBoxTools.prepareNew(fresh); }catch(_){}   /* 삭제한 텍스트박스는 이 리포트에만 — 새 리포트는 삭제 전 형식(모든 박스·받았던 높이 반납)으로 시작 */
+  /* 삭제(숨김)한 텍스트박스는 새 리포트도 그대로 숨긴 채 시작(v163) — 화면이 가장 최근 리포트면 fresh 가 이미 화면의 숨김·높이를 이어받았고(손 안 댐),
+     지난 리포트를 보고 있었다면 위 다른 이월 항목들과 같은 원칙으로 가장 최근에 저장된 리포트의 숨김을 따름 */
+  try{ if(window.BTMBoxTools) BTMBoxTools.prepareNew(fresh, (!allArcs.length || (cur.reportDate||'') >= allArcs[0].date) ? null : _latestArcData); }catch(_){}
   applyData(fresh);
   /* 시장분석 세로 중앙정렬 기본 적용 */
   _applyValignWrap(g('marketAnalysis'), 'center');
@@ -61447,7 +61449,7 @@ function refresh(){   /* 버튼 표시(값·색·비활성)를 지금 박스 상
   const viz=!!cur.closest('.vz-wrap.vz-on'), T=window.BTMBoxTools, bf=pill.querySelector('.lh-fit'), bd=pill.querySelector('.lh-del');
   pill.classList.toggle('viz',viz);   /* 인포그래픽 보기 — 행간 조절은 빼고 두 아이콘만 */
   if(bf){ bf.disabled=!T; bf.title=viz?'인포그래픽에 맞게 높이 자동 조절':'내용에 맞게 높이 자동 조절 — 짧으면 줄이고 넘치면 늘려요'; }
-  if(bd){ const why=T?T.whyNot(cur.id):'삭제 기능을 불러오지 못했어요', tip=(!why&&T&&T.tip)?T.tip(cur.id):''; bd.disabled=!!why; bd.title=why||('이 텍스트박스 삭제'+(tip?' ('+tip+')':'')+' — 지금 작성 중인 리포트에만 적용돼요(Create New 하면 원래 형식으로 돌아와요)'); }
+  if(bd){ const why=T?T.whyNot(cur.id):'삭제 기능을 불러오지 못했어요', tip=(!why&&T&&T.tip)?T.tip(cur.id):''; bd.disabled=!!why; bd.title=why||('이 텍스트박스 삭제'+(tip?' ('+tip+')':'')+' — Create New 로 새 리포트를 만들어도 숨김이 그대로 유지돼요'); }
   pill.title=(NAME[cur.id]||'텍스트박스')+' 본문 행간격 — 한 번 정하면 Create New·다시 로그인해도 유지돼요';
 }
 function eligible(el){
@@ -61532,9 +61534,12 @@ window.BTMBoxLH={IDS,apply,snapshot,set,has,hide:hideNow,get:id=>{ const el=$(id
        - 기술적 분석(2026-10-29 열림, v120): 제목줄+차트+텍스트박스가 한 섹션(#mkTechSection)이라 다른 섹션처럼 통째로 숨김. 이 텍스트박스는 차트를 조회하면 숨겨지고(tsQueryChart) 차트가 없을 때만 보이므로 알약·삭제도 그때만 가능.
          숨기기 직전 DEF.hide 가 섹션 밖(열 안)에 떠 있는 Chart Note 팝업을 닫음(setHidden·del 이 부름). 복원하면 차트는 캔버스 부모의 ResizeObserver 가 알아서 제 폭으로 다시 그림. 알약 툴팁·알림창에는 DEF.tip(차트·그래프 조회 도구도 함께 숨겨져요)을 덧붙임.
          ※ 알려진 한계(v83부터 — 이번 변경과 무관): 차트가 떠 있어 이 텍스트박스가 숨겨진 상태에서 바로 위·아래 섹션(AI Stock Radar·매매 전략)을 지우면, 엔진(removeItem·lastBoxIn)이 숨겨진 박스를 '위 박스'·'맨 아래 박스'로 골라 그 높이가 몰래 부풀고 좌우 밑변이 어긋남.
-   · 저장 — '이 리포트에만': collectData().boxDeleted = {v:1,list:[{id,h:{박스id:높이 변화 px}}]}(지운 순서). h = 삭제 앞뒤로 높이가 달라진 박스들(빈자리를 받은 박스 + 밑단 싱크로 따라 바뀐 짝 박스)의 차이 —
+   · 저장 — 리포트마다(Archive 에 저장한 지난 리포트는 그 때의 숨김 그대로): collectData().boxDeleted = {v:1,list:[{id,h:{박스id:높이 변화 px}}]}(지운 순서). h = 삭제 앞뒤로 높이가 달라진 박스들(빈자리를 받은 박스 + 밑단 싱크로 따라 바뀐 짝 박스)의 차이 —
        삭제 직전·직후 보이는 박스 높이를 재서 구함(엔진이 같은 자리에서 동기식으로 밑변을 맞춘 뒤라 비동기 싱크의 중간 상태가 섞이지 않음). 로그인·기록 열기·자동저장 복원·게스트 화면 모두 applyData → apply(d).
-       복원: 숨김을 풀고 h 를 도로 뺌 → 삭제 전 높이 그대로. Create New: confirmNewReport 가 applyData(fresh) 앞에서 prepareNew(fresh) — h 를 거꾸로 빼서 boxHeights 를 삭제 전 높이로 돌리고 boxDeleted 를 지워 삭제 전 형식(모든 박스·높이)으로 시작.
+       복원: 숨김을 풀고 h 를 도로 뺌 → 삭제 전 높이 그대로.
+       Create New(2026-11-08, v163 — 예전엔 prepareNew 가 h 를 거꾸로 빼고 boxDeleted 를 지워 '삭제 전 형식'으로 시작했음): 새 리포트도 숨김을 그대로 이어받음. confirmNewReport 의 fresh 는 {...화면 데이터} 라 화면의
+       boxDeleted·boxHeights(숨긴 뒤 높이)가 이미 들어 있고, applyData(fresh) → apply(d) 가 같은 목록이라 숨김을 그대로 둠(그 뒤 복원하면 h 를 도로 빼 삭제 전 높이로). 화면이 가장 최근 리포트면 prepareNew 는 아무것도 안 함.
+       화면이 '지난' 리포트(가장 최근 저장본보다 이전 날짜)였으면 다른 이월 항목처럼 가장 최근 저장 리포트의 숨김을 따름 — prepareNew(fresh, 그 리포트 데이터)가 화면 리포트의 h 를 돌려놓고 그 리포트의 목록·높이(h 가 있는 박스)를 넣음.
    · 제목 옆 알약(2026-11-02, v122): 삭제한 박스를 '■ 성장 Routine'·'■ 시장 분석' 제목 오른쪽(#bdPills-growth / #bdPills-market)에 약어 알약으로도 보임 — 말씀·묵상·감사·생각·독서 / 시황·테마·Radar·Warren·Chart·Note
        (+ Inbody·Key-Word·Snow 위/아래: 같은 성장 Routine 카드 안의 박스). 약어·순서는 PILL 표에서 고침. 알약을 누르면 restore(id) — 알림창 [되돌리기]·관리 패널 [↩ 복원]과 같은 길이라 높이 복원도 똑같음.
        알약이 붙는 카드는 숨긴 박스의 DOM 위치로 정함(섹션을 성장 Routine ↔ 시장 분석 사이로 옮겨 뒀으면 옮긴 카드). 두 카드 밖 메모(관심 종목·Investor Status)는 알약 없이 관리 패널 목록으로만. 게스트·잠금(게시)·모바일·인쇄·PDF/이미지에서는 숨김(CSS).
@@ -61614,7 +61619,7 @@ function del(id){
   Object.keys(b1).forEach(k=>{ if(b0[k]>0&&b1[k]!==b0[k]) h[k]=b1[k]-b0[k]; });   /* 삭제 앞뒤로 높이가 달라진 박스(받은 박스 + 따라서 바뀐 짝 박스) */
   REC.set(id,{id,h});
   changed();
-  toast('"'+d.n+'" 텍스트박스를 삭제했어요'+(d.tip?' ('+d.tip+')':'')+' · 이 리포트에만 적용돼요',[['되돌리기',()=>restore(id)]]);
+  toast('"'+d.n+'" 텍스트박스를 삭제했어요'+(d.tip?' ('+d.tip+')':'')+' · 새 리포트(Create New)에서도 숨김이 유지돼요',[['되돌리기',()=>restore(id)]]);
   return true;
 }
 function restore(id,o){
@@ -61673,14 +61678,24 @@ function apply(dt){   /* applyData 가 부름 — 박스 높이는 그 앞에서
   REC.clear(); next.forEach((r,id)=>REC.set(id,r));
   renderAdmin();
 }
-function prepareNew(f){   /* Create New — 삭제 전 형식으로: 삭제 때 달라진 박스 높이(h)를 거꾸로 빼고 삭제 기록을 지움 */
+function listOf(dt){   /* 데이터의 boxDeleted → [{id,h}] (알려진 박스만·중복 없이·지운 순서) */
+  const L=(dt&&dt.boxDeleted&&Array.isArray(dt.boxDeleted.list))?dt.boxDeleted.list:[], seen=new Set(), out=[];
+  L.forEach(r=>{ const id=r&&r.id; if(!DEF[id]||DEF[id].no||seen.has(id)) return; seen.add(id); out.push({id,h:cleanH(r.h)}); });
+  return out;
+}
+function prepareNew(f,src){   /* Create New — 숨겨(삭제해) 둔 텍스트박스를 새 리포트도 그대로 숨긴 채 시작(2026-11-08, v163 — 예전엔 삭제 전 형식으로 되돌렸음).
+     f   = confirmNewReport 가 화면(collectData)에서 만든 새 리포트 데이터 — 화면의 boxDeleted·boxHeights(숨긴 뒤 높이)를 이미 갖고 있으므로 그대로 두면 이어받음. 데이터는 안 건드림.
+     src = 화면이 '지난' 리포트(가장 최근 저장본보다 이전 날짜)였을 때만 넘어오는 '가장 최근 저장 리포트'의 데이터 — 다른 이월 항목처럼 가장 최근 리포트의 숨김을 따름(화면이 가장 최근이면 null). */
   try{
-    const L=(f&&f.boxDeleted&&Array.isArray(f.boxDeleted.list))?f.boxDeleted.list:null;
-    if(L&&f.boxHeights){
-      for(let i=L.length-1;i>=0;i--){ const h=cleanH(L[i]&&L[i].h);
-        Object.keys(h).forEach(k=>{ const cur=parseFloat(f.boxHeights[k]); if(cur>0) f.boxHeights[k]=Math.max(MINPX,Math.round(cur-h[k]))+'px'; }); }
-    }
-    if(f) delete f.boxDeleted;
+    if(!f||!src) return f;
+    const have=listOf(f), want=listOf(src);
+    if(have.length===want.length&&have.every((r,i)=>r.id===want[i].id)) return f;   /* 같은 박스를 같은 순서로 숨겨 둠 — 높이도 이미 같음 */
+    const H=f.boxHeights;
+    if(H) for(let i=have.length-1;i>=0;i--) Object.keys(have[i].h).forEach(k=>{ const cur=parseFloat(H[k]); if(cur>0) H[k]=Math.max(MINPX,Math.round(cur-have[i].h[k]))+'px'; });   /* 지난 리포트가 숨겨서 달라진 높이를 먼저 돌림 → 모든 박스가 보이는 높이 */
+    if(want.length){
+      f.boxDeleted={v:1,list:want};
+      if(H&&src.boxHeights) want.forEach(r=>Object.keys(r.h).forEach(k=>{ const v=src.boxHeights[k]; if(v) H[k]=v; }));   /* 빈자리를 받은 박스·따라서 바뀐 짝 박스는 그 리포트의 높이로 */
+    }else delete f.boxDeleted;
   }catch(e){ console.warn('[BTMBoxTools.prepareNew]',e); }
   return f;
 }
