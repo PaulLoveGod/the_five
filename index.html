@@ -57049,7 +57049,7 @@ function setBrandField(k,v,final){   /* brand.* 칸 — 모든 영상 공통 설
    요청: 주요 지수 등락률 인포그래픽은 첨부 이미지처럼 한 화면에 고정으로 — 왼쪽 열(위→아래 나스닥100·S&P500·다우·러셀2000·코스피)은 등락률만, 오른쪽 열(유가(WTI)·국채(10Y)·금(GOLD)·달러인덱스·원달러환율)은
          등락률 옆에 괄호로 (최종 수치) · 막대가 나타내는 수치는 모두 등락률 · 자막·음성도 화면과 같은 순서(왼쪽 위에서 아래 → 오른쪽 위에서 아래)로 소개 · 그다음 화면에 VIX·Fear & Greed 게이지(자막·멘트 포함).
    방식(경제 일정 v171 과 같음): 주요 지수 챕터(키 indices)에서 '지수 이름 + 등락률(%)' 문장이 이어진 구간(ixSpan)과 VIX·Fear & Greed 문장(fgSpan)을 규칙으로 찾아 클립 둘(g.ixs=true)로 올린다 —
-      ① 막대판 s.ix2(왼쪽·오른쪽 두 열, 열마다 0 선 기준 좌우 막대, 말하는 순간마다 한 줄씩) ② 게이지 둘 g.speed(VIX·Fear & Greed 가 나란히, 각자 말하는 순간에). 그 문장들은 장면별 만들기에서 빠진다(runInfo 의 ixIds).
+      ① 막대판 s.ix2(왼쪽·오른쪽 두 열, 두 열이 같은 범위·같은 0 선 기준 좌우 막대, 말하는 순간마다 한 줄씩) ② 게이지 둘 g.speed(VIX·Fear & Greed 가 나란히, 각자 말하는 순간에). 그 문장들은 장면별 만들기에서 빠진다(runInfo 의 ixIds).
    대본 쪽: 스크립트 만들기의 '주요 지수' 챕터가 화면 순서대로 말하게 META.indices.focus 에 낭독 순서·형식을 적어 둠(왼쪽 = 이름 + 등락률, 오른쪽 = 이름 + 등락률 + 최종 수치 → VIX → Fear & Greed).
    부름: 한 번에 만들기(ix:'auto') · 인포 만들기(그 구간 장면이 대상일 때) · [인포] 탭 [📈 주요 지수 한 화면](igIx). 플래그 cfg.info.ix(기본 켜짐, 대화상자 체크박스 iix) — 끄면 v174 와 같음 ── */
 const klIxOn=()=>!!(P&&P.cfg&&P.cfg.info&&P.cfg.info.ix!==false);
@@ -57371,20 +57371,21 @@ function ixEmK(E,it,p){   /* 한 줄의 강조 세기 {k 0~1, s 강조가 시작
   one(p); (p.em||[]).forEach(one);
   return {k:bk,s:bs};
 }
-/* ── 그림: 주요 지수 막대판 — 왼쪽·오른쪽 두 열. 열마다 0 선 기준 좌우 막대(막대 길이 = 등락률, 열마다 자기 범위), 오른쪽 열은 등락률 옆에 흰 글씨 (최종 수치).
+/* ── 그림: 주요 지수 막대판 — 왼쪽·오른쪽 두 열. 0 선 기준 좌우 막대(막대 길이 = 등락률), 오른쪽 열은 등락률 옆에 흰 글씨 (최종 수치).   v180: 막대 기준(범위)은 두 열 모든 줄의 가장 큰 오름·가장 큰 내림 하나 — 0 선 위치와 막대 길이가 두 열에서 같음(막대 칸 폭도 같게).
       v177: 전체 줄이 처음부터 한꺼번에 나타나고, 강조 구간(ixEmK)에 든 줄만 방향 색 판 + 굵은 이름 + 커지는 등락률 + 빛나는 두꺼운 막대(+ 훑고 지나가는 빛)로 눈에 띄고 나머지 줄은 흐려짐 ── */
 function drawIx2(E,c,it,D){
   const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
   const bk=E.B*c.k, ps=(it.parts||[]).map((p,i)=>({p,i,v:nz(p.v)})).filter(q=>q.v!=null&&String(q.p.l||'').trim()!==''); if(!ps.length) return;
   const zl=FZP(it,'l'), zv=FZP(it,'v'), Ls=ps.filter(q=>q.p.sd!=='R'), Rs=ps.filter(q=>q.p.sd==='R'), two=Ls.length>0&&Rs.length>0, nmax=Math.max(Ls.length,Rs.length);
-  const port=two&&c.w<E.B*1.4, nrows=port?Ls.length+Rs.length+1:nmax, rh=Math.min(c.h/nrows,0.088*bk), top=c.y+(c.h-rh*nrows)/2, W=c.w-0.04*bk, X0=c.x+0.02*bk, gap=two?W*0.06:0, wl=two?(W-gap)*0.445:Math.min(W,W*0.66), wr=two?(W-gap)-wl:Math.min(W,W*0.7);
+  const port=two&&c.w<E.B*1.4, nrows=port?Ls.length+Rs.length+1:nmax, rh=Math.min(c.h/nrows,0.088*bk), top=c.y+(c.h-rh*nrows)/2, W=c.w-0.04*bk, X0=c.x+0.02*bk, gap=two?W*0.06:0, wl=two?(W-gap)*0.4535:Math.min(W,W*0.66), wr=two?(W-gap)-wl:Math.min(W,W*0.7);
   const EM=new Map(); let mx=0; ps.forEach(q=>{ const e=ixEmK(E,it,q.p); EM.set(q.i,e); if(e.k>mx) mx=e.k; });   /* 줄마다 강조 세기 · 가장 센 값(mx)만큼 강조 안 된 줄은 흐려짐 */
   const intro=rv(s0,0.45), grow=rv(s0-0.05,0.8), cnt=rv(s0-0.05,0.75);   /* 전체 줄이 한꺼번에 나타나고 막대도 함께 자람 */
+  let mxp=0, mxn=0; ps.forEach(q=>{ if(q.v>0) mxp=Math.max(mxp,q.v); else if(q.v<0) mxn=Math.max(mxn,-q.v); });   /* v180: 막대 범위 = 두 열 모든 줄의 가장 큰 오름(mxp)·가장 큰 내림(mxn) — 열마다 따로 재지 않음 */
+  const both=mxp>0&&mxn>0, tot=(mxp+mxn)||1;
   const col=(arr,x,w,sfx,y0)=>{
-    const lw=w*(sfx?0.19:0.224), tw=w*(sfx?0.478:0.576), g1=w*(sfx?0.028:0.038), vw=w*(sfx?0.13:0.162), g2=w*0.014, sw=sfx?w*0.16:0, tx0=x+lw, vr=tx0+tw+g1+vw, th=rh*0.45;
+    const f2=sfx||port, lw=w*(f2?0.19:0.224), tw=w*(f2?0.478:0.576), g1=w*(f2?0.028:0.038), vw=w*(f2?0.13:0.162), g2=w*0.014, sw=sfx?w*0.16:0, tx0=x+lw, vr=tx0+tw+g1+vw, th=rh*0.45;
     const baseS=0.036*bk*zv; let fsS=baseS; if(sfx){ const mw=Math.max.apply(null,arr.map(q=>{ const s1=String(q.p.t||'').trim(); return s1?klTW(E,'('+s1+')',baseS,'800'):0; })); if(mw>sw*1.02) fsS=baseS*sw*1.02/mw; }   /* 괄호 안 최종 수치는 한 열 모두 같은 크기(가장 긴 글에 맞춤) */
-    let mxp=0, mxn=0; arr.forEach(q=>{ if(q.v>0) mxp=Math.max(mxp,q.v); else if(q.v<0) mxn=Math.max(mxn,-q.v); });
-    const both=mxp>0&&mxn>0, tot=(mxp+mxn)||1, zx=both?tx0+tw*mxn/tot:tx0, sc=both?tw/tot:tw/(Math.max(mxp,mxn)||1);
+    const zx=both?tx0+tw*mxn/tot:tx0, sc=both?tw/tot:tw/(Math.max(mxp,mxn)||1);   /* 0 선 위치·막대 길이는 두 열이 같은 범위 */
     arr.forEach((q,j)=>{
       const e=EM.get(q.i)||{k:0,s:99}, ek=e.k, yc=y0+j*rh+rh/2, v=q.v, tc=v>0?pal.up:v<0?pal.down:pal.flat, th2=th*(1+0.45*ek), ty=yc-th2/2, neg=both&&v<0;
       g.save(); g.globalAlpha*=intro*(1-0.55*mx*(1-ek));
@@ -58426,7 +58427,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v179';
+const KL_BUILD='v180';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
