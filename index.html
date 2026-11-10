@@ -43422,7 +43422,7 @@ function fixedParts(it,lang){
 }
 function buildPlan(L,cpm,secs,lang){
   const has=k=>secs.indexOf(k)>=0, ct=(key,ko)=>(lang&&lang!=='ko'&&V.get(lang).chap&&V.get(lang).chap[key])||ko;   /* v108: 챕터 이름도 영상 언어로 */
-  let it=[{key:'open',title:ct('open','오프닝'),w:7,data:[],focus:'오늘 시장에서 가장 강한 한 줄로 시작(후킹) → 인사 → 이번 영상에서 다룰 내용 예고'}];
+  let it=[{key:'open',title:ct('open','오프닝'),w:7,data:[],focus:'오늘 시장의 주요 이슈를 하나의 수치나 한마디로 정의하는 후킹 한 문장 → 정해진 인사 → 이번 영상에서 다룰 내용 예고'}];
   ['indices','eco','market','theme','watch','warren','radar','tech','strategy'].forEach(k=>{ if(has(k)){ const m=META[k]; it.push({key:k,title:ct(k,m.chap),w:m.w,data:[k],focus:m.focus}); } });
   it.push({key:'scenario',title:ct('scenario','시나리오와 대응 전략'),w:12,data:[],focus:'상승·기본·하락 시나리오와 각각의 트리거·점검 지표, 투자자가 이번 주 체크할 것'});
   it.push({key:'close',title:ct('close','마무리'),w:6,data:[],focus:'핵심 3줄 요약 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'});
@@ -43495,11 +43495,17 @@ const sysChapterKo=rep=>`당신은 구독자 신뢰도가 높은 증시 유튜�
 - 나레이션만 출력하세요. 챕터 제목·번호·마크다운·따옴표·설명·글자 수 표기는 쓰지 마세요.
 - 문단은 빈 줄로 구분하세요.
 - 화면에 띄울 자료가 있으면 해당 문단 바로 앞에 [화면: …] 형식으로 한 줄을 따로 쓰세요(예: [화면: S&P500 1개월 차트]). 화면 지시는 글자 수에 포함되지 않으며 챕터당 1~3개면 충분합니다.`;
+const GREET_WD=['일','월','화','수','목','금','토'];
+function greetLine(c){   /* v172: 오프닝의 정해진 인사에 들어가는 '날짜 + 브랜드 이름' — 예) 11월 10일 화요일 5분 증시 브리핑 (브랜드 이름은 스튜디오 [인포] 탭 '🎬 오프닝'에서 정한 값, 없으면 기본) */
+  let nm='5분 증시 브리핑'; try{ const o=JSON.parse(localStorage.getItem('BTMVideoBrand')||'null'); if(o&&String(o.name||'').trim()) nm=String(o.name).trim().slice(0,40); }catch(e){}
+  let d=c&&c.base; if(typeof d==='string'){ const m=/(\d{4})-(\d{2})-(\d{2})/.exec(d); d=m?new Date(+m[1],+m[2]-1,+m[3]):null; }
+  return (d&&!isNaN(d)?(d.getMonth()+1)+'월 '+d.getDate()+'일 '+GREET_WD[d.getDay()]+'요일 ':'')+nm;
+}
 function chapterUser(c,u,i){
   const cpm=c.cfg.cpm, sec=c.plan.slice(0,i).reduce((a,x)=>a+x.target,0)/cpm*60, end=sec+u.target/cpm*60;
   const outline=c.plan.map((x,j)=>(j+1)+'. '+x.title+' (약 '+x.target+'자)'+(j===i?'   ← 지금 작성할 챕터':'')).join('\n');
   let role='';
-  if(u.first) role+='\n[첫 챕터입니다] 첫 문장은 오늘 시장에서 가장 강한 한 줄(후킹)로 시작하고, 짧게 인사한 뒤 이번 영상에서 다룰 내용을 예고하세요.';
+  if(u.first) role+='\n[첫 챕터입니다] 오프닝은 이 순서로 쓰세요. ① 후킹 — 첫 문단에는 오늘 시장의 주요 이슈를 하나의 핵심 수치(예: "나스닥 3.4% 급등")나 한마디(예: "금리 인하 기대, 하루 만에 꺾였습니다")로 정의하는 짧고 강렬한 한 문장(25자 안팎)만 쓰세요. 설명이나 인사를 덧붙이지 마세요. ② 인사 — 다음 문단은 정해진 인사 한 줄로 시작하세요: "안녕하십니까. '+greetLine(c)+'입니다." (이 문장은 바꾸지 마세요.) ③ 그 뒤에 이번 영상에서 다룰 내용을 예고하세요.';
   if(u.last) role+='\n[마지막 챕터입니다] 핵심 3줄 요약 → 구독·좋아요 안내 → "본 영상은 투자 권유가 아니며 모든 투자 판단과 책임은 투자자 본인에게 있다"는 취지의 면책 멘트 순서로 마무리하세요.';
   const prev=i>0&&c.plan[i-1].text?tailText(c.plan[i-1].text,420):'';
   const rep=!!c.report;   /* 보고서 없이 스크립트만 만드는 경우 — 원자료만 근거로 */
@@ -46477,6 +46483,7 @@ function drawFoot(E,L,ig,o){   /* 슬라이드: 아래 줄 — 영상 제목 · 
 }
 function drawClip(g,w,h,ig,t,o){
   o=o||{}; const lt=t-ig.s; let al=1;
+  if(ig.hook||ig.greet){ const a2=o.all?1:Math.min((ig.greet&&!o.noIn)?rv(lt,0.45):1,o.noOut?1:clamp((ig.e-t)/0.32,0,1)); if(a2<=0.004) return; g.save(); g.globalAlpha*=a2; try{ (ig.greet?drawGreet:drawHook)(g,w,h,ig,t,o); } finally{ g.restore(); } return; }   /* v172: 오프닝 후킹·인사 화면은 스타일과 무관한 전용 그림 */
   if(!o.all){ al=Math.min(o.noIn?1:rv(lt,0.45),o.noOut?1:clamp((ig.e-t)/0.32,0,1)); if(al<=0.004) return; }
   const s0=sentById(P,ig.a&&ig.a.sid), ci=s0?s0.ci:0, L=igLay(g,w,h,ig), sty=L.sty, sk=ISTY[sty], pal0=infoPal(ci,sty,bgForce(ig,L,ci)), pal=ig.ovt?Object.assign({},pal0,{text:'#f8fafc',mute:'rgba(226,232,240,.82)',dark:true}):pal0, cf=P.cfg.info, B=L.B, font=L.font;   /* 겹쳐 얹은 타이틀(ovt)은 어두운 막 위라 글을 밝게 */
   const E={g,p:P,pal,font,B,cf,t,ig,items:ig.items||[],all:!!o.all,sty,sk,cells:L.cells};
@@ -46770,7 +46777,7 @@ const SYS_INFO=`당신은 한국어 증시 뉴스 방송(유튜브 시황 브리
 5. [사용자 추가 요청]이 있으면 위 규칙(JSON 형식·나레이션에 없는 사실 금지·뉴스체)을 지키는 범위에서 반영한다.
 6. [인포그래픽 스타일]이 있으면 그 스타일의 구성 지침(블록 종류·개수·mode)을 따른다.`;
 function igCtx(sc,o){   /* ss = 화면에 옮길 '내용 있는' 문장만(인사·마무리·진행 멘트 제외), all = 장면의 모든 문장 */
-  const all=sentsOf(P,sc), sbp0=sbOn(P)?klSbInfo(sc,all):null, exc=s=>!!(o&&((o.ovIds&&o.ovIds.has(s.id))||(o.smIds&&o.smIds.has(s.id))||(o.schIds&&o.schIds.has(s.id)))), c0=all.filter(s=>!exc(s)&&(!isFiller(s.text)||(klGuarOn()&&klIsRole(s.text)))), ss=(!c0.length&&all.length&&sbp0&&(sbp0.texts.length||sbp0.gfx.length))?all:((c0.length||!klGuarOn())?c0:all.filter(s=>String(s.text||'').trim()&&!exc(s))), s0=P.sents[sc.first]||{}, sib=P.scenes.filter(c=>(P.sents[c.first]||{}).ci===s0.ci), cue=(all.find(s=>s.cue)||{}).cue, j=P.scenes.indexOf(sc);   /* v107: 스토리보드가 화면 글자·그래픽을 지시한 장면은 인사·진행 멘트뿐이어도 건너뛰지 않음 */
+  const all=sentsOf(P,sc), sbp0=sbOn(P)?klSbInfo(sc,all):null, exc=s=>!!(o&&((o.ovIds&&o.ovIds.has(s.id))||(o.smIds&&o.smIds.has(s.id))||(o.schIds&&o.schIds.has(s.id))||(o.opIds&&o.opIds.has(s.id)))), c0=all.filter(s=>!exc(s)&&(!isFiller(s.text)||(klGuarOn()&&klIsRole(s.text)))), ss=(!c0.length&&all.length&&sbp0&&(sbp0.texts.length||sbp0.gfx.length))?all:((c0.length||!klGuarOn())?c0:all.filter(s=>String(s.text||'').trim()&&!exc(s))), s0=P.sents[sc.first]||{}, sib=P.scenes.filter(c=>(P.sents[c.first]||{}).ci===s0.ci), cue=(all.find(s=>s.cue)||{}).cue, j=P.scenes.indexOf(sc);   /* v107: 스토리보드가 화면 글자·그래픽을 지시한 장면은 인사·진행 멘트뿐이어도 건너뛰지 않음 */
   return {ss,all,cs:c0,forced:!c0.length&&ss.length>0,sbp:(sbp0&&sbp0.blocks.length)?sbp0:null,ch:cleanChap(chapOf(P,sc)),chFull:chapOf(P,sc),nth:sib.indexOf(sc)+1,total:sib.length,cue,vk:(sc.vis&&sc.vis.kind)||'none',j,first:sib[0]===sc,pos:j===0?'first':j===P.scenes.length-1?'last':'mid',style:(P.cfg.info&&P.cfg.info.style)||'news'};
 }
 function infoUser(ctx){
@@ -46885,14 +46892,14 @@ function fixStages(list){   /* 한 장면에 단계(clip)가 여럿일 때 — �
 }
 async function buildClips(sc,o,signal){   /* 장면 하나의 인포그래픽 만들기 — 핵심이 없는 장면(인사·마무리·진행 멘트뿐)은 건너뜀, AI 가 안 되면 규칙으로. 이 장면 안에 있던 클립은 바꿔 놓음 */
   klGoneClear(sc); const ctx=igCtx(sc,o), ss=ctx.ss; if(o.style) ctx.style=o.style; let specs=null, src='rule';
-  if(!ss.length&&klGuarOn()&&((o.smIds&&sentsOf(P,sc).some(s=>o.smIds.has(s.id)))||(o.ovIds&&sentsOf(P,sc).some(s=>o.ovIds.has(s.id)))||(o.schIds&&sentsOf(P,sc).some(s=>o.schIds.has(s.id))))){ P.igs=(P.igs||[]).filter(g=>{ const mid=(g.s+g.e)/2; return !(mid>=sc.s&&mid<sc.e)||g.sm||g.ov||g.sch||g.src==='hand'; }); layout(P); return; }   /* v143: 3줄 요약·개요가 맡은 장면 */
+  if(!ss.length&&klGuarOn()&&((o.smIds&&sentsOf(P,sc).some(s=>o.smIds.has(s.id)))||(o.ovIds&&sentsOf(P,sc).some(s=>o.ovIds.has(s.id)))||(o.schIds&&sentsOf(P,sc).some(s=>o.schIds.has(s.id)))||(o.opIds&&sentsOf(P,sc).some(s=>o.opIds.has(s.id))))){ P.igs=(P.igs||[]).filter(g=>{ const mid=(g.s+g.e)/2; return !(mid>=sc.s&&mid<sc.e)||g.sm||g.ov||g.sch||g.hook||g.greet||g.src==='hand'; }); layout(P); return; }   /* v143: 3줄 요약·개요가 맡은 장면 */
   if(ss.length&&o.mode==='ai'&&!o.dead){
     try{ specs=await aiSpecs(ss,ctx,o,signal); src='ai'; if(specs.skip&&!specs.dedupe&&ctx.sbp&&(ctx.sbp.texts.length||ctx.sbp.gfx.length)){ specs=null; src='rule'; } }   /* 스토리보드가 화면을 지시한 장면을 AI 가 건너뛰자고 하면 규칙으로 */
     catch(e){ if(e&&e.name==='AbortError') throw e; o.fails=(o.fails||0)+1; o.err=(e&&e.message)||String(e); if(/Key|키/.test(o.err)||o.fails>=3) o.dead=true; specs=null; }
   }
   if(klGuarOn()&&specs&&!specs.length){ specs=null; src='rule'; }   /* v143: AI 가 건너뛰자고 한 장면도 규칙으로라도 */
   if(ss.length&&!specs){ specs=ruleSpecs(ss,ctx,o); src='rule'; }
-  P.igs=(P.igs||[]).filter(g=>{ const mid=(g.s+g.e)/2; return !(mid>=sc.s&&mid<sc.e)||(g.sch&&!!o.schIds); });
+  P.igs=(P.igs||[]).filter(g=>{ const mid=(g.s+g.e)/2; return !(mid>=sc.s&&mid<sc.e)||(g.sch&&!!o.schIds)||((g.hook||g.greet)&&!!o.opIds); });
   if(specs&&specs.length&&(specs.rescue||ctx.rescued)) o.rescued=(o.rescued||0)+1;
   if(!specs||!specs.length){ (o.skipped=o.skipped||[]).push(ctx.j); layout(P); return; }
   const made=[]; specs.forEach(sp=>{ const mode=resolveMode(sp,sc,o,ctx), ig=specToClip(sp,mode,sc,ctx); ig.src=src; made.push(ig); P.igs.push(ig); });
@@ -46903,7 +46910,7 @@ function varyClips(list){   /* 같은 형태가 연달아 나오지 않게(전�
   solid.forEach(g=>{ if((g.mode===p1&&g.mode===p2)||((g.mode==='left'||g.mode==='right')&&g.mode===p1)){ g.mode={left:'right',right:'left',full:'left',hero:'full'}[g.mode]||g.mode; } p2=p1; p1=g.mode; });
 }
 async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐릭터 처리 → (오프닝 개요 설계) → 대기열(qRun)로 장면마다 만들기 → 개요 올리기 → 형태 섞기 */
-  if(!P||(!items.length&&!(o&&(o.ov||o.sm||o.sch)))) return false;
+  if(!P||(!items.length&&!(o&&(o.ov||o.sm||o.sch||o.op)))) return false;
   if(Q.on||UI.busy){ toast('다른 작업이 끝난 뒤에 해 주세요'); return false; }
   klCleanExisting();
   o=Object.assign({lay:'auto',mode:'ai',char:'keep',open:true,remember:false},o||{});
@@ -46938,6 +46945,16 @@ async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐�
       catch(e){ if(e&&e.name==='AbortError'){ UI.busy=''; UI.ctl=null; paintBusy(); progress(0,'중단했어요'); return false; } smr={why:'3줄 요약을 설계하지 못했어요 — '+String((e&&e.message)||'').slice(0,60)}; }
       finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
       if(smr&&smr.ids) run.smIds=smr.ids; } }catch(e){ if(window.__klStrict) throw e; } }
+  let opr=null;   /* v172: 오프닝 후킹·인사 화면 — 인사 문장과 그 앞 후킹 문장을 찾아(AI → 규칙) 전용 화면으로 만들고, 그 문장들은 장면별 만들기에서 뺌. 이미 있으면(손댔을 수 있어서) 단추([🎬 오프닝 만들기])를 눌렀을 때만 새로 만듦 */
+  if((klHookOn()||klGreetOn()||o.op===true)&&o.op!==false){ try{
+    const f0=opFind(P), olds=(P.igs||[]).filter(g=>g.hook||g.greet), want=o.op===true||(!olds.length&&((!!f0&&opTouch(items,f0))||(o.op==='auto'&&!!f0)));
+    if(want){ UI.busy='gen'; UI.ctl=new AbortController(); paintBusy(); progress(0.03,'오프닝 후킹·인사 화면 설계 중…');
+      try{ run.op=o.op; opr=await opPlan(run,UI.ctl.signal); }
+      catch(e){ if(e&&e.name==='AbortError'){ UI.busy=''; UI.ctl=null; paintBusy(); progress(0,'중단했어요'); return false; } opr={why:'오프닝 후킹·인사 화면을 설계하지 못했어요 — '+String((e&&e.message)||'').slice(0,60)}; }
+      finally{ UI.busy=''; UI.ctl=null; paintBusy(); }
+      if(opr&&opr.ids) run.opIds=opr.ids; }
+    else if(olds.length&&items.some(it=>{ const sc=P.scenes.find(c=>c.id===it.id); return !!sc&&olds.some(g=>sc.s<g.e-0.05&&sc.e>g.s+0.05); })) run.opIds=opIdsOfClips();   /* 이미 있는 후킹·인사 화면 위의 장면을 다시 만들 때 — 그 문장들은 그 화면들이 계속 맡음 */
+  }catch(e){ if(window.__klStrict) throw e; } }
   let shr=null;   /* v171: 경제 일정 — 일정을 짚는 문장 구간을 찾아(AI → 규칙) 장면을 넘기지 않는 한 화면짜리 일정표로 만들고, 그 문장들은 장면별 만들기에서 뺌 */
   if((klSchOn()||o.sch===true)&&o.sch!==false){ try{
     const sp1=schSpan(P), old=(P.igs||[]).find(g=>g.sch), want=o.sch===true||(!!sp1&&smTouch(items,sp1))||(o.sch==='auto'&&!old&&(!!sp1||(o.mode==='ai'&&!run.dead&&infoTextAi()&&!!schWindow(P))));
@@ -46953,13 +46970,14 @@ async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐�
   let ovg=null; if(ovr&&ovr.block) ovg=ovApply(ovr,run);
   let smg=null; if(smr&&smr.block){ try{ smg=smApply(smr,run); }catch(e){ if(window.__klStrict) throw e; smr={why:'3줄 요약을 올리지 못했어요 — '+String((e&&e.message)||'').slice(0,60)}; } }   /* v143 */
   let shg=null; if(shr&&shr.block){ try{ shg=schApply(shr,run); }catch(e){ if(window.__klStrict) throw e; shr={why:'경제 일정을 올리지 못했어요 — '+String((e&&e.message)||'').slice(0,60)}; } }   /* v171 */
+  let opg=null; if(opr&&(opr.hook||opr.greet)){ try{ opg=opApply(opr,run); }catch(e){ if(window.__klStrict) throw e; opr={why:'오프닝 후킹·인사 화면을 올리지 못했어요 — '+String((e&&e.message)||'').slice(0,60)}; } }   /* v172 */
   if(run.lay==='auto') varyClips(run.made);
   if(P.cfg.info.ltpl!==false){ try{ run.lt=layoutAll(run.made); }catch(e){ if(window.__klStrict) throw e; } }   /* v126: AI 가 정한/디렉터가 고른 배치 템플릿 적용 */
   sortClips(P); layout(P); igPostersAll(true); commit('인포그래픽'); renderAll();
-  if(!items.length) progress((ovg||smg||shg)?1:0,ovg?'오프닝 개요 인포그래픽을 만들었어요':smg?'핵심 3줄 요약 인포그래픽을 만들었어요':shg?'경제 일정 인포그래픽을 한 화면에 만들었어요':(o.sch&&!o.sm?'경제 일정은 만들지 않았어요':(o.sm?'3줄 요약은 만들지 않았어요':'개요 인포그래픽은 만들지 않았어요')));   /* 개요만 만든 경우 — '설계 중…' 표시를 마무리 */
+  if(!items.length) progress((ovg||smg||shg||(opg&&opg.length))?1:0,ovg?'오프닝 개요 인포그래픽을 만들었어요':smg?'핵심 3줄 요약 인포그래픽을 만들었어요':shg?'경제 일정 인포그래픽을 한 화면에 만들었어요':(opg&&opg.length)?'오프닝 후킹·인사 화면을 만들었어요':(o.op&&!o.sm&&!o.sch?'오프닝 후킹·인사 화면은 만들지 않았어요':(o.sch&&!o.sm?'경제 일정은 만들지 않았어요':(o.sm?'3줄 요약은 만들지 않았어요':'개요 인포그래픽은 만들지 않았어요'))));   /* 개요만 만든 경우 — '설계 중…' 표시를 마무리 */
   const note=[]; if(klDropSince()>0) note.push('🧹 자막·제목과 같은 뜻의 구성요소 '+klDropSince()+'개를 뺐어요(수치는 숫자 카드로만 남겨요)'); if(run.lt) note.push('🧩 배치 템플릿 '+run.lt+'곳 적용(구성요소 개수·모양·중요도에 맞춰 골랐어요)'); if(run.skipped.length) note.push(klGuarOn()?'나레이션 글이 없거나 개요가 맡은 장면 '+run.skipped.length+'개는 따로 인포그래픽을 만들지 않았어요':'인사·마무리·진행 멘트'+(klDetailOn()?'·자막과 같은 내용':'')+'처럼 화면에 옮길 핵심이 없는 장면 '+run.skipped.length+'개는 원래 화면 그대로 음성·자막만 나가요'); if(run.fails) note.push('AI 요약이 실패한 장면은 규칙으로 만들었어요('+run.fails+'건) — '+String(run.err||'').slice(0,60));
   if(ovg) note.push('오프닝에 개요(오늘의 안내) 인포그래픽을 올렸어요 — 항목 '+ovg.items[0].parts.length+'개'+(ovg.src==='ai'?'(AI)':'(규칙)')); else if(ovr&&ovr.why) note.push(ovr.why);
-  if(smg) note.push('📝 핵심 3줄 요약을 한 화면에 올렸어요 — '+((smg.items[0].parts||[]).length)+'줄'+(smg.src==='ai'?'(AI)':'(규칙)')+', 줄마다 말하는 순서·타이밍에 하나씩 나타나요'); else if(smr&&smr.why&&o.sm!=='auto') note.push(smr.why); if(shg) note.push('🗓 경제 일정을 장면을 넘기지 않고 한 화면에 올렸어요 — 일정 '+((shg.items[0].parts||[]).length)+'개'+(shg.src==='ai'?'(AI)':'(규칙)')+', 일정을 말하는 순간마다 하나씩 나타나 전체 일정표가 완성돼요'); else if(shr&&shr.why&&o.sch!=='auto') note.push(shr.why);
+  if(smg) note.push('📝 핵심 3줄 요약을 한 화면에 올렸어요 — '+((smg.items[0].parts||[]).length)+'줄'+(smg.src==='ai'?'(AI)':'(규칙)')+', 줄마다 말하는 순서·타이밍에 하나씩 나타나요'); else if(smr&&smr.why&&o.sm!=='auto') note.push(smr.why); if(shg) note.push('🗓 경제 일정을 장면을 넘기지 않고 한 화면에 올렸어요 — 일정 '+((shg.items[0].parts||[]).length)+'개'+(shg.src==='ai'?'(AI)':'(규칙)')+', 일정을 말하는 순간마다 하나씩 나타나 전체 일정표가 완성돼요'); else if(shr&&shr.why&&o.sch!=='auto') note.push(shr.why); if(opg&&opg.length){ const hk0=opg.find(x=>x.hook), gr0=opg.find(x=>x.greet); note.push('🎬 오프닝 — '+(hk0?'후킹 화면('+(hk0.hk.kind==='text'?'한마디':'수치 하나')+(hk0.src==='ai'?', AI':', 규칙')+')'+(gr0?' + ':''):'')+(gr0?'고정 인사 화면(매일 같은 모습)':'')+'을 올렸어요'); } else if(opr&&opr.why&&o.op!=='auto') note.push(opr.why);
   if(run.rescued) note.push('🧷 숫자·핵심이 없는 장면 '+run.rescued+'개도 핵심 구절로 인포그래픽을 만들었어요(인사·구독 안내·면책 멘트 포함)');
   if(note.length) toast(note.join(' · '));
   return true;
@@ -47145,6 +47163,7 @@ function igBlockHtml(g,it){
   return h+alHtml(g,it)+fzHtml(g,it)+'</div>';
 }
 function igEditor(g){
+  if(g.hook||g.greet) return opEditor(g);   /* v172 */
   const pre='ig:'+g.id+'::';
   let h=''; if(g.nf) h=igNfRows(g); else{
   h+='<div class="vs-sec">선택한 인포그래픽 <span class="hint">'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+r2(g.e-g.s)+'초 · '+(g.src==='ai'?'AI 가 요약':g.src==='hand'?'직접 만듦':'규칙으로 추출')+'</span></div>';
@@ -47170,10 +47189,10 @@ function igEditor(g){
 function inspIg(){
   const igs0=P.igs||[], igs=igs0.filter(g=>!g.nf), cur=igs0.find(x=>x.id===UI.ig)||null, t=ENG.playing?nowT():ENG.pos;   /* v153: 틀 없는 인포그래픽은 목록에서 빼고, 칩을 눌러 고른 것(cur)은 편집창에 */
   let h='<div class="vs-ih"><b>인포그래픽</b><span>'+igs.length+'개 · 타임라인 [인포] 줄에서 끌어 옮기고 늘이고 줄여요</span></div>';
-  h+='<div class="vs-btns">'+F.btn('igNew','＋ 인포그래픽 추가',{c:'pri',title:'재생헤드 위치에 새 인포그래픽'})+F.btn('infoMk','📊 이 장면 자동 구성',{title:'선택한 장면의 나레이션으로 자동 구성(마지막에 쓴 설정)'})+F.btn('igOv','📋 개요 만들기',{title:'오프닝의 "오늘 다룰 내용" 안내 문장에 개요(목차) 인포그래픽을 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSum','📝 3줄 요약 만들기',{title:'마무리의 "핵심 요약" 문장(첫째·둘째·셋째)을 찾아 한 화면에 줄마다 말하는 순서·타이밍대로 나타나게 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSch','🗓 경제 일정 한 화면',{title:'경제 일정 챕터에서 일정을 짚는 문장을 찾아, 장면을 넘기지 않고 한 화면에 날짜·일정이 말하는 순간마다 하나씩 나타나 전체 일정표가 되게 만들어요(이미 장면별로 만든 일정 인포그래픽도 한 화면으로 바꾸고, 일정 화면이 이미 있으면 새로 만들어 바꿔요)'})+F.btn('upgrade','✨ 화면 구성 업그레이드',{c:'pri',title:'AI 가 영상 전체를 파악한 뒤 장면마다 화면 구성이 단순하고 명료한지 검토하고, 모자란 장면은 삭제·수정·보완해 다시 구성해요'})+(UI.up?F.btn('upReport','📋 업그레이드 결과',{title:'마지막 화면 구성 업그레이드의 장면별 점수·이유·바뀐 내용'}):'')+'</div>';
+  h+='<div class="vs-btns">'+F.btn('igNew','＋ 인포그래픽 추가',{c:'pri',title:'재생헤드 위치에 새 인포그래픽'})+F.btn('infoMk','📊 이 장면 자동 구성',{title:'선택한 장면의 나레이션으로 자동 구성(마지막에 쓴 설정)'})+F.btn('igOv','📋 개요 만들기',{title:'오프닝의 "오늘 다룰 내용" 안내 문장에 개요(목차) 인포그래픽을 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSum','📝 3줄 요약 만들기',{title:'마무리의 "핵심 요약" 문장(첫째·둘째·셋째)을 찾아 한 화면에 줄마다 말하는 순서·타이밍대로 나타나게 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSch','🗓 경제 일정 한 화면',{title:'경제 일정 챕터에서 일정을 짚는 문장을 찾아, 장면을 넘기지 않고 한 화면에 날짜·일정이 말하는 순간마다 하나씩 나타나 전체 일정표가 되게 만들어요(이미 장면별로 만든 일정 인포그래픽도 한 화면으로 바꾸고, 일정 화면이 이미 있으면 새로 만들어 바꿔요)'})+F.btn('igOpen','🎬 오프닝 만들기',{title:'오프닝의 인사 문장과 그 앞 후킹 문장을 찾아, 후킹(오늘의 핵심 수치·한마디 하나)과 매일 같은 고정 인사 화면을 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('upgrade','✨ 화면 구성 업그레이드',{c:'pri',title:'AI 가 영상 전체를 파악한 뒤 장면마다 화면 구성이 단순하고 명료한지 검토하고, 모자란 장면은 삭제·수정·보완해 다시 구성해요'})+(UI.up?F.btn('upReport','📋 업그레이드 결과',{title:'마지막 화면 구성 업그레이드의 장면별 점수·이유·바뀐 내용'}):'')+'</div>';
   h+='<div class="vs-iglist" id="vsIgList">'+(igs.length?igs.map(g=>{ const on=t>=g.s&&t<g.e, m=MODE_OF[g.mode]||MODES[0]; return '<div class="vs-igr'+(g.id===UI.ig?' sel':'')+(on?' now':'')+'" data-a="igSel" data-id="'+g.id+'"><span class="th"'+(g._poster?' style="background-image:url('+g._poster+')"':'')+'>'+(g._poster?'':m[2])+'</span><span class="m"><b>'+esc(igName(g))+'</b><i>'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+m[2]+' '+MODE_SHORT[g.mode]+' · '+ISTY[styOf(g)].ic+'</i></span>'+F.btn('igPlay','▶',{d:g.id,title:'이 구간 재생'})+F.btn('igDel','🗑',{d:g.id,c:'dng',title:'화면 삭제 — 안의 구성요소는 틀 없이 그대로 남아요 (구성요소까지 지우려면 편집창의 [구성요소까지 삭제])'})+'</div>'; }).join(''):'<div class="vs-empty sm">아직 없어요 — ＋ 로 추가하거나 ③ 화면 만들기에서 \'인포그래픽 화면\'을 고르면 장면마다 자동으로 만들어요</div>')+'</div>';
   if(cur) h+=igEditor(cur); else if(igs.length) h+='<div class="hint pad">위 목록에서 고르거나 타임라인의 인포 줄을 눌러 선택하세요.</div>';
-  return h+inspInfoLook(!cur);
+  return h+inspOpenKit()+inspInfoLook(!cur);
 }
 function inspInfoLook(open){
   const ch=P.char, cf=P.cfg.info, key=!!geminiKey();
@@ -47208,6 +47227,7 @@ function setIgField0(path,v){
     const k=a[3], itId=a[2];
     if(!itId){
       if(k&&k.indexOf('fz.')===0){ setFz(g,k.slice(3),v); return 'draw'; }   /* 클립 제목·윗글 글자 크기 */
+      if(k&&(k.indexOf('hk.')===0||k.indexOf('gr.')===0)) return opClipSet(g,k,v);   /* v172: 후킹·인사 화면 글 칸 */
       switch(k){
         case 'name': g.name=String(v||'').slice(0,40); return 'draw';
         case 'mode': g.mode=v; g.bg=isOver(v)?'scene':(g.bg==='scene'&&!isOver(v)?'solid':g.bg); return 'insp';
@@ -47261,6 +47281,11 @@ async function infoAct(a,id,btn){
     case 'igOv': { const ic=P.cfg.info; await runInfo([],{lay:ic.lay,mode:ic.mode,char:'keep',open:ic.open!==false,style:ic.style,ov:true}); break; }
     case 'igSum': { const ic=P.cfg.info; await runInfo([],{lay:ic.lay,mode:ic.mode,char:'keep',open:ic.open!==false,style:ic.style,sm:true}); break; }
     case 'igSch': { const ic=P.cfg.info; await runInfo([],{lay:ic.lay,mode:ic.mode,char:'keep',open:ic.open!==false,style:ic.style,sch:true}); break; }
+    case 'igOpen': { const ic=P.cfg.info; await runInfo([],{lay:ic.lay,mode:ic.mode,char:'keep',open:ic.open!==false,style:ic.style,op:true}); break; }   /* v172: 오프닝 후킹·인사 화면 */
+    case 'igBrandImg': $('vsFBrand').click(); break;
+    case 'igBrandImgDel': brandSet({logo:''}); renderInspector(true); igPostersAll(); if(!ENG.playing) paintFrame(ENG.pos); break;
+    case 'igBrandSeek': { const g0=(P.igs||[]).find(x=>x.greet)||(P.igs||[]).find(x=>x.hook); if(g0) seekTo(Math.min(P.dur,g0.s+(g0.greet?1.6:1.0))); else toast('후킹·인사 화면이 아직 없어요 — [🎬 오프닝 만들기]를 눌러 주세요'); break; }
+    case 'igBrandReset': { brandSet(BRAND_DEF); opBrandSync(); commit('인사 화면 설정'); igPostersAll(); renderInspector(true); if(!ENG.playing) paintFrame(ENG.pos); break; }
     case 'igGo': await igGo(); break;
     case 'igDel': case 'igDelAll': if(g){ const all=a==='igDelAll';   /* v153: igDel = 화면(틀)만(구성요소는 틀 없이 남음) · igDelAll = 구성요소까지 */
       if(g.nf&&!all){ toast('이미 화면(틀)이 없는 구성요소예요 — 타임라인 [구성] 줄의 칩을 눌러 지우거나, [인포] 탭의 [구성요소까지 삭제]를 써요'); break; }
@@ -47338,7 +47363,7 @@ async function charFromFile(file){
 function infoTextAi(){ try{ return !!studioAi().key; }catch(e){ return false; } }   /* 글 AI(영상 스튜디오 🤖 AI 에서 고른 것)에 키가 있나 */
 function infoOptRows(d){
   const ch=P.char?(P.char.src==='ai'?'AI 캐릭터':'내 그림'):'기본 캐릭터', ai=studioAi(), has=!!ai.key, nf=P.scenes.filter(c=>!contentOf(sentsOf(P,c)).length).length;
-  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false; if(d.ionly==null) d.ionly=P.cfg.info.only||''; if(d.ibal==null) d.ibal=P.cfg.info.bal!==false; if(d.ibalm==null) d.ibalm=P.cfg.info.balm||'auto'; if(d.ifit==null) d.ifit=P.cfg.info.fit!==false; if(d.iguar==null) d.iguar=P.cfg.info.guar!==false; if(d.isum==null) d.isum=P.cfg.info.sum!==false; if(d.isch==null) d.isch=P.cfg.info.sch!==false;
+  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false; if(d.ionly==null) d.ionly=P.cfg.info.only||''; if(d.ibal==null) d.ibal=P.cfg.info.bal!==false; if(d.ibalm==null) d.ibalm=P.cfg.info.balm||'auto'; if(d.ifit==null) d.ifit=P.cfg.info.fit!==false; if(d.iguar==null) d.iguar=P.cfg.info.guar!==false; if(d.isum==null) d.isum=P.cfg.info.sum!==false; if(d.isch==null) d.isch=P.cfg.info.sch!==false; if(d.ihook==null) d.ihook=P.cfg.info.hook!==false; if(d.igreet==null) d.igreet=P.cfg.info.greet!==false;
   return styleGallery(d)+D_('구성',dsel('ilay',d.ilay,[['auto','자동 — 내용·장면 화면에 맞춰 형태를 골라 섞어요(권장)'],['left','왼쪽 70% 패널 + 오른쪽 캐릭터'],['right','오른쪽 70% 패널 + 왼쪽 캐릭터'],['full','전체 화면 패널'],['hero','큰 수치 위주(화면 가득)'],['over','겹치기 — 장면 화면 위 띠·카드']]))
     +D_('내용',dsel('imode',d.imode,[['ai','AI 가 나레이션을 보고 설계(권장)'],['rule','규칙으로 추출(무료·즉시)']]))
     +D_('구성요소',klRowHtml(d))
@@ -47967,7 +47992,7 @@ const DLG_PREF={
   vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
   avoice:v=>{ P.cfg.dlg.avoice=!!v; }, vai:v=>{ if(v&&v!==P.cfg.voice.model){ P.cfg.voice.model=v; UI.vai=null; delete PRV._noTemp; } }, aucard:v=>{ P.cfg.dlg.aucard=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
   ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; },
-  istyle:v=>{ if(ISTY[v]){ P.cfg.info.style=v; P.cfg.info.sv138=1; } }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; }, ionly:v=>{ P.cfg.info.only=String(v==null?'':v).slice(0,300); }, ibal:v=>{ P.cfg.info.bal=!!v; }, ibalm:v=>{ P.cfg.info.balm=(v==='tile'||v==='type')?v:'auto'; }, ifit:v=>{ P.cfg.info.fit=!!v; }, iguar:v=>{ P.cfg.info.guar=!!v; }, isum:v=>{ P.cfg.info.sum=!!v; }, isch:v=>{ P.cfg.info.sch=!!v; },
+  istyle:v=>{ if(ISTY[v]){ P.cfg.info.style=v; P.cfg.info.sv138=1; } }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; }, ionly:v=>{ P.cfg.info.only=String(v==null?'':v).slice(0,300); }, ibal:v=>{ P.cfg.info.bal=!!v; }, ibalm:v=>{ P.cfg.info.balm=(v==='tile'||v==='type')?v:'auto'; }, ifit:v=>{ P.cfg.info.fit=!!v; }, iguar:v=>{ P.cfg.info.guar=!!v; }, isum:v=>{ P.cfg.info.sum=!!v; }, isch:v=>{ P.cfg.info.sch=!!v; }, ihook:v=>{ P.cfg.info.hook=!!v; }, igreet:v=>{ P.cfg.info.greet=!!v; },
   asb:v=>{ P.sb=P.sb||{}; P.sb.on=(v==='on'); commit('스토리보드 적용 '+(v==='on'?'켬':'끔')); }   /* v107: 스토리보드대로 / AI 가 알아서 — 프로젝트에 저장(AI 수정 패널과 같은 값) */
 };
 function resetPref(gid){
@@ -51269,7 +51294,7 @@ function klBalAi(specs,ctx){   /* AI 결과 — clip 마다 짧은 글 구성(�
   return specs;
 }
 function klShortComposeClip(g){   /* 이미 만든 클립에 글이 덧붙은 뒤(스토리보드 보충) — 짧은 글을 다시 구성하고, 상자가 모자란 클립은 배치 템플릿을 다시 고름 */
-  if(!klBal()||!g||g.src==='hand'||g.ov||g.sm||g.sch||g.mode==='title'||!Array.isArray(g.items)||!g.items.length) return false;
+  if(!klBal()||!g||g.src==='hand'||g.ov||g.sm||g.sch||g.hook||g.greet||g.mode==='title'||!Array.isArray(g.items)||!g.items.length) return false;
   const sc=P.scenes[sceneIdx(g.s)], out=klShortCompose(g.items,{j:sc?P.scenes.indexOf(sc):0}); let ch=false;
   if(out!==g.items){ g.items=out; sortItems(g); ch=true; }
   klDialectFix(g.items);
@@ -56124,11 +56149,11 @@ function smApply(res,o){   /* 설계한 요약을 clip 으로 올림 — 안내 
   let ts=Math.max(0,Math.min(s0.vs-0.35,first-FRAME_PRE-0.1)), te=Math.max(s1.ve,last+1.6)+HOLD;
   const nx=S[sp.i1+1]; if(nx&&te>nx.vs-0.05) te=Math.max(s1.ve+0.3,nx.vs-0.05);
   te=Math.min(te,P.dur); if(te<ts+1.5) te=Math.min(P.dur,ts+1.5);
-  P.igs=P.igs.filter(g=>{ if(g.src==='hand'||g.ov||g.sm||g.sch) return true; const mid=(g.s+g.e)/2; return !(mid>=ts&&mid<=te); });   /* 이 구간에 있던 자동 생성 클립은 요약이 맡음(손으로 만든 것은 그대로) */
+  P.igs=P.igs.filter(g=>{ if(g.src==='hand'||g.ov||g.sm||g.sch||g.hook||g.greet) return true; const mid=(g.s+g.e)/2; return !(mid>=ts&&mid<=te); });   /* 이 구간에 있던 자동 생성 클립은 요약이 맡음(손으로 만든 것은 그대로) */
   const sty=(o&&o.style)||(P.cfg.info&&P.cfg.info.style)||'news', own=blk.type==='l.msum';   /* l.msum 은 큰 제목(label)을 블록이 직접 그림 — 클립 머리말은 비움 */
   const g={id:uid('g'),name:res.title||TX('sum3','핵심 3줄 요약'),mode:'full',bg:'solid',a:anchorAtTime(P,ts),b:anchorAtTime(P,te),title:own?'':(res.title||TX('sum3','핵심 3줄 요약')),kicker:own?'':'SUMMARY',source:'',items:[blk],src:res.src,sty,sm:true};
   P.igs.push(g); layout(P);
-  P.igs.forEach(x=>{ if(x===g||x.sm||x.sch||x.ov||isOver(x.mode)||x.mode==='title') return;   /* 같은 때의 다른 전체 틀 클립은 요약 앞에서 끝나고 요약 뒤에서 시작 — 요약의 시작·끝은 그대로(안내 문장보다 일찍 나오지 않게) */
+  P.igs.forEach(x=>{ if(x===g||x.sm||x.sch||x.hook||x.greet||x.ov||isOver(x.mode)||x.mode==='title') return;   /* 같은 때의 다른 전체 틀 클립은 요약 앞에서 끝나고 요약 뒤에서 시작 — 요약의 시작·끝은 그대로(안내 문장보다 일찍 나오지 않게) */
     if(x.s<g.s-0.05&&x.e>g.s+0.05) x.b=anchorAtTime(P,g.s); else if(x.s>=g.s-0.05&&x.s<g.e-0.05&&x.e>g.e+0.05) x.a=anchorAtTime(P,g.e); });
   layout(P); sortClips(P); return g;
 }
@@ -56281,18 +56306,289 @@ function schApply(res,o){   /* 설계한 일정을 clip 으로 올림 — 일정
   const nt=(P._titles||[]).find(q=>!q.ov&&q.ta>=s1.vs); if(nt&&te>nt.ta) te=Math.max(s1.ve+0.3,nt.ta-0.05);   /* 다음 챕터 타이틀 앞에서 거둠 */
   te=Math.min(te,P.dur); if(te<ts+2) te=Math.min(P.dur,ts+2);
   const inSp=t=>t!=null&&t>=s0.vs-0.4&&t<=s1.ve+0.2;   /* 일정 문장을 말하는 시간 */
-  P.igs=P.igs.filter(g=>{ if(g.src==='hand'||g.ov||g.sm) return true; const ms=(g.items||[]).map(it=>mentionT0(P,it)).filter(t=>t!=null);
+  P.igs=P.igs.filter(g=>{ if(g.src==='hand'||g.ov||g.sm||g.hook||g.greet) return true; const ms=(g.items||[]).map(it=>mentionT0(P,it)).filter(t=>t!=null);
     if(ms.length) return ms.filter(inSp).length/ms.length<0.5;   /* 클립이 말하는 내용(블록)이 대부분 일정 문장에 대한 것이면 일정 화면이 맡음 — 장면 전체 길이로 늘어난 앞 문장 클립(예: 일정 바로 앞 지수 설명)은 시간 가운데가 구간에 걸려도 지우지 않고 아래에서 끝만 자름 */
     const mid=(g.s+g.e)/2; return !(mid>=ts&&mid<=te); });   /* 말하는 시각을 알 수 없는 클립만 시간 가운데로(손으로 만든 것·개요·3줄 요약은 그대로) */
   const sty=(o&&o.style)||(P.cfg.info&&P.cfg.info.style)||'news', ttl=res.title||TX('sch','경제 일정');
   const g={id:uid('g'),name:TX('sch','경제 일정'),mode:'full',bg:'solid',a:anchorAtTime(P,ts),b:anchorAtTime(P,te),title:ttl,kicker:'ECONOMIC CALENDAR',source:'',items:[blk],src:res.src,sty,sch:true};
   P.igs.push(g); layout(P);
-  P.igs.forEach(x=>{ if(x===g||x.sch||x.sm||x.ov||isOver(x.mode)||x.mode==='title') return;   /* 같은 때의 다른 전체 틀 클립은 일정 화면 앞에서 끝나고 뒤에서 시작 — 일정 화면의 시작·끝은 그대로 */
+  P.igs.forEach(x=>{ if(x===g||x.sch||x.sm||x.hook||x.greet||x.ov||isOver(x.mode)||x.mode==='title') return;   /* 같은 때의 다른 전체 틀 클립은 일정 화면 앞에서 끝나고 뒤에서 시작 — 일정 화면의 시작·끝은 그대로 */
     if(x.s<g.s-0.05&&x.e>g.s+0.05) x.b=anchorAtTime(P,g.s); else if(x.s>=g.s-0.05&&x.s<g.e-0.05&&x.e>g.e+0.05) x.a=anchorAtTime(P,g.e); });
   layout(P); sortClips(P); return g;
 }
 function schIdsOfClip(g){ const ids=new Set(); ((P&&P.sents)||[]).forEach(s=>{ if(s.ve>g.s+0.05&&s.vs<g.e-0.05) ids.add(s.id); }); return ids; }   /* 이미 있는 일정 화면이 맡고 있는 문장들 */
 /* ══ /v171 ══ */
+/* ══ v172 (2026-11-10) — 오프닝 키트: ① 후킹(오늘의 핵심 수치·한마디 하나) ② 매일 같은 고정 인사 화면 ═══════════════════════════════════════════════
+   요청: 영상 오프닝은 오늘의 주요 이슈를 한마디로 정의하는 임팩트 있고 컴팩트한 수치 하나(또는 한마디)로 시작하고, 그 뒤 "안녕하십니까. 11월 10일 화요일 5분 증시 브리핑입니다." 에는
+         언제나 같은 이미지(5분 증시 브리핑 / Five-Minute Brief)가 나와 보는 사람에게 각인되게 — 영상을 만들 때마다 똑같이 적용.
+   방식(핵심 3줄 요약 v143·경제 일정 v171 과 같음): 오프닝 챕터(키 open · 'open+…')에서 인사 문장(opFind: 안녕하십니까·안녕하세요… + 이어지는 '브리핑입니다'·날짜 문장)과
+      그 앞 후킹 문장을 찾아 전용 클립 2개로 올린다 — g.hook(후킹: g.hk={kind:'num'|'text',label,value,tone,text,sub}) · g.greet(인사: g.brand 글 스냅샷·g.dtx 날짜 글).
+      그림은 인포그래픽 스타일과 무관한 고정 모양(drawHook·drawGreet — 남색 바탕 + 강조색 하나)이라 어느 스타일·어느 날에도 같은 모습. 그 문장들은 장면별 만들기에서 빠진다(runInfo 의 opIds).
+   브랜드 설정(이름·영문·한 줄·엠블럼 글자·강조색·날짜 표시·캐릭터·내 이미지)은 모든 영상 공통으로 localStorage BTMVideoBrand 에 저장(brandGet·brandSet) — [인포] 탭 '🎬 오프닝' 칸.
+      내 이미지(로고)는 프로젝트에 넣지 않고(저장·되돌리기 기록이 무거워지지 않게) 그릴 때 지금 설정 값을 읽는다.
+   후킹 화면 내용: AI(opHookAi — 후킹 문장에서 수치 하나 또는 한마디) → 안 되면 규칙(opHookRule — 수치(% 우선) → 없으면 첫 문장의 핵심 구절).
+   부름: 한 번에 만들기(op:'auto') · 인포 만들기(오프닝 장면이 대상일 때) · [인포] 탭 [🎬 오프닝 만들기](igOpen — 이미 만든 프로젝트도 그 구간의 자동 생성 클립을 바꿈).
+   플래그 cfg.info.hook · cfg.info.greet(기본 켜짐, 대화상자 체크박스 ihook·igreet) — 둘 다 끄면 v171 과 같음 ── */
+const klHookOn=()=>!!(P&&P.cfg&&P.cfg.info&&P.cfg.info.hook!==false);
+const klGreetOn=()=>!!(P&&P.cfg&&P.cfg.info&&P.cfg.info.greet!==false);
+const BRAND_KEY='BTMVideoBrand', BRAND_DEF={name:'5분 증시 브리핑',en:'Five-Minute Brief',tag:'',mark:'5',accent:'#f59e0b',date:true,char:false,logo:''};
+let _brC=null;
+function brandGet(){   /* 브랜드 설정(모든 영상 공통) — 저장값 위에 기본값을 깔아 돌려줌 */
+  if(_brC) return _brC; let o=null; try{ o=JSON.parse(lsGet(BRAND_KEY)||'null'); }catch(e){ o=null; }
+  const b=Object.assign({},BRAND_DEF,(o&&typeof o==='object')?o:{});
+  ['name','en','tag','mark'].forEach(k=>{ b[k]=String(b[k]==null?'':b[k]).slice(0,40); });
+  if(!/^#[0-9a-fA-F]{6}$/.test(b.accent)) b.accent=BRAND_DEF.accent; b.date=b.date!==false; b.char=!!b.char; b.logo=(typeof b.logo==='string'&&b.logo.indexOf('data:image/')===0)?b.logo:'';
+  return (_brC=b);
+}
+function brandSet(patch){ const b=Object.assign({},brandGet(),patch||{}); _brC=null; try{ localStorage.setItem(BRAND_KEY,JSON.stringify(b)); }catch(e){ toast('브랜드 설정을 저장하지 못했어요 — 저장 공간이 부족해요(이미지를 더 작게 올려 주세요)'); } return brandGet(); }
+const brandSnap=()=>{ const b=brandGet(); return {name:b.name,en:b.en,tag:b.tag,mark:b.mark,accent:b.accent,date:!!b.date,char:!!b.char}; };   /* 클립에 넣는 글·색 스냅샷(이미지는 뺌) */
+function opBrandSync(){ (P.igs||[]).forEach(g=>{ if(g.greet||g.hook) g.brand=brandSnap(); }); }
+/* ── 오프닝에서 인사·후킹 문장 찾기 ── */
+const OP_GREET=/안녕하십니까|안녕하세요|반갑습니다|환영합니다|\bhello\b|\bwelcome\b|good\s+(?:morning|evening|afternoon)|大家好|欢迎|こんにちは|皆さん/i;
+const OP_BRIEF=/브리핑\s*(?:입니다|이에요|예요|이죠)|증시\s*브리핑|시황\s*브리핑|\d\s*분\s*(?:증시|시황|브리핑)|(?:월|화|수|목|금)요일\s*(?:입니다|이에요|이네요)|market\s+brief|\bbriefing\b|this\s+is\b/i;
+const OP_AGENDA=/살펴보겠|다뤄\s*보|다루겠|다룰|준비했|소개해|알아보겠|짚어\s*보겠|차례로|let'?s\s+(?:look|cover)|we\s+will\s+cover|today\s+we/i;   /* 인사 뒤에 이어지는 문장이 '오늘 다룰 내용 안내'면 인사에 안 넣음 */
+function opWindow(p){   /* 오프닝 구간 — 첫 문장이 속한 챕터가 오프닝(키 open·'open+…'·이름)일 때 그 챕터의 앞 14문장 → {a,b,ci} 또는 null */
+  p=p||P; const S=(p&&p.sents)||[]; if(!S.length) return null; const ci=S[0].ci, k=chKey(p,ci);
+  if(!(isOpenChap(p,ci)||/^open(?:\+|$)/.test(k)||(!k&&OPEN_GREET_RE.test(S.slice(0,6).map(s=>s.text).join(' '))))) return null;
+  let b=0; while(b+1<S.length&&S[b+1].ci===ci&&b<13) b++;
+  return {a:0,b,ci};
+}
+function opFind(p){   /* 인사 문장(g0~g1)과 그 앞 후킹 문장(h0~h1, 없으면 −1)을 찾음 → {w,g0,g1,h0,h1} 또는 null(인사 문장이 없으면) */
+  p=p||P; const w=opWindow(p); if(!w) return null; const S=p.sents, T=i=>String(S[i].text||'');
+  let g0=-1; for(let i=w.a;i<=w.b;i++){ if(OP_GREET.test(T(i))){ g0=i; break; } }
+  if(g0<0) return null;
+  let g1=g0; for(let k=1;k<=2&&g1+1<=w.b;k++){ const t=T(g1+1); if((OP_BRIEF.test(t)||OP_GREET.test(t)||R_DATEONLY.test(t.trim()))&&!OP_AGENDA.test(t)) g1++; else break; }   /* '11월 10일 화요일 5분 증시 브리핑입니다' 같은 이어지는 인사 */
+  let h0=-1, h1=-1; if(g0>w.a){ h0=w.a; h1=Math.min(g0-1,h0+1); const dd=(S[h1].ve||0)-(S[h0].vs||0); if(h1>h0&&isFinite(dd)&&dd>9) h1=h0; }   /* 후킹은 짧고 강렬하게 — 최대 두 문장·약 9초(인사 앞 문장이 더 있으면 그것들은 장면별 만들기가 맡음) */
+  return {w,g0,g1,h0,h1};
+}
+function opDateText(p,g0,g1){   /* 인사 문장에서 읽은 날짜 → '2026. 11. 10 (화)' (없으면 프로젝트 기준일, 그것도 없으면 '') */
+  const S=p.sents, tx=S.slice(g0,g1+1).map(s=>s.text).join(' '), bm=/(\d{4})-(\d{2})-(\d{2})/.exec(String(p.base||'')), m=/(\d{1,2})\s*월\s*(\d{1,2})\s*일(?:\s*([월화수목금토일])요일)?/.exec(tx);
+  let y=0, mo=0, d=0, wk='';
+  if(m&&isKo(p.lang)){ mo=+m[1]; d=+m[2]; wk=m[3]||''; y=bm?+bm[1]:new Date().getFullYear(); }
+  else if(bm){ y=+bm[1]; mo=+bm[2]; d=+bm[3]; }
+  else return '';
+  if(!wk){ const dt=new Date(y,mo-1,d); if(!isNaN(dt)) wk=isKo(p.lang)?['일','월','화','수','목','금','토'][dt.getDay()]:(function(){ try{ return V.weekday(dt.getDay(),p.lang); }catch(e){ return ''; } })(); }
+  return y+'. '+String(mo).padStart(2,'0')+'. '+String(d).padStart(2,'0')+(wk?' ('+wk+')':'');
+}
+const OP_UP_X=/\b(?:rose|rises?|risen|jump(?:ed|s)?|surg(?:e[sd]?|ing)|soar(?:ed|s)?|gain(?:ed|s)?|climb(?:ed|s)?|rall(?:y|ied|ies)|advanc(?:e[sd]?)|higher|up)\b|上涨|大涨|涨|上昇|急騰|上げ/i, OP_DN_X=/\b(?:fell|falls?|fallen|drop(?:ped|s)?|plung(?:e[sd]?)|slid(?:e|es)?|sank|sinks?|lost|declin(?:e[sd]?)|tumbl(?:e[sd]?)|lower|down)\b|下跌|大跌|跌|下落|急落|下げ/i;
+function opDir(text,i0,i1){   /* 수치의 오르내림 — 한국어는 dirNear, 그 밖 언어는 앞뒤 낱말로 */
+  if(isKo(P&&P.lang)) return dirNear(text,i0,i1);
+  const a=text.slice(i1,i1+26), b=text.slice(Math.max(0,i0-26),i0), ua=OP_UP_X.exec(a), da=OP_DN_X.exec(a);
+  if(ua||da) return (ua&&da)?(ua.index<=da.index?'up':'down'):(ua?'up':'down');
+  const ub=OP_UP_X.exec(b), db=OP_DN_X.exec(b); if(ub||db) return (ub&&db)?(ub.index>=db.index?'up':'down'):(ub?'up':'down'); return '';
+}
+function opHookRule(ss){   /* 후킹 문장에서 화면에 크게 띄울 하나 — 수치(% 우선·오르내림 말이 붙은 것) → 없으면 첫 문장의 핵심 구절. 못 찾으면 null */
+  let best=null;
+  ss.forEach((s,si)=>{ const text=String(s.text||'').replace(/(\d)\s*(?:percent|per\s*cent|％)/gi,'$1%'), re=new RegExp(R_NUM.source,R_NUM.flags); let m;
+    while((m=re.exec(text))){
+      const sg=m[1]||'', cur=m[2]||'', num=m[3], unit=m[4]||'', end=m.index+m[0].length;
+      if(!unit&&!sg&&!cur&&num.indexOf(',')<0&&num.indexOf('.')<0&&num.length<4) continue;   /* 연도·개수 같은 짧은 정수는 수치가 아님 */
+      const nxt=text.slice(end,end+2); if(!unit&&/^(년|월|일|시|분|초|번|차|주|개|명|건|가)/.test(nxt)) continue;
+      const dir=opDir(text,m.index,end), pct=/%/.test(unit), sc=(pct?4:unit?2:1)+(dir?1:0)+(sg?0.5:0)-si*0.2;
+      if(!best||sc>best.sc) best={sc,si,idx:m.index,sg,cur,num,unit,dir,text}; } });
+  if(best){
+    let v=(best.sg?best.sg.replace(/[−–]/,'-'):'')+best.cur+best.num+best.unit; if(!best.sg&&/%/.test(best.unit)&&best.dir) v=(best.dir==='up'?'+':'-')+v;
+    const tone=best.dir==='up'?'up':best.dir==='down'?'down':(best.sg==='+'?'up':(best.sg&&/[-−–]/.test(best.sg)?'down':'flat')), lab=clipS(newsT((isKo(P.lang)?labelBefore:labelBeforeX)(best.text,best.idx)||''),KW(10));
+    return {kind:'num',label:lab,value:v,tone,sub:''};
+  }
+  const first=ss.find(s=>String(s.text||'').trim()); if(!first) return null; const tx=clipS(klHeadline(first),KW(18)); return tx?{kind:'text',text:tx,sub:''}:null;
+}
+const SYS_HOOK_KO=`당신은 한국어 증시 뉴스 방송(유튜브 시황 브리핑)의 '인포그래픽 디렉터'입니다. 영상은 진행자가 오늘 시장의 주요 이슈를 짧고 강렬한 후킹 한마디로 던지며 시작합니다. 아래 후킹 문장을 보고, 그 순간 화면 한가운데에 크게 띄울 '하나의 핵심 수치' 또는 '한마디'를 JSON 하나로만 설계하세요. 설명·머리말·코드블록 표시는 쓰지 않습니다.
+
+[규칙]
+1. 수치가 있으면 수치형: {"kind":"num","label":"…","value":"…","tone":"up|down|flat","sub":"…"} — label 은 그 수치의 대상(지수·종목·지표 이름, 10자 이내), value 는 부호·단위를 포함한 수치 하나(8자 이내, 예 "+3.4%"·"-2.1%"·"1,350원"), tone 은 오름 up·내림 down·그 밖 flat, sub 는 선택(변화를 한 줄로, 14자 이내, 예 "기술주가 끌어올렸다").
+2. 수치가 없거나 한마디가 더 강하면 한마디형: {"kind":"text","text":"…","sub":"…"} — text 는 오늘 시장의 주요 이슈를 정의하는 명사형 헤드라인 한 줄(공백 포함 16자 이내, 예 "금리 인하 기대, 하루 만에 꺾였다"), sub 는 선택.
+3. 문장에 없는 수치·사실은 만들지 않는다. 수치는 문장에 나온 값 그대로 쓴다.
+4. 후킹으로 볼 문장이 없으면 {"skip":true,"reason":"이유"} 로만 답한다.
+
+[형식]
+{"kind":"num","label":"나스닥100","value":"+3.4%","tone":"up","sub":"기술주가 시장을 끌어올렸다"}`;
+const SYS_HOOK_EN=`You are the "infographic director" of a stock-market YouTube briefing. The video opens with the host throwing out a short, punchy hook about today's main market issue. Read the hook sentences below and design what to show big in the middle of the screen at that moment: ONE key figure or ONE short phrase. Answer with ONE JSON object only (no explanations, headers or code-block marks).
+
+[Rules]
+1. If there is a figure, use the number form: {"kind":"num","label":"…","value":"…","tone":"up|down|flat","sub":"…"} — label = what the figure belongs to (index, stock or indicator, up to 14 characters), value = one figure with sign and unit (up to 8 characters, e.g. "+3.4%", "-2.1%", "$78"), tone = up / down / flat, sub = optional one-line note (up to 24 characters).
+2. If there is no figure or a phrase is stronger, use the phrase form: {"kind":"text","text":"…","sub":"…"} — text = a short headline that defines today's main issue (up to 30 characters), sub optional.
+3. Never invent figures or facts that are not in the sentences; use the figure exactly as spoken.
+4. If there is no hook sentence, answer only {"skip":true,"reason":"why"}.
+Write every on-screen text in {LANG}.
+
+[Format]
+{"kind":"num","label":"Nasdaq 100","value":"+3.4%","tone":"up","sub":"Tech led the rally"}`;
+const sysHook=()=>isKo()?SYS_HOOK_KO:SYS_HOOK_EN.replace('{LANG}',LG().ai);
+async function opHookAi(ss,signal){   /* AI — 후킹 문장에서 수치 하나 또는 한마디 → {kind,…} (skip 이면 {skip:true}) */
+  if(typeof window._runTextPrompt!=='function') throw new Error('AI 모듈을 찾지 못했어요');
+  const ai=studioAi(); if(!ai.key) throw new Error(ai.name+' API Key 가 없어요');
+  const user=(isKo()?'':'[영상 언어] '+LG().ai+' — 화면에 나오는 모든 글은 이 언어로\n')+'[영상] '+P.title+'\n[후킹 문장]\n'+ss.map((s,i)=>(i+1)+'. '+s.text).join('\n');
+  const raw=parseJsonLoose(await window._runTextPrompt(ai.mapKey,sysHook(),user,{signal}));
+  if(raw&&raw.skip===true) return {skip:true};
+  const cl=(x,n)=>klTidy(clipS(String(x==null?'':x).replace(/["“”]/g,'').trim(),n));
+  if(raw&&raw.kind==='num'){ const val=String(raw.value==null?'':raw.value).trim().slice(0,12); if(/\d/.test(val)){ const tone=/^(up|down|flat)$/.test(raw.tone)?raw.tone:'flat'; return {kind:'num',label:cl(raw.label,KW(10)),value:val,tone,sub:cl(raw.sub,KW(16))}; } }
+  const tx=cl(raw&&raw.text,KW(18)); if(tx) return {kind:'text',text:tx,sub:cl(raw.sub,KW(16))};
+  throw new Error('AI 가 후킹 한마디를 주지 않았어요');
+}
+async function opPlan(o,signal){   /* 후킹·인사 설계 — 시간표에는 아직 안 올림. → {hook:{i0,i1,hk,src},greet:{i0,i1,dtx},ids} 또는 {why} */
+  const f=opFind(P); if(!f) return {why:'오프닝에서 인사 문장("안녕하십니까·안녕하세요 …")을 찾지 못해 후킹·인사 화면은 만들지 않았어요'};
+  const S=P.sents, force=o.op===true, wantH=force||klHookOn(), wantG=force||klGreetOn(), res={ids:new Set()};
+  if(wantG){ res.greet={i0:f.g0,i1:f.g1,dtx:opDateText(P,f.g0,f.g1)}; for(let i=f.g0;i<=f.g1;i++) res.ids.add(S[i].id); }
+  if(wantH&&f.h0>=0){
+    const ss=S.slice(f.h0,f.h1+1); let hk=null, src='rule';
+    if(o.mode==='ai'&&!o.dead&&infoTextAi()){ try{ const r=await opHookAi(ss,signal); if(r&&!r.skip){ hk=r; src='ai'; } }catch(e){ if(e&&e.name==='AbortError') throw e; o.err=(e&&e.message)||String(e); } }
+    if(!hk){ hk=opHookRule(ss); src='rule'; }
+    if(hk){ res.hook={i0:f.h0,i1:f.h1,hk,src}; for(let i=f.h0;i<=f.h1;i++) res.ids.add(S[i].id); }
+  }
+  if(!res.hook&&!res.greet) return {why:wantH&&f.h0<0?'인사 앞에 후킹 문장이 없어요 — 스크립트의 첫 문장이 오늘의 핵심 수치·한마디가 되게 만들면 후킹 화면이 나와요':'후킹·인사 화면을 만들지 않았어요'};
+  return res;
+}
+function opApply(res,o){   /* 설계한 후킹·인사를 clip 으로 올림 — 후킹은 첫 문장부터(바로 뒤에 인사가 이어지면 인사 시작까지), 인사는 인사 문장부터 잠깐 두고 다음 문장·다음 챕터 타이틀 앞까지. 겹치는 다른 전체 틀 클립은 끝·시작만 자름 */
+  const S=P.sents, made=[]; if(!res||(!res.hook&&!res.greet)) return made;
+  P.igs=(P.igs||[]).filter(g=>!g.hook&&!g.greet);
+  const sty=(o&&o.style)||(P.cfg.info&&P.cfg.info.style)||'news', gr=res.greet, hk=res.hook, ivs=[], spans=[];
+  let gts=null, gte=null, hts=null, hte=null;
+  if(gr){ const s0=S[gr.i0], s1=S[gr.i1]; gts=Math.max(0,s0.vs-0.1); gte=s1.ve+0.9; const nx=S[gr.i1+1]; if(nx&&gte>nx.vs-0.05) gte=Math.max(s1.ve+0.3,nx.vs-0.05);
+    const nt=(P._titles||[]).find(q=>!q.ov&&q.ta>=s1.vs); if(nt&&gte>nt.ta) gte=Math.max(s1.ve+0.3,nt.ta-0.05); gte=Math.min(gte,P.dur); if(gte<gts+2) gte=Math.min(P.dur,gts+2); ivs.push([gts,gte]); spans.push([s0.vs-0.4,s1.ve+0.2]); }
+  if(hk){ const s0=S[hk.i0], s1=S[hk.i1]; hts=Math.max(0,s0.vs-0.15); hte=(gr&&hk.i1+1===gr.i0)?Math.max(gts,s1.ve+0.2):s1.ve+0.3; hte=Math.min(hte,P.dur); if(hte<hts+1.2) hte=Math.min(P.dur,hts+1.2); ivs.push([hts,hte]); spans.push([s0.vs-0.4,s1.ve+0.2]); }
+  const inSp=t=>t!=null&&spans.some(s=>t>=s[0]&&t<=s[1]);
+  P.igs=P.igs.filter(g=>{ if(g.src==='hand'||g.ov||g.sm||g.sch) return true; const ms=(g.items||[]).map(it=>mentionT0(P,it)).filter(t=>t!=null);
+    if(ms.length) return ms.filter(inSp).length/ms.length<0.5;   /* 클립이 말하는 내용(블록)이 대부분 후킹·인사 문장에 대한 것이면 이 화면들이 맡음 — 아니면 지우지 않고 아래에서 끝·시작만 자름 */
+    const mid=(g.s+g.e)/2; return !ivs.some(v=>mid>=v[0]&&mid<=v[1]); });
+  const mk=(x)=>Object.assign({id:uid('g'),name:'',mode:'full',bg:'solid',title:'',kicker:'',source:'',items:[],src:'rule',sty,brand:brandSnap()},x);
+  if(hk){ const g=mk({name:'오프닝 후킹',a:anchorAtTime(P,hts),b:anchorAtTime(P,hte),src:hk.src,hook:true,hk:hk.hk}); P.igs.push(g); made.push(g); }
+  if(gr){ const g=mk({name:'인사 화면',a:anchorAtTime(P,gts),b:anchorAtTime(P,gte),greet:true,dtx:gr.dtx||''}); P.igs.push(g); made.push(g); }
+  layout(P);
+  made.forEach(m=>{ P.igs.forEach(x=>{ if(made.indexOf(x)>=0||x.hook||x.greet||x.sm||x.sch||isOver(x.mode)||x.mode==='title') return;   /* 같은 때의 다른 전체 틀 클립(개요 포함)은 이 화면 앞에서 끝나고 뒤에서 시작 */
+    if(x.s<m.s-0.05&&x.e>m.s+0.05) x.b=anchorAtTime(P,m.s); else if(x.s>=m.s-0.05&&x.s<m.e-0.05&&x.e>m.e+0.05) x.a=anchorAtTime(P,m.e); }); layout(P); });
+  sortClips(P); return made;
+}
+function opTouch(items,f){   /* 이번에 만들 장면(items)이 후킹·인사 문장을 하나라도 품고 있나 */
+  if(!f||!items||!items.length) return false; const ids=new Set(), S=P.sents; if(f.h0>=0) for(let i=f.h0;i<=f.h1;i++) ids.add(S[i].id); for(let i=f.g0;i<=f.g1;i++) ids.add(S[i].id);
+  return items.some(it=>{ const sc=P.scenes.find(c=>c.id===it.id); return !!sc&&sentsOf(P,sc).some(s=>ids.has(s.id)); });
+}
+function opIdsOfClips(){ const ids=new Set(); (P.igs||[]).forEach(g=>{ if(!(g.hook||g.greet)) return; (P.sents||[]).forEach(s=>{ if(s.ve>g.s+0.05&&s.vs<g.e-0.05) ids.add(s.id); }); }); return ids; }   /* 이미 있는 후킹·인사 화면이 맡고 있는 문장들 */
+/* ── 그리기 — 인포그래픽 스타일과 무관한 고정 모양(남색 바탕 + 강조색 하나) ── */
+const OP_FONT=()=>(P&&P.cfg&&P.cfg.sub&&P.cfg.sub.font)||'"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+function opBack(g,w,h,acc){
+  const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,'#060b18'); gr.addColorStop(0.55,'#0d1a35'); gr.addColorStop(1,'#15284e'); g.fillStyle=gr; g.fillRect(0,0,w,h);
+  const rg=g.createRadialGradient(w*0.78,h*0.5,0,w*0.78,h*0.5,Math.max(w,h)*0.6); rg.addColorStop(0,rgbaOf(acc,0.22)); rg.addColorStop(1,rgbaOf(acc,0)); g.fillStyle=rg; g.fillRect(0,0,w,h);
+  const vg=g.createRadialGradient(w/2,h/2,Math.min(w,h)*0.45,w/2,h/2,Math.max(w,h)*0.78); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.38)'); g.fillStyle=vg; g.fillRect(0,0,w,h);
+}
+function opSpaced(g,s,x,y,fs,sp,wt,col,font,al,dry){   /* 글자 사이를 sp(px)씩 벌려 그림(기준점 al: left|center|right) — 너비를 돌려줌, dry 면 재기만 */
+  g.font=wt+' '+fs.toFixed(1)+'px '+font; const ch=Array.from(String(s)), ws=ch.map(c=>g.measureText(c).width), tot=ws.reduce((a,b)=>a+b,0)+sp*Math.max(0,ch.length-1); if(dry) return tot;
+  g.fillStyle=col; g.textBaseline='middle'; g.textAlign='left'; let cx=al==='center'?x-tot/2:(al==='right'?x-tot:x); ch.forEach((c,i)=>{ g.fillText(c,cx,y); cx+=ws[i]+sp; }); return tot;
+}
+function opLines(g,text,maxW,fs,wt,font){   /* 낱말(띄어쓰기) 단위로 줄을 나눔 — 한 낱말이 너무 길면 글자 단위로 */
+  g.font=wt+' '+fs.toFixed(1)+'px '+font; const words=String(text||'').split(/\s+/).filter(Boolean), lines=[]; let cur='';
+  const push=wd=>{ const t=cur?cur+' '+wd:wd; if(g.measureText(t).width<=maxW||!cur){ cur=t; } else{ lines.push(cur); cur=wd; } };
+  words.forEach(wd=>{ if(g.measureText(wd).width>maxW){ Array.from(wd).forEach(c=>{ const t=cur+c; if(g.measureText(t).width<=maxW||!cur) cur=t; else{ lines.push(cur); cur=c; } }); } else push(wd); });
+  if(cur) lines.push(cur); return lines;
+}
+function drawGreet(g,w,h,ig,t,o){   /* 인사 화면 — 5분 타이머 엠블럼(또는 내 이미지·캐릭터) + 영문 알약 + 큰 이름 + 강조 막대 + 날짜. 설정이 같으면 언제나 같은 모습 */
+  const b=Object.assign({},BRAND_DEF,ig.brand||brandSnap(),{logo:brandGet().logo}), acc=b.accent, font=OP_FONT(), B=Math.min(w,h), lt=o.all?99:Math.max(0,t-ig.s), E=(a,d)=>easeOut(clamp((lt-a)/d,0,1)), port=h>w*1.05;
+  g.save(); opBack(g,w,h,acc);
+  const name=String(b.name||'').trim(), en=String(b.en||'').trim().toUpperCase(), tag=String(b.tag||'').trim(), dt=(b.date&&ig.dtx)?String(ig.dtx):'', m=/^(\S*\d\S*)\s+(.+)$/.exec(name), big=m?m[1]:'', rest=m?m[2]:name;
+  /* 그림 자리 — 가로 화면은 오른쪽, 세로 화면은 위 */
+  const ex=port?w*0.5:w*0.77, ey=port?h*0.26:h*0.46, R=port?w*0.2:B*0.3, lw=B*0.04;
+  const logo=b.logo?brandImgGet(b.logo):null;
+  if(b.char&&!P.cfg.info.nochar){ const col=port?{x:w*0.2,w:w*0.6,top:h*0.05,bot:h*0.5}:{x:w*0.56,w:w*0.42,top:h*0.07,bot:h*0.85}; g.save(); g.globalAlpha*=E(0.1,0.5); drawInfoChar(g,{col,B},t,{accent:acc,dark:true},o); g.restore(); }
+  else if(logo){ const bw=port?w*0.7:w*0.4, bh=port?h*0.4:h*0.78, k=Math.min(bw/logo.width,bh/logo.height), dw=logo.width*k, dh=logo.height*k, e=E(0.15,0.55); g.save(); g.globalAlpha*=e; g.shadowColor=rgbaOf(acc,0.45); g.shadowBlur=B*0.06; g.drawImage(logo,ex-dw/2,ey-dh/2+(1-e)*B*0.03,dw,dh); g.restore(); }
+  else{   /* 5분 타이머 엠블럼 */
+    const gl=g.createRadialGradient(ex,ey,R*0.2,ex,ey,R*1.7); gl.addColorStop(0,rgbaOf(acc,0.30)); gl.addColorStop(1,rgbaOf(acc,0)); g.fillStyle=gl; g.fillRect(ex-R*1.8,ey-R*1.8,R*3.6,R*3.6);
+    const tk=Math.round(60*E(0.1,1.0)); for(let i=0;i<tk;i++){ const a=-Math.PI/2+i/60*Math.PI*2, big5=i%5===0, r0=R+lw*0.9, r1=r0+B*(big5?0.036:0.018); g.strokeStyle=big5?'rgba(255,255,255,.55)':'rgba(255,255,255,.26)'; g.lineWidth=Math.max(1.5,B*(big5?0.006:0.004)); g.beginPath(); g.moveTo(ex+Math.cos(a)*r0,ey+Math.sin(a)*r0); g.lineTo(ex+Math.cos(a)*r1,ey+Math.sin(a)*r1); g.stroke(); }
+    g.strokeStyle='rgba(255,255,255,.10)'; g.lineWidth=lw; g.beginPath(); g.arc(ex,ey,R,0,Math.PI*2); g.stroke();
+    const sw=E(0.15,1.3); g.strokeStyle=acc; g.lineWidth=lw; g.lineCap='round'; g.beginPath(); g.arc(ex,ey,R,-Math.PI/2,-Math.PI/2+Math.PI*2*sw*0.999); g.stroke();
+    g.fillStyle=acc; roundRect(g,ex-B*0.03,ey-R-lw*0.5-B*0.075,B*0.06,B*0.032,B*0.012); g.fill(); roundRect(g,ex-B*0.012,ey-R-lw*0.5-B*0.045,B*0.024,B*0.04,B*0.004); g.fill();   /* 스톱워치 윗단추 */
+    const mk=String(b.mark||'').trim(), n=Array.from(mk).length, fm=B*(n<=1?0.46:n===2?0.34:0.26), pe=E(0.3,0.5); if(mk){ g.save(); g.translate(ex,ey-(/^\d+$/.test(mk)?B*0.02:0)); g.scale(0.7+0.3*pe,0.7+0.3*pe); g.globalAlpha*=pe; g.shadowColor=rgbaOf(acc,0.5); g.shadowBlur=B*0.04; dtx(g,mk,0,0,fm,'800','#ffffff',font,'center','middle'); g.restore(); }
+    if(/^\d+$/.test(mk)){ g.save(); g.globalAlpha*=E(0.5,0.4); opSpaced(g,'MIN',ex,ey+R*0.56,B*0.04,B*0.012,'700',acc,font,'center'); g.restore(); }
+  }
+  /* 글 덩어리 — 가로 화면은 왼쪽 위아래 가운데, 세로 화면은 가운데 정렬 */
+  const x0=port?w/2:w*0.07, al=port?'center':'left', maxW=port?w*0.84:w*0.54;
+  const fsPill=B*0.034, hPill=B*0.075, fsBig=B*0.3, hBig=B*0.27, fsRest=B*0.125, hRest=B*0.15, hBar=B*0.06, fsDate=B*0.05, hDate=B*0.07, fsTag=B*0.04, hTag=B*0.06;
+  const H=(en?hPill+B*0.03:0)+(big?hBig:0)+(rest?hRest:0)+hBar+(dt?hDate:0)+(tag?hTag:0);
+  let y=port?h*0.5+(h*0.5-H)/2-B*0.02:(h-H)/2-h*0.035;
+  if(en){ const e=E(0.05,0.45), padX=B*0.035, tw=opSpaced(g,en,0,0,fsPill,B*0.012,'700','#000',font,'left',true), pw=tw+padX*2, px=al==='center'?x0-pw/2:x0;
+    g.save(); g.globalAlpha*=e; g.translate((1-e)*-B*0.05,0); g.fillStyle=rgbaOf(acc,0.13); roundRect(g,px,y,pw,hPill*0.82,hPill*0.41); g.fill(); g.strokeStyle=rgbaOf(acc,0.85); g.lineWidth=Math.max(1.5,B*0.004); g.stroke(); opSpaced(g,en,px+padX,y+hPill*0.41,fsPill,B*0.012,'700',acc,font,'left'); g.restore(); y+=hPill+B*0.03; }
+  if(big){ const e=E(0.12,0.55), fb=fitFont(g,big,maxW,fsBig,'800',font,0.5); g.save(); g.globalAlpha*=e; g.translate(0,(1-e)*B*0.05); g.shadowColor=rgbaOf(acc,0.4); g.shadowBlur=B*0.05; dtx(g,big,x0,y+hBig*0.5,fb,'800',acc,font,al,'middle'); g.restore(); y+=hBig; }
+  if(rest){ const e=E(0.22,0.55), fr=fitFont(g,rest,maxW,big?fsRest:B*0.17,'800',font,0.45); g.save(); g.globalAlpha*=e; g.translate(0,(1-e)*B*0.05); dtx(g,rest,x0,y+hRest*0.5,fr,'800','#ffffff',font,al,'middle'); g.restore(); y+=hRest; }
+  { const e=E(0.45,0.5), bw=Math.min(maxW,B*0.62)*e, bx=al==='center'?x0-bw/2:x0, gr=g.createLinearGradient(bx,0,bx+Math.max(1,bw),0); gr.addColorStop(0,acc); gr.addColorStop(1,rgbaOf(acc,0.1)); g.fillStyle=gr; roundRect(g,bx,y+hBar*0.4,Math.max(0,bw),B*0.014,B*0.007); g.fill(); y+=hBar; }
+  if(dt){ const e=E(0.6,0.5); g.save(); g.globalAlpha*=e; dtx(g,dt,x0,y+hDate*0.5,fsDate,'600','rgba(226,232,240,.92)',font,al,'middle'); g.restore(); y+=hDate; }
+  if(tag){ const e=E(0.7,0.5); g.save(); g.globalAlpha*=e; dtf(g,tag,x0,y+hTag*0.5,maxW,fsTag,'500','rgba(203,213,225,.78)',font,al,'middle',0.5); g.restore(); }
+  g.restore();
+}
+function drawHook(g,w,h,ig,t,o){   /* 후킹 화면 — 큰 수치 하나(숫자가 올라가며 나옴) 또는 큰 한마디를 자막 자리(아래 22%)를 피한 위쪽 가운데에. 같은 남색 바탕·강조색이라 인사 화면과 한 세트 */
+  const hk=ig.hk||{}, b=Object.assign({},BRAND_DEF,ig.brand||brandSnap()), acc=b.accent, font=OP_FONT(), B=Math.min(w,h), lt=o.all?99:Math.max(0,t-ig.s), E=(a,d)=>easeOut(clamp((lt-a)/d,0,1));
+  g.save(); opBack(g,w,h,acc);
+  const pk=(P.cfg.info&&P.cfg.info.ud==='us')?{up:'#4ade80',down:'#ff6b6b'}:{up:'#ff6b6b',down:'#60a5fa'}, col=hk.tone==='up'?pk.up:hk.tone==='down'?pk.down:'#ffffff', TOP=h*0.1, SAFE=h*0.78;
+  { const nm=String(b.en||b.name||'').toUpperCase(); if(nm){ g.save(); g.globalAlpha*=0.9*E(0.1,0.5); opSpaced(g,nm,w*0.05,h*0.075,B*0.03,B*0.012,'700',acc,font,'left'); g.restore(); } }   /* 모서리 작은 브랜드 글 — 첫 화면부터 각인 */
+  if(hk.kind==='text'&&hk.text){
+    const maxW=w*0.84; let fs=B*0.2, lines=[]; for(let k=0;k<14;k++){ lines=opLines(g,hk.text,maxW,fs,'800',font); if(lines.length<=3&&lines.length*fs*1.2<=(SAFE-TOP)*0.62) break; fs*=0.9; }
+    const lh=fs*1.2, tot=lines.length*lh, barH=B*0.05, subH=hk.sub?B*0.1:0, y0=TOP+((SAFE-TOP)-(tot+barH+subH))/2+lh/2, e=E(0,0.45);
+    g.save(); g.globalAlpha*=e; g.translate(0,(1-e)*B*0.05); g.shadowColor=rgbaOf(acc,0.35); g.shadowBlur=B*0.04; lines.forEach((ln,i)=>dtx(g,ln,w/2,y0+i*lh,fs,'800','#ffffff',font,'center','middle')); g.restore();
+    const by=y0-lh/2+tot+B*0.03, be=E(0.3,0.5), bw=Math.min(w*0.3,B*0.5)*be; g.fillStyle=acc; roundRect(g,w/2-bw/2,by,bw,B*0.016,B*0.008); g.fill();
+    if(hk.sub){ g.save(); g.globalAlpha*=E(0.5,0.5); dtf(g,hk.sub,w/2,by+B*0.075,w*0.8,B*0.06,'600','rgba(226,232,240,.88)',font,'center','middle',0.5); g.restore(); }
+  } else{
+    const val=String(hk.value||''), maxW=w*0.88, fsN=Math.min(B*0.62,h*0.6), fn=fitFont(g,val,maxW,fsN,'800',font,0.35), hNum=fn*0.74, labH=hk.label?B*0.1:0, barH=B*0.05, subH=hk.sub?B*0.1:0, top=TOP+((SAFE-TOP)-(labH+hNum+barH+subH))/2, yc=top+labH+hNum/2;
+    const pc=o.all?1:E(0.12,0.9), shown=pc>=1?val:countText(val,pc), pop=E(0,0.35);
+    if(hk.label){ g.save(); g.globalAlpha*=E(0,0.4); dtf(g,hk.label,w/2,top+labH*0.45,w*0.8,B*0.08,'700','rgba(226,232,240,.92)',font,'center','middle',0.5); g.restore(); }
+    g.save(); g.globalAlpha*=pop; g.translate(w/2,yc); const sc=1+(1-pop)*0.12; g.scale(sc,sc); g.shadowColor=rgbaOf(col,0.55); g.shadowBlur=B*0.07; dtx(g,shown,0,0,fn,'800',col,font,'center','middle'); g.restore();
+    const by=top+labH+hNum+B*0.02, be=E(0.35,0.5), bw=Math.min(w*0.34,B*0.56)*be; g.fillStyle=acc; roundRect(g,w/2-bw/2,by,bw,B*0.016,B*0.008); g.fill();
+    if(hk.sub){ g.save(); g.globalAlpha*=E(0.55,0.5); dtf(g,hk.sub,w/2,by+B*0.075,w*0.8,B*0.06,'600','rgba(226,232,240,.88)',font,'center','middle',0.5); g.restore(); }
+  }
+  g.restore();
+}
+const BRAND_IMGS=new Map();   /* 내 이미지(데이터 주소) → 불러온 그림 */
+function brandImgGet(url){ if(!url) return null; const c=BRAND_IMGS.get(url); if(c) return c.ok?c.im:null; const im=new Image(), rec={im,ok:false,p:null}; BRAND_IMGS.set(url,rec); rec.p=new Promise(res=>{ im.onload=()=>{ rec.ok=true; try{ wantDraw(); }catch(e){} res(true); }; im.onerror=()=>res(false); im.src=url; }); return null; }
+async function brandImgsReady(){ const b=brandGet(); if(!b.logo||!(P.igs||[]).some(g=>g.greet)) return; brandImgGet(b.logo); const r=BRAND_IMGS.get(b.logo); if(r&&r.p) await r.p; }   /* 재생·내보내기 전에 내 이미지를 미리 불러 둠 */
+async function brandImgFromFile(file){
+  if(!file||!/^image\//.test(file.type)){ toast('이미지 파일을 선택해 주세요'); return; }
+  try{ const bm=await createImageBitmap(file), k=Math.min(1,640/Math.max(bm.width,bm.height)), cw=Math.max(1,Math.round(bm.width*k)), ch=Math.max(1,Math.round(bm.height*k)), cv=document.createElement('canvas'); cv.width=cw; cv.height=ch; cv.getContext('2d').drawImage(bm,0,0,cw,ch);
+    const url=cv.toDataURL('image/png'); if(url.length>900000){ toast('이미지가 너무 커요 — 더 작은 그림을 올려 주세요'); return; }
+    brandSet({logo:url}); toast('인사 화면 이미지를 저장했어요 — 앞으로 만드는 모든 영상의 인사 화면에 같은 모습으로 나와요'); renderInspector(true); igPostersAll(); if(!ENG.playing) paintFrame(ENG.pos); }
+  catch(e){ toast('그림을 읽지 못했어요: '+((e&&e.message)||'')); }
+}
+/* ── 편집 칸 — [인포] 탭 '🎬 오프닝' 칸 · 후킹/인사 클립을 골랐을 때의 편집창 ── */
+function brandRows(){
+  const b=brandGet();
+  return F.row('이름',F.txt('brand.name',b.name,{ph:'5분 증시 브리핑'}),'큰 글자로 나와요 — 숫자가 든 첫 낱말("5분")은 강조색으로 더 크게')
+    +F.row('영문',F.txt('brand.en',b.en,{ph:'Five-Minute Brief'}),'이름 위 알약에 넓게 벌려 나오는 영문 · 후킹 화면 모서리에도 작게')
+    +F.row('한 줄 문구',F.txt('brand.tag',b.tag,{ph:'(선택) 예: 시황을 5분 안에'}),'비우면 안 나와요')
+    +F.row('엠블럼 글자',F.txt('brand.mark',b.mark,{ph:'5'}),'5분 타이머 안에 들어갈 1~3자(비우면 타이머만)')
+    +F.row('강조색',F.col('brand.accent',b.accent))
+    +F.row('날짜',F.chk('brand.date',b.date,'나레이션에서 읽은 날짜를 보여 줘요'))
+    +F.row('오른쪽 그림','<span class="hint">'+(b.logo?'내 이미지':b.char?'캐릭터':'5분 타이머')+'</span>'+F.btn('igBrandImg','📎 내 이미지 올리기',{title:'로고·마스코트 그림(PNG 권장) — 모든 영상의 인사 화면에 같은 모습으로 나와요'})+F.btn('igBrandImgDel','지우기',{dis:!b.logo})+F.chk('brand.char',b.char,'내 이미지 대신 이 영상의 캐릭터'))
+    +'<div class="hint pad">이 칸의 설정은 <b>모든 영상 공통</b>이에요 — 한 번 정해 두면 영상을 만들 때마다 인사 화면이 똑같이 나와요. 지금 영상의 인사 화면에는 바로 반영돼요.</div>';
+}
+function inspOpenKit(){
+  const f=opFind(P), has=(P.igs||[]).some(g=>g.hook||g.greet), cf=P.cfg.info;
+  let h='<details class="vs-det" id="vsOpKit"'+(UI.opKit?' open':'')+'><summary>🎬 오프닝 — 후킹 · 고정 인사 화면 <span class="hint">'+(has?'만들어져 있어요':'아직 없어요')+'</span></summary>';
+  h+='<div class="hint pad">① <b>후킹</b> — 첫 문장이 던지는 오늘의 핵심 수치·한마디 하나를 큼직하게 ② <b>인사 화면</b> — "안녕하십니까 … 5분 증시 브리핑입니다"에 늘 같은 모습의 브랜드 화면</div>';
+  h+=F.row('자동으로',F.chk('cfg.info.hook',cf.hook!==false,'후킹 화면')+F.chk('cfg.info.greet',cf.greet!==false,'인사 화면'),'🚀 한 번에 만들기에서 만들지');
+  h+=brandRows();
+  h+='<div class="vs-btns">'+F.btn('igOpen','🎬 오프닝 만들기',{c:'pri',title:'오프닝에서 인사 문장과 그 앞 후킹 문장을 찾아 후킹·인사 화면을 만들어요(이미 있으면 새로 만들어 바꿔요 — 그 구간의 자동 생성 인포그래픽은 이 화면들이 맡아요)'})+F.btn('igBrandSeek','▶ 인사 화면 보기',{dis:!has})+F.btn('igBrandReset','↺ 기본값',{title:'이름·영문·색·이미지를 처음 모습으로'})+'</div>';
+  h+='<div class="hint pad">'+(f?'오프닝에서 찾은 곳 — '+(f.h0>=0?'후킹 '+(f.h0+1)+(f.h1>f.h0?'~'+(f.h1+1):'')+'번 문장 · ':'후킹 문장 없음 · ')+'인사 '+(f.g0+1)+(f.g1>f.g0?'~'+(f.g1+1):'')+'번 문장':'오프닝에서 인사 문장("안녕하십니까·안녕하세요")을 찾지 못했어요')+' · 맨 앞 오프닝 타이틀(무음 2.5초)이 있으면 그 뒤에 나와요 — 후킹으로 바로 시작하려면 [타이틀] 탭에서 오프닝 타이틀을 꺼 주세요</div>';
+  return h+'</details>';
+}
+function opEditor(g){   /* 후킹·인사 클립을 골랐을 때의 편집창 */
+  const pre='ig:'+g.id+'::';
+  let h='<div class="vs-sec">'+(g.greet?'인사 화면':'오프닝 후킹')+' <span class="hint">'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+r2(g.e-g.s)+'초 · '+(g.greet?'매일 같은 고정 화면(설정은 모든 영상 공통)':(g.src==='ai'?'AI 가 고른 수치·한마디':'규칙으로 고른 수치·한마디'))+'</span></div>';
+  h+=F.row('시작·끝',F.num(pre+'s',r2(g.s),{min:0,step:0.1})+F.btn('igPhS','재생헤드로',{d:g.id})+'<span class="hint">~</span>'+F.num(pre+'e',r2(g.e),{min:0,step:0.1})+F.btn('igPhE','재생헤드로',{d:g.id}),'초 — 타임라인에서 끌어도 돼요');
+  if(g.hook){ const k=g.hk||{}, kind=k.kind==='text'?'text':'num';
+    h+=F.row('종류',F.sel(pre+'hk.kind',kind,[['num','수치 하나'],['text','한마디']]));
+    if(kind==='num') h+=F.row('이름',F.txt(pre+'hk.label',k.label||'',{ph:'나스닥100'}),'수치 위에 작게')+F.row('수치',F.txt(pre+'hk.value',k.value||'',{ph:'+3.4%'}),'부호·단위까지 — 숫자 부분이 올라가며 나와요')+F.row('색',F.sel(pre+'hk.tone',k.tone||'flat',[['up','오름색(한국식 빨강)'],['down','내림색(한국식 파랑)'],['flat','흰색']]));
+    else h+=F.row('한마디',F.txt(pre+'hk.text',k.text||'',{ph:'금리 인하 기대, 하루 만에 꺾였다'}),'16자 안팎 — 세 줄까지 자동으로 나뉘어요');
+    h+=F.row('덧글',F.txt(pre+'hk.sub',k.sub||'',{ph:'(선택) 한 줄 보충'}));
+  } else{ h+=F.row('날짜 글',F.txt(pre+'gr.dtx',g.dtx||'',{ph:'2026. 11. 10 (화)'}),'나레이션에서 읽은 날짜 — 고쳐도 돼요(비우면 안 나와요)')+brandRows(); }
+  h+='<div class="vs-btns">'+F.btn('igPlay','▶ 이 구간 재생',{d:g.id})+F.btn('igOpen','🎬 오프닝 다시 만들기',{title:'후킹·인사 화면을 오프닝 문장에서 다시 만들어요'})+F.btn('igDelAll','🗑 삭제',{d:g.id,c:'dng'})+'</div>';
+  return h;
+}
+function opClipSet(g,k,v){   /* 후킹(hk.*)·인사(gr.*) 글 칸 */
+  if(k.indexOf('hk.')===0){ g.hk=g.hk||{}; const f=k.slice(3); if(f==='kind'){ g.hk.kind=v==='text'?'text':'num'; return 'insp'; } if(f==='tone'){ g.hk.tone=/^(up|down|flat)$/.test(v)?v:'flat'; return 'draw'; } g.hk[f]=String(v==null?'':v).slice(0,60); return 'draw'; }
+  if(k==='gr.dtx'){ g.dtx=String(v==null?'':v).slice(0,30); return 'draw'; }
+  return 'draw';
+}
+function setBrandField(k,v,final){   /* brand.* 칸 — 모든 영상 공통 설정에 저장하고 지금 영상의 인사 화면에 바로 반영 */
+  const patch={}; if(k==='date'||k==='char') patch[k]=!!v; else if(k==='accent'){ if(/^#[0-9a-fA-F]{6}$/.test(String(v))) patch.accent=String(v); } else if(k==='name'||k==='en'||k==='tag'||k==='mark') patch[k]=String(v==null?'':v).slice(0,40); else return 'draw';
+  brandSet(patch); opBrandSync(); if(final) igPostersAll(); return (k==='char'||k==='date')?'insp':'draw';
+}
+/* ══ /v172 ══ */
 /* ══ v144 (2026-11-03) — ✨ 화면 구성 업그레이드 ═══════════════════════════════════════════════════════════════════════════════════════════
    한 번에 만들기 뒤 [✨ 화면 구성 업그레이드](머리 줄·[인포] 탭·싱크 점검 창) — AI 가 ① 영상 전체(줄거리·챕터 역할·핵심 수치·용어)를 먼저 파악하고(upBrief) ② 장면을 4개씩 묶어 장면마다 지금의 화면 구성
    (구성요소 JSON + 측정값)을 '명료함·단순함(미니멀)·맥락 적합·사실/시점' 기준으로 1~5점 매겨 검토한 뒤(SYS_UP·upBatchUser) ③ 모자란 장면만 새 구성(삭제·수정·보완)을 돌려주면 applyInfoEdit 로 반영한다(upApplyScene).
@@ -56312,6 +56608,8 @@ const upManual=g=>(g.items||[]).some(it=>it.bx)&&!g.tpl;   /* 직접 정한 크�
 function upLockWhy(sc,gs,lock){   /* 바꾸지 않을 장면이면 이유, 아니면 '' */
   if(gs.some(g=>g.sm)) return '3줄 요약';
   if(gs.some(g=>g.sch)) return '경제 일정';
+  if(gs.some(g=>g.hook)) return '오프닝 후킹';
+  if(gs.some(g=>g.greet)) return '인사 화면';
   if(gs.some(g=>g.ov)) return '오프닝 개요';
   if(!gs.length&&igCovered(sc)) return '앞뒤 장면에 걸친 화면이 덮고 있어요';
   if(lock&&gs.some(g=>g.src==='hand')) return '손으로 만든 화면';
@@ -56723,7 +57021,7 @@ function klDtf2(E,s,x,y,maxW,maxH,fs,wt,col,al,minK){   /* 한 줄로 줄이면 
 const klFxClipSig=g=>{ let h=2166136261; const s=[g.mode,styOf(g),igSig(g),P.cfg.w,P.cfg.h].join('|'); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); };   /* 이미 검사한 클립(내용·배치가 그대로)은 다음에 다시 안 따짐 — g.fx */
 function klFxLayout(ig,nofit){ return buildIgLay(klCtx(),P.cfg.w,P.cfg.h,ig,nofit?{nofit:1}:undefined); }
 function klFxNeeds(g){   /* 템플릿으로 배치한 클립 중 지금 배치에서 글자를 줄여야 하거나 넘침이 남는 것 */
-  if(!g||g.ov||g.sm||g.sch||g.src==='hand'||g.mode==='title'||!g.tpl||!LE_MODES[g.mode]||!igBoxOK(g)) return false;
+  if(!g||g.ov||g.sm||g.sch||g.hook||g.greet||g.src==='hand'||g.mode==='title'||!g.tpl||!LE_MODES[g.mode]||!igBoxOK(g)) return false;
   if(g.fx&&g.fx===klFxClipSig(g)) return false;
   let L; try{ L=klFxLayout(g); }catch(e){ if(window.__klStrict) throw e; return false; }
   return !!L&&(L.cells||[]).some(c=>c.fsc>KL_FX_EPS||(c.k0&&c.k<c.k0*0.9));
@@ -56808,6 +57106,8 @@ function klRowHtml(d){   /* 대화상자 — 구성요소·배치 선택 줄 */
     +dchk('iguar',d.iguar,'모든 장면에 인포그래픽 — 자막·음성이 있으면 빠짐없이 만들기')+'<div class="hint">인사·오프닝, 구독·좋아요 안내, 투자 면책 멘트, 숫자가 없는 해설, 자막과 같은 내용뿐인 장면도 건너뛰지 않고 그 말의 핵심 구절·행동 목록으로 인포그래픽을 만들어요(AI 에게도 skip 하지 말라고 요청해요). 자막과 같은 뜻의 글을 거르는 설정은 그대로고, <b>거르고 나서 아무것도 안 남는 장면만</b> 마지막에 구제해요. 이미 만든 프로젝트는 [🚀 한 번에 만들기]를 다시 누르면 인포그래픽이 없는 장면을 채워요. 끄면 예전처럼 핵심이 없는 장면은 원래 화면 그대로 나가요.</div>'
     +dchk('isum',d.isum,'마지막 "핵심 3줄 요약"은 한 화면에 — 줄마다 말하는 순서·타이밍에 맞춰')+'<div class="hint">마무리 챕터에서 요약을 안내하는 문장과 첫째·둘째·셋째 줄을 찾아, 한 화면에 줄이 말해지는 순간마다 하나씩 나타나게 정리해요(AI 로 만들 때는 줄 글을 AI 가 다듬어요 — 요청이 한 번 더 들어가요). 그 문장들은 장면별 인포그래픽에서 빠져요. [인포] 탭의 [📝 3줄 요약 만들기]로 따로 만들 수도 있어요. 끄면 예전처럼 장면별로만 만들어요.</div>'
     +dchk('isch',d.isch,'경제 일정은 장면을 넘기지 않고 한 화면에 — 일정 전체를 말하는 순서·타이밍에 맞춰')+'<div class="hint">경제 일정 챕터에서 일정을 짚는 문장(예: "이번 주 경제 일정을 살펴보겠습니다" ~ 마지막 일정 설명)을 찾아, 장면이 바뀌어도 끊기지 않는 한 화면에 날짜·일정이 말해지는 순간마다 하나씩 나타나 끝날 무렵 전체 일정표가 되게 만들어요(AI 로 만들 때는 일정 글을 AI 가 다듬어요 — 요청이 한 번 더 들어가요). 그 문장들은 장면별 인포그래픽에서 빠져요. [인포] 탭의 [🗓 경제 일정 한 화면]으로 따로 만들 수도 있어요(이미 장면별로 만든 프로젝트도 한 화면으로 바꿔요). 끄면 예전처럼 장면별로만 만들어요.</div>'
+    +dchk('ihook',d.ihook,'오프닝 후킹 — 첫 문장의 핵심 수치·한마디 하나를 큼직하게')+'<div class="hint">인사 앞에서 진행자가 던지는 후킹 문장에서 오늘의 핵심 수치 하나(숫자가 올라가며 나와요) 또는 한마디를 골라 화면 한가운데에 크게 띄워요(AI 로 만들 때는 AI 가 골라요 — 요청이 한 번 더 들어가요). 끄면 예전처럼 장면별로만 만들어요.</div>'
+    +dchk('igreet',d.igreet,'인사 화면 — 매일 같은 고정 브랜드 화면')+'<div class="hint">"안녕하십니까. 11월 10일 화요일 5분 증시 브리핑입니다." 같은 인사 문장에 <b>언제나 같은 모습</b>(5분 타이머 엠블럼 + 이름 + 영문 + 날짜)의 화면을 올려요. 이름·영문·색·내 이미지는 [인포] 탭 <b>🎬 오프닝</b> 칸에서 한 번 정해 두면 모든 영상에 공통이에요. 후킹·인사 문장은 장면별 인포그래픽에서 빠져요. [인포] 탭의 [🎬 오프닝 만들기]로 따로 만들 수도 있어요. 끄면 예전처럼 장면별로만 만들어요.</div>'
     +'<div class="hint" style="margin-top:6px"><b>본문에 쓰지 않을 글</b> — 영상 제목·시리즈명·브랜드는 머리말과 타이틀 화면에서만 써요. 영상 제목, 오프닝 챕터 이름, [타이틀] 탭에 적은 글, The FIVE, 스토리보드에서 장면마다 되풀이되는 로고 글은 자동으로 찾아 본문에서 빼요. 빠진 게 있으면 아래에 쉼표로 적어 주세요(다음 영상에도 기억해요).</div>'
     +'<input type="text" class="vs-in mobile-keep" data-d="ionly" style="width:100%" maxlength="300" value="'+esc(d.ionly||'')+'" placeholder="예: Five Minute Market Brief, The FIVE" aria-label="본문에 쓰지 않을 글">';
 }
@@ -57141,7 +57441,7 @@ function klCleanExisting0(only){
   if(!klDetailOn()||!P||!(P.igs||[]).length) return 0;
   let removed=0, cleaned=0; const lost=[], hit=[];
   (P.igs||[]).slice().forEach(g=>{
-    if(!g||(only&&g!==only)||g.ov||g.sm||g.sch||g.src==='hand'||g.mode==='title'||!(g.items||[]).length) return;
+    if(!g||(only&&g!==only)||g.ov||g.sm||g.sch||g.hook||g.greet||g.src==='hand'||g.mode==='title'||!(g.items||[]).length) return;
     const sc=P.scenes[sceneIdx(g.s)]; if(!sc) return;
     const all=sentsOf(P,sc), ctx=Object.assign(igCtx(sc),{ss:all,all}), sig0=g.items.map(i=>i.id).join(','), txt0=klTextSig(g.items), snap=g.items.map(it=>({it,ps:(it.parts||[]).slice()}));
     let out; try{ out=klDetailItems(g.items.slice(),all,ctx,false,{title:g.title}); }catch(e){ if(window.__klStrict) throw e; return; }
@@ -57273,7 +57573,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v171';
+const KL_BUILD='v172';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -57337,7 +57637,7 @@ function klPartsEcho(it,keys,refs){   /* 수치·날짜 없는 항목(이름·�
   if(!keep.length) return null; if(keep.length!==parts.length) it.parts=keep; return it;
 }
 function klTitleEchoFix(g){   /* 제목·윗글을 손으로 고쳐 본문 글과 똑같아졌으면 그 블록을 뺌(자동 생성 클립만) — 바꿨으면 true */
-  if(!klDetailOn()||!g||g.src==='hand'||g.ov||g.sm||g.sch||g.mode==='title'||!Array.isArray(g.items)||!g.items.length) return false;
+  if(!klDetailOn()||!g||g.src==='hand'||g.ov||g.sm||g.sch||g.hook||g.greet||g.mode==='title'||!Array.isArray(g.items)||!g.items.length) return false;
   const keys=[g.title,g.kicker].map(t=>klNK(cleanChap(t))).filter(k=>k.length>=2); if(!keys.length) return false;
   const bad=it=>{ if(!it||it.type==='agenda'||it.ed) return false; const d=klOf(it.type), fid=d?d.fid:''; return (it.type==='point'||it.type==='quote'||it.type==='title'||fid==='x')?klExact(it.text,keys):(klTextCard(it)&&klExact(it.value,keys)); };
   const gone=g.items.filter(bad); if(!gone.length) return false;
@@ -59610,7 +59910,7 @@ async function bufOf(bid){
   const buf=await getAc().decodeAudioData((await b.arrayBuffer()).slice(0)); BUF.set(bid,buf); return buf;
 }
 async function ensureBuffers(){ for(const k of P.chunks){ if(k.bid&&k.state==='done') await bufOf(k.bid); } if(P.cfg.bgm.bid) await bufOf(P.cfg.bgm.bid); }
-async function ensureImages(){ for(const sc of P.scenes){ if(sc.vis.kind==='image'&&sc.vis.bid) await loadImg(sc.vis.bid); } if(P.char&&P.char.bid) await loadImg(P.char.bid); await ensureBgImages(); }
+async function ensureImages(){ for(const sc of P.scenes){ if(sc.vis.kind==='image'&&sc.vis.bid) await loadImg(sc.vis.bid); } if(P.char&&P.char.bid) await loadImg(P.char.bid); await ensureBgImages(); await brandImgsReady(); }
 const TK={w:null,url:null,fn:null,iv:0};
 function tickStart(fn,fps){
   tickStop(); TK.fn=fn; const ms=Math.max(8,Math.round(1000/(fps||30)));
@@ -60152,7 +60452,7 @@ function modalHtml(){
    +'<button class="vs-mb mobile-keep" data-a="splitPh" title="재생헤드 위치에서 장면 나누기 (S)">✂ 여기서 나누기</button><button class="vs-mb mobile-keep" data-a="audCut" title="음성 박스를 눌러 자를 곳에 재생 위치(빨간 선)를 놓고 누르면 그 자리에서 음성 박스를 둘로 잘라요 — 자른 조각은 따로 옮기고·길이를 줄이고·지울 수 있어요">✂ 음성 자르기</button><button class="vs-mb mobile-keep" data-a="addX" title="재생헤드 위치에 자막 추가">＋ 자막</button><button class="vs-mb dng mobile-keep" id="vsTlDel" data-a="tlDel" disabled title="타임라인에서 요소를 눌러 고르면 지울 수 있어요">🗑 삭제</button><span class="hint" id="vsTlHint">요소를 눌러 고르고 Delete 키로 지워요 · 끌어서 조정</span></div>'
    +'<div class="vs-tlw"><div class="vs-tll"><i style="height:22px"></i><i style="height:18px">타이틀</i><i style="height:40px">화면</i><i id="vsTllG" style="height:40px">인포</i><i id="vsTllC" style="height:22px">구성</i><i style="height:30px">자막</i><i style="height:42px">음성</i><i style="height:18px">BGM</i></div><div class="vs-tls" id="vsTls"><div class="vs-tli" id="vsTlIn"></div></div></div></div>'
    +'<div class="vs-dg" id="vsDlg"></div>'
-   +'<input type="file" id="vsFVis" accept="image/*,video/*" style="display:none"><input type="file" id="vsFAud" accept="audio/*,video/*" style="display:none"><input type="file" id="vsFBgm" accept="audio/*" style="display:none"><input type="file" id="vsFChar" accept="image/*" style="display:none"><input type="file" id="vsFBg" accept="image/*,video/*" style="display:none">'
+   +'<input type="file" id="vsFVis" accept="image/*,video/*" style="display:none"><input type="file" id="vsFAud" accept="audio/*,video/*" style="display:none"><input type="file" id="vsFBgm" accept="audio/*" style="display:none"><input type="file" id="vsFChar" accept="image/*" style="display:none"><input type="file" id="vsFBrand" accept="image/*" style="display:none"><input type="file" id="vsFBg" accept="image/*,video/*" style="display:none">'
    +'</div>';
 }
 function paintSaved(){ const e=$('vsSaved'); if(e) e.textContent=UI.saved?'✓ 저장됨':'● 저장 안 됨'; if(e) e.className='vs-saved'+(UI.saved?'':' un'); }
@@ -60570,6 +60870,7 @@ function setField(path,v,el,final){
   }
   else if(path==='p.charPrompt'){ P.charPrompt=String(v||''); redo=''; }
   else if(path==='ui.igType'){ UI.igType=v; redo=''; }
+  else if(path.indexOf('brand.')===0){ redo=setBrandField(path.slice(6),v,final); }   /* v172: 브랜드(인사 화면) 설정 — 모든 영상 공통 */
   else if(path.indexOf('ig:')===0||path.indexOf('igp:')===0){ redo=setIgField(path,v); if(final){ const gg=igById(path.split(':')[1]); if(gg) igPoster(gg); if(path.indexOf(':fz.')>0) fzBadgeRefresh(); } }
   else if(path.indexOf('sc.')===0&&c) redo=setSceneField(c,path.slice(3),v);
   else if(path.indexOf('ss:')===0) redo=setSentField(path,v);
@@ -60851,7 +61152,7 @@ function slPrint(q,rec){
   fp.bgm={has:!!(cf.bgm&&cf.bgm.bid),vol:+(cf.bgm&&cf.bgm.vol)||0};
   fp.ask={info:slTxt(cf.prompts&&cf.prompts.info,160),sub:slTxt(cf.prompts&&cf.prompts.sub,160)};
   /* 인포그래픽 — 클립(개요 제외)·블록 분포와, 직접 손댄 흔적(글 위치 ta·va, 글자 크기 fz, 상자 배치 bx, 길이 du) */
-  const body=IG.filter(g=>!g.ov&&!g.sm&&!g.sch), blocks=[]; body.forEach(g=>g.items.forEach(it=>{ if(it&&it.type) blocks.push(it); }));
+  const body=IG.filter(g=>!g.ov&&!g.sm&&!g.sch&&!g.hook&&!g.greet), blocks=[]; body.forEach(g=>g.items.forEach(it=>{ if(it&&it.type) blocks.push(it); }));
   const cov=dur>0?Math.min(1,IG.reduce((a,g)=>a+Math.max(0,(+g.e||0)-(+g.s||0)),0)/dur):0, multi=blocks.filter(it=>Array.isArray(it.parts)&&it.parts.length);
   fp.info={n:body.length,ovn:IG.length-body.length,cover:r2(cov),modes:slTally(body,g=>g.mode),styles:slTally(IG,g=>g.sty||'news'),srcs:slTally(body,g=>g.src||''),nb:blocks.length,types:slTally(blocks,it=>it.type),parts:multi.length?r2(multi.reduce((a,it)=>a+it.parts.length,0)/multi.length):0};
   const tw={}, gz={}, pf=(dst,fz)=>{ if(fz&&typeof fz==='object') Object.keys(fz).forEach(k=>{ const v=+fz[k]; if(v>0&&Math.abs(v-1)>=0.04) (dst[k]=dst[k]||[]).push(r2(v)); }); };
@@ -61021,7 +61322,7 @@ function slBlock(kind){
 function slReplay(prof,ids){
   const H=prof&&prof.agg&&prof.agg.tweaks; if(!H||!ids||!ids.size) return 0; let n=0;
   (P.igs||[]).forEach(g=>{
-    if(!ids.has(g.id)||g.ov||g.sm||g.sch||!alOK(g)) return;
+    if(!ids.has(g.id)||g.ov||g.sm||g.sch||g.hook||g.greet||!alOK(g)) return;
     if(Object.keys(H.gfz).length&&!g.fz){ g.fz=Object.assign({},H.gfz); n++; }
     (g.items||[]).forEach(it=>{
       const t=it.type; let c=false;
@@ -61795,7 +62096,7 @@ async function autoMake(d,lp){
   if(d.asub){ await runSubs('all'); if(UI.aborted) return; }
   if(cu){ const us=cardUniSrc(), n=cardUnify(us,!!(us&&us.from==='scene')); if(n){ commit('카드 색 통일'); igPostersAll(true); } }   /* v149: 모든 장면 카드를 한 색으로 — 맞출 색이 있으면 장면 배경으로(지금 고른 장면의 카드 색은 장면 배경을 직접 골랐어도 그 위에, 저장해 둔 공통 색은 장면 배경이 기본일 때만), 장면마다 따로 정한 색은 지움 */
   if(d.akind==='card'){ P.scenes.forEach(c=>{ if((c.vis.kind||'none')==='none'){ setCard(c); if(sb) sbMkCard(c,cu?{noColor:true}:undefined); } }); commit('카드'); }
-  else if(d.akind==='info'){ klCleanExisting(); const its=genTargets('empty','info'); if(its.length){ const before=new Set((P.igs||[]).map(g=>g.id)); await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,remember:true,style:d.istyle,sm:'auto',sch:'auto'}); if(UI.aborted) return; if(lp){ const ids=new Set((P.igs||[]).filter(g=>!before.has(g.id)).map(g=>g.id)); lh=slReplay(lp,ids); if(lh){ igPostersAll(true); commit('내 스타일 손질'); } } } if(!its.length&&((klSumOn()&&!(P.igs||[]).some(g=>g.sm)&&smSpan(P))||(klSchOn()&&!(P.igs||[]).some(g=>g.sch)&&schSpan(P)))){ await runInfo([],{lay:d.ilay,mode:d.imode,char:d.ichar,remember:false,style:d.istyle,sm:'auto',sch:'auto'}); if(UI.aborted) return; } if(sb){ its.forEach(it=>{ const c=P.scenes.find(x=>x.id===it.id); if(c) sbTopUpInfo(c); }); P.scenes.forEach(c=>{ if(['none','card'].indexOf((c.vis&&c.vis.kind)||'none')>=0) sbMkCard(c,{noText:true,noColor:cu}); }); } }
+  else if(d.akind==='info'){ klCleanExisting(); const its=genTargets('empty','info'); if(its.length){ const before=new Set((P.igs||[]).map(g=>g.id)); await runInfo(its,{lay:d.ilay,mode:d.imode,char:d.ichar,remember:true,style:d.istyle,sm:'auto',sch:'auto',op:'auto'}); if(UI.aborted) return; if(lp){ const ids=new Set((P.igs||[]).filter(g=>!before.has(g.id)).map(g=>g.id)); lh=slReplay(lp,ids); if(lh){ igPostersAll(true); commit('내 스타일 손질'); } } } if(!its.length&&((klSumOn()&&!(P.igs||[]).some(g=>g.sm)&&smSpan(P))||(klSchOn()&&!(P.igs||[]).some(g=>g.sch)&&schSpan(P))||((klHookOn()||klGreetOn())&&!(P.igs||[]).some(g=>g.hook||g.greet)&&opFind(P)))){ await runInfo([],{lay:d.ilay,mode:d.imode,char:d.ichar,remember:false,style:d.istyle,sm:'auto',sch:'auto',op:'auto'}); if(UI.aborted) return; } if(sb){ its.forEach(it=>{ const c=P.scenes.find(x=>x.id===it.id); if(c) sbTopUpInfo(c); }); P.scenes.forEach(c=>{ if(['none','card'].indexOf((c.vis&&c.vis.kind)||'none')>=0) sbMkCard(c,{noText:true,noColor:cu}); }); } }
   else if(d.akind==='image'||d.akind==='video'){ if(!geminiKey()) toast('키가 없어 화면은 카드로 둬요'); else{ await qRun(genTargets('empty',d.akind)); if(UI.aborted) return; } }
   if(sb) commit('스토리보드 적용'); if(lt) commit('내 스타일 전환');
   renderAll(); const rep=syncReport(); if(d.akind==='info'){ UI.upHint=true; paintUpBtn(); } progress(1,'한 번에 만들기 끝 · 점검 '+rep.length+'건'+(d.akind==='info'?' · ✨ 화면 구성 업그레이드로 다듬어 볼 수 있어요':'')+(sb?' · 📐 스토리보드 적용(전환 '+pr.tr+'곳 · 이미지 움직임 '+pr.mo+'곳)':'')+(lp?' · 🧠 내 스타일 반영(영상 '+lp.n+'개'+(lp.ai?' · AI 요약':'')+(lh?' · 인포그래픽 손질 '+lh+'곳':'')+(lt?' · 챕터 전환 '+lt+'곳':'')+')':'')); dlgSync();
@@ -61937,6 +62238,7 @@ function bindEvents(el){
   el.addEventListener('input',e=>{ const t=e.target; if(P&&t.dataset&&t.dataset.f==='cfg.voice.style') vpTouch(t.value); });   /* v157: 음성 프롬프트 칸을 고치는 동안 [저장] 단추 색·안내 */
   el.addEventListener('focusin',e=>{ const t=e.target, f=t&&t.dataset&&t.dataset.f; if(!f||!P) return; const m=/^tt:(\d+):(?:gk|lh|gs)$/.exec(f); if(m) ttShow(+m[1]); else if(/^cfg\.title\.(?:gk|lh|gs)$/.test(f)) ttShow(null); });   /* v147: 간격 칸을 누르면 그 타이틀이 미리보기에 보이게 */
   el.addEventListener('change',e=>{ const t=e.target; if(t.dataset&&t.dataset.f!=null&&t.dataset.f!=='') onField(e,true); else if(t.dataset&&t.dataset.d!=null) onDlgField(e); });
+  el.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.id==='vsOpKit') UI.opKit=!!d.open; },true);   /* v172: '🎬 오프닝' 칸을 펼쳐 둔 채로 값을 고칠 수 있게(toggle 은 거품이 없어 캡처로 받음) */
   const sk=$('vsSeek'); sk.addEventListener('input',()=>{ if(P) seekTo(sk.value/1000*P.dur); });
   const z=$('vsZoom'); z.addEventListener('input',()=>setZoom(+z.value));
   const et=$('vsEdTxt'); et.addEventListener('input',()=>{ UI.edTxt=et.value; }); et.addEventListener('keydown',e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); runSceneEdit(); } });
@@ -61947,6 +62249,7 @@ function bindEvents(el){
   $('vsFAud').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P){ if(P.chunks.some(k=>k.bid)&&!confirm('지금 있는 음성을 이 파일로 바꿀까요?')) return; importNarration(f); } });
   $('vsFBg').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P&&UI.bgTgt) bgFromFile(UI.bgTgt,f); });   /* v148: 배경 이미지·동영상 올리기 */
   $('vsFChar').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f&&P) charFromFile(f); });
+  $('vsFBrand').addEventListener('change',e=>{ const f=e.target.files[0]; e.target.value=''; if(f) brandImgFromFile(f); });
   $('vsFBgm').addEventListener('change',async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f||!P) return; try{ const b=P.cfg.bgm, id=putBlob(f); BUF.delete(b.bid); b.bid=id; b.name=f.name.replace(/\.\w+$/,''); await bufOf(id); commit('배경음악'); renderAll(); }catch(x){ toast('음악 파일을 읽지 못했어요'); } });
 }
 function ensureModal(){
@@ -62025,7 +62328,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,tlSameCC,tlKindSum,mqKey,mqKeyAt,tlMultiHint,tlCopyNote,tmulMenuMix,tmulDeleteMix,tlMvPlanSubs,tlMvPlanAuds,tlMvPlanMix,tlMvDoMix,tlDragSetMix,TL_PICK,TL_MIXMV,tlMvFinish,tlCompsMove,tlDownGrp,tlMenu,tlSelFrom,tselPaint,tlDelete,tselClear,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,igMovePart,schSpan,schWindow,schDates,schAi,schBlock,schPlan,schApply,schIdsOfClip,klSchOn,isEcoChap,scEndSet,scEndMove,tlRipple,tlRippleList,tlRippleKey,tlRipRelax,tlStartOf,tlSceneOfTitle,tlTitlesOfScenes,tlTitlesApply,ttShiftApply,scSetStarts,tlMvPlanScenes,tlMvPlanTitles,tlMvPlanBgm,tlPreGrp,tlCompsExtend,tlPaintEl,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,igMovePart,opFind,opWindow,opPlan,opApply,opHookRule,opHookAi,opDateText,opTouch,brandGet,brandSet,brandSnap,drawGreet,drawHook,inspOpenKit,klHookOn,klGreetOn,schSpan,schWindow,schDates,schAi,schBlock,schPlan,schApply,schIdsOfClip,klSchOn,isEcoChap,scEndSet,scEndMove,tlRipple,tlRippleList,tlRippleKey,tlRipRelax,tlStartOf,tlSceneOfTitle,tlTitlesOfScenes,tlTitlesApply,ttShiftApply,scSetStarts,tlMvPlanScenes,tlMvPlanTitles,tlMvPlanBgm,tlPreGrp,tlCompsExtend,tlPaintEl,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
