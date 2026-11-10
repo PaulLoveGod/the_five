@@ -2961,6 +2961,7 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-pt .n{width:16px;height:16px;border-radius:50%;background:#243149;color:#cbd5e1;font-size:10px;display:inline-flex;align-items:center;justify-content:center}
 .vs-ov .vs-in.sm{width:78px;padding:3px 5px;font-size:11px}
 .vs-pt .vs-in.sm[type=text]{flex:1 1 110px;width:auto;min-width:80px}.vs-pt select.vs-in{width:auto;max-width:96px}
+.vs-pt .vs-mb.mv{min-width:26px;padding:0 6px;font-size:10px}
 .vs-sc .r1 em.ig{background:#064e3b;color:#a7f3d0}
 .vs-it{margin:8px 0;padding:8px 9px;border:1px solid #1f2d46;border-radius:8px;background:#0e1829}
 .vs-it .r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -5345,7 +5346,7 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
           onclick="toggleHeatmapManual()">Manual</button>
         <button id="hmCaptureBtn" class="btn mobile-keep"
           style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4e3d7a;border:none;border-radius:3px;font-weight:700;color:#fff"
-          onclick="captureHeatmapSection()" title="히트맵 전체 캡쳐 후 고해상도 이미지로 붙여넣기 — 누르면 이 탭의 화면 공유 허용 창이 뜨고, 허용하면 약 1초 후 캡쳐한 뒤 화면 공유를 자동으로 중지합니다">📸 캡쳐</button>
+          onclick="captureHeatmapSection()" title="히트맵 전체 캡쳐 후 고해상도 이미지로 붙여넣기 — 누르면 먼저 히트맵 섹션을 화면 가운데로 스크롤한 뒤 이 탭의 화면 공유 허용 창이 뜨고, 허용하면 약 1초 후 캡쳐한 뒤 화면 공유를 자동으로 중지합니다">📸 캡쳐</button>
         <button id="heatmapBtn" class="btn mobile-keep"
           style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#f97316;border:none;border-radius:3px;font-weight:700;color:#fff"
           onclick="updateHeatmap()" title="히트맵 업데이트">🔄 업데이트</button>
@@ -27374,6 +27375,42 @@ async function _hmGetCaptureStream(){
   return stream;
 }
 
+/* [2026-11-10] 📸 캡쳐를 누르면 제일 먼저 S&P 500 히트맵 섹션(제목줄+히트맵)을 화면 가운데로 스크롤함(captureHeatmapSection) —
+   히트맵이 화면 아래·가장자리에 걸쳐 있으면 화면 공유 프레임에서 잘리거나, 맨 위 고정 메뉴바(.main-btn-bar)에 가려진 채 찍히기 때문.
+   '화면'은 그 메뉴바 아래부터 창 맨 아래까지 실제로 보이는 영역(_hmViewArea)이고, 섹션이 그 영역보다 크면(창이 작은 경우) 캡쳐 대상인 히트맵(iframe)을 가운데로 맞춤.
+   behavior:'instant' — 허용 창(getDisplayMedia)은 클릭 직후 같은 흐름에서 불러야 하므로(사용자 활성화 유지) 스크롤이 끝나자마자 이어지도록 부드러운 스크롤은 쓰지 않음.
+   스크롤은 덤이므로 어떤 이유로든 실패해도 캡쳐 자체는 막지 않음(호출부에서 try/catch) */
+function _hmViewArea(){
+  let top=0;
+  const bar=document.querySelector('.main-btn-bar');
+  if(bar){
+    const cs=getComputedStyle(bar);
+    if(cs.display!=='none' && cs.position==='fixed') top=Math.max(0, bar.getBoundingClientRect().bottom);
+  }
+  return {top:top, bottom:window.innerHeight};
+}
+/* 가운데로 실제 스크롤했으면 true (이미 가운데이거나 대상이 없으면 false) */
+function _hmCenterSection(){
+  const ifr=g('heatmapContent')?.querySelector('iframe');
+  let el=g('sdColHmL')||g('heatmapWrap')||ifr;
+  if(!el) return false;
+  const a=_hmViewArea();
+  let r=el.getBoundingClientRect();
+  if(ifr && r.height>a.bottom-a.top){ el=ifr; r=ifr.getBoundingClientRect(); }   /* 섹션이 보이는 영역보다 크면 히트맵만이라도 온전히 보이게 */
+  const dy=(r.top+r.bottom)/2-(a.top+a.bottom)/2;
+  if(Math.abs(dy)<1) return false;
+  try{ window.scrollBy({top:dy, left:0, behavior:'instant'}); }
+  catch(_){ window.scrollBy(0,dy); }
+  return true;
+}
+/* 히트맵(iframe)이 보이는 영역 안에 통째로 들어와 있는지 */
+function _hmFitsInView(el){
+  const a=_hmViewArea(), r=el.getBoundingClientRect();
+  return r.top>=a.top-1 && r.bottom<=a.bottom+1;
+}
+/* 허용하면서 브라우저가 끼운 '공유 중' 표시줄로 보이는 화면이 줄어 히트맵이 잘리게 됐을 때 다시 가운데로 맞춘 뒤, 그 화면이 공유 프레임에 반영되기를 기다리는 시간 */
+const _HM_RESCROLL_MS=400;
+
 /* 히트맵 iframe → hm-manual-img 즉시 캡쳐
    ── 왜 예전 방식이 항상 실패했는가 ──────────────────────────────────────────
    TradingView 위젯은 우리 srcdoc iframe 안에 자기 도메인(tradingview-widget.com)의 iframe을
@@ -27403,6 +27440,9 @@ async function captureHeatmapSection(){
   if(btn) btn.disabled=true;   /* 허용 창·대기 중 중복 클릭 방지 */
 
   try{
+    /* [2026-11-10] 제일 먼저 S&P 500 히트맵 섹션을 화면 가운데로 스크롤 — 그다음 허용 창·캡쳐가 이어짐(_hmCenterSection).
+       스크롤은 즉시 끝나므로 아래 getDisplayMedia 는 여전히 같은 클릭 안에서 동기 호출됨 */
+    try{ _hmCenterSection(); }catch(_){}
     /* [2026-10-16] 누를 때마다 '허용 → 약 1초 대기 → 캡쳐 → 공유 중지' 한 사이클. 이 자리에서 허용을 묻고(getDisplayMedia 는 클릭 직후 동기 호출이라야
        창이 뜸 — 허용은 사용자가 직접 눌러야 하며 페이지 코드로 대신할 수 없음), '허용'하면 곧바로 찍지 않고 _HM_SHARE_SETTLE_MS(약 1초) 기다림 —
        허용 직후 브라우저가 페이지 맨 위에 '이 탭을 공유하는 중' 표시줄을 끼워 넣어 화면이 아래로 밀리는데, 그 사이에 찍으면 밀리는 중인 화면이 캡쳐됨.
@@ -27416,6 +27456,12 @@ async function captureHeatmapSection(){
     }
     if(btn) btn.textContent='⏳ 준비 중…';
     await new Promise(res=>setTimeout(res,_HM_SHARE_SETTLE_MS));
+    /* [2026-11-10] 허용하면서 브라우저가 끼운 '공유 중' 표시줄로 보이는 화면이 줄어 히트맵이 가려졌다면(창이 작을 때) 다시 가운데로 맞추고,
+       그 화면이 공유 프레임에 반영될 시간(_HM_RESCROLL_MS)을 기다림. 이미 다 보이면 아무것도 하지 않음 */
+    try{
+      const f0=content.querySelector('iframe');
+      if(f0 && !_hmFitsInView(f0) && _hmCenterSection()) await new Promise(res=>setTimeout(res,_HM_RESCROLL_MS));
+    }catch(_){}
     if(!_hmStreamIsLive()) throw new Error('화면 공유가 중지되어 캡쳐하지 못했습니다.');   /* 대기 중 브라우저의 '공유 중지'를 누른 경우 */
     if(btn) btn.textContent='📷 캡쳐 중…';
     const stream=_hmCaptureStream;
@@ -47067,6 +47113,11 @@ function alHtml(g,it){
   const ok=alOK(g);
   return '<div class="vs-al"><i title="글을 상자 안 어디에 놓을지 — 상하 위치는 상자가 글보다 클 때 눈에 보여요([📐 크기/배치 수정]으로 상자를 키워 보세요)">글 위치</i>'+alBtns('igAl',g.id+':'+it.id+':',[it],!ok,ok?'':'하단 띠·상단 띠·모서리 배지·타이틀 형태는 글 위치를 바꿀 수 없어요')+'</div>';
 }
+function ptMvBtns(it,i,cid){   /* v170: 항목 줄의 ▲▼ — 항목이 둘 이상일 때만. 맨 위·맨 아래는 해당 방향 단추를 꺼 둠 */
+  const n=(it.parts||[]).length; if(n<2) return '';
+  const tip='화면에서 항목이 놓이는 자리 순서만 바뀌어요 — 시점·길이는 항목을 따라가요';
+  return F.btn('igMovePt','▲',{d:cid+':'+i+':-1',c:'mv',dis:i<=0,title:i<=0?'맨 위 항목이에요':'한 칸 위로 — '+tip})+F.btn('igMovePt','▼',{d:cid+':'+i+':1',c:'mv',dis:i>=n-1,title:i>=n-1?'맨 아래 항목이에요':'한 칸 아래로 — '+tip});
+}
 function igBlockHtml(g,it){
   const bt=BT[it.type]||BT.point, pre='ig:'+g.id+':'+it.id+':', m0=mentionOf(P,it), t0=itemTime(P,it), cid=g.id+':'+it.id;
   let h='<div class="vs-it'+(it.id===UI.igIt?' sel':'')+'" data-iid="'+it.id+'"><div class="r">'+F.sel(pre+'type',it.type,btOpts())+'<span class="vs-sp"></span>'+F.btn('igPlayIt','▶',{d:cid,title:'이 블록이 나오기 1초 전부터 재생'})+F.btn('igDelIt','🗑',{d:cid,c:'dng',title:'이 블록 지우기'})+'</div>';
@@ -47074,7 +47125,7 @@ function igBlockHtml(g,it){
   if(bt.parts){
     if(bt.parts.length>1) h+='<div class="r sm"><span class="hint">항목 칸 순서 — '+bt.parts.map(f=>esc(f[1])).join(' · ')+' · 시점 · 길이(비우면 끝까지)</span></div>';
     (it.parts||[]).forEach((p,i)=>{ const pp='igp:'+g.id+':'+it.id+':'+i+':', tp=partMention(P,p);
-      h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+timeIn(pp+'_t',tp,tp==null)+'<label class="sm" title="이 항목이 화면에 보이는 시간 — 이 시간이 지나면 이 항목만 사라져요. 비우면 블록이 끝날 때까지 보여요(타임라인 [구성] 줄의 칩 양 끝을 끌어도 돼요)">길이 <input type="number" class="vs-in sm mobile-keep" data-f="'+pp+'du" data-t="n" step="0.1" min="0.3" placeholder="끝까지" value="'+(p.du>0?r2(p.du):'')+'">초</label>'+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
+      h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+timeIn(pp+'_t',tp,tp==null)+'<label class="sm" title="이 항목이 화면에 보이는 시간 — 이 시간이 지나면 이 항목만 사라져요. 비우면 블록이 끝날 때까지 보여요(타임라인 [구성] 줄의 칩 양 끝을 끌어도 돼요)">길이 <input type="number" class="vs-in sm mobile-keep" data-f="'+pp+'du" data-t="n" step="0.1" min="0.3" placeholder="끝까지" value="'+(p.du>0?r2(p.du):'')+'">초</label>'+ptMvBtns(it,i,cid)+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
     h+='<div class="vs-btns">'+F.btn('igAddPt','＋ 항목 추가',{d:cid})+'</div><div class="r sm"><span class="hint">블록 전체 시점</span>'+F.btn('igNudge','◀ 0.1초',{d:cid+':-0.1',title:'항목 전부를 0.1초 일찍'})+F.btn('igNudge','0.1초 ▶',{d:cid+':0.1',title:'항목 전부를 0.1초 늦게'})+F.btn('igNudge','◀ 0.5초',{d:cid+':-0.5'})+F.btn('igNudge','0.5초 ▶',{d:cid+':0.5'})+'</div>';
   }else{
     h+='<div class="r sm">'+timeIn(pre+'t',m0,m0==null)+F.btn('igPhIt','재생헤드로',{d:cid,title:'지금 재생헤드 위치를 이 블록이 나오는 시점으로'})+F.btn('igNudge','◀',{d:cid+':-0.1',title:'0.1초 일찍'})+F.btn('igNudge','▶',{d:cid+':0.1',title:'0.1초 늦게'})+'<label class="sm">보정 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'dt" data-t="n" step="0.05" value="'+(it.dt||0)+'">초</label>'+(m0==null?'<em class="bad">문장을 찾지 못함</em>':'')+'</div>';
@@ -47181,6 +47232,13 @@ function setIgField0(path,v){
   const f=(BT[it.type].parts||[]).find(x=>x[0]===k); p[k]=f&&f[2]==='num'?(v==null?null:v):(f&&f[2]==='tone'?(v||''):String(v==null?'':v));
   return 'draw';
 }
+function igMovePart(it,i,j){   /* v170: 목록 블록의 항목 i 를 j 자리로 옮김(사이 항목은 한 칸씩 밀림). 시점(at·dt)·길이(du)·글자 크기(fz)는 항목에 붙어 있어 항목을 따라감 — 화면에서 항목이 놓이는 자리 순서만 바뀜(블록 시점·타임라인 칩 시각은 그대로). 옮긴 항목을 고른 상태로 하고, 타임라인에서 고른 칩(번호 pi)도 같은 항목을 가리키게 고침. 옮겼으면 true */
+  const a=it&&it.parts; if(!a||!(i>=0&&i<a.length)||!(j>=0&&j<a.length)||i===j) return false;
+  a.splice(j,0,a.splice(i,1)[0]);
+  const mp=k=>k===i?j:(i<j?((k>i&&k<=j)?k-1:k):((k>=j&&k<i)?k+1:k)), same=e=>!!e&&e.k==='comp'&&String(e.id)===String(it.id)&&e.pi>=0, seen=new Set();
+  [UI.tsel].concat(UI.tmul||[]).forEach(e=>{ if(same(e)&&!seen.has(e)){ seen.add(e); e.pi=mp(e.pi); } });   /* 같은 객체가 tsel·tmul 에 같이 있어도 한 번만 */
+  UI.igIt=it.id; UI.igPt=j; return true;
+}
 async function infoAct(a,id,btn){
   const c=P.scenes[UI.sel], ids=String(id||'').split(':'), g=igById(ids[0]), t=ENG.playing?nowT():ENG.pos;
   const done=(label,sel)=>{ if(g&&sel!==false) igPoster(g); commit(label); renderAll(); };
@@ -47210,6 +47268,7 @@ async function infoAct(a,id,btn){
     case 'igPhIt': if(g){ const it=g.items.find(x=>x.id===ids[1]), at=anchorAtTime(P,t); if(it&&at){ it.at={sid:at.sid,f:at.f}; it.dt=at.dt; sortItems(g); edMark(it); done('블록 시점'); } } break;
     case 'igAddPt': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it&&it.parts){ const d=defaultBlock(it.type,t).parts, last=it.parts[it.parts.length-1], p=Object.assign({},d[Math.min(d.length-1,it.parts.length)]||d[0]), tm=last?(partMention(P,last)||t)+0.9:t, at=anchorAtTime(P,tm); if(at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; } it.parts.push(p); edMark(it); done('항목 추가'); } } break;
     case 'igDelPt': if(g){ const it=g.items.find(x=>x.id===ids[1]); if(it&&it.parts){ it.parts.splice(+ids[2],1); edMark(it); done('항목 삭제'); } } break;
+    case 'igMovePt': if(g){ const it=g.items.find(x=>x.id===ids[1]), i=+ids[2], j=i+(+ids[3]||0); if(it&&igMovePart(it,i,j)){ UI.ig=g.id; edMark(it); done('항목 순서'); renderInspector(true); icScroll(); } } break;   /* v170: 항목 순서 바꾸기(▲▼) — 다시 그린 뒤 줄 번호가 달라졌으니 검사창은 강제로 새로 그림 */
     case 'igPhPt': if(g){ const it=g.items.find(x=>x.id===ids[1]), p=it&&it.parts&&it.parts[+ids[2]], at=anchorAtTime(P,t); if(p&&at){ p.at={sid:at.sid,f:at.f}; p.dt=at.dt; sortItems(g); edMark(it); done('항목 시점'); } } break;
     case 'igAI': case 'igRule': if(g) await igRegen(g,a==='igAI'?'ai':'rule'); break;
     case 'igLayAI': if(g){ if(!LE_MODES[g.mode]){ toast('이 형태는 칸 배치가 아니에요 — [📐 크기/배치 수정]에서 전체 화면 패널로 바꿔 주세요'); break; } const pk=layoutApply(g,{force:true}); if(pk){ done('AI 배치'); toast('배치 "'+pk.t.nm+'"('+pk.t.id+')를 골랐어요 — [📐 크기/배치 수정]에서 더 고칠 수 있어요'); } else toast('이 인포그래픽에는 배치 템플릿을 쓸 수 없어요(구성요소 1~7개만)'); } break;
@@ -57044,7 +57103,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v168';
+const KL_BUILD='v170';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -61796,7 +61855,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,tlSameCC,tlKindSum,mqKey,mqKeyAt,tlMultiHint,tlCopyNote,tmulMenuMix,tmulDeleteMix,tlMvPlanSubs,tlMvPlanAuds,tlMvPlanMix,tlMvDoMix,tlDragSetMix,TL_PICK,TL_MIXMV,tlMvFinish,tlCompsMove,tlDownGrp,tlMenu,tlSelFrom,tselPaint,tlDelete,tselClear,titleGap,ttgClamp,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,scEndSet,scEndMove,tlRipple,tlRippleList,tlRippleKey,tlRipRelax,tlStartOf,tlSceneOfTitle,tlTitlesOfScenes,tlTitlesApply,ttShiftApply,scSetStarts,tlMvPlanScenes,tlMvPlanTitles,tlMvPlanBgm,tlPreGrp,tlCompsExtend,tlPaintEl,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,igMovePart,scEndSet,scEndMove,tlRipple,tlRippleList,tlRippleKey,tlRipRelax,tlStartOf,tlSceneOfTitle,tlTitlesOfScenes,tlTitlesApply,ttShiftApply,scSetStarts,tlMvPlanScenes,tlMvPlanTitles,tlMvPlanBgm,tlPreGrp,tlCompsExtend,tlPaintEl,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
