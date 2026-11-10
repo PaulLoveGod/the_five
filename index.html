@@ -43108,7 +43108,7 @@ const SECS=[
 ];
 /* rpt = 보고서 소제목, chap = 스크립트 챕터 이름, w = 챕터 비중, focus = 그 챕터에서 다룰 내용 */
 const META={
-  indices:{rpt:'시장 온도계 — 주요 지수 해석',chap:'주요 지수 브리핑',w:15,focus:'주요 지수 등락률을 화면 순서 그대로 소개 — ① 왼쪽 열(위에서 아래): 나스닥100 → S&P500 → 다우존스 → 러셀2000 → 코스피를 한 문장에 하나씩, 이름과 등락률(%)만 말하고 지수 값은 말하지 않음(예: "나스닥100은 3.4% 올랐습니다.") ② 이어서 오른쪽 열(위에서 아래): WTI 유가 → 국채 10년물 금리 → 금 → 달러인덱스 → 원달러 환율을 한 문장에 하나씩, 이름과 등락률(%) 다음에 최종 수치까지 말함(예: "WTI 유가는 3.4% 오른 98.1달러입니다.", "국채 10년물 금리는 1.1% 오른 4.82%입니다.", "금은 0.8% 오른 4,210달러입니다.", "달러인덱스는 0.6% 내린 101.2입니다.", "원달러 환율은 1.5% 내린 1,345원입니다.") — 순서를 바꾸거나 다른 말을 끼워 넣지 말고(자료에 없는 항목만 건너뜀), 등락률은 항상 퍼센트 숫자와 올랐다·내렸다로 말함 ③ 그다음 새 화면으로 VIX 지수와 Fear & Greed 지수를 한 문장씩 소개(예: "VIX 지수는 18.5로 안정 구간입니다.", "Fear & Greed 지수는 32로 공포 구간입니다.") ④ 그 뒤에 이 지표들을 서로 연결해 지금 시장의 분위기와 위험 선호 정도를 설명'},
+  indices:{rpt:'시장 온도계 — 주요 지수 해석',chap:'주요 지수 브리핑',w:15,focus:'주요 지수 등락률 — 화면에는 전체 지수의 등락률이 한꺼번에 표시되므로 지수를 하나하나 읽어 내려가지 말고, 오늘 시장을 이해하는 데 중요한 변화만 골라 이야기하듯 풀어서 설명 — ① 먼저 오늘 시장 분위기를 한 문장으로 요약(예: "간밤 뉴욕증시는 기술주 강세에 3대 지수가 나란히 올랐습니다.") ② 오늘 가장 중요한 변화 2~4개만 골라 이름과 등락률(%)을 말하고, 왜 중요한지·무엇과 연결되는지 한 문장씩 덧붙임 — 중요도는 변화 폭의 크기, 지수끼리 방향이 엇갈린 정도(예: 미국은 오르는데 코스피는 내림), 유가·금리·환율·금 같은 변수와의 연결로 판단하고 [오늘 눈에 띄는 변화]가 있으면 참고(예: "특히 나스닥100은 1.8% 올라 상승을 주도했고, 반대로 코스피는 2.1% 내려 대조를 이뤘습니다.") ③ 나머지 지수는 "S&P500과 다우도 소폭 올랐습니다"처럼 한 문장으로 묶거나 생략하고, 변화가 작은 항목의 수치를 일일이 읽지 않음 ④ 유가·국채 금리·금·달러인덱스·원달러 환율은 중요한 경우에만 언급하고, 이때 필요하면 최종 수치도 함께 말함(예: "국채 10년물 금리는 4.82%로 올랐습니다.") ⑤ 지수 이름은 화면과 같은 이름으로 말함 — 나스닥100·S&P500·다우·러셀2000·코스피·WTI 유가·국채 10년물 금리·금·달러인덱스·원달러 환율 ⑥ 그다음 새 화면으로 VIX 지수와 Fear & Greed 지수를 한 문장씩 소개(예: "VIX 지수는 18.5로 안정 구간입니다.", "Fear & Greed 지수는 32로 공포 구간입니다.") ⑦ 그 뒤에 이 지표들을 서로 연결해 지금 시장의 분위기와 위험 선호 정도를 설명'},
   eco:{rpt:'이벤트 캘린더 — 경제 일정 체크포인트',chap:'경제 일정 체크포인트',w:14,focus:'다가오는 핵심 일정을 날짜순으로 짚고, 결과별(예상 상회·부합·하회) 시장 반응 시나리오를 설명'},
   market:{rpt:'시장 분석 — 상승·하락 요인과 수급·심리',chap:'시황 분석',w:22,focus:'시장 분석(시황)의 핵심 논지 — 상승·하락 요인, 수급, 투자 심리 — 를 이야기 흐름으로 풀어서 설명'},
   theme:{rpt:'테마·섹터 분석 — 주도 테마와 지속성',chap:'테마·섹터 분석',w:22,focus:'강세·약세 테마와 그 이유, 지속 가능성, 원자료에 나온 섹터·종목을 설명'},
@@ -43334,6 +43334,23 @@ function fieldText(id){
   if(html==null){ const el=$(id); html=el?el.innerHTML:''; }
   return clean(typeof _richToText==='function'?_richToText(html):String(html).replace(/<[^>]+>/g,' '));
 }
+/* v177 — 주요 지수 화면용 자료: 보고서의 지수 칸(등락률·최종 수치)을 구조 그대로 읽어 챕터 자료(plan[].ix)로 영상 스튜디오에 넘김 + 챕터 지시에 덧붙일 '오늘 눈에 띄는 변화' 참고 목록 */
+const IXD_KEYS=[['nasdaq','ndx','나스닥100'],['sp500','spx','S&P500'],['dow','dji','다우'],['russell','rut','러셀2000'],['kospi','kospi','코스피'],['wti','wti','WTI 유가'],['treasury','tnx','국채 10년물 금리'],['gold','gold','금'],['dxy','dxy','달러인덱스'],['usdkrw','krw','원달러 환율']];
+const IXD_SIG={ndx:1.1,spx:0.9,dji:0.8,rut:1.2,kospi:1.0,wti:2.0,tnx:2.5,gold:0.9,dxy:0.45,krw:0.5};   /* 하루 등락률의 보통 크기(%) — '평소보다 큰 움직임' 어림 */
+function ixPctOf(s){   /* '▲1.23%'·'+1.2%' → 1.23·1.2 / '▼0.45%'·'-0.4%' → -0.45·-0.4 / '±0.00%' → 0 / % 가 없거나 읽을 수 없으면 null */
+  s=String(s==null?'':s).trim(); if(!/[%％]/.test(s)) return null; const m=/(\d[\d,]*(?:\.\d+)?)/.exec(s); if(!m) return null;
+  let v=parseFloat(m[1].replace(/,/g,'')); if(!isFinite(v)) return null; if(/[-−–▼▽↓]/.test(s.slice(0,m.index))) v=-v; return Math.round(v*100)/100;
+}
+function ixRowsDom(){   /* 보고서 화면의 주요 지수 칸 → [{k,v,lv}] (v = 등락률 %, lv = 최종 수치 글). 등락률을 읽을 수 없는 칸은 건너뜀 */
+  const out=[]; IXD_KEYS.forEach(a=>{ const c=ixPctOf((($('idx-c-'+a[0])||{}).value||'')); if(c==null) return; out.push({k:a[1],v:c,lv:(($('idx-v-'+a[0])||{}).value||'').trim()}); });
+  return out;
+}
+function ixHint(c){   /* 주요 지수 챕터 지시에 덧붙이는 '오늘 눈에 띄는 변화' 참고 목록 — 변화율을 평소 크기로 나눠 큰 순서로 */
+  const rows=(c&&c.ixd)||[]; if(rows.length<3) return '';
+  const nm={}; IXD_KEYS.forEach(a=>{ nm[a[1]]=a[2]; });
+  const z=rows.map(r=>({k:r.k,v:r.v,z:Math.abs(r.v)/(IXD_SIG[r.k]||1)})).sort((a,b)=>b.z-a.z), top=z.filter(x=>x.z>=1).slice(0,4), f=x=>(nm[x.k]||x.k)+' '+(x.v>0?'+':'')+x.v.toFixed(2)+'%';
+  return '\n[오늘 눈에 띄는 변화 — 참고] '+(top.length?top.map(f).join(' · ')+' (평소보다 큰 움직임 순)':'평소 수준을 크게 벗어난 지수가 없음 — 전반적으로 잔잔한 장이었다는 점을 짚고, 상대적으로 가장 큰 움직임 한두 가지만 언급')+'. 중요도는 이 목록뿐 아니라 원자료 전체와 시장 맥락을 보고 판단하세요.';
+}
 function idxBlock(){
   if(typeof INDICES==='undefined') return '';
   const rows=[];
@@ -43513,7 +43530,7 @@ function chapterUser(c,u,i){
   if(!rep){ if(u.data.length) rest=digestBlocks(c,u.data,DIG_OTHER); else data=digestBlocks(c,[],DIG_ALL); }
   return `${langLine(c)}[영상 정보] 총 ${c.cfg.len}분 · 기준일 ${dLabel(c.base,c.cfg.lang)} · 챕터 ${i+1}/${c.plan.length}: "${u.title}" (예상 구간 ${fmtTime(sec)}~${fmtTime(end)})
 ${lenLine(u,c.cfg.lang)}
-[이 챕터에서 다룰 내용] ${u.focus}${role}
+[이 챕터에서 다룰 내용] ${u.focus}${role}${(u.data||[]).indexOf('indices')>=0?ixHint(c):''}
 ${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
 [전체 챕터 구성]
 ${outline}
@@ -44208,7 +44225,7 @@ const dbAll=()=>openDb().then(d=>new Promise((res,rej)=>{ const q=d.transaction(
 const dbDel=id=>openDb().then(d=>new Promise((res,rej)=>{ const t=d.transaction(STORE,'readwrite'); t.objectStore(STORE).delete(id); t.oncomplete=()=>res(); t.onerror=t.onabort=()=>rej(t.error||new Error('삭제 실패')); }));
 function recOf(c){
   return Object.assign({id:c.id,ts:c.ts,upd:Date.now(),date:baseLabel(c),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
-    plan:c.plan.map(u=>({title:u.title,key:u.key,names:u.names,target:u.target,chars:u.chars,text:u.text,state:u.state})),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0),
+    plan:c.plan.map(u=>Object.assign({title:u.title,key:u.key,names:u.names,target:u.target,chars:u.chars,text:u.text,state:u.state},u.ix?{ix:u.ix}:null)),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0),
     board:c.board?Object.assign({bible:c.board.bible,bibleDone:c.board.bibleDone,done:c.board.done,mode:c.board.mode,
       units:c.board.units.map(u=>Object.assign({pi:u.pi,part:u.part,parts:u.parts,title:u.title,start:u.start,end:u.end,n:u.segs?u.segs.length:u.n,warn:!!u.warn,state:u.state,blocks:u.blocks},u.plw?{plw:true}:null))},c.board.tch?{tch:c.board.tch}:null):null},c.ed?{ed:c.ed}:null);   /* segs(구간별 나레이션)는 저장하지 않음 — 다시 만들 때 스크립트에서 계산. v119: 직접 고친 기록만 ed(고친 부분·시각)·board.tch(스토리보드 시간이 맞춰진 기준 글자 수)가 더 붙음 */
 }
@@ -44233,7 +44250,7 @@ function videoSource(c){
       V.split(nl,lang).forEach(s=>{ s=s.trim(); if(s){ cur.push({t:s,n:s.replace(/\s+/g,'').length,cue}); cue=''; } });
     });
     if(cur.length) paras.push(cur);
-    chapters.push({title:u.title,key:u.key||'',names:(u.names&&u.names.length>1)?u.names.slice():null,t0:acc/cpm*60,D:u.chars/cpm*60,paras}); acc+=u.chars;
+    chapters.push({title:u.title,key:u.key||'',names:(u.names&&u.names.length>1)?u.names.slice():null,t0:acc/cpm*60,D:u.chars/cpm*60,paras,ix:(u.ix&&u.ix.length)?u.ix:null}); acc+=u.chars;
   });
   const scenes=[]; boardUnits(c).forEach(u=>(u.blocks||[]).forEach(b=>scenes.push({s:b.s,e:b.e,t:b.t,pi:u.pi})));
   const B=(c.board&&c.board.bible)||{};
@@ -44461,13 +44478,16 @@ function ai(sys,user,onDelta,signal){
   if(typeof window._runTextPrompt!=='function') return Promise.reject(new Error('AI 모듈을 찾지 못했어요. 페이지를 새로고침한 뒤 다시 시도해 주세요.'));
   return window._runTextPrompt(MAP_KEY,sys,user,{onDelta,signal,onRetry:(a,mx)=>setProg(parseFloat(($('scPb')||{style:{}}).style.width)||0,'AI 서버가 혼잡해요 — 잠시 뒤 다시 시도합니다 ('+a+'/'+mx+')')});
 }
-function newCtx(cfg){
+function newCtx0(cfg){
   const pack={}, act=[];
   cfg.secs.forEach(k=>{ const t=rawBlock(k); if(t){ pack[k]=trunc(t,LIM[k]||6000); act.push(k); } });
   const secs=SECS.map(s=>s.k).filter(k=>act.indexOf(k)>=0);
   const rep=cfg.rep!==false, scr=cfg.scr!==false, brd=cfg.board===true, old=!rep&&scr?reusableReport(cfg):'';   /* 스크립트만 만들면 화면에 있는 같은 조건의 보고서를 바탕으로 */
   return {id:'sc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),cfg:Object.assign({len:cfg.len,cpm:cfg.cpm>=150?cfg.cpm:DEF_CFG.cpm,secs:cfg.secs.slice(),extra:cfg.extra,rep,scr,board:brd,seg:brd?(isAuto(cfg)?segOf(cfg):cfg.seg):DEF_SEG,bstyle:brd?cfg.bstyle||'':'',bpre:brd&&bpreOf(cfg.bpre)?cfg.bpre:'',lang:V.norm(cfg.lang),vtitle:String(cfg.vtitle||'').trim().slice(0,80)},isAuto(cfg)?{segMode:'auto',segMin:segRange(cfg).min,segMax:segRange(cfg).max}:null),secs,pack,psig:packSig(pack,secs),base:repDate(),
     plan:scr||brd?buildPlan(cfg.len,cfg.cpm,secs,cfg.lang):[],report:old,reportDone:!!old,board:null,shr:sharesOf(rep,scr,brd),status:'run',provider:'',sig:sigOf(cfg)};   /* 스토리보드만 만들 땐 챕터 구성(plan)만 있고 글은 없음 */
+}
+function newCtx(cfg){   /* v177: 주요 지수 섹션이 든 대본이면 보고서 화면의 지수 칸(등락률·최종 수치)을 구조 그대로 c.ixd 에 읽어 둠 — 챕터 지시의 참고 목록과 영상 스튜디오의 지수 화면이 씀 */
+  const c=newCtx0(cfg); try{ if((c.secs||[]).indexOf('indices')>=0){ const d=ixRowsDom(); if(d.length) c.ixd=d; } }catch(e){ console.warn('주요 지수 자료를 읽지 못했어요',e); } return c;
 }
 function sharesOf(rep,scr,brd){   /* 진행률 막대 몫(%) — 보고서·스크립트·스토리보드 */
   if(rep&&scr&&brd) return {rw:10,sw:55,bw:35};
@@ -44523,7 +44543,7 @@ async function run(fresh){
       const lab='② 스크립트 작성 중 — '+(i+1)+'/'+c.plan.length+' · '+u.title;
       setProg(progFor(c,i,0),lab);
       const raw=await ai(sysChapter(!!c.report,c.cfg.lang),chapterUser(c,u,i),t=>{ u.text=cleanNarr(t,u); u.chars=narrChars(u.text); setProg(progFor(c,i,u.chars/u.target),lab); paintSoon(); },sig);
-      u.text=cleanNarr(raw,u); u.chars=narrChars(u.text);
+      u.text=cleanNarr(raw,u); u.chars=narrChars(u.text); if(c.ixd&&String(u.key||'').split('+').indexOf('indices')>=0) u.ix=c.ixd.map(r=>Object.assign({},r));   /* v177: 주요 지수 자료를 이 챕터에 붙임 */
       if(!u.text.trim()) throw new Error('AI 가 빈 응답을 보냈어요');
       if(u.target>=250&&Math.abs(u.chars-u.target)/u.target>ADJ_TOL){
         u.state='adjust'; setProg(progFor(c,i,1),'② '+u.title+' — 분량 조정 중…'); paintScript();
@@ -44975,7 +44995,7 @@ document.addEventListener('keydown',e=>{
 window.openScriptMaker=()=>openMaker();
 window.openScriptHistory=()=>openHistory();
 window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
-  _dbg:{buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
+  _dbg:{ixRowsDom,ixHint,ixPctOf,buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
     buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur,
     V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,
     isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted,
@@ -45323,6 +45343,7 @@ function newProject(src){
   const lang=V.norm(src.lang), cfg=loadPref(lang), vt=String(src.vtitle||'').trim().slice(0,80); cfg.cpm=src.cpm>=150?src.cpm:V.get(lang).cpm;   /* v136: vt = 스크립트 만들기의 '영상 제목' — 오프닝 타이틀의 제목·프로젝트 이름으로 */
   const p={v:1,id:uid('vp'),title:nlFlat(vt)||src.title||'시황 영상',vtitle:vt,recId:src.recId||'',base:src.base||'',created:Date.now(),updated:Date.now(),cfg,lang,
     style:src.style||'',tone:src.tone||'',sb:{on:true},seg:src.seg||8,chap:src.chapters.map(c=>c.title),ck:src.chapters.map(c=>c.key||''),tv:3,sents:[],chunks:[],scenes:[],xsubs:[]};   /* v136: 타이틀 규칙 3 — 오프닝 윗글 The FIVE·챕터 윗글 CHAPTER01·02…·모든 타이틀을 영상·음성·자막과 겹치지 않게(끼워 넣기) */
+  { const ixc=(src.chapters||[]).find(ch=>ch&&Array.isArray(ch.ix)&&ch.ix.length); if(ixc) p.ixd=ixc.ix.map(r=>({k:String(r.k||''),v:+r.v,lv:String(r.lv==null?'':r.lv)})).filter(r=>r.k&&isFinite(r.v)); }   /* v177: 대본이 넘긴 주요 지수 자료(등락률·최종 수치) — 지수 막대판이 전체 줄을 채우는 데 씀 */
   src.chapters.forEach((ch,ci)=>{
     const tot=ch.paras.reduce((a,pa)=>a+pa.reduce((x,s)=>x+s.n,0),0)||1; let cum=0;
     ch.paras.forEach((pa,pai)=>pa.forEach(s=>{
@@ -46987,7 +47008,7 @@ async function runInfo(items,o){   /* items=[{id,kind:'info'}](장면) — 캐�
   const note=[]; if(klDropSince()>0) note.push('🧹 자막·제목과 같은 뜻의 구성요소 '+klDropSince()+'개를 뺐어요(수치는 숫자 카드로만 남겨요)'); if(run.lt) note.push('🧩 배치 템플릿 '+run.lt+'곳 적용(구성요소 개수·모양·중요도에 맞춰 골랐어요)'); if(run.skipped.length) note.push(klGuarOn()?'나레이션 글이 없거나 개요가 맡은 장면 '+run.skipped.length+'개는 따로 인포그래픽을 만들지 않았어요':'인사·마무리·진행 멘트'+(klDetailOn()?'·자막과 같은 내용':'')+'처럼 화면에 옮길 핵심이 없는 장면 '+run.skipped.length+'개는 원래 화면 그대로 음성·자막만 나가요'); if(run.fails) note.push('AI 요약이 실패한 장면은 규칙으로 만들었어요('+run.fails+'건) — '+String(run.err||'').slice(0,60));
   if(ovg) note.push('오프닝에 개요(오늘의 안내) 인포그래픽을 올렸어요 — 항목 '+ovg.items[0].parts.length+'개'+(ovg.src==='ai'?'(AI)':'(규칙)')); else if(ovr&&ovr.why) note.push(ovr.why);
   if(smg) note.push('📝 핵심 3줄 요약을 한 화면에 올렸어요 — '+((smg.items[0].parts||[]).length)+'줄'+(smg.src==='ai'?'(AI)':'(규칙)')+', 줄마다 말하는 순서·타이밍에 하나씩 나타나요'); else if(smr&&smr.why&&o.sm!=='auto') note.push(smr.why); if(shg) note.push('🗓 경제 일정을 장면을 넘기지 않고 한 화면에 올렸어요 — 일정 '+((shg.items[0].parts||[]).length)+'개'+(shg.src==='ai'?'(AI)':'(규칙)')+', 일정을 말하는 순간마다 하나씩 나타나 전체 일정표가 완성돼요'); else if(shr&&shr.why&&o.sch!=='auto') note.push(shr.why); if(opg&&opg.length){ const hk0=opg.find(x=>x.hook), gr0=opg.find(x=>x.greet); note.push('🎬 오프닝 — '+(hk0?'후킹 화면('+(hk0.hk.kind==='text'?'한마디':'수치 하나')+(hk0.src==='ai'?', AI':', 규칙')+')'+(gr0?' + ':''):'')+(gr0?'고정 인사 화면(매일 같은 모습)':'')+'을 올렸어요'); } else if(opr&&opr.why&&o.op!=='auto') note.push(opr.why);
-  if(ixg&&ixg.length){ const bg=ixg.find(x=>x.ixk==='bars'), ga=ixg.find(x=>x.ixk==='gauge'), bp=bg?(bg.items[0].parts||[]):[]; note.push('📈 주요 지수 — '+(bg?'등락률 한 화면(왼쪽 '+bp.filter(p=>p.sd!=='R').length+'개 · 오른쪽 '+bp.filter(p=>p.sd==='R').length+'개, 말하는 순서대로 하나씩)':'')+(bg&&ga?' + ':'')+(ga?'다음 화면에 VIX·Fear & Greed 게이지':'')+'를 올렸어요'); } else if(ixr&&ixr.why&&o.ix!=='auto') note.push(ixr.why);   /* v175 */
+  if(ixg&&ixg.length){ const bg=ixg.find(x=>x.ixk==='bars'), ga=ixg.find(x=>x.ixk==='gauge'), bp=bg?(bg.items[0].parts||[]):[]; note.push('📈 주요 지수 — '+(bg?'등락률 한 화면(왼쪽 '+bp.filter(p=>p.sd!=='R').length+'개 · 오른쪽 '+bp.filter(p=>p.sd==='R').length+'개 전체를 한꺼번에 — 나레이션이 말하는 지수 '+bp.filter(p=>p.at).length+'개는 그 순간 강조)':'')+(bg&&ga?' + ':'')+(ga?'다음 화면에 VIX·Fear & Greed 게이지':'')+'를 올렸어요'); } else if(ixr&&ixr.why&&o.ix!=='auto') note.push(ixr.why);   /* v175 */
   if(run.rescued) note.push('🧷 숫자·핵심이 없는 장면 '+run.rescued+'개도 핵심 구절로 인포그래픽을 만들었어요(인사·구독 안내·면책 멘트 포함)');
   if(note.length) toast(note.join(' · '));
   return true;
@@ -47154,7 +47175,7 @@ function alHtml(g,it){
 }
 function ptMvBtns(it,i,cid){   /* v170: 항목 줄의 ▲▼ — 항목이 둘 이상일 때만. 맨 위·맨 아래는 해당 방향 단추를 꺼 둠 */
   const n=(it.parts||[]).length; if(n<2) return '';
-  const tip='이웃 항목과 서로 맞바뀌어요 — 시점·길이도 함께 맞바뀌어요';
+  const tip=it.type==='s.ix2'?'이웃 항목과 자리만 바뀌어요 — 강조 시점·길이는 그 지수를 따라가요':'이웃 항목과 서로 맞바뀌어요 — 시점·길이도 함께 맞바뀌어요';
   return F.btn('igMovePt','▲',{d:cid+':'+i+':-1',c:'mv',dis:i<=0,title:i<=0?'맨 위 항목이에요':'한 칸 위로 — '+tip})+F.btn('igMovePt','▼',{d:cid+':'+i+':1',c:'mv',dis:i>=n-1,title:i>=n-1?'맨 아래 항목이에요':'한 칸 아래로 — '+tip});
 }
 function igBlockHtml(g,it){
@@ -47162,9 +47183,9 @@ function igBlockHtml(g,it){
   let h='<div class="vs-it'+(it.id===UI.igIt?' sel':'')+'" data-iid="'+it.id+'"><div class="r">'+F.sel(pre+'type',it.type,btOpts())+'<span class="vs-sp"></span>'+F.btn('igPlayIt','▶',{d:cid,title:'이 블록이 나오기 1초 전부터 재생'})+F.btn('igDelIt','🗑',{d:cid,c:'dng',title:'이 블록 지우기'})+'</div>';
   bt.f.forEach(f=>{ h+=F.row(f[1],fieldIn(pre+f[0],it[f[0]],f[2])); });
   if(bt.parts){
-    if(bt.parts.length>1) h+='<div class="r sm"><span class="hint">항목 칸 순서 — '+bt.parts.map(f=>esc(f[1])).join(' · ')+' · 시점 · 길이(비우면 끝까지)</span></div>';
+    if(bt.parts.length>1) h+='<div class="r sm"><span class="hint">항목 칸 순서 — '+bt.parts.map(f=>esc(f[1])).join(' · ')+(it.type==='s.ix2'?' · 강조 시점 · 강조 길이 — 모든 줄이 처음부터 한꺼번에 보이고, 시점부터 길이만큼 그 줄만 강조돼요(시점을 비우면 강조 없음)':' · 시점 · 길이(비우면 끝까지)')+'</span></div>';
     (it.parts||[]).forEach((p,i)=>{ const pp='igp:'+g.id+':'+it.id+':'+i+':', tp=partMention(P,p);
-      h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+timeIn(pp+'_t',tp,tp==null)+'<label class="sm" title="이 항목이 화면에 보이는 시간 — 이 시간이 지나면 이 항목만 사라져요. 비우면 블록이 끝날 때까지 보여요(타임라인 [구성] 줄의 칩 양 끝을 끌어도 돼요)">길이 <input type="number" class="vs-in sm mobile-keep" data-f="'+pp+'du" data-t="n" step="0.1" min="0.3" placeholder="끝까지" value="'+(p.du>0?r2(p.du):'')+'">초</label>'+ptMvBtns(it,i,cid)+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
+      h+='<div class="vs-pt'+(it.id===UI.igIt&&UI.igPt===i?' sel':'')+'"><span class="n">'+(i+1)+'</span>'+bt.parts.map(f=>fieldIn(pp+f[0],p[f[0]],f[2],f[1])).join('')+ptLbl(it,timeIn(pp+'_t',tp,tp==null)+'<label class="sm" title="이 항목이 화면에 보이는 시간 — 이 시간이 지나면 이 항목만 사라져요. 비우면 블록이 끝날 때까지 보여요(타임라인 [구성] 줄의 칩 양 끝을 끌어도 돼요)">길이 <input type="number" class="vs-in sm mobile-keep" data-f="'+pp+'du" data-t="n" step="0.1" min="0.3" placeholder="끝까지" value="'+(p.du>0?r2(p.du):'')+'">초</label>')+ptMvBtns(it,i,cid)+F.btn('igPhPt','⏱',{d:cid+':'+i,title:'재생헤드 위치를 이 항목의 시점으로'})+F.btn('igDelPt','×',{d:cid+':'+i,c:'dng',title:'이 항목 지우기'})+'</div>'; });
     h+='<div class="vs-btns">'+F.btn('igAddPt','＋ 항목 추가',{d:cid})+'</div><div class="r sm"><span class="hint">블록 전체 시점</span>'+F.btn('igNudge','◀ 0.1초',{d:cid+':-0.1',title:'항목 전부를 0.1초 일찍'})+F.btn('igNudge','0.1초 ▶',{d:cid+':0.1',title:'항목 전부를 0.1초 늦게'})+F.btn('igNudge','◀ 0.5초',{d:cid+':-0.5'})+F.btn('igNudge','0.5초 ▶',{d:cid+':0.5'})+'</div>';
   }else{
     h+='<div class="r sm">'+timeIn(pre+'t',m0,m0==null)+F.btn('igPhIt','재생헤드로',{d:cid,title:'지금 재생헤드 위치를 이 블록이 나오는 시점으로'})+F.btn('igNudge','◀',{d:cid+':-0.1',title:'0.1초 일찍'})+F.btn('igNudge','▶',{d:cid+':0.1',title:'0.1초 늦게'})+'<label class="sm">보정 <input type="number" class="vs-in sm mobile-keep" data-f="'+pre+'dt" data-t="n" step="0.05" value="'+(it.dt||0)+'">초</label>'+(m0==null?'<em class="bad">문장을 찾지 못함</em>':'')+'</div>';
@@ -47199,7 +47220,7 @@ function igEditor(g){
 function inspIg(){
   const igs0=P.igs||[], igs=igs0.filter(g=>!g.nf), cur=igs0.find(x=>x.id===UI.ig)||null, t=ENG.playing?nowT():ENG.pos;   /* v153: 틀 없는 인포그래픽은 목록에서 빼고, 칩을 눌러 고른 것(cur)은 편집창에 */
   let h='<div class="vs-ih"><b>인포그래픽</b><span>'+igs.length+'개 · 타임라인 [인포] 줄에서 끌어 옮기고 늘이고 줄여요</span></div>';
-  h+='<div class="vs-btns">'+F.btn('igNew','＋ 인포그래픽 추가',{c:'pri',title:'재생헤드 위치에 새 인포그래픽'})+F.btn('infoMk','📊 이 장면 자동 구성',{title:'선택한 장면의 나레이션으로 자동 구성(마지막에 쓴 설정)'})+F.btn('igOv','📋 개요 만들기',{title:'오프닝의 "오늘 다룰 내용" 안내 문장에 개요(목차) 인포그래픽을 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSum','📝 3줄 요약 만들기',{title:'마무리의 "핵심 요약" 문장(첫째·둘째·셋째)을 찾아 한 화면에 줄마다 말하는 순서·타이밍대로 나타나게 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSch','🗓 경제 일정 한 화면',{title:'경제 일정 챕터에서 일정을 짚는 문장을 찾아, 장면을 넘기지 않고 한 화면에 날짜·일정이 말하는 순간마다 하나씩 나타나 전체 일정표가 되게 만들어요(이미 장면별로 만든 일정 인포그래픽도 한 화면으로 바꾸고, 일정 화면이 이미 있으면 새로 만들어 바꿔요)'})+F.btn('igIx','📈 주요 지수 한 화면',{title:'주요 지수 챕터에서 지수 이름과 등락률이 이어지는 문장을 찾아, 왼쪽 열(등락률)·오른쪽 열(등락률 + (최종 수치)) 막대판 한 화면을 말하는 순서대로 만들고, 이어서 VIX·Fear & Greed 게이지 화면도 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igOpen','🎬 오프닝 만들기',{title:'오프닝을 후킹(오늘의 핵심 수치·한마디 하나) → 매일 같은 고정 인사 화면 → 오늘의 브리핑 목차(고정 모양) 순서로 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('upgrade','✨ 화면 구성 업그레이드',{c:'pri',title:'AI 가 영상 전체를 파악한 뒤 장면마다 화면 구성이 단순하고 명료한지 검토하고, 모자란 장면은 삭제·수정·보완해 다시 구성해요'})+(UI.up?F.btn('upReport','📋 업그레이드 결과',{title:'마지막 화면 구성 업그레이드의 장면별 점수·이유·바뀐 내용'}):'')+'</div>';
+  h+='<div class="vs-btns">'+F.btn('igNew','＋ 인포그래픽 추가',{c:'pri',title:'재생헤드 위치에 새 인포그래픽'})+F.btn('infoMk','📊 이 장면 자동 구성',{title:'선택한 장면의 나레이션으로 자동 구성(마지막에 쓴 설정)'})+F.btn('igOv','📋 개요 만들기',{title:'오프닝의 "오늘 다룰 내용" 안내 문장에 개요(목차) 인포그래픽을 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSum','📝 3줄 요약 만들기',{title:'마무리의 "핵심 요약" 문장(첫째·둘째·셋째)을 찾아 한 화면에 줄마다 말하는 순서·타이밍대로 나타나게 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igSch','🗓 경제 일정 한 화면',{title:'경제 일정 챕터에서 일정을 짚는 문장을 찾아, 장면을 넘기지 않고 한 화면에 날짜·일정이 말하는 순간마다 하나씩 나타나 전체 일정표가 되게 만들어요(이미 장면별로 만든 일정 인포그래픽도 한 화면으로 바꾸고, 일정 화면이 이미 있으면 새로 만들어 바꿔요)'})+F.btn('igIx','📈 주요 지수 한 화면',{title:'주요 지수 챕터에서 지수 이름을 말하는 문장을 찾아, 왼쪽 열(등락률)·오른쪽 열(등락률 + (최종 수치))의 전체 지수를 한 화면에 한꺼번에 보여 주고 나레이션이 말하는 지수는 그 순간 강조되게 만들고, 이어서 VIX·Fear & Greed 게이지 화면도 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('igOpen','🎬 오프닝 만들기',{title:'오프닝을 후킹(오늘의 핵심 수치·한마디 하나) → 매일 같은 고정 인사 화면 → 오늘의 브리핑 목차(고정 모양) 순서로 만들어요(이미 있으면 새로 만들어 바꿔요)'})+F.btn('upgrade','✨ 화면 구성 업그레이드',{c:'pri',title:'AI 가 영상 전체를 파악한 뒤 장면마다 화면 구성이 단순하고 명료한지 검토하고, 모자란 장면은 삭제·수정·보완해 다시 구성해요'})+(UI.up?F.btn('upReport','📋 업그레이드 결과',{title:'마지막 화면 구성 업그레이드의 장면별 점수·이유·바뀐 내용'}):'')+'</div>';
   h+='<div class="vs-iglist" id="vsIgList">'+(igs.length?igs.map(g=>{ const on=t>=g.s&&t<g.e, m=MODE_OF[g.mode]||MODES[0]; return '<div class="vs-igr'+(g.id===UI.ig?' sel':'')+(on?' now':'')+'" data-a="igSel" data-id="'+g.id+'"><span class="th"'+(g._poster?' style="background-image:url('+g._poster+')"':'')+'>'+(g._poster?'':m[2])+'</span><span class="m"><b>'+esc(igName(g))+'</b><i>'+fmtT(g.s,1)+' – '+fmtT(g.e,1)+' · '+m[2]+' '+MODE_SHORT[g.mode]+' · '+ISTY[styOf(g)].ic+'</i></span>'+F.btn('igPlay','▶',{d:g.id,title:'이 구간 재생'})+F.btn('igDel','🗑',{d:g.id,c:'dng',title:'화면 삭제 — 안의 구성요소는 틀 없이 그대로 남아요 (구성요소까지 지우려면 편집창의 [구성요소까지 삭제])'})+'</div>'; }).join(''):'<div class="vs-empty sm">아직 없어요 — ＋ 로 추가하거나 ③ 화면 만들기에서 \'인포그래픽 화면\'을 고르면 장면마다 자동으로 만들어요</div>')+'</div>';
   if(cur) h+=igEditor(cur); else if(igs.length) h+='<div class="hint pad">위 목록에서 고르거나 타임라인의 인포 줄을 눌러 선택하세요.</div>';
   return h+inspOpenKit()+inspInfoLook(!cur);
@@ -47275,9 +47296,9 @@ function setIgField0(path,v){
 }
 function igMovePart(it,i,j){   /* v170: 목록 블록의 항목 i 를 j 자리로 옮김(사이 항목은 한 칸씩 밀림). v174: 시점(at·dt)·길이(du)는 '자리(줄)'에 그대로 두고 항목만 옮김 — ▲▼ 로 이웃과 맞바꾸면 두 항목의 시점·길이도 서로 맞바뀌고(자리마다 나타나는 때·보이는 길이는 그대로), 글자 크기(fz) 같은 항목 자체의 값은 항목을 따라감. 블록 시점·타임라인 칩 시각은 그대로. 옮긴 항목을 고른 상태로 하고, 타임라인에서 고른 칩(번호 pi)도 같은 항목을 가리키게 고침. 옮겼으면 true */
   const a=it&&it.parts; if(!a||!(i>=0&&i<a.length)||!(j>=0&&j<a.length)||i===j) return false;
-  const TK=['at','dt','du'], keep=a.map(p=>{ const o={}; TK.forEach(k=>{ if(p[k]!=null) o[k]=(typeof p[k]==='object')?clone(p[k]):p[k]; }); return o; });   /* v174: 각 자리가 가진 시점·길이 */
+  const fixT=it.type!=='s.ix2', TK=['at','dt','du'], keep=a.map(p=>{ const o={}; TK.forEach(k=>{ if(p[k]!=null) o[k]=(typeof p[k]==='object')?clone(p[k]):p[k]; }); return o; });   /* v174: 각 자리가 가진 시점·길이 */
   a.splice(j,0,a.splice(i,1)[0]);
-  a.forEach((p,k)=>{ TK.forEach(key=>{ delete p[key]; }); Object.assign(p,keep[k]); });   /* 시점·길이는 자리에 남기고 항목만 옮김 → 맞바꾼 두 항목이 서로의 시점·길이를 갖게 됨 */
+  if(fixT) a.forEach((p,k)=>{ TK.forEach(key=>{ delete p[key]; }); Object.assign(p,keep[k]); });   /* v177: 지수 막대판(s.ix2)은 강조 시점·길이가 항목을 따라감(자리에 남기지 않음) */   /* 시점·길이는 자리에 남기고 항목만 옮김 → 맞바꾼 두 항목이 서로의 시점·길이를 갖게 됨 */
   const mp=k=>k===i?j:(i<j?((k>i&&k<=j)?k-1:k):((k>=j&&k<i)?k+1:k)), same=e=>!!e&&e.k==='comp'&&String(e.id)===String(it.id)&&e.pi>=0, seen=new Set();
   [UI.tsel].concat(UI.tmul||[]).forEach(e=>{ if(same(e)&&!seen.has(e)){ seen.add(e); e.pi=mp(e.pi); } });   /* 같은 객체가 tsel·tmul 에 같이 있어도 한 번만 */
   UI.igIt=it.id; UI.igPt=j; return true;
@@ -47376,7 +47397,7 @@ async function charFromFile(file){
 function infoTextAi(){ try{ return !!studioAi().key; }catch(e){ return false; } }   /* 글 AI(영상 스튜디오 🤖 AI 에서 고른 것)에 키가 있나 */
 function infoOptRows(d){
   const ch=P.char?(P.char.src==='ai'?'AI 캐릭터':'내 그림'):'기본 캐릭터', ai=studioAi(), has=!!ai.key, nf=P.scenes.filter(c=>!contentOf(sentsOf(P,c)).length).length;
-  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false; if(d.ionly==null) d.ionly=P.cfg.info.only||''; if(d.ibal==null) d.ibal=P.cfg.info.bal!==false; if(d.ibalm==null) d.ibalm=P.cfg.info.balm||'auto'; if(d.ifit==null) d.ifit=P.cfg.info.fit!==false; if(d.iguar==null) d.iguar=P.cfg.info.guar!==false; if(d.isum==null) d.isum=P.cfg.info.sum!==false; if(d.isch==null) d.isch=P.cfg.info.sch!==false; if(d.iix==null) d.iix=P.cfg.info.ix!==false; if(d.ihook==null) d.ihook=P.cfg.info.hook!==false; if(d.igreet==null) d.igreet=P.cfg.info.greet!==false; if(d.iag==null) d.iag=P.cfg.info.agd!==false;
+  if(d.irich==null) d.irich=P.cfg.info.rich!==false; if(d.iltpl==null) d.iltpl=P.cfg.info.ltpl!==false; if(d.idetail==null) d.idetail=P.cfg.info.detail!==false; if(d.ionly==null) d.ionly=P.cfg.info.only||''; if(d.ibal==null) d.ibal=P.cfg.info.bal!==false; if(d.ibalm==null) d.ibalm=P.cfg.info.balm||'auto'; if(d.ifit==null) d.ifit=P.cfg.info.fit!==false; if(d.iguar==null) d.iguar=P.cfg.info.guar!==false; if(d.isum==null) d.isum=P.cfg.info.sum!==false; if(d.isch==null) d.isch=P.cfg.info.sch!==false; if(d.iix==null) d.iix=P.cfg.info.ix!==false; if(d.iixh==null) d.iixh=P.cfg.info.ixh!==false; if(d.ihook==null) d.ihook=P.cfg.info.hook!==false; if(d.igreet==null) d.igreet=P.cfg.info.greet!==false; if(d.iag==null) d.iag=P.cfg.info.agd!==false;
   return styleGallery(d)+D_('구성',dsel('ilay',d.ilay,[['auto','자동 — 내용·장면 화면에 맞춰 형태를 골라 섞어요(권장)'],['left','왼쪽 70% 패널 + 오른쪽 캐릭터'],['right','오른쪽 70% 패널 + 왼쪽 캐릭터'],['full','전체 화면 패널'],['hero','큰 수치 위주(화면 가득)'],['over','겹치기 — 장면 화면 위 띠·카드']]))
     +D_('내용',dsel('imode',d.imode,[['ai','AI 가 나레이션을 보고 설계(권장)'],['rule','규칙으로 추출(무료·즉시)']]))
     +D_('구성요소',klRowHtml(d))
@@ -48005,7 +48026,7 @@ const DLG_PREF={
   vkind:v=>{ if(v) P.cfg.dlg.vkind=v; }, akind:v=>{ if(v&&v!=='skip') P.cfg.dlg.vkind=v; },
   avoice:v=>{ P.cfg.dlg.avoice=!!v; }, vai:v=>{ if(v&&v!==P.cfg.voice.model){ P.cfg.voice.model=v; UI.vai=null; delete PRV._noTemp; } }, aucard:v=>{ P.cfg.dlg.aucard=!!v; }, asub:v=>{ P.cfg.dlg.asub=!!v; }, alearn:v=>{ P.cfg.dlg.alearn=!!v; },
   ilay:v=>{ P.cfg.info.lay=v; }, imode:v=>{ P.cfg.info.mode=v; },
-  istyle:v=>{ if(ISTY[v]){ P.cfg.info.style=v; P.cfg.info.sv138=1; } }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; }, ionly:v=>{ P.cfg.info.only=String(v==null?'':v).slice(0,300); }, ibal:v=>{ P.cfg.info.bal=!!v; }, ibalm:v=>{ P.cfg.info.balm=(v==='tile'||v==='type')?v:'auto'; }, ifit:v=>{ P.cfg.info.fit=!!v; }, iguar:v=>{ P.cfg.info.guar=!!v; }, isum:v=>{ P.cfg.info.sum=!!v; }, isch:v=>{ P.cfg.info.sch=!!v; }, iix:v=>{ P.cfg.info.ix=!!v; }, ihook:v=>{ P.cfg.info.hook=!!v; }, igreet:v=>{ P.cfg.info.greet=!!v; }, iag:v=>{ P.cfg.info.agd=!!v; },
+  istyle:v=>{ if(ISTY[v]){ P.cfg.info.style=v; P.cfg.info.sv138=1; } }, ichar:v=>{ if(v!=='keep') P.cfg.info.nochar=(v==='none'); }, irich:v=>{ P.cfg.info.rich=!!v; }, iltpl:v=>{ P.cfg.info.ltpl=!!v; }, idetail:v=>{ P.cfg.info.detail=!!v; }, ionly:v=>{ P.cfg.info.only=String(v==null?'':v).slice(0,300); }, ibal:v=>{ P.cfg.info.bal=!!v; }, ibalm:v=>{ P.cfg.info.balm=(v==='tile'||v==='type')?v:'auto'; }, ifit:v=>{ P.cfg.info.fit=!!v; }, iguar:v=>{ P.cfg.info.guar=!!v; }, isum:v=>{ P.cfg.info.sum=!!v; }, isch:v=>{ P.cfg.info.sch=!!v; }, iix:v=>{ P.cfg.info.ix=!!v; }, iixh:v=>{ P.cfg.info.ixh=!!v; }, ihook:v=>{ P.cfg.info.hook=!!v; }, igreet:v=>{ P.cfg.info.greet=!!v; }, iag:v=>{ P.cfg.info.agd=!!v; },
   asb:v=>{ P.sb=P.sb||{}; P.sb.on=(v==='on'); commit('스토리보드 적용 '+(v==='on'?'켬':'끔')); }   /* v107: 스토리보드대로 / AI 가 알아서 — 프로젝트에 저장(AI 수정 패널과 같은 값) */
 };
 function resetPref(gid){
@@ -56615,16 +56636,16 @@ const IX_NAME_RE=/주요\s*지수|지수\s*브리핑|시장\s*지수|market\s+in
 const isIdxChap=(p,ci)=>{ const k=chKey(p,ci); if(k) return k.split('+').indexOf('indices')>=0; return IX_NAME_RE.test(cleanChap(((p&&p.chap)||[])[ci])); };   /* 주요 지수 챕터 — 스크립트 키(indices)가 있으면 키로, 없으면 이름으로 */
 /* 지수 표 — sd = 칸(L 왼쪽 · R 오른쪽), ko·en = 화면에 쓰는 이름, lv = 최종 수치에 붙일 단위($·₩·%) */
 const IX_DEF=[
-  {k:'ndx',  sd:'L', ko:'나스닥100',  en:'Nasdaq 100',   re:/나스닥\s?100|NASDAQ[\s-]?100|\bNDX\b/i},
-  {k:'spx',  sd:'L', ko:'S&P500',     en:'S&P 500',      re:/S\s?&\s?P\s?500|에스앤피\s?500|S\s?&\s?P|\bSPX\b/i},
-  {k:'dji',  sd:'L', ko:'다우',       en:'Dow',          re:/다우\s?존스|다우|\bDow(?:\s+Jones)?\b|\bDJIA\b/i},
-  {k:'rut',  sd:'L', ko:'러셀2000',   en:'Russell 2000', re:/러셀\s?2000|러셀|\bRussell(?:\s?2000)?\b/i},
-  {k:'kospi',sd:'L', ko:'코스피',     en:'KOSPI',        re:/코스피|\bKOSPI\b/i},
-  {k:'wti',  sd:'R', ko:'유가(WTI)',  en:'WTI Oil',      re:/WTI|서부\s?텍사스|국제\s?유가|유가|원유|\bcrude(?:\s+oil)?\b|\boil\b/i, lv:'$'},
-  {k:'tnx',  sd:'R', ko:'국채(10Y)',  en:'10Y Yield',    re:/국채\s?10\s?년(?:물)?(?:\s?금리)?|10\s?년(?:물)?\s?(?:국채\s?)?금리|10\s?년물|국채\s?금리|국채|10[-\s]?year(?:\s+(?:treasury|yield|note))?|\b10Y\b|\btreasur(?:y|ies)\b/i, lv:'%'},
-  {k:'gold', sd:'R', ko:'금(GOLD)',   en:'Gold',         re:/(?<![가-힣])금(?=은|는|이|가|도|과|와|의|값|선물|시세|가격|\s|[,.]|$)|골드|\bGOLD\b/i, lv:'$'},
-  {k:'dxy',  sd:'R', ko:'달러인덱스', en:'Dollar Index', re:/달러\s?(?:인덱스|지수)|\bDXY\b|\bdollar\s+index\b/i},
-  {k:'krw',  sd:'R', ko:'원달러환율', en:'USD/KRW',      re:/원\s?[·\/]?\s?달러(?:\s?환율)?|환율|USD\s?\/\s?KRW|\bwon\b/i, lv:'₩'}
+  {k:'ndx',  sd:'L', ko:'나스닥100',  en:'Nasdaq 100',   re:/나스닥\s?100|NASDAQ[\s-]?100|\bNDX\b|나스닥|\bNASDAQ\b|纳斯达克|ナスダック/i},
+  {k:'spx',  sd:'L', ko:'S&P500',     en:'S&P 500',      re:/S\s?&\s?P\s?500|에스앤피\s?500|S\s?&\s?P|\bSPX\b|标普/i},
+  {k:'dji',  sd:'L', ko:'다우',       en:'Dow',          re:/다우\s?존스|다우|\bDow(?:\s+Jones)?\b|\bDJIA\b|道琼斯|道指|ダウ/i},
+  {k:'rut',  sd:'L', ko:'러셀2000',   en:'Russell 2000', re:/러셀\s?2000|러셀|\bRussell(?:\s?2000)?\b|罗素|ラッセル/i},
+  {k:'kospi',sd:'L', ko:'코스피',     en:'KOSPI',        re:/코스피|\bKOSPI\b|韩国综合指数|コスピ/i},
+  {k:'wti',  sd:'R', ko:'유가(WTI)',  en:'WTI Oil',      re:/WTI|서부\s?텍사스|국제\s?유가|유가|원유|\bcrude(?:\s+oil)?\b|\boil\b|原油|油价/i, lv:'$'},
+  {k:'tnx',  sd:'R', ko:'국채(10Y)',  en:'10Y Yield',    re:/국채\s?10\s?년(?:물)?(?:\s?금리)?|10\s?년(?:물)?\s?(?:국채\s?)?금리|10\s?년물|국채\s?금리|국채|10[-\s]?year(?:\s+(?:treasury|yield|note))?|\b10Y\b|\btreasur(?:y|ies)\b|美债|10年期(?:美)?(?:国)?债|10年債|10年物国債/i, lv:'%'},
+  {k:'gold', sd:'R', ko:'금(GOLD)',   en:'Gold',         re:/(?<![가-힣])금(?=은|는|이|가|도|과|와|의|값|선물|시세|가격|\s|[,.]|$)|골드|\bGOLD\b|黄金|ゴールド/i, lv:'$'},
+  {k:'dxy',  sd:'R', ko:'달러인덱스', en:'Dollar Index', re:/달러\s?(?:인덱스|지수)|\bDXY\b|\bdollar\s+index\b|美元指数|ドル指数|ドルインデックス/i},
+  {k:'krw',  sd:'R', ko:'원달러환율', en:'USD/KRW',      re:/원\s?[·\/]?\s?달러(?:\s?환율)?|환율|USD\s?\/\s?KRW|\bwon\b|韩元|ウォン/i, lv:'₩'}
 ];
 const IX_TOK=/([+\-−±]?)\s?([$₩¥]?)\s?(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)\s?(%|퍼센트|percent|포인트|points?|pt|달러|불|dollars?|원|엔|bp)?/gi;
 const IX_DIRW=/올랐|올라|오른|오르|상승|급등|강세|뛰|내렸|내려|내린|내리|하락|급락|떨어|약세|rose|rises?|gained?|jumped|climbed|surged|fell|falls?|dropped|declined|slid|lost/gi;
@@ -56664,17 +56685,6 @@ function ixSentRows(text,si){   /* 문장 하나 → 지수 줄들 [{k,sd,n,v,t,
     rows.push({k:h.d.k,sd:h.d.sd,n:isKo()?h.d.ko:h.d.en,v:r.v,t:h.d.sd==='R'?r.lv:'',i:si,f:clamp(spokenW(text.slice(0,h.i))/W,0,0.98)}); });
   return rows;
 }
-function ixSpan(p,all){   /* 규칙 — 주요 지수 챕터에서 '지수 이름 + 등락률' 문장이 이어진 구간 → {i0,i1,rows,ss} 또는 null(서로 다른 지수 4개 이상이어야 함). all=true 면 챕터를 가리지 않음 */
-  p=p||P; const S=(p&&p.sents)||[]; if(S.length<4) return null;
-  let best=null, cur=null; const fin=()=>{ if(cur&&cur.keys.size>=4&&(!best||cur.keys.size>best.keys.size)) best=cur; cur=null; };
-  for(let i=0;i<S.length;i++){
-    if(!all&&!isIdxChap(p,S[i].ci)){ fin(); continue; }
-    const rows=ixSentRows(String(S[i].text||''),i);
-    if(rows.length){ if(!cur||i-cur.last>3){ fin(); cur={rows:[],keys:new Set(),first:i,last:i}; } rows.forEach(r=>{ if(!cur.keys.has(r.k)){ cur.keys.add(r.k); cur.rows.push(r); } }); cur.last=i; }
-  }
-  fin(); if(!best) return null;
-  const i0=best.rows[0].i, i1=best.last; return {i0,i1,rows:best.rows,ss:S.slice(i0,i1+1)};
-}
 /* VIX·Fear & Greed — 값 하나와 판정 글(구간) */
 const FG_FNG=/Fear\s?(?:&|＆|and)\s?Greed|공포\s?[·&와과]?\s?탐욕(?:\s?지수)?|공탐\s?지수|\bF\s?&\s?G\b|fear[-\s]and[-\s]greed/i;
 const FG_VIX=/\bVIX\b|빅스|변동성\s?지수|공포\s?지수|volatility\s+index/i;
@@ -56706,32 +56716,6 @@ function fgSpan(p,bs,all){   /* 규칙 — (막대판 다음의) VIX·Fear & Gre
   for(let k=1;k<=2&&i1+1<S.length;k++){ const j=i1+1, t=String(S[j].text||''); if(isFiller(t)||SCH_INTRO.test(t)||(!all&&!isIdxChap(p,S[j].ci))||(schDates(t).length&&SCH_EVT.test(t))) break; i1=j; }   /* 두 지수를 풀어 주는 설명 한두 문장까지(일정 안내·진행 멘트 앞에서 멈춤) */
   return {i0,i1,vix,fng,ss:S.slice(i0,i1+1)};
 }
-/* ── 그림: 주요 지수 막대판 — 왼쪽·오른쪽 두 열. 열마다 0 선 기준 좌우 막대(막대 길이 = 등락률, 열마다 자기 범위), 오른쪽 열은 등락률 옆에 흰 글씨 (최종 수치) ── */
-function drawIx2(E,c,it,D){
-  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
-  const bk=E.B*c.k, ps=(it.parts||[]).map((p,i)=>({p,i,v:nz(p.v)})).filter(q=>q.v!=null&&String(q.p.l||'').trim()!==''); if(!ps.length) return;
-  const zl=FZP(it,'l'), zv=FZP(it,'v'), Ls=ps.filter(q=>q.p.sd!=='R'), Rs=ps.filter(q=>q.p.sd==='R'), two=Ls.length>0&&Rs.length>0, nmax=Math.max(Ls.length,Rs.length);
-  const port=two&&c.w<E.B*1.4, nrows=port?Ls.length+Rs.length+1:nmax, rh=Math.min(c.h/nrows,0.088*bk), top=c.y+(c.h-rh*nrows)/2, W=c.w-0.04*bk, X0=c.x+0.02*bk, gap=two?W*0.06:0, wl=two?(W-gap)*0.445:Math.min(W,W*0.66), wr=two?(W-gap)-wl:Math.min(W,W*0.7);
-  const col=(arr,x,w,sfx,y0)=>{
-    const lw=w*(sfx?0.19:0.224), tw=w*(sfx?0.478:0.576), g1=w*(sfx?0.028:0.038), vw=w*(sfx?0.13:0.162), g2=w*0.014, sw=sfx?w*0.16:0, tx0=x+lw, vr=tx0+tw+g1+vw, th=rh*0.45;
-    const baseS=0.036*bk*zv; let fsS=baseS; if(sfx){ const mw=Math.max.apply(null,arr.map(q=>{ const s0=String(q.p.t||'').trim(); return s0?klTW(E,'('+s0+')',baseS,'800'):0; })); if(mw>sw*1.02) fsS=baseS*sw*1.02/mw; }   /* 괄호 안 최종 수치는 한 열 모두 같은 크기(가장 긴 글에 맞춤) */
-    let mxp=0, mxn=0; arr.forEach(q=>{ if(q.v>0) mxp=Math.max(mxp,q.v); else if(q.v<0) mxn=Math.max(mxn,-q.v); });
-    const both=mxp>0&&mxn>0, tot=(mxp+mxn)||1, zx=both?tx0+tw*mxn/tot:tx0, sc=both?tw/tot:tw/(Math.max(mxp,mxn)||1);
-    arr.forEach((q,j)=>{
-      const sp=partSince(E,it,q.p,q.i); if(sp<=0) return; const yc=y0+j*rh+rh/2, ty=yc-th/2, v=q.v, tc=v>0?pal.up:v<0?pal.down:pal.flat;
-      g.save(); g.globalAlpha*=rv(sp,0.4);
-      dtf(g,String(q.p.l),x,yc,lw-w*0.012,0.031*bk*zl,'700',pal.text,font,'left','middle',0.6);
-      g.fillStyle=pal.track; roundRect(g,tx0,ty,tw,th,th/2); g.fill();
-      const bw=Math.max(th*0.9,Math.abs(v)*sc*rv(sp-0.05,0.8)); g.fillStyle=tc; if(both&&v<0) roundRect(g,zx-bw,ty,bw,th,th/2); else roundRect(g,zx,ty,bw,th,th/2); g.fill();
-      if(both){ g.fillStyle=pal.mute; g.fillRect(zx-0.5,ty-0.01*bk,1.5,th+0.02*bk); }
-      const vs=(v>0?'+':'')+v.toFixed(2)+'%'; dtf(g,E.cf.count?countText(vs,rv(sp-0.05,0.75)):vs,vr,yc,vw,0.036*bk*zv,'800',tc,font,'right','middle',0.6);
-      const sx=String(q.p.t||'').trim(); if(sfx&&sx) dtf(g,'('+sx+')',vr+g2,yc,sw*1.02,fsS,'800',pal.text,font,'left','middle',0.6);
-      g.restore();
-    });
-  };
-  if(port){ col(Ls,X0,W,false,top); col(Rs,X0,W,true,top+(Ls.length+1)*rh); }   /* 세로 영상 — 왼쪽 열 위, 오른쪽 열 아래(각각 전체 폭) */
-  else if(two){ col(Ls,X0,wl,false,top); col(Rs,X0+wl+gap,wr,true,top); } else if(Ls.length) col(Ls,X0+(W-wl)/2,wl,false,top); else col(Rs,X0+(W-wr)/2,wr,true,top);
-}
 (function(){
   KLD('s','ix2','주요 지수 막대판(고정)',{s:'지수판',g:'막대 차트(가로)',ar:3.0,h:0.46,mw:0.9,t:{kind:'ix2'},draw:drawIx2,nai:true,meas:(E,it,iw,kk)=>{ const ps=it.parts||[], nL=ps.filter(p=>p.sd!=='R').length, nR=ps.length-nL, port=nL>0&&nR>0&&iw<E.B*1.4; return {h:(port?(nL+nR+1)*0.088:Math.max(nL,nR,1)*0.088+0.04)*E.B*kk,mw:0}; },   /* 두 열이 나란히 놓일 폭이면 줄 수만큼, 좁으면(세로 영상) 위아래로 쌓은 만큼 높이를 요청 */
     parts:[['l','이름'],['v','등락률(%)','num'],['t','최종 수치(오른쪽 칸만)'],['sd','칸','sel:L=왼쪽/R=오른쪽']],
@@ -56751,10 +56735,6 @@ function drawIxG(E,c,it,D){   /* 지수 게이지 — 이름(VIX·Fear & Greed)�
 })();
 const IX_TX={en:{ixt:'US Market Indices — Daily Change'},zh:{ixt:'美国主要指数涨跌幅'},ja:{ixt:'米主要指数の騰落率'}};
 try{ Object.keys(IX_TX).forEach(id=>{ const l=V.get(id); if(l&&l.tx) Object.keys(IX_TX[id]).forEach(k=>{ if(l.tx[k]==null) l.tx[k]=IX_TX[id][k]; }); }); }catch(e){ console.warn('주요 지수 번역 글을 못 넣었어요',e); }
-function ixBlock(rows){   /* 막대판 블록 하나 — 줄은 고정 순서(왼쪽 위→아래, 오른쪽 위→아래), 나타나는 때는 말한 순간 */
-  const S=P.sents, od=IX_DEF.map(d=>d.k), srt=rows.slice().sort((a,b)=>od.indexOf(a.k)-od.indexOf(b.k)), t0=rows.slice().sort((a,b)=>a.i-b.i||a.f-b.f)[0];
-  return {id:uid('i'),type:'s.ix2',label:'',parts:srt.map(r=>({l:r.n,v:r.v,t:r.t||'',sd:r.sd,at:{sid:S[r.i].id,f:r3(r.f)},dt:0})),at:{sid:S[t0.i].id,f:r3(t0.f)},dt:0,ld:0.1};
-}
 function fgBlocks(gs){   /* 게이지 블록 — VIX(왼쪽) · Fear & Greed(오른쪽). 같은 5색 구간 모양(g.speed·fg)이고 VIX 는 0~50 눈금 */
   const S=P.sents, out=[];
   [gs.vix,gs.fng].forEach(r=>{ if(!r) return; const isV=r.k==='vix', mx=isV?Math.max(50,Math.ceil(r.v/10)*10):100;
@@ -56764,10 +56744,10 @@ function fgBlocks(gs){   /* 게이지 블록 — VIX(왼쪽) · Fear & Greed(오
 }
 function ixPlan(o){   /* 설계(규칙) — 시간표에는 아직 안 올림. → {bars,gauge,ids,src} 또는 {why} */
   const S=P.sents, force=!!(o&&o.ix===true); let all=false, bs=ixSpan(P,false); if(!bs&&force){ bs=ixSpan(P,true); all=!!bs; }
-  const gs=fgSpan(P,bs,all||(force&&!bs)); if(!bs&&!gs) return {why:'주요 지수 챕터에서 지수 이름과 등락률(%)이 이어서 나오는 문장(4개 이상)을 찾지 못해 주요 지수 화면은 만들지 않았어요'};
+  const gs=fgSpan(P,bs,all||(force&&!bs)); if(!bs&&!gs) return {why:'주요 지수 챕터에서 지수 이름을 말하는 문장을 찾지 못해 주요 지수 화면은 만들지 않았어요(대본에 지수 자료가 없으면 이름과 등락률(%)이 이어서 나오는 문장이 4개 이상 있어야 해요)'};
   const res={ids:new Set(),src:'rule'};
   if(bs){ let i1=bs.i1; if(gs&&gs.i0-bs.i1<=5) i1=gs.i0-1; else{ const t=String((S[bs.i1+1]||{}).text||''); if(S[bs.i1+1]&&!isFiller(t)&&!SCH_INTRO.test(t)&&(all||isIdxChap(P,S[bs.i1+1].ci))&&!(schDates(t).length&&SCH_EVT.test(t))) i1=bs.i1+1; }   /* 막대판은 마지막 지수 다음 한 문장(풀이)까지 — 게이지가 바로 이어지면 게이지 시작 앞까지 */
-    res.bars={span:{i0:bs.i0,i1,rows:bs.rows},block:ixBlock(bs.rows)}; for(let i=bs.i0;i<=i1;i++) res.ids.add(S[i].id); }
+    res.bars={span:{i0:bs.i0,i1,rows:bs.rows},block:ixBlock(bs)}; for(let i=bs.i0;i<=i1;i++) res.ids.add(S[i].id); }
   if(gs){ res.gauge={span:gs,blocks:fgBlocks(gs)}; for(let i=gs.i0;i<=gs.i1;i++) res.ids.add(S[i].id); }
   return res;
 }
@@ -56779,6 +56759,7 @@ function ixApply(res,o){   /* 설계한 막대판·게이지를 clip 으로 올�
   const cap=t=>{ let te=t.te; const nx=S[t.sp.i1+1]; if(nx&&te>nx.vs-0.05) te=Math.max(t.s1.ve+0.3,nx.vs-0.05); const nt=(P._titles||[]).find(q=>!q.ov&&q.ta>=t.s1.vs); if(nt&&te>nt.ta) te=Math.max(t.s1.ve+0.3,nt.ta-0.05); te=Math.min(te,P.dur); if(te<t.ts+2) te=Math.min(P.dur,t.ts+2); return te; };
   const bt=b?tspan(b.span,[b.block]):null, gt=gg?tspan(gg.span,gg.blocks):null; if(bt) bt.te=cap(bt); if(gt) gt.te=cap(gt);
   if(bt&&gt&&bt.te>gt.ts-0.02) bt.te=Math.max(bt.ts+1.5,gt.ts);   /* 막대판 끝 = 게이지 시작 */
+  if(bt&&b){ const a0=anchorAtTime(P,bt.ts+0.1); if(a0){ b.block.at={sid:a0.sid,f:a0.f}; b.block.dt=a0.dt; } }   /* v177: 막대판은 화면이 나오는 순간부터 전체가 한꺼번에 — 블록 시점을 화면 시작에 맞춤(줄마다 시점·길이는 강조 구간) */
   const wins=[]; if(bt) wins.push([bt.s0.vs-0.4,bt.s1.ve+0.2,bt.ts,bt.te]); if(gt) wins.push([gt.s0.vs-0.4,gt.s1.ve+0.2,gt.ts,gt.te]);
   P.igs=P.igs.filter(g=>{ if(g.src==='hand'||g.ov||g.sm||g.sch||g.hook||g.greet) return true; const ms=(g.items||[]).map(it=>mentionT0(P,it)).filter(t=>t!=null);
     if(ms.length) return ms.filter(t=>wins.some(w=>t>=w[0]&&t<=w[1])).length/ms.length<0.5;   /* 클립이 말하는 내용(블록)이 대부분 이 문장들에 대한 것이면 이 화면들이 맡음 */
@@ -56890,6 +56871,153 @@ function drawAgFix(E,c,it,D){
   LEAD_DEF['l.agfix']=0.12;
 })();
 /* ══ /v176 ══ */
+/* ══ v177 (2026-11-10) — 주요 지수 화면: 전체 수치는 한꺼번에 · 말하는 지수만 그 순간 강조 ═══════════════════════════════════════════════
+   요청: 주요 지수 등락률을 기계적으로 하나하나 읽지 말고, 인포그래픽에는 전체 수치를 동시에 보여 주되 그날의 중요한 변화는 자막·나레이션으로 강조하고,
+         자막·나레이션으로 강조되는 항목은 인포그래픽에서도 강조되는 순간에 화면 속 그 항목이 눈에 띄게(강조 효과).
+   방식: ① 대본(BTMScript) — 주요 지수 챕터 지시를 '중요한 변화 2~4개만 풀어서 이야기'로 바꾸고, 보고서의 지수 칸(등락률·최종 수치 10줄)을 챕터 자료(plan[].ix)로 함께 저장해 스튜디오에 넘김(p.ixd).
+         ② 막대판(s.ix2) — 전체 줄(자료 10줄)을 처음부터 한꺼번에 그리고, 줄마다 '강조 구간'(시점 at·dt, 길이 du, 더 있으면 em)에 그 줄만 판·굵은 글·빛나는 막대로 눈에 띄고 나머지는 살짝 흐려짐.
+            강조 구간 = 나레이션이 그 지수 이름을 말하는 순간(ixMentions) ~ 그 문장 끝(같은 문장에서 다른 지수 이름이 나오면 거기까지, 바로 이어지는 풀이 한 문장까지).
+         ③ 자막 — 같은 순간 그 지수의 이름·등락률 글을 노란색으로(ixSubTerms · drawCues, 체크박스 iixh). 대본에 지수 자료가 없으면(옛 대본·직접 쓴 대본) 문장에서 읽은 줄만으로 화면을 채움(v175 방식).
+   플래그 cfg.info.ix(전체) · cfg.info.ixh(자막 강조, 기본 켜짐) ── */
+const klIxHlOn=()=>!(P&&P.cfg&&P.cfg.info&&P.cfg.info.ixh===false);
+const IX_GRP=/3대\s?(?:주요\s?)?(?:주가\s?)?(?:지수|증시)|(?:뉴욕|미국|미)\s?3대|three\s+major\s+(?:us\s+)?(?:stock\s+)?(?:indices|indexes|averages)|美国三大(?:股)?指数|三大(?:股)?指数|米3大(?:株価)?指数/i;
+function ixMentions(text){   /* 문장 안의 지수 이름 언급 → [{k,i,e,f}] 말하는 순서 — f = 이름을 말하기 시작하는 위치(0~1). '3대 지수' 같은 묶음 말은 나스닥100·S&P500·다우 셋으로 */
+  text=String(text||''); const W=spokenW(text)||1, out=[];
+  ixFind(text).forEach(h=>out.push({k:h.d.k,i:h.i,e:h.e}));
+  const re=new RegExp(IX_GRP.source,'gi'); let m;
+  while((m=re.exec(text))){ if(!m[0]){ re.lastIndex++; continue; } const a=m.index, b=a+m[0].length; if(out.some(o=>a<o.e&&b>o.i)) continue; ['ndx','spx','dji'].forEach(k=>out.push({k,i:a,e:b,grp:true})); }
+  out.sort((x,y)=>x.i-y.i); out.forEach(o=>{ o.f=clamp(spokenW(text.slice(0,o.i))/W,0,0.98); });
+  return out;
+}
+function ixData(p){   /* 대본에서 받은 지수 자료(p.ixd) → [{k,sd,n,v,t}] 화면 순서 — 없으면 [] */
+  p=p||P; const D=(p&&p.ixd)||[], out=[]; if(!Array.isArray(D)||!D.length) return out;
+  IX_DEF.forEach(d=>{ const r=D.find(q=>q&&q.k===d.k); if(!r) return; const v=+r.v; if(!isFinite(v)) return;
+    const raw=String(r.lv==null?'':r.lv).replace(/[^\d.,]/g,'').replace(/^[.,]+|[.,]+$/g,'');
+    out.push({k:d.k,sd:d.sd,n:isKo(p.lang)?d.ko:d.en,v:Math.round(v*100)/100,t:(d.sd==='R'&&raw)?ixLvText({raw,u:'',cur:''},d):''}); });
+  return out;
+}
+function ixRowsOf(sp){   /* 화면에 올릴 줄 전체 — 대본 자료가 있으면 그 줄들, 자료에 없는 지수는 문장에서 읽은 줄(이름 + 등락률)로 채움 */
+  const out=ixData(P), seen=new Set(out.map(r=>r.k));
+  ((sp&&sp.rows)||[]).forEach(r=>{ if(seen.has(r.k)) return; seen.add(r.k); out.push({k:r.k,sd:r.sd,n:r.n,v:r.v,t:r.t||''}); });
+  const od=IX_DEF.map(d=>d.k); out.sort((a,b)=>od.indexOf(a.k)-od.indexOf(b.k)); return out;
+}
+function ixWins(sp,rows){   /* 줄마다 강조 구간 {k:[{i,f,t,t1,du}]} — 나레이션이 그 지수 이름을 말하는 순간부터 같은 문장의 끝(다음 지수 이름 앞)까지, 바로 이어지는 풀이 한 문장까지. 이어지는 같은 지수는 한 구간 */
+  const S=P.sents, keys=new Set(rows.map(r=>r.k)), ev=[], LEAD=0.1;
+  for(let i=sp.i0;i<=sp.i1;i++){ const s=S[i], sd=Math.max(0.05,s.ve-s.vs); ixMentions(String(s.text||'')).forEach(m=>{ if(keys.has(m.k)) ev.push({k:m.k,i,f:m.f,t:s.vs+m.f*sd}); }); }
+  ev.sort((a,b)=>(a.t-b.t)||(a.i-b.i));
+  const wins={};
+  ev.forEach((e,j)=>{
+    const s=S[e.i], nx=ev.slice(j+1).find(q=>q.t>e.t+0.05); let end=s.ve+0.25;
+    if(nx&&nx.i===e.i) end=Math.min(end,nx.t);   /* 같은 문장에서 다른 이름이 이어지면 거기까지 */
+    else{ const n1=S[e.i+1]; if(n1&&e.i+1<=sp.i1&&n1.ci===s.ci&&(!nx||nx.i>e.i+1)) end=Math.max(end,n1.ve+0.25); }   /* 그 지수를 풀어 주는 다음 문장 하나까지 */
+    end=Math.max(Math.min(end,e.t+6),e.t+1.5);
+    const arr=wins[e.k]||(wins[e.k]=[]), last=arr[arr.length-1];
+    if(last&&e.t-LEAD<=last.t1+0.8){ last.t1=Math.max(last.t1,end); last.du=r2(last.t1-last.t+LEAD); }
+    else arr.push({i:e.i,f:e.f,t:e.t,t1:end,du:r2(end-e.t+LEAD)});
+  });
+  return wins;
+}
+function ixSpan(p,all){   /* 규칙 — 주요 지수 챕터에서 지수 이름을 말하는 문장이 이어진 구간 → {i0,i1,rows,named,data,ss} 또는 null. 대본에 지수 자료(p.ixd)가 있으면 이름 하나만 나와도 되고, 없으면 '이름 + 등락률(%)'이 서로 다른 지수 4개 이상이어야 함(v175 방식). all=true 면 챕터를 가리지 않음 */
+  p=p||P; const S=(p&&p.sents)||[]; if(S.length<2) return null;
+  const hasD=ixData(p).length>=3; let skip=-1; try{ const ag=agdFind(p), f0=opFind(p); skip=ag?ag.i1:(f0?f0.g1:-1); }catch(e){ skip=-1; }   /* 오프닝(인사·목차) 문장은 지수 이름이 나와도 건너뜀 — 오프닝이 합쳐진 첫 챕터일 때 */
+  let best=null, cur=null; const sc=c=>hasD?c.named.size:c.pk.size, ok=c=>hasD?c.named.size>=1:c.pk.size>=4, fin=()=>{ if(cur&&ok(cur)&&(!best||sc(cur)>sc(best))) best=cur; cur=null; };
+  for(let i=0;i<S.length;i++){
+    if(i<=skip||(!all&&!isIdxChap(p,S[i].ci))){ fin(); continue; }
+    const t=String(S[i].text||''), sch=SCH_INTRO.test(t)||(schDates(t).length>0&&SCH_EVT.test(t));   /* 경제 일정을 짚는 문장은 지수 이름(국채·환율 …)이 나와도 지수 구간에 안 넣음 */
+    const ms=sch?[]:ixMentions(t), rows=sch?[]:ixSentRows(t,i);
+    if(!ms.length&&!rows.length) continue;
+    if(!cur||i-cur.last>3){ fin(); cur={rows:[],keys:new Set(),named:new Set(),pk:new Set(),first:i,last:i}; }
+    rows.forEach(r=>{ cur.pk.add(r.k); if(!cur.keys.has(r.k)){ cur.keys.add(r.k); cur.rows.push(r); } }); ms.forEach(m=>cur.named.add(m.k)); cur.last=i;
+  }
+  fin(); if(!best) return null;
+  let i0=best.first; const pv=S[i0-1];
+  if(pv&&i0-1>skip&&pv.ci===S[i0].ci&&pv.pa===S[i0].pa){ const pt=String(pv.text||''); if(!isFiller(pt)&&!OP_GREET.test(pt)&&!OP_AGENDA.test(pt)&&!SCH_INTRO.test(pt)) i0--; }   /* 같은 문단에서 바로 앞 문장(분위기 요약 같은 도입)도 함께 */
+  return {i0,i1:best.last,rows:best.rows,named:Array.from(best.named),data:hasD,ss:S.slice(i0,best.last+1)};
+}
+function ixBlock(sp){   /* 막대판 블록 하나 — 줄은 전체(자료 + 문장에서 읽은 것)를 고정 순서(왼쪽 위→아래, 오른쪽 위→아래)로, 모두 처음부터 보임. 줄마다 시점·길이 = 강조 구간(그 지수 이름을 말하는 순간) */
+  const S=P.sents, rows=ixRowsOf(sp), wins=ixWins(sp,rows), s0=S[sp.i0];
+  const parts=rows.map(r=>{ const w=wins[r.k]||[], pt={k:r.k,l:r.n,v:r.v,t:r.t||'',sd:r.sd};
+    if(w.length){ const a=w[0]; pt.at={sid:S[a.i].id,f:r3(a.f)}; pt.dt=0; pt.du=a.du; if(w.length>1) pt.em=w.slice(1).map(x=>({at:{sid:S[x.i].id,f:r3(x.f)},dt:0,du:x.du})); }
+    return pt; });
+  return {id:uid('i'),type:'s.ix2',label:'',parts,at:{sid:s0.id,f:0},dt:0,ld:0.1};
+}
+const ixA=(col,a)=>{ col=String(col||'#888'); if(col[0]==='#') return rgbaOf(col,a); let m=/^rgba?\(([^)]*)\)$/.exec(col); if(m) return 'rgba('+m[1].split(',').slice(0,3).map(s=>s.trim()).join(',')+','+a+')'; m=/^hsla?\(([^)]*)\)$/.exec(col); if(m) return 'hsla('+m[1].split(',').slice(0,3).map(s=>s.trim()).join(',')+','+a+')'; return col; };
+function ixEmK(E,it,p){   /* 한 줄의 강조 세기 {k 0~1, s 강조가 시작된 뒤 지난 시간} — 강조 구간(시점·길이) 안이면 부드럽게 켜지고 끝나면 꺼짐. 시점이 없는 줄은 강조 없음. 썸네일(E.all)엔 강조 없음 */
+  if(E.all) return {k:0,s:99};
+  let bk=0, bs=99;
+  const one=pt=>{ const t0=partTime(E.p,pt,it); if(t0==null) return; const t1=t0+(pt.du>0?pt.du:2.2), t=E.t; if(t<t0-0.05||t>t1) return;
+    const k=Math.min(easeOut(clamp((t-t0)/0.22,0,1)),clamp((t1-t)/0.32,0,1)); if(k>bk){ bk=k; bs=Math.max(0,t-t0); } };
+  one(p); (p.em||[]).forEach(one);
+  return {k:bk,s:bs};
+}
+/* ── 그림: 주요 지수 막대판 — 왼쪽·오른쪽 두 열. 열마다 0 선 기준 좌우 막대(막대 길이 = 등락률, 열마다 자기 범위), 오른쪽 열은 등락률 옆에 흰 글씨 (최종 수치).
+      v177: 전체 줄이 처음부터 한꺼번에 나타나고, 강조 구간(ixEmK)에 든 줄만 방향 색 판 + 굵은 이름 + 커지는 등락률 + 빛나는 두꺼운 막대(+ 훑고 지나가는 빛)로 눈에 띄고 나머지 줄은 흐려짐 ── */
+function drawIx2(E,c,it,D){
+  const g=E.g, pal=E.pal, font=E.font, s0=E.sinceBlock(it); if(s0<=0) return;
+  const bk=E.B*c.k, ps=(it.parts||[]).map((p,i)=>({p,i,v:nz(p.v)})).filter(q=>q.v!=null&&String(q.p.l||'').trim()!==''); if(!ps.length) return;
+  const zl=FZP(it,'l'), zv=FZP(it,'v'), Ls=ps.filter(q=>q.p.sd!=='R'), Rs=ps.filter(q=>q.p.sd==='R'), two=Ls.length>0&&Rs.length>0, nmax=Math.max(Ls.length,Rs.length);
+  const port=two&&c.w<E.B*1.4, nrows=port?Ls.length+Rs.length+1:nmax, rh=Math.min(c.h/nrows,0.088*bk), top=c.y+(c.h-rh*nrows)/2, W=c.w-0.04*bk, X0=c.x+0.02*bk, gap=two?W*0.06:0, wl=two?(W-gap)*0.445:Math.min(W,W*0.66), wr=two?(W-gap)-wl:Math.min(W,W*0.7);
+  const EM=new Map(); let mx=0; ps.forEach(q=>{ const e=ixEmK(E,it,q.p); EM.set(q.i,e); if(e.k>mx) mx=e.k; });   /* 줄마다 강조 세기 · 가장 센 값(mx)만큼 강조 안 된 줄은 흐려짐 */
+  const intro=rv(s0,0.45), grow=rv(s0-0.05,0.8), cnt=rv(s0-0.05,0.75);   /* 전체 줄이 한꺼번에 나타나고 막대도 함께 자람 */
+  const col=(arr,x,w,sfx,y0)=>{
+    const lw=w*(sfx?0.19:0.224), tw=w*(sfx?0.478:0.576), g1=w*(sfx?0.028:0.038), vw=w*(sfx?0.13:0.162), g2=w*0.014, sw=sfx?w*0.16:0, tx0=x+lw, vr=tx0+tw+g1+vw, th=rh*0.45;
+    const baseS=0.036*bk*zv; let fsS=baseS; if(sfx){ const mw=Math.max.apply(null,arr.map(q=>{ const s1=String(q.p.t||'').trim(); return s1?klTW(E,'('+s1+')',baseS,'800'):0; })); if(mw>sw*1.02) fsS=baseS*sw*1.02/mw; }   /* 괄호 안 최종 수치는 한 열 모두 같은 크기(가장 긴 글에 맞춤) */
+    let mxp=0, mxn=0; arr.forEach(q=>{ if(q.v>0) mxp=Math.max(mxp,q.v); else if(q.v<0) mxn=Math.max(mxn,-q.v); });
+    const both=mxp>0&&mxn>0, tot=(mxp+mxn)||1, zx=both?tx0+tw*mxn/tot:tx0, sc=both?tw/tot:tw/(Math.max(mxp,mxn)||1);
+    arr.forEach((q,j)=>{
+      const e=EM.get(q.i)||{k:0,s:99}, ek=e.k, yc=y0+j*rh+rh/2, v=q.v, tc=v>0?pal.up:v<0?pal.down:pal.flat, th2=th*(1+0.45*ek), ty=yc-th2/2, neg=both&&v<0;
+      g.save(); g.globalAlpha*=intro*(1-0.55*mx*(1-ek));
+      if(ek>0.01){   /* 강조 판 — 줄 전체를 방향 색으로 감싸고 왼쪽에 띠 */
+        const ph=rh*0.94, px=x-0.012*bk, pw=w+0.04*bk, py=yc-ph/2;
+        g.save(); g.globalAlpha*=ek; roundRect(g,px,py,pw,ph,ph*0.24); g.fillStyle=ixA(tc,0.17); g.fill(); g.lineWidth=Math.max(1.2,0.0032*bk); g.strokeStyle=ixA(tc,0.8); g.stroke();
+        g.fillStyle=tc; roundRect(g,px+0.004*bk,py+ph*0.17,0.0075*bk,ph*0.66,0.0037*bk); g.fill(); g.restore();
+      }
+      { const sN=1+0.07*ek; g.save(); g.translate(x,yc); g.scale(sN,sN); g.translate(-x,-yc);
+        dtf(g,String(q.p.l),x,yc,(lw-w*0.012)/sN,0.031*bk*zl,ek>0.3?'800':'700',pal.text,font,'left','middle',0.6); g.restore(); }
+      g.fillStyle=pal.track; roundRect(g,tx0,ty,tw,th2,th2/2); g.fill();
+      const bw=Math.max(th2*0.9,Math.abs(v)*sc*grow), bx0=neg?zx-bw:zx;
+      g.save(); if(ek>0.02){ g.shadowColor=tc; g.shadowBlur=0.034*bk*ek; } g.fillStyle=tc; roundRect(g,bx0,ty,bw,th2,th2/2); g.fill(); g.restore();
+      if(ek>0.02&&e.s<0.9){   /* 강조가 시작될 때 막대 위를 훑고 지나가는 빛 */
+        const u=e.s/0.9, dir=neg?-1:1, cx=zx+dir*bw*(1.25*u-0.1), hw=Math.max(bw*0.16,th2*0.9);
+        g.save(); roundRect(g,bx0,ty,bw,th2,th2/2); g.clip(); const gr=g.createLinearGradient(cx-hw,0,cx+hw,0);
+        gr.addColorStop(0,'rgba(255,255,255,0)'); gr.addColorStop(0.5,'rgba(255,255,255,'+(0.6*ek).toFixed(3)+')'); gr.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=gr; g.fillRect(bx0,ty,bw,th2); g.restore();
+      }
+      if(both){ g.fillStyle=pal.mute; g.fillRect(zx-0.5,ty-0.01*bk,1.5,th2+0.02*bk); }
+      const vs=(v>0?'+':'')+v.toFixed(2)+'%', pop=1+0.2*ek+0.12*ek*Math.sin(clamp(e.s/0.4,0,1)*Math.PI);
+      g.save(); g.translate(vr,yc); g.scale(pop,pop); g.translate(-vr,-yc); if(ek>0.02){ g.shadowColor=tc; g.shadowBlur=0.03*bk*ek; }
+      dtf(g,E.cf.count?countText(vs,cnt):vs,vr,yc,vw,0.036*bk*zv,'800',tc,font,'right','middle',0.6); g.restore();
+      const sx=String(q.p.t||'').trim(); if(sfx&&sx) dtf(g,'('+sx+')',vr+g2,yc,sw*1.02,fsS,'800',pal.text,font,'left','middle',0.6);
+      g.restore();
+    });
+  };
+  if(port){ col(Ls,X0,W,false,top); col(Rs,X0,W,true,top+(Ls.length+1)*rh); }   /* 세로 영상 — 왼쪽 열 위, 오른쪽 열 아래(각각 전체 폭) */
+  else if(two){ col(Ls,X0,wl,false,top); col(Rs,X0+wl+gap,wr,true,top); } else if(Ls.length) col(Ls,X0+(W-wl)/2,wl,false,top); else col(Rs,X0+(W-wr)/2,wr,true,top);
+}
+function ixSubTerms(q,t){   /* 자막 강조 — 지금(t) 강조 중인 지수 줄의 이름·등락률 글을 자막 글 안에서 찾아 돌려줌(없으면 null) */
+  if(!q||!P||!P.igs||!klIxHlOn()) return null;
+  const g=P.igs.find(x=>x.ixs&&x.ixk==='bars'&&t>=x.s-0.05&&t<=x.e+0.05); if(!g) return null;
+  const blk=(g.items||[]).find(x=>x.type==='s.ix2'); if(!blk) return null;
+  const act=new Set(); (blk.parts||[]).forEach(pt=>{ const k=pt.k||((ixFind(String(pt.l||''))[0]||{}).d||{}).k; if(!k) return;
+    [pt].concat(pt.em||[]).forEach(w=>{ const t0=partTime(P,w,blk); if(t0==null) return; if(t>=t0&&t<=t0+(w.du>0?w.du:2.2)) act.add(k); }); });
+  if(!act.size) return null;
+  const text=String(q.text||'').replace(/\n/g,' '), hits=ixFind(text), out=[];
+  hits.forEach((h,j)=>{ if(!act.has(h.d.k)) return; out.push(text.slice(h.i,h.e)); const seg=text.slice(h.e,j+1<hits.length?hits[j+1].i:text.length), tk=ixToks(seg).filter(x=>x.u==='%')[0]; if(tk) out.push(seg.slice(tk.i,tk.e).trim()); });
+  if(act.has('ndx')||act.has('spx')||act.has('dji')){ const gm=new RegExp(IX_GRP.source,'i').exec(text); if(gm) out.push(gm[0]); }
+  return out.length?out:null;
+}
+function ixSubLine(g,st,l,cx,y,h,terms){   /* 자막 한 줄을 강조 글(노란색·굵게)을 섞어 그림 — 줄에 강조할 글이 없으면 false(그리지 않음) */
+  const rg=[]; terms.forEach(tm=>{ tm=String(tm||''); if(!tm) return; let from=0, k; while((k=l.indexOf(tm,from))>=0){ rg.push([k,k+tm.length]); from=k+tm.length; } });
+  if(!rg.length) return false;
+  rg.sort((a,b)=>a[0]-b[0]); const mg=[]; rg.forEach(r=>{ const ls=mg[mg.length-1]; if(ls&&r[0]<=ls[1]) ls[1]=Math.max(ls[1],r[1]); else mg.push(r.slice()); });
+  const runs=[]; let p0=0; mg.forEach(r=>{ if(r[0]>p0) runs.push({s:l.slice(p0,r[0]),hl:false}); runs.push({s:l.slice(r[0],r[1]),hl:true}); p0=r[1]; }); if(p0<l.length) runs.push({s:l.slice(p0),hl:false});
+  const fs=st.size*h/1080, fam=st.font, wB=st.bold?'700':'400', wH=st.bold?'800':'700', fnt=hl=>(hl?wH:wB)+' '+fs.toFixed(1)+'px '+fam;
+  runs.forEach(r=>{ g.font=fnt(r.hl); r.w=g.measureText(r.s).width; });
+  let x=cx-runs.reduce((a,r)=>a+r.w,0)/2; g.textAlign='left';
+  runs.forEach(r=>{ g.font=fnt(r.hl); if(st.strokeW>0){ g.lineWidth=st.strokeW*h/1080; g.strokeStyle=st.stroke; g.strokeText(r.s,x,y); } g.fillStyle=r.hl?(st.hl||'#ffd84a'):st.color; g.fillText(r.s,x,y); x+=r.w; });
+  g.textAlign='center'; g.font=fnt(false); return true;
+}
+const ptLbl=(it,h)=>(it&&it.type==='s.ix2')?String(h).replace('title="나레이션에서 이 말이 나오는 시각">시점 <','title="나레이션에서 이 지수를 말하는 시각 — 이때부터 이 줄이 강조돼요(비우면 강조 없음)">강조 시점 <').replace(/title="이 항목이 화면에 보이는 시간[^"]*">길이 </,'title="이 줄이 강조되는 시간(초) — 비우면 약 2초. 줄은 늘 처음부터 보여요">강조 길이 <').replace('placeholder="끝까지"','placeholder="자동"'):h;   /* v177: 지수 막대판 줄의 시점·길이는 '나타남'이 아니라 '강조' */
+/* ══ /v177 ══ */
 /* ══ v144 (2026-11-03) — ✨ 화면 구성 업그레이드 ═══════════════════════════════════════════════════════════════════════════════════════════
    한 번에 만들기 뒤 [✨ 화면 구성 업그레이드](머리 줄·[인포] 탭·싱크 점검 창) — AI 가 ① 영상 전체(줄거리·챕터 역할·핵심 수치·용어)를 먼저 파악하고(upBrief) ② 장면을 4개씩 묶어 장면마다 지금의 화면 구성
    (구성요소 JSON + 측정값)을 '명료함·단순함(미니멀)·맥락 적합·사실/시점' 기준으로 1~5점 매겨 검토한 뒤(SYS_UP·upBatchUser) ③ 모자란 장면만 새 구성(삭제·수정·보완)을 돌려주면 applyInfoEdit 로 반영한다(upApplyScene).
@@ -57408,7 +57536,7 @@ function klRowHtml(d){   /* 대화상자 — 구성요소·배치 선택 줄 */
     +dchk('iguar',d.iguar,'모든 장면에 인포그래픽 — 자막·음성이 있으면 빠짐없이 만들기')+'<div class="hint">인사·오프닝, 구독·좋아요 안내, 투자 면책 멘트, 숫자가 없는 해설, 자막과 같은 내용뿐인 장면도 건너뛰지 않고 그 말의 핵심 구절·행동 목록으로 인포그래픽을 만들어요(AI 에게도 skip 하지 말라고 요청해요). 자막과 같은 뜻의 글을 거르는 설정은 그대로고, <b>거르고 나서 아무것도 안 남는 장면만</b> 마지막에 구제해요. 이미 만든 프로젝트는 [🚀 한 번에 만들기]를 다시 누르면 인포그래픽이 없는 장면을 채워요. 끄면 예전처럼 핵심이 없는 장면은 원래 화면 그대로 나가요.</div>'
     +dchk('isum',d.isum,'마지막 "핵심 3줄 요약"은 한 화면에 — 줄마다 말하는 순서·타이밍에 맞춰')+'<div class="hint">마무리 챕터에서 요약을 안내하는 문장과 첫째·둘째·셋째 줄을 찾아, 한 화면에 줄이 말해지는 순간마다 하나씩 나타나게 정리해요(AI 로 만들 때는 줄 글을 AI 가 다듬어요 — 요청이 한 번 더 들어가요). 그 문장들은 장면별 인포그래픽에서 빠져요. [인포] 탭의 [📝 3줄 요약 만들기]로 따로 만들 수도 있어요. 끄면 예전처럼 장면별로만 만들어요.</div>'
     +dchk('isch',d.isch,'경제 일정은 장면을 넘기지 않고 한 화면에 — 일정 전체를 말하는 순서·타이밍에 맞춰')+'<div class="hint">경제 일정 챕터에서 일정을 짚는 문장(예: "이번 주 경제 일정을 살펴보겠습니다" ~ 마지막 일정 설명)을 찾아, 장면이 바뀌어도 끊기지 않는 한 화면에 날짜·일정이 말해지는 순간마다 하나씩 나타나 끝날 무렵 전체 일정표가 되게 만들어요(AI 로 만들 때는 일정 글을 AI 가 다듬어요 — 요청이 한 번 더 들어가요). 그 문장들은 장면별 인포그래픽에서 빠져요. [인포] 탭의 [🗓 경제 일정 한 화면]으로 따로 만들 수도 있어요(이미 장면별로 만든 프로젝트도 한 화면으로 바꿔요). 끄면 예전처럼 장면별로만 만들어요.</div>'
-    +dchk('iix',d.iix,'주요 지수 등락률은 고정 모양 한 화면에 — 왼쪽 열 → 오른쪽 열 순서대로, 다음 화면에 VIX·Fear &amp; Greed 게이지')+'<div class="hint">주요 지수 챕터에서 지수 이름과 등락률이 이어지는 문장(나스닥100·S&amp;P500·다우·러셀2000·코스피 → 유가·국채·금·달러인덱스·원달러환율)을 찾아, 왼쪽 열(등락률만)·오른쪽 열(등락률 + 괄호 안 최종 수치)의 막대판 한 화면을 말하는 순서대로 하나씩 채우고, 이어서 VIX·Fear &amp; Greed 를 말하는 문장은 다음 화면의 게이지로 만들어요. 그 문장들은 장면별 인포그래픽에서 빠져요(AI 요청은 안 들어가요). [인포] 탭의 [📈 주요 지수 한 화면]으로 따로 만들 수도 있어요. 끄면 예전처럼 장면별로만 만들어요.</div>'
+    +dchk('iix',d.iix,'주요 지수 등락률은 한 화면에 전체를 한꺼번에 — 말하는 지수만 그 순간 강조, 다음 화면에 VIX·Fear &amp; Greed 게이지')+'<div class="hint">주요 지수 챕터에서 지수 이름을 말하는 문장 구간을 찾아, 전체 지수(왼쪽 열: 나스닥100·S&amp;P500·다우·러셀2000·코스피 · 오른쪽 열: 유가·국채·금·달러인덱스·원달러환율 + 괄호 안 최종 수치)의 막대판을 처음부터 한꺼번에 보여 주고, 나레이션이 그 지수를 말하는 순간 그 줄만 방향 색 판·굵은 글·빛나는 막대로 강조해요(나머지는 살짝 흐려져요). 대본에 지수 자료가 들어 있으면 그 수치로 전체를 채우고, 없으면(옛 대본·직접 쓴 대본) 문장에서 읽은 지수만 보여 줘요. 줄마다 [인포] 탭의 강조 시점·길이로 강조되는 때를 고칠 수 있어요. 이어서 VIX·Fear &amp; Greed 를 말하는 문장은 다음 화면의 게이지로 만들어요. 그 문장들은 장면별 인포그래픽에서 빠져요(AI 요청은 안 들어가요). [인포] 탭의 [📈 주요 지수 한 화면]으로 따로 만들 수도 있어요. 끄면 예전처럼 장면별로만 만들어요.</div>'+dchk('iixh',d.iixh,'지수 화면에서 강조되는 지수는 자막에서도 색으로 강조')+'<div class="hint">지수 화면이 어떤 지수를 강조하는 동안, 자막에 나온 그 지수의 이름과 등락률 글을 <b>노란색</b>으로 바꿔 보여 줘요(자막 글 자체는 그대로예요).</div>'
     +dchk('ihook',d.ihook,'오프닝 후킹 — 첫 문장의 핵심 수치·한마디 하나를 큼직하게')+'<div class="hint">인사 앞에서 진행자가 던지는 후킹 문장에서 오늘의 핵심 수치 하나(숫자가 올라가며 나와요) 또는 한마디를 골라 화면 한가운데에 크게 띄워요(AI 로 만들 때는 AI 가 골라요 — 요청이 한 번 더 들어가요). 끄면 예전처럼 장면별로만 만들어요.</div>'
     +dchk('igreet',d.igreet,'인사 화면 — 매일 같은 고정 브랜드 화면')+'<div class="hint">"안녕하십니까. 11월 10일 화요일 5분 증시 브리핑입니다." 같은 인사 문장에 <b>언제나 같은 모습</b>(5분 타이머 엠블럼 + 이름 + 영문 + 날짜)의 화면을 올려요. 이름·영문·색·내 이미지는 [인포] 탭 <b>🎬 오프닝</b> 칸에서 한 번 정해 두면 모든 영상에 공통이에요. 후킹·인사 문장은 장면별 인포그래픽에서 빠져요. [인포] 탭의 [🎬 오프닝 만들기]로 따로 만들 수도 있어요. 끄면 예전처럼 장면별로만 만들어요.</div>'
     +dchk('iag',d.iag,'오프닝 목차 — 후킹 → 인사 다음에 "오늘의 브리핑 목차"(고정 모양)')+'<div class="hint">오프닝에서 오늘 다룰 내용을 소개하는 문단(대본의 [화면: 목차 | 이름: 설명 | …] 줄 — 없으면 오프닝 뒤 챕터 이름)을 찾아, 윗글 <b>/ 오프닝</b> + 제목 <b>오늘의 브리핑 목차</b> + 줄마다 <b>번호 | /이름 | 설명</b> 형식의 화면을 이름을 말하는 순간마다 하나씩 나타나게 만들어요(AI 요청은 안 들어가요). 후킹 → 인사 → 목차 순서로 이어지고, 그 문장들은 장면별 인포그래픽에서 빠져요. 끄면 목차 화면은 자동으로 안 만들어요([인포] 탭 [🎬 오프닝 만들기]로는 만들 수 있어요).</div>'
@@ -57877,7 +58005,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v176';
+const KL_BUILD='v177';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
@@ -60174,7 +60302,8 @@ function drawCues(g,w,h,t){
   const y0=st.pos==='top'?h*st.off/100:st.pos==='mid'?(h-totalH)/2:h-h*st.off/100-totalH;
   g.save(); g.globalAlpha=alpha; g.textAlign='center'; g.textBaseline='top'; g.lineJoin='round';
   if(st.bgA>0){ const mw=Math.max.apply(null,lines.map(l=>g.measureText(l).width)), pad=fs*0.35; g.fillStyle=hexA(st.bg,st.bgA); roundRect(g,w/2-mw/2-pad*1.4,y0-pad*0.5,mw+pad*2.8,totalH+pad,fs*0.25); g.fill(); }
-  lines.forEach((l,i)=>{ const y=y0+i*lh+(lh-fs)/2; if(st.strokeW>0){ g.lineWidth=st.strokeW*h/1080; g.strokeStyle=st.stroke; g.strokeText(l,w/2,y); } g.fillStyle=st.color; g.fillText(l,w/2,y); });
+  let hlT=null; try{ hlT=ixSubTerms(q,t); }catch(e){ hlT=null; }   /* v177: 지수 화면이 강조하는 지수의 이름·등락률 글 */
+  lines.forEach((l,i)=>{ const y=y0+i*lh+(lh-fs)/2; if(hlT&&ixSubLine(g,st,l,w/2,y,h,hlT)) return; if(st.strokeW>0){ g.lineWidth=st.strokeW*h/1080; g.strokeStyle=st.stroke; g.strokeText(l,w/2,y); } g.fillStyle=st.color; g.fillText(l,w/2,y); });
   g.restore();
 }
 function drawFrame(g,w,h,t){
@@ -62635,7 +62764,7 @@ window.BTMVideo={open:openStudio,close:closeStudio,isOpen:()=>!!(_ov&&_ov.classL
     translateProject,reanchorInfo,sysTr,trUser,trNeed,baseTo,trEstimate,dlgLang,showLangDlg,
     agSpan,splitOpen,TTV,bgReg,bgTplDraw,drawBgSpec,drawSceneBg,bgChooser,bgSection,bgSetKind,bgFromFile,bgAct,bgTarget,bgKindOf,bgThumb,bgDark,bgCovered,bgSync,bgVidEl,BVM,bgBake,_bgc,sceneBgCss,sceneBgDef,sceneStyle,setBgField,igFillBg,igBack,scrTrans,scrActive,scrPrev,scrNextT,scrOwn,scrOpt,drawScrTrans,scrTransRows,scrSel,drawClips,drawClip,drawTitle,igLay,trScratch,bgForce,specLum,sceneLum,bgReady,accFlip,bgLumOfUrl,ensureBgImages,bgPurge,bgPasteTarget,cardEff,cardUniSrc,cardUnify,cuRow,cardColorRows,tlMovSel,tlMvPlan,tlMvApply,tlMvDo,tlNudge,tlNudgeKey,tlDragSet,tlGrpDt,tlCopyAt,commitMerge,tlSnapPts,tlDragCancel,cbSelAssign,tmKey,tselEls,renderTimeline,get DRAG(){ return DRAG; },get HIST(){ return H; },tlCompPlace,tlCompsMove,tlCompsRemove,tlMvFinish,partSince,nfPrune,igDropFrame,nfCount,igNfRows,ueT,itEndT,ueFreeze,ueActive,duLeft,vText,vNum,vDiff,chunkTts,vtSetText,vtReplaceAll,vtMark,runVoice,applyChunkAudio,inspVoice,inspScene,vcSegs,vcAllSegs,vcFind,vcEnsure,vcMoveBy,vcTrimSet,vcRemove,vcCutHere,vcSidOf,vcRowHtml,speechSpans,speechLevel,narrationWav,startPlay,vpList,vpDefs,vpEdited,vpSave,vpReset,vpSel,vpInner,vpBox,vpTouch,vpSync,vpPaintAll,vpPreset,vpPick,vpDoSave,vpDoReset,tlSameCC,tlKindSum,mqKey,mqKeyAt,tlMultiHint,tlCopyNote,tmulMenuMix,tmulDeleteMix,tlMvPlanSubs,tlMvPlanAuds,tlMvPlanMix,tlMvDoMix,tlDragSetMix,TL_PICK,TL_MIXMV,tlMvFinish,tlCompsMove,tlDownGrp,tlMenu,tlSelFrom,tselPaint,tlDelete,tselClear,titleGap,ttgClamp,TTD,ttShow,ttGapRows,ttGapAny,titleIg,titleSpec,inspTitle,ttOv,ttOvDef,ttOfs,openCi,chNum,numAfter,isOpenChap,isCloseChap,ovSpan,ovChapters,ovRuleBlock,ovShort,ovPlan,ovApply,
     hasBoard,sbOn,sbSet,sbParse,sbGlobal,sbCheck,sbSummary,sbPrepare,sbMkCard,sbTopUpInfo,sbFullPrompt,sbInfoBlock,sbEditHead,sbEditScene,sysEdit,infoUser,igCtx,insertSentence,docScriptEdit,docBoardEdit,docBoardHtml,docScriptHtml,dlgSbReport,sbFixAll,setSbField,docRerender,autoGo,dlgAuto,dlgVisual,sbRow,sbText,sbBlocks,sbHay,autoMake,subUser,onDlgField,showAutoDlg,
-    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,igMovePart,opFind,opWindow,opPlan,opApply,opHookRule,opHookAi,opDateText,opTouch,brandGet,brandSet,brandSnap,drawGreet,drawHook,inspOpenKit,klHookOn,klGreetOn,schSpan,schWindow,schDates,schAi,schBlock,schPlan,schApply,schIdsOfClip,klSchOn,isEcoChap,klAgdOn,agdFind,agdCueOf,agdCutOf,agdCueItems,agdChapItems,agdBlock,agdPlan,drawAgFix,klIxOn,isIdxChap,IX_DEF,ixToks,ixSentRows,ixSpan,fgSentRows,fgSpan,ixBlock,fgBlocks,ixPlan,ixApply,ixIdsOfClips,ixTouch,drawIx2,drawIxG,scEndSet,scEndMove,tlRipple,tlRippleList,tlRippleKey,tlRipRelax,tlStartOf,tlSceneOfTitle,tlTitlesOfScenes,tlTitlesApply,ttShiftApply,scSetStarts,tlMvPlanScenes,tlMvPlanTitles,tlMvPlanBgm,tlPreGrp,tlCompsExtend,tlPaintEl,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
+    SL_KEY,SL_SYS,slPrint,slAgg,slCollect,slRun,slBlock,slReplay,slTrans,slGet,slPut,slDigest,slNorm,slAsk,slCard,slScan,slLines,slPlain,slView,slShow,slPrefill,slStart,slRunBtn,slClearBtn,slItemJson,slClipJson,slExamples,slRow,slPaint,slSuggest,KL,KL_HIST,klOf,klResolve,klNorm,klGroups,layoutPick,layoutApply,layoutAll,layoutCatalog,klStack,klBox,klCatalog,klSys,kindUpgrade,drawM,klRich,klLtpl,klTplOf,leAiTpl,klHash,klUnit,KL_AI,KL_GUIDE,klRowHtml,klChip,klSig,DRAW,MEAS,LE_MODES,infoPal,igCustomCells,klEcho,klHead,klDetailItems,klDetailOn,klDetailInsert,KL_DETAIL,klSecKeys,klRestates,klDateSig,klRefs,klDropN,klUnits,klCover,klSbInfo,klSbBlock,klFigsOf,klDropSince,klStatsFromText,klCleanExisting,klCanon,klFinalAi,klListFix,klSbFrag,klGoneHas,KL_GONE,klStrs,klNameOnly,klAllStrs,klPartText,klJudgeCands,klPoolFix,klTextCard,klShortText,KL_BUILD,klTitleEchoFix,klPartsEcho,klExact,klBuildCheck,edMark,klLostAdd,klCleanToast,setIgField0,igMovePart,opFind,opWindow,opPlan,opApply,opHookRule,opHookAi,opDateText,opTouch,brandGet,brandSet,brandSnap,drawGreet,drawHook,inspOpenKit,klHookOn,klGreetOn,schSpan,schWindow,schDates,schAi,schBlock,schPlan,schApply,schIdsOfClip,klSchOn,isEcoChap,klAgdOn,agdFind,agdCueOf,agdCutOf,agdCueItems,agdChapItems,agdBlock,agdPlan,drawAgFix,klIxOn,klIxHlOn,ixMentions,ixData,ixRowsOf,ixWins,ixEmK,ixSubTerms,ixSubLine,ptLbl,ixA,isIdxChap,IX_DEF,ixToks,ixSentRows,ixSpan,fgSentRows,fgSpan,ixBlock,fgBlocks,ixPlan,ixApply,ixIdsOfClips,ixTouch,drawIx2,drawIxG,scEndSet,scEndMove,tlRipple,tlRippleList,tlRippleKey,tlRipRelax,tlStartOf,tlSceneOfTitle,tlTitlesOfScenes,tlTitlesApply,ttShiftApply,scSetStarts,tlMvPlanScenes,tlMvPlanTitles,tlMvPlanBgm,tlPreGrp,tlCompsExtend,tlPaintEl,klOnly,klWords,klWordSub,klTitleBits,klFrameTexts,klOnlyLine,klHeadEn,klBal,klW,klShortCompose,klShortOf,klShortListOf,klBalAi,klShortComposeClip,klTextUnit,KL_DIALECTS,KL_MHIST,klDialect,klMethod,klDialectFix,klTypoPick,drawLT,klFxOn,klFxK,klFxRec,klFxOv,klFxExisting,klFxNeeds,klFxLayout,KL_FX_EPS,buildIgLay,igLay,klGuarOn,klSumOn,klSceneHas,igCovered,klSceneOnly,klRescueItems,klGuarKeep,klGuarInsert,klHeadline,klRoleItems,klNoRole,klIsRole,smWindow,smSpan,smCondense,smLineText,smBlock,smRuleBlock,smAi,smPlan,smApply,smTouch,SM_INTRO,SM_ORD_S,SM_ORD_W,KL_CTA_RE,KL_DISC_RE,sysSm,UP_LV,UP_BATCH,upPref,upTargets,upManual,upLockWhy,upCompLine,upShown,upLeaf,upMetrics,upMetricLine,upNumNorm,upNumTok,upAllowed,upNumFilter,upDiff,upKey,upDigest,upNormBrief,upBriefLocal,upBrief,upBriefText,SYS_UP_KO,SYS_UPB_KO,upVocab,sysUp,upBatchUser,upTrim,upChars,upCompText,upClips,upIsImp,upApplyScene,upHas,upRevert,runUpgrade,dlgUpgrade,showUpgradeDlg,upReportHtml,dlgUpgradeReport,paintUpBtn}};
 })();
 /* ═══ BTMVIDEO-JS-END ═══ */
 </script>
