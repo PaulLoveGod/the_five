@@ -2631,6 +2631,14 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 #scWhatHint:empty{display:none}
 #scSegHint{min-height:0;line-height:1.5;word-break:keep-all}
 #scSegHint:empty{display:none}
+/* v190 — 실시간 온라인 시장조회(에프터마켓) */
+#scLiveHint{min-height:0;margin-top:5px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:6px 9px;color:#075985;line-height:1.55;word-break:keep-all}
+#scLiveHint b{color:#0c4a6e}
+#scLiveHint a,.sc-livepv a{color:#0369a1;font-weight:700;text-decoration:underline;cursor:pointer}
+.sc-livepv{margin-top:6px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:8px;padding:7px 9px;font-size:11px;line-height:1.55;color:#1e3a8a}
+.sc-livepv pre{margin:0 0 6px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;font:inherit}
+.sc-sr[data-k="live"]{border-color:#bae6fd;background:#f0f9ff}
+.sc-sr[data-k="live"] .st{color:#0369a1}
 .sc-segmode{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .sc-sm{display:flex;align-items:flex-start;gap:6px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;transition:background .1s,border-color .1s}
 .sc-sm:hover{border-color:#fcd34d;background:#fffdf5}
@@ -43073,7 +43081,7 @@ L.en={id:'en',name:'영어',native:'English',short:'EN',ai:'English',cls:'latin'
   sentLen:'about 20 words or fewer',
   register:'natural spoken broadcast English — conversational yet professional, short sentences, jargon explained right away, numbers written so they are easy to read aloud',
   units:'Write currency and units the way English-language financial media do (e.g. "KRW 1,350" or "1,350 won", "5,412 points", "+1.2%", "$78 a barrel"). Use standard English names for indices, companies and terms (KOSPI, KOSDAQ, Samsung Electronics, SK hynix, S&P 500, Nasdaq, the Fed, FOMC).',
-  chap:{open:'Opening',indices:'Market Indices Briefing',eco:'Economic Calendar Checkpoints',market:'Market Analysis',theme:'Sector & Theme Analysis',watch:'Watchlist Check',warren:"Warren Kim's View",radar:'AI Stock Radar Picks',tech:'Technical Analysis Points',strategy:'Trading Strategy Check',scenario:'Scenarios & Action Plan',close:'Wrap-up'},
+  chap:{open:'Opening',indices:'Market Indices Briefing',eco:'Economic Calendar Checkpoints',market:'Market Analysis',after:'After-Hours Market',theme:'Sector & Theme Analysis',watch:'Watchlist Check',warren:"Warren Kim's View",radar:'AI Stock Radar Picks',tech:'Technical Analysis Points',strategy:'Trading Strategy Check',scenario:'Scenarios & Action Plan',close:'Wrap-up'},
   tx:{fig:'Key figure',sec:'Sectors',evt:'Schedule',geo:'Major markets',tl:'Timeline',pct:'Change',val:'Level',up:'Strong',dn:'Weak',prev:'Before',now:'Now',sub:'Subtitle',ns:'New sentence',loading:'Loading the visual…',fg:'Fear & Greed Index',vix:'VIX',rsi:'RSI',ag:"Today's Overview",agi:'Topic',base:'Base',open:'Open',high:'High',low:'Low',vol:'Volume',est:'Est.',act:'Actual',beat:'Beat',miss:'Miss',inl:'In line',tot:'Total',rku:'Top gainers',rkd:'Top losers',adv:'Advancing',dec:'Declining',unc:'Unchanged',fromhi:'vs high'},
   gz:{fg:['Extreme Fear','Fear','Neutral','Greed','Extreme Greed'],vix:['Calm','Caution','Alert','Fear'],rsi:['Oversold','Neutral','Overbought'],plain:['Low','Medium','High']},
   presets:[['News anchor','Read like an evening news anchor — calm and clear, numbers and proper nouns slowly and precisely'],['Breaking news','Deliver it like breaking news — fast and urgent, with emphasis on key figures'],['Friendly explainer','Explain it like talking to a friend — warm and natural, with comfortable pauses between sentences'],['Market close brief','Low, steady, trustworthy tone; finish each sentence firmly']]};
@@ -43083,7 +43091,7 @@ L.zh={id:'zh',name:'중국어(간체)',native:'简体中文',short:'中',ai:'Sim
   sentLen:'about 30 Chinese characters or fewer',
   register:'natural spoken broadcast Mandarin (口语化的播报风格) — professional yet approachable, short sentences, jargon explained right away, numbers written so they are easy to read aloud',
   units:'货币和单位按中文财经媒体的习惯书写(如“1,350韩元”“5,412点”“+1.2%”“每桶78美元”);指数、公司和术语使用标准中文名称(如 韩国综合指数KOSPI、三星电子、SK海力士、标普500、纳斯达克、美联储、FOMC)。',
-  chap:{open:'开场',indices:'主要指数简报',eco:'经济日程要点',market:'市场分析',theme:'主题与板块分析',watch:'关注个股检查',warren:'Warren Kim 的观点',radar:'AI Stock Radar 捕捉个股',tech:'技术分析要点',strategy:'交易策略检查',scenario:'情景与应对策略',close:'结语'},
+  chap:{open:'开场',indices:'主要指数简报',eco:'经济日程要点',market:'市场分析',after:'盘后市场',theme:'主题与板块分析',watch:'关注个股检查',warren:'Warren Kim 的观点',radar:'AI Stock Radar 捕捉个股',tech:'技术分析要点',strategy:'交易策略检查',scenario:'情景与应对策略',close:'结语'},
   tx:{fig:'核心数据',sec:'板块',evt:'日程',geo:'主要市场',tl:'时间线',pct:'涨跌幅',val:'点位',up:'强势',dn:'弱势',prev:'此前',now:'现在',sub:'字幕',ns:'新句子',loading:'正在加载画面…',fg:'恐惧与贪婪指数',vix:'VIX',rsi:'RSI',ag:'今日概览',agi:'要点',base:'基准',open:'开盘',high:'最高',low:'最低',vol:'成交量',est:'预期',act:'实际',beat:'超预期',miss:'不及预期',inl:'符合预期',tot:'合计',rku:'涨幅榜',rkd:'跌幅榜',adv:'上涨',dec:'下跌',unc:'平盘',fromhi:'较高点'},
   gz:{fg:['极度恐惧','恐惧','中性','贪婪','极度贪婪'],vix:['平稳','注意','警戒','恐慌'],rsi:['超卖','中性','超买'],plain:['低','中','高']},
   presets:[['新闻主播','像晚间新闻主播一样,沉稳清晰,数字和专有名词读得慢而准确'],['快讯语气','像播报快讯一样语速较快、节奏紧凑,关键数字加重语气'],['亲切讲解','像和朋友聊天一样亲切自然,句子之间留出充分停顿'],['收盘简报','语调低沉平稳、值得信赖,每句话收尾干脆']]};
@@ -43093,7 +43101,7 @@ L.ja={id:'ja',name:'일본어',native:'日本語',short:'日',ai:'Japanese (日�
   sentLen:'about 45 Japanese characters or fewer',
   register:'natural spoken Japanese news-broadcast style (です・ます調) — professional yet approachable, short sentences, jargon explained right away, numbers written so they are easy to read aloud',
   units:'通貨・単位は日本語の経済メディアの慣例で書く(例:「1,350ウォン」「5,412ポイント」「+1.2%」「1バレル78ドル」)。指数・企業名・用語は標準的な日本語表記(KOSPI、サムスン電子、SKハイニックス、S&P500、ナスダック、FRB、FOMC)にする。',
-  chap:{open:'オープニング',indices:'主要指数ブリーフィング',eco:'経済指標カレンダー',market:'市況分析',theme:'テーマ・セクター分析',watch:'注目銘柄チェック',warren:'Warren Kim の視点',radar:'AI Stock Radar 注目銘柄',tech:'テクニカル分析ポイント',strategy:'トレード戦略チェック',scenario:'シナリオと対応戦略',close:'まとめ'},
+  chap:{open:'オープニング',indices:'主要指数ブリーフィング',eco:'経済指標カレンダー',market:'市況分析',after:'時間外取引',theme:'テーマ・セクター分析',watch:'注目銘柄チェック',warren:'Warren Kim の視点',radar:'AI Stock Radar 注目銘柄',tech:'テクニカル分析ポイント',strategy:'トレード戦略チェック',scenario:'シナリオと対応戦略',close:'まとめ'},
   tx:{fig:'注目の数値',sec:'セクター',evt:'日程',geo:'主要市場',tl:'タイムライン',pct:'騰落率',val:'水準',up:'強い',dn:'弱い',prev:'以前',now:'現在',sub:'字幕',ns:'新しい文',loading:'画面を読み込み中…',fg:'恐怖・強欲指数',vix:'VIX',rsi:'RSI',ag:'本日の概要',agi:'トピック',base:'基準',open:'始値',high:'高値',low:'安値',vol:'出来高',est:'予想',act:'実績',beat:'上振れ',miss:'下振れ',inl:'一致',tot:'合計',rku:'値上がり上位',rkd:'値下がり上位',adv:'上昇',dec:'下落',unc:'変わらず',fromhi:'高値比'},
   gz:{fg:['極度の恐怖','恐怖','中立','強欲','極度の強欲'],vix:['安定','注意','警戒','恐怖'],rsi:['売られすぎ','中立','買われすぎ'],plain:['低い','普通','高い']},
   presets:[['ニュースキャスター','夜のニュースキャスターのように落ち着いて明瞭に、数字や固有名詞はゆっくり正確に読む'],['速報調','速報を伝えるように速くて緊迫感のある口調で、重要な数値は強調して読む'],['親しみやすい解説','友達に説明するように柔らかく自然に、文の間に十分な間を取る'],['引け後ブリーフィング','低く安定した信頼感のある声で、文末をきっぱり締める']]};
@@ -43243,6 +43251,7 @@ const SECS=[
   {k:'eco',label:'경제 일정',core:1},
   {k:'market',label:'시장 분석 (시황 분석)',core:1,id:'marketAnalysis'},
   {k:'theme',label:'테마 분석',core:1,id:'sectorAnalysis'},
+  {k:'live',label:'실시간 온라인 시장조회'},   /* v190: 만들 때 인터넷에서 에프터마켓 현황을 조회 → 시황 분석 안에 '에프터마켓 시황' */
   {k:'watch',label:'관심 종목'},
   {k:'warren',label:'The Whispers of Warren Kim',id:'warrenKim'},
   {k:'radar',label:'AI Stock Radar',id:'aiStockRadar'},
@@ -43260,15 +43269,17 @@ const META={
   radar:{rpt:'AI Stock Radar 포착 종목·전략',chap:'AI Stock Radar 포착 종목',w:10,focus:'AI Stock Radar 가 포착한 종목·전략의 핵심과 근거'},
   tech:{rpt:'기술적 분석 포인트',chap:'기술적 분석 포인트',w:10,focus:'기술적 분석의 핵심 레벨(지지·저항·추세)과 해석'},
   strategy:{rpt:'매매 전략 점검',chap:'매매 전략 점검',w:9,focus:'매매 전략의 핵심 원칙과 이번 시장에서의 적용 포인트(개인 포지션은 드러내지 말고 일반론으로)'},
+  after:{rpt:'에프터마켓 시장 분석 — 정규장 마감 후 선물·시간외 시세와 이슈',chap:'에프터마켓 시황',w:10,focus:'에프터마켓(시간외) 현황 — [참고 원자료]의 "실시간 온라인 시장조회"(인터넷에서 방금 조회한 에프터마켓 시세·뉴스)만을 근거로 이야기하듯 풀어서 설명 — ① 조회 시각과 지금이 어떤 세션(에프터마켓·프리마켓·정규장 마감)인지를 한 번 밝히고 ② 나스닥100·S&P500·다우 선물이 가리키는 방향 ③ 정규장 종가 대비 에프터마켓에서 눈에 띄게 오르내린 대형주와 그 이유(자료에 있는 실적·뉴스만) ④ VIX·금리·환율 같은 위험 선호 지표와 연결 ⑤ 이것이 다음 정규장과 한국 시장 개장에 주는 시사점(확정적 예측 없이 시나리오로) — 에프터마켓은 거래량이 적어 가격이 과장될 수 있음을 한 번 짚고, 자료에 없는 종목·수치·뉴스는 만들지 마세요'},
+  live:{rpt:'실시간 온라인 시장조회 — 에프터마켓',chap:'에프터마켓 시황',w:0,focus:''},   /* v190: 목록 표시용 — 챕터는 'after' 로 만듦 */
 };
-const LIM={indices:3000,eco:5000,watch:3000,market:7000,theme:7000,warren:5000,radar:6000,tech:6000,strategy:6000};
+const LIM={indices:3000,eco:5000,watch:3000,market:7000,theme:7000,warren:5000,radar:6000,tech:6000,strategy:6000,live:7000};
 /* v146 — 스크립트 챕터 4부 제목(영상 언어별). ie = 주요 지수+경제 일정을 같이 고른 첫 부, i·e = 둘 중 하나만 골랐을 때, m = 시황 분석, t = 테마·섹터, w = 시나리오·마무리가 든 마지막 부.
    제목에 ·(가운뎃점)·~ 는 쓰지 말 것 — 영상 스튜디오 splitOpen 이 '오프닝 · 이름' 꼴로 읽음. 영어·중국어·일본어는 스튜디오 개요(ovShort)가 끝말(Summary·总结·まとめ)을 떼지 않는 이름으로. */
 const GRP_T={
-  ko:{ie:'주요 지수 & 경제 일정',i:'주요 지수',e:'경제 일정',m:'시황 분석',t:'테마 & 섹터 분석',w:'핵심 요약'},
-  en:{ie:'Major Indices & Economic Calendar',i:'Major Indices',e:'Economic Calendar',m:'Market Analysis',t:'Theme & Sector Analysis',w:'Key Takeaways'},
-  zh:{ie:'主要指数与经济日程',i:'主要指数',e:'经济日程',m:'市场分析',t:'主题与板块分析',w:'核心摘要'},
-  ja:{ie:'主要指数と経済日程',i:'主要指数',e:'経済日程',m:'市況分析',t:'テーマ・セクター分析',w:'要点整理'}
+  ko:{ie:'주요 지수 & 경제 일정',i:'주요 지수',e:'경제 일정',m:'시황 분석',a:'에프터마켓 시황',t:'테마 & 섹터 분석',w:'핵심 요약'},
+  en:{ie:'Major Indices & Economic Calendar',i:'Major Indices',e:'Economic Calendar',m:'Market Analysis',a:'After-Hours Market',t:'Theme & Sector Analysis',w:'Key Takeaways'},
+  zh:{ie:'主要指数与经济日程',i:'主要指数',e:'经济日程',m:'市场分析',a:'盘后市场',t:'主题与板块分析',w:'核心摘要'},
+  ja:{ie:'主要指数と経済日程',i:'主要指数',e:'経済日程',m:'市況分析',a:'時間外取引',t:'テーマ・セクター分析',w:'要点整理'}
 };
 let FIXED_PARTS=true;   /* false 면 예전처럼 영상 길이에 맞춰 1분 미만 챕터를 이웃과 합침 */
 const labelOf=k=>(SECS.find(s=>s.k===k)||{label:k}).label;
@@ -43532,13 +43543,180 @@ function watchBlock(){
     return '- '+(w.name||w.ticker)+(w.name&&w.ticker?'('+w.ticker+')':'')+(p.length?': '+p.join(', '):'');
   }).join('\n');
 }
+/* ══ v190 (2026-11-12) — 실시간 온라인 시장조회 = 에프터마켓 시황 ══════════════════════════════════════════════════════
+   요청: "반영할 섹션에 '실시간 온라인 시장조회' 목록을 추가 — 선택하면 시황 분석에 반영. 이건 '에프터마켓' 현황을 만들기 위한 것으로, 선택하면 시황 분석 안에 에프터마켓 시장분석 섹션을 만들 수 있게"
+   · 섹션 목록 '추가 (선택)' 맨 위에 '실시간 온라인 시장조회'(k:'live'). 내용은 만들기를 누를 때 인터넷에서 조회(liveRun):
+       미국 지수 선물(나스닥100·S&P500·다우·러셀2000) · 주요 대형주 10곳의 정규장 종가 → 에프터마켓(프리마켓) 시세(야후 5분봉, includePrePost) · VIX·미국채 10년·달러인덱스·원달러·WTI 유가·금 · Fear & Greed
+       + Tavily·Finnhub 키(관리 메뉴 › 웹 API)가 있으면 최신 뉴스와 뉴스에 나온 종목의 시간외 시세. 개인 보유 종목은 조회하지 않음(공개 영상용 — 고정한 대형주 목록만)
+   · 스크립트: buildPlan 이 챕터 'after'(에프터마켓 시황, data:['live'])를 시황 분석 바로 뒤에 넣고, fixedParts 가 시황 분석 부 안에 합쳐 소제목('1) 시황 분석 2) 에프터마켓 시황')이 됨(시황 분석을 안 골랐으면 에프터마켓 시황만).
+     보고서: '시장 분석' 다음에 '에프터마켓 시장 분석' 섹션(rptSecs). 정규장 진행 중이면 에프터마켓 시세가 아직 없어 만들기 전에 물음(liveCheck). 조회가 안 되면 그 자료 없이 계속할지 물음
+   검색: liveRun · liveEnsure · liveFresh · LIVE · META.after · rptSecs · paintLive ── */
+const LIVE_TTL=3*60*1000;   /* 조회한 값을 다시 쓰는 시간 — 에프터마켓은 빨리 움직이므로 3분 */
+let LIVE={at:0,text:'',sess:'',nq:0,ns:0,news:false};
+const liveFresh=()=>!!LIVE.text&&Date.now()-LIVE.at<LIVE_TTL;
+function kstParts(ts){   /* 한국 시각(KST)의 연·월·일·시·분·요일 */
+  const o={}; const d=new Date(ts==null?Date.now():ts);
+  try{ new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d).forEach(x=>{ o[x.type]=x.value; }); }
+  catch(e){ o.year=String(d.getFullYear()); o.month=String(d.getMonth()+1).padStart(2,'0'); o.day=String(d.getDate()).padStart(2,'0'); o.hour=String(d.getHours()).padStart(2,'0'); o.minute=String(d.getMinutes()).padStart(2,'0'); }
+  o.wd=new Date(Date.UTC(+o.year,+o.month-1,+o.day)).getUTCDay(); return o;
+}
+const liveStamp=ts=>{ const o=kstParts(ts); return o.year+'-'+o.month+'-'+o.day+'('+WD[o.wd]+') '+o.hour+':'+o.minute; };   /* 2026-11-12(목) 07:02 */
+const kstHM=sec=>{ const o=kstParts(sec*1000); return o.hour+':'+o.minute; };
+const liveAgo=()=>{ const m=Math.floor((Date.now()-LIVE.at)/60000); return m<1?'방금 조회됨':m+'분 전 조회됨'; };
+const liveNum=(v,d)=>Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const livePct=p=>(p>=0?'+':'')+p.toFixed(2)+'%';
+const liveTo=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(null),ms))]);
+async function livePool(items,n,fn){ const out=new Array(items.length); let i=0; await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{ while(i<items.length){ const k=i++; try{ out[k]=await fn(items[k],k); }catch(e){ out[k]=null; } } })); return out; }
+
+/* 조회할 것 — [야후 티커, 이름, 소수 자릿수] */
+const LIVE_FUT=[['NQ=F','나스닥100 선물',0],['ES=F','S&P500 선물',0],['YM=F','다우 선물',0],['RTY=F','러셀2000 선물',1]];
+const LIVE_CTX=[['^VIX','VIX(변동성 지수)',2],['^TNX','미국 국채 10년물 금리',3],['DX-Y.NYB','달러인덱스',2],['KRW=X','원/달러 환율',2],['CL=F','WTI 유가(선물)',2],['GC=F','금(선물)',1]];
+const LIVE_STK=[['NVDA','엔비디아'],['AAPL','애플'],['MSFT','마이크로소프트'],['AMZN','아마존'],['GOOGL','알파벳(구글)'],['META','메타'],['TSLA','테슬라'],['AVGO','브로드컴'],['AMD','AMD'],['TSM','TSMC(ADR)']];
+const LIVE_UNIT={'KRW=X':['','원'],'CL=F':['$',''],'GC=F':['$',''],'^TNX':['','%']};
+const LIVE_STOP=new Set('CEO CFO CTO IPO ETF GDP CPI FDA SEC ATH ATL US USD AI Q1 Q2 Q3 Q4 EPS PER PBR ROE YOY QOQ FOMC ECB FED NYSE NASDAQ AMEX ET PM AM EU UK'.split(' '));
+const LIVE_NET={bad:0,until:0};   /* bad = 이번 조회에서 야후 직접 접속이 막힌 횟수(2번 막히면 프록시로만) · until = 이 시각이 지나면 남은 조회는 건너뜀 */
+
+async function liveQuote(l){   /* 일봉 시세(전일 종가 대비) 한 종목 — 앱이 주요 지수 업데이트에 쓰는 fetchYahooFast 를 그대로 */
+  if(typeof fetchYahooFast!=='function'||Date.now()>LIVE_NET.until) return null;
+  const d=await liveTo(fetchYahooFast(l[0]).catch(()=>null),20000);
+  return d&&d.ok&&d.currentPrice!=null?{tk:l[0],nm:l[1],dec:l[2],v:d.currentPrice,p:d.changePct}:null;
+}
+function liveLine(r,fut){   /* 시세 한 줄 */
+  if(r.tk==='^TNX'&&r.p!=null){ const prev=r.v/(1+r.p/100), bp=(r.v-prev)*100; return '- '+r.nm+': '+liveNum(r.v,3)+'% (전일 대비 '+(bp>=0?'+':'')+bp.toFixed(1)+'bp)'; }
+  const u=LIVE_UNIT[r.tk]||['',''];
+  return '- '+r.nm+': '+u[0]+liveNum(r.v,r.dec)+u[1]+(r.p==null?'':' ('+(fut?'전일 정산가 대비 ':'전일 종가 대비 ')+livePct(r.p)+')');
+}
+async function liveFng(){
+  try{ if(typeof _fetchFearGreed!=='function') return ''; const d=await liveTo(_fetchFearGreed().catch(()=>null),15000); if(!d||!d.ok||d.currentPrice==null) return '';
+    const s=Math.round(d.currentPrice); let lb=''; try{ if(typeof _fngRating==='function') lb=_fngRating(s,d.apiRating)||''; }catch(e){} return s+(lb?' ('+lb+')':''); }
+  catch(e){ return ''; }
+}
+async function liveChart(tk){   /* 5분봉 + 프리·에프터 포함(야후 v8 chart) — 직접 → 프록시 순서로 */
+  const enc=encodeURIComponent(tk), q1='https://query1.finance.yahoo.com/v8/finance/chart/'+enc+'?interval=5m&range=1d&includePrePost=true', q2=q1.replace('query1','query2');
+  const get=async(url,ms,hd)=>{ const ctrl=new AbortController(), tid=setTimeout(()=>ctrl.abort(),ms);
+    try{ const r=await fetch(url,{signal:ctrl.signal,headers:hd||{}}); if(!r.ok) throw new Error('HTTP '+r.status); const tx=await r.text(), a=tx.indexOf('{'), b=tx.lastIndexOf('}'); const j=JSON.parse(tx.slice(a,b+1)), res=j&&j.chart&&j.chart.result&&j.chart.result[0];
+      if(!(res&&res.meta&&res.meta.regularMarketPrice&&res.timestamp)) throw new Error('parse'); return res; } finally{ clearTimeout(tid); } };
+  if(Date.now()>LIVE_NET.until) return null;
+  if(LIVE_NET.bad<2){ try{ const r=await Promise.any([get(q1,6000),get(q2,6000)]); LIVE_NET.bad=0; return r; }catch(e){ LIVE_NET.bad++; } }   /* 직접 접속이 막혔으면(429·CORS) 곧바로 프록시로 */
+  for(const x of [['https://r.jina.ai/'+q1,{'X-Return-Format':'text'},10000],['https://r.jina.ai/'+q2,{'X-Return-Format':'text'},10000],['https://api.allorigins.win/raw?url='+encodeURIComponent(q1),null,8000]]){   /* 프록시는 하나씩 — 한꺼번에 보내면 서로 막힘 */
+    if(Date.now()>LIVE_NET.until) return null; try{ return await get(x[0],x[2],x[1]||{}); }catch(e){}
+  }
+  return null;
+}
+function liveSession(res){   /* 차트 → 정규장·프리마켓·에프터마켓 값과 지금 세션 */
+  const meta=res.meta, ts=res.timestamp, cl=res.indicators&&res.indicators.quote&&res.indicators.quote[0]&&res.indicators.quote[0].close, tp=meta&&meta.currentTradingPeriod;
+  if(!ts||!cl||!tp||!tp.regular) return null;
+  const pre=tp.pre||{}, reg=tp.regular, post=tp.post||{}; let preP=null,preT=null,postP=null,postT=null;
+  const dayOf=a=>{ try{ const d=a&&a[a.length-1], e=Array.isArray(d)?d[d.length-1]:d; return e&&e.start!=null&&e.end!=null?e:null; }catch(e){ return null; } }, tps=meta.tradingPeriods||{};
+  const dpre=dayOf(tps.pre)||pre, dpost=dayOf(tps.post)||post;   /* 시세가 담긴 거래일의 프리·에프터 구간 — 장이 닫힌 뒤·주말에 currentTradingPeriod 가 다음 거래일로 넘어가도 마지막 거래일의 시간외 체결을 읽음(지금 세션 판단은 아래에서 currentTradingPeriod 로) */
+  ts.forEach((t,i)=>{ const c=cl[i]; if(c==null||isNaN(c)) return; if(dpre.start!=null&&t>=dpre.start&&t<dpre.end){ preP=c; preT=t; } if(dpost.start!=null&&t>=dpost.start&&t<=dpost.end){ postP=c; postT=t; } });
+  const now=Math.floor(Date.now()/1000); let cur;
+  if(post.start!=null&&now>=post.start&&now<=post.end) cur='POST'; else if(now>=reg.start&&now<=reg.end) cur='REGULAR'; else if(pre.start!=null&&now>=pre.start&&now<pre.end) cur='PRE'; else cur='CLOSED';
+  return {cur,reg:meta.regularMarketPrice,prev:meta.chartPreviousClose||meta.previousClose||null,preP,preT,postP,postT,tp};
+}
+function liveSessLine(s){
+  const m={POST:'🌙 에프터마켓(시간외) 세션 진행 중',PRE:'🌅 프리마켓 세션 진행 중(정규장 개장 전)',REGULAR:'📈 미국 정규장 진행 중 — 에프터마켓은 아직 시작 전',CLOSED:'🔒 미국 정규장·에프터마켓 모두 마감(또는 휴장) — 마지막 거래일 기준'}[s.cur]||'';
+  const t=s.tp; return m+' · 정규장 마감 '+kstHM(t.regular.end)+' KST(미국 동부 16:00)'+(t.post&&t.post.end?' · 에프터마켓 종료 '+kstHM(t.post.end)+' KST(20:00)':'');
+}
+function liveStockLine(s){   /* 종목 하나 → {t:글, p:세션 등락률(정렬용)} */
+  const nm=s.name?s.name+'('+s.tk+')':s.tk, f=v=>'$'+liveNum(v,2), reg=s.reg, dayP=(reg!=null&&s.prev)?livePct((reg/s.prev-1)*100):'';
+  if(s.cur==='REGULAR') return {t:'- '+nm+': 정규장 진행 중 '+f(reg)+(dayP?' (전일 종가 대비 '+dayP+')':'')+' · 에프터마켓 시세 아직 없음',p:null};
+  if(s.cur==='PRE'){
+    if(s.preP!=null&&reg){ const p=(s.preP/reg-1)*100; return {t:'- '+nm+': 전 거래일 종가 '+f(reg)+(dayP?' ('+dayP+')':'')+' → 프리마켓 '+f(s.preP)+' (종가 대비 '+livePct(p)+', 마지막 체결 '+kstHM(s.preT)+' KST)',p}; }
+    return {t:'- '+nm+': 전 거래일 종가 '+f(reg)+(dayP?' ('+dayP+')':'')+' · 프리마켓 체결 없음',p:null};
+  }
+  if(s.postP!=null&&reg){ const p=(s.postP/reg-1)*100; return {t:'- '+nm+': 정규장 종가 '+f(reg)+(dayP?' (전일 대비 '+dayP+')':'')+' → 에프터마켓 '+f(s.postP)+' (정규장 종가 대비 '+livePct(p)+', 마지막 체결 '+kstHM(s.postT)+' KST)',p}; }
+  return {t:'- '+nm+': 정규장 종가 '+f(reg)+(dayP?' (전일 대비 '+dayP+')':'')+' · 에프터마켓 체결 없음',p:null};
+}
+function liveTickers(blob){   /* 뉴스 글에서 '(NASDAQ: NVDA)'·'$NVDA' 꼴의 미국 종목 티커 */
+  const s=new Set(), t=String(blob||''); let m; const p1=/\(\s*(?:NASDAQ|NYSE|AMEX|Nasdaq|NYSE American)?\s*:?\s*([A-Z]{1,5})\s*\)/g, p2=/\$([A-Z]{1,5})\b/g;
+  while((m=p1.exec(t))){ if(!LIVE_STOP.has(m[1])) s.add(m[1]); } while((m=p2.exec(t))){ if(!LIVE_STOP.has(m[1])) s.add(m[1]); }
+  return [...s];
+}
+async function liveNews(){   /* 키가 있으면(Tavily·Finnhub) 에프터마켓 관련 최신 뉴스 — 개인 보유 종목은 쓰지 않는 일반 질의 */
+  const out={text:'',blob:'',errs:[],keys:false}; let tv='',fh=''; try{ tv=(localStorage.getItem('BTMTavilyKey')||'').trim(); fh=(localStorage.getItem('BTMFinnhubKey')||'').trim(); }catch(e){}
+  out.keys=!!(tv||fh); if(!out.keys) return out;
+  const j=async(url,opt,ms)=>{ const ctrl=new AbortController(), tid=setTimeout(()=>ctrl.abort(),ms||12000); try{ const r=await fetch(url,Object.assign({signal:ctrl.signal},opt||{})); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); } finally{ clearTimeout(tid); } };
+  const jobs=[];
+  if(tv) [['after-hours stock movers today earnings reaction futures','영문'],['미국 증시 에프터마켓 시간외 급등락 종목 실적 발표 선물','한글']].forEach(q=>jobs.push((async()=>{
+    try{ const d=await j('https://api.tavily.com/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:tv,query:q[0],search_depth:'basic',include_answer:'basic',include_raw_content:false,max_results:4,topic:'finance',time_range:'day'})}); const L=[];
+      if(d.answer) L.push('[요약] '+String(d.answer).slice(0,500));
+      (d.results||[]).forEach((r,i)=>L.push((i+1)+'. '+String(r.title||'').slice(0,120)+(r.published_date?' ('+String(r.published_date).slice(0,16)+')':'')+'\n   '+String(r.content||'').replace(/\s+/g,' ').slice(0,220)));
+      return {t:L.length?'[웹 검색 — Tavily · '+q[1]+' 질의]\n'+L.join('\n'):'',b:L.join(' ')}; }
+    catch(e){ out.errs.push('Tavily '+((e&&e.message)||e)); return null; } })()));
+  if(fh) jobs.push((async()=>{
+    try{ const n=await j('https://finnhub.io/api/v1/news?category=general&minId=0&token='+encodeURIComponent(fh)); const L=(Array.isArray(n)?n:[]).slice(0,6).map(x=>'· ['+(x.datetime?liveStamp(x.datetime*1000):'')+'] '+String(x.headline||'').slice(0,140));
+      return {t:L.length?'[최신 시장 뉴스 — Finnhub]\n'+L.join('\n'):'',b:L.join(' ')}; }
+    catch(e){ out.errs.push('Finnhub '+((e&&e.message)||e)); return null; } })());
+  const rs=(await Promise.all(jobs)).filter(Boolean); out.text=rs.map(x=>x.t).filter(Boolean).join('\n\n'); out.blob=rs.map(x=>x.b).join(' '); return out;
+}
+async function liveRun(){   /* 에프터마켓 현황 자료를 글로 — {ok,text,at,sess,nq,ns,news,errs} */
+  const at=Date.now(), nmap=new Map(LIVE_STK); LIVE_NET.bad=0; LIVE_NET.until=at+30000;
+  const stk=async(tk)=>{ const res=await liveChart(tk), s=res&&liveSession(res); return s?Object.assign({tk,name:nmap.get(tk)||''},s):null; };
+  const newsP=liveNews(), fngP=liveFng();   /* 뉴스·공포탐욕은 시세와 따로 동시에 */
+  /* 시세는 한 줄로 세워 동시에 5개씩 — 야후가 한꺼번에 많이 오면 막아 버려서 */
+  const tasks=LIVE_FUT.map(l=>()=>liveQuote(l)).concat(LIVE_CTX.map(l=>()=>liveQuote(l)),LIVE_STK.map(x=>()=>stk(x[0])));
+  const res1=await livePool(tasks,5,f=>f());
+  const fut=res1.slice(0,LIVE_FUT.length).filter(Boolean), ctx=res1.slice(LIVE_FUT.length,LIVE_FUT.length+LIVE_CTX.length).filter(Boolean);
+  let stocks=res1.slice(LIVE_FUT.length+LIVE_CTX.length).filter(Boolean);
+  const [fng,news]=await Promise.all([fngP,newsP]);
+  const extra=liveTickers(news.blob).filter(t=>!nmap.has(t)).slice(0,6);
+  if(extra.length&&Date.now()<LIVE_NET.until+8000){ LIVE_NET.until=Date.now()+15000; stocks=stocks.concat((await livePool(extra,4,stk)).filter(Boolean).map(s=>Object.assign(s,{ex:true}))); }   /* 뉴스에 나온 종목의 시간외 시세 */
+  const first=stocks[0]||null, sess=first?first.cur:'', L=[];
+  L.push('[조회 시각] '+liveStamp(at)+' (한국 시각) — 인터넷에서 방금 조회한 값입니다.');
+  if(first) L.push('[미국 시장 상태] '+liveSessLine(first));
+  L.push('[읽는 법] 이 자료는 에프터마켓(시간외) 현황을 정리하기 위한 것입니다. 정규장 등락률은 전일 종가 대비, 에프터마켓·프리마켓 등락률은 그날 정규장 종가 대비입니다. 에프터마켓은 거래량이 적어 가격이 크게 흔들릴 수 있습니다. 여기 없는 수치·종목·뉴스·원인은 만들어 쓰지 마세요.');
+  if(fut.length){ L.push('\n[미국 증시 선물 — 에프터마켓 방향]'); fut.forEach(r=>L.push(liveLine(r,true))); }
+  if(stocks.length){
+    const sortRows=a=>a.map(liveStockLine).sort((x,y)=>(y.p==null?-1:Math.abs(y.p))-(x.p==null?-1:Math.abs(x.p))), main=sortRows(stocks.filter(s=>!s.ex)), ex=sortRows(stocks.filter(s=>s.ex));
+    if(main.length){ L.push('\n[주요 대형주 — '+(sess==='PRE'?'전 거래일 종가 → 프리마켓':sess==='REGULAR'?'정규장 진행 중':'정규장 종가 → 에프터마켓')+' (움직임이 큰 순)]'); main.forEach(r=>L.push(r.t)); }
+    if(ex.length){ L.push('\n[뉴스에서 언급된 종목의 시세]'); ex.forEach(r=>L.push(r.t)); }
+  }
+  if(ctx.length||fng){ L.push('\n[변동성·금리·환율·원자재 — 참고]'); ctx.forEach(r=>L.push(liveLine(r))); if(fng) L.push('- 공포·탐욕 지수(CNN Fear & Greed): '+fng); }
+  if(news.text) L.push('\n'+news.text);
+  else if(!news.keys) L.push('\n[참고] 웹 검색·뉴스 키(Tavily·Finnhub)가 없어 시세만 조회했어요 — 시간외 등락의 이유(실적·뉴스)는 이 자료에 없습니다.');
+  const nq=fut.length+ctx.length, ns=stocks.length, miss=LIVE_STK.length-stocks.filter(s=>!s.ex).length;
+  if(miss>0&&ns>0) L.push('[참고] 대형주 '+LIVE_STK.length+'곳 중 '+miss+'곳은 시세 사이트 접속이 막혀 조회하지 못했습니다 — 위에 있는 종목만 근거로 삼으세요.');
+  return {ok:fut.length>=2||ns>=3||!!news.text,text:L.join('\n'),at,sess,nq,ns,news:!!news.text,errs:news.errs};
+}
+function liveCheck(quiet){   /* 미국 정규장이 진행 중이면 에프터마켓 시세가 아직 없음 — 그래도 만들지 물음 */
+  if(!quiet&&LIVE.sess==='REGULAR') return confirm('지금은 미국 정규장이 진행 중이라 에프터마켓 시세가 아직 없어요(한국 시각 '+liveStamp(Date.now()).slice(-5)+').\n정규장이 마감된 뒤에 만들면 에프터마켓 현황을 담을 수 있어요.\n\n그래도 지금 만들까요?');
+  return true;
+}
+async function liveEnsure(force,quiet){   /* 만들기 전에 실시간 조회 — true 면 계속(조회 성공 또는 '그 자료 없이 계속' 선택) */
+  if(!force&&liveFresh()) return liveCheck(quiet);
+  S.liveBusy=true; const go=$('scGo'); if(go) go.disabled=true; setProg(1,'⓪ 실시간 온라인 시장조회(에프터마켓) 중… 최대 40초');
+  let r=null; try{ r=await liveRun(); }catch(e){ r={ok:false,errs:[String((e&&e.message)||e)]}; }
+  S.liveBusy=false; if(go) go.disabled=false; setProg(0,'대기 중');
+  if(r&&r.ok){ LIVE={at:r.at,text:r.text,sess:r.sess,nq:r.nq,ns:r.ns,news:r.news}; paintLive(); return liveCheck(quiet); }
+  paintLive(); if(quiet) return false;
+  return confirm('실시간 온라인 시장조회를 하지 못했어요 — 인터넷 연결이나 시세 사이트 접속을 확인해 주세요.'+((r&&r.errs&&r.errs.length)?'\n('+r.errs.slice(0,2).join(' · ')+')':'')+'\n\n그 자료 없이 나머지 섹션으로 계속 만들까요?');
+}
+async function livePreview(){   /* [지금 조회해서 보기] — 만들 때 쓸 자료를 미리 봄(3분 안에 만들면 그 값을 그대로 씀) */
+  if(S.running||S.liveBusy) return; const box=$('scLivePv'); if(!box) return; box.style.display=''; box.innerHTML='<div>조회 중… (최대 40초)</div>';
+  const ok=await liveEnsure(true,true);
+  box.innerHTML=(ok&&LIVE.text?'<pre>'+esc(LIVE.text)+'</pre>':'<div>조회하지 못했어요 — 인터넷 연결을 확인해 주세요.</div>')+'<a data-act="livePvX">닫기</a>';
+}
+function paintLive(){   /* 섹션 목록 아래 안내 + '실시간 온라인 시장조회' 줄의 상태 글 */
+  const h=$('scLiveHint'); if(!h) return; const cb=$('scSecs').querySelector('input[data-k="live"]'), on=!!(cb&&cb.checked); let keys=false; try{ keys=!!((localStorage.getItem('BTMTavilyKey')||'').trim()||(localStorage.getItem('BTMFinnhubKey')||'').trim()); }catch(e){}
+  h.innerHTML='🌐 <b>실시간 온라인 시장조회</b>'+(on?'를 골랐어요 — <b>만들기</b>를 누르면 ':'를 고르면 만들 때 ')+'인터넷에서 <b>에프터마켓(시간외) 현황</b> — 미국 지수 선물·주요 대형주의 시간외 시세와 변동성·금리·환율'+(keys?'·최신 뉴스':'(뉴스는 관리 메뉴 › 웹 API 에 Tavily·Finnhub 키가 있을 때)')+' — 을 조회해, <b>시황 분석</b> 안에 \'에프터마켓 시황\'을 만들어요. <a data-act="livePv">지금 조회해서 보기</a>';
+  const st=$('scSecs').querySelector('.sc-sr[data-k="live"] .st'); if(st) st.textContent=secInfo('live').txt;
+}
+/* 보고서·챕터에 에프터마켓 섹션을 넣는 도우미 */
+const liveOn=c=>((c&&c.secs)||[]).indexOf('live')>=0;
+function rptSecs(c){ const L=liveOn(c), o=[]; SECS.forEach(s=>{ if(s.k==='live') return; if(c.secs.indexOf(s.k)>=0) o.push(s.k); if(s.k==='market'&&L) o.push('after'); }); return o; }   /* 보고서 섹션 — '실시간 온라인 시장조회'는 따로 안 세우고 '에프터마켓 시장 분석'(시장 분석 다음)으로 */
+const liveRule=c=>liveOn(c)?'\n8. [원자료]의 "실시간 온라인 시장조회"는 이 보고서를 쓰는 지금 인터넷에서 방금 조회한 에프터마켓(시간외) 자료입니다 — 미국 지수 선물, 주요 대형주의 정규장 종가 대비 시간외 등락, 변동성·금리·환율 시세와 최신 뉴스(조회 시각 포함). 이 자료는 "에프터마켓 시장 분석" 섹션의 근거로만 쓰고(조회 시각을 한 번 밝히세요), 다른 섹션의 글과 수치가 다르면 어느 시점의 값인지 구분해 쓰세요. 에프터마켓은 거래량이 적어 가격이 과장될 수 있다는 점을 한 번 짚고, 이 자료에 없는 종목·수치·뉴스·원인은 지어내지 마세요.':'';
+const liveRuleX=c=>liveOn(c)?'\n8. The "Live online market lookup" in the raw data is after-hours data fetched from the internet just now: US index futures, extended-hours moves of large caps versus their regular-session close, volatility/yield/FX quotes and the latest news (with the lookup time). Use it only as the basis of the "After-hours market analysis" section (state the lookup time once); if it differs from other sections, say which point in time each figure refers to. Note once that thin after-hours volume can exaggerate prices, and never invent tickers, figures, news or causes that are not in it.':'';
+/* ══ /v190 ══ */
 function rawBlock(k){
   if(k==='indices') return idxBlock();
   if(k==='eco') return ecoBlock();
   if(k==='watch') return watchBlock();
+  if(k==='live') return liveFresh()?LIVE.text:'';   /* v190: 만들기 직전에 조회해 둔 값(3분 안) */
   const s=SECS.find(x=>x.k===k); return s&&s.id?fieldText(s.id):'';
 }
 function secInfo(k){
+  if(k==='live') return {n:1,txt:liveFresh()?liveAgo():'만들 때 조회'};   /* v190: 내용은 만들기를 누를 때 인터넷에서 — 늘 고를 수 있음 */
   let t=''; try{ t=rawBlock(k); }catch(e){}
   if(!t) return {n:0,txt:'비어 있음'};
   if(k==='indices'||k==='eco'||k==='watch'){ const n=t.split('\n').length; return {n,txt:n+(k==='indices'?'개 지표':k==='eco'?'건':'종목')}; }
@@ -43570,10 +43748,10 @@ function fixedParts(it,lang){
     const names=[].concat.apply([],list.map(x=>x.names)), foci=[].concat.apply([],list.map(x=>x.foci)), data=[]; list.forEach(x=>x.data.forEach(d=>{ if(data.indexOf(d)<0) data.push(d); }));
     return {key:list.map(x=>x.key).join('+'),title,names,foci,w:sum(list,'w'),min:sum(list,'min'),data,focus:foci.map((f,i)=>(i+1)+') '+names[i]+': '+f).join('\n')};
   };
-  const idx=by('indices'), eco=by('eco'), mkt=by('market'), th=by('theme'), ex=['watch','warren','radar','tech','strategy'].map(by).filter(Boolean), first=[idx,eco].filter(Boolean), G=[];
+  const idx=by('indices'), eco=by('eco'), mkt=by('market'), aft=by('after'), th=by('theme'), ex=['watch','warren','radar','tech','strategy'].map(by).filter(Boolean), first=[idx,eco].filter(Boolean), G=[];
   mergeShort(ex,1);
   if(first.length) G.push([[by('open')].concat(first),first.length===2?gt.ie:(idx?gt.i:gt.e)]);
-  if(mkt) G.push([[mkt],gt.m]);
+  if(mkt||aft) G.push([[mkt,aft].filter(Boolean),mkt?gt.m:gt.a]);   /* v190: 에프터마켓 시황은 시황 분석 부 안의 소제목(시황 분석을 안 골랐으면 에프터마켓 시황만) */
   if(th) G.push([[th],gt.t]);
   ex.forEach(x=>G.push([[x],x.title]));
   G.push([[by('scenario'),by('close')],gt.w]);
@@ -43583,7 +43761,7 @@ function fixedParts(it,lang){
 function buildPlan(L,cpm,secs,lang){
   const has=k=>secs.indexOf(k)>=0, ct=(key,ko)=>(lang&&lang!=='ko'&&V.get(lang).chap&&V.get(lang).chap[key])||ko;   /* v108: 챕터 이름도 영상 언어로 */
   let it=[{key:'open',title:ct('open','오프닝'),w:7,data:[],focus:'오늘 시장의 주요 이슈를 하나의 수치나 한마디로 정의하는 후킹 한 문장 → 정해진 인사 → 오늘의 브리핑 목차(목차 지시 줄 + 한 문장 소개)'}];
-  ['indices','eco','market','theme','watch','warren','radar','tech','strategy'].forEach(k=>{ if(has(k)){ const m=META[k]; it.push({key:k,title:ct(k,m.chap),w:m.w,data:[k],focus:m.focus}); } });
+  ['indices','eco','market','after','theme','watch','warren','radar','tech','strategy'].forEach(k=>{ if(k==='after'?has('live'):has(k)){ const m=META[k]; it.push({key:k,title:ct(k,m.chap),w:m.w,data:[k==='after'?'live':k],focus:m.focus}); } });   /* v190: 'after' = 실시간 온라인 시장조회로 만드는 에프터마켓 시황 */
   it.push({key:'scenario',title:ct('scenario','시나리오와 대응 전략'),w:12,data:[],focus:'상승·기본·하락 시나리오와 각각의 트리거·점검 지표, 투자자가 이번 주 체크할 것'});
   it.push({key:'close',title:ct('close','마무리'),w:6,data:[],focus:'핵심 3줄 요약 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'});
   it.forEach(x=>{ x.names=[x.title]; x.foci=[x.focus]; });
@@ -43608,7 +43786,7 @@ function sysReport(c){
   if(V.norm((c.cfg||{}).lang)!=='ko') return sysReportX(c);   /* v108: 한국어가 아닌 영상 언어 */
   let n=1; const o=[];
   o.push('## '+(n++)+'. 한 줄 결론과 핵심 메시지 — "한 줄 결론:" 한 줄과 "핵심 메시지 3가지" 불릿 3개');
-  c.secs.forEach(k=>o.push('## '+(n++)+'. '+META[k].rpt));
+  rptSecs(c).forEach(k=>o.push('## '+(n++)+'. '+META[k].rpt));   /* v190: 실시간 온라인 시장조회는 '에프터마켓 시장 분석' 섹션으로 */
   o.push('## '+(n++)+'. 시나리오와 대응 전략 — 상승·기본·하락 3개 시나리오(각각 트리거와 점검 지표) + 투자자 체크리스트');
   o.push('## '+(n++)+'. 리스크 요인과 반대 논리');
   o.push('## '+(n++)+'. 영상 제작 가이드 — 영상 제목 후보 3개, 썸네일 문구 3개, 오프닝 훅 멘트 2개, 영상 구성안(챕터별 핵심 소재와 보여줄 화면 자료)');
@@ -43622,7 +43800,7 @@ function sysReport(c){
 4. 서술형 섹션(시장 분석·테마 분석 등)은 핵심 논지를 압축하되, 강세·약세 요인, 수급·심리, 테마의 지속 가능성을 짚으세요. 원자료에 이름이 나온 종목·섹터만 언급하세요.
 5. 확정적 예측, 종목 추천, 수익 보장 표현은 금지합니다. 시나리오와 점검 포인트로 말하고, 리스크와 반대 논리를 함께 제시하세요.
 6. 원자료에 개인 보유 종목·수량·평단·계좌 정보로 보이는 내용이 있으면 보고서에 쓰지 말고 일반론으로 바꿔 쓰세요(공개 영상용 자료입니다).
-7. 한국어로, 전문적이되 일반 투자자가 이해할 수 있게 쓰세요. 인사말·사족·자기소개는 쓰지 마세요.
+7. 한국어로, 전문적이되 일반 투자자가 이해할 수 있게 쓰세요. 인사말·사족·자기소개는 쓰지 마세요.${liveRule(c)}
 
 [출력 형식] 마크다운 소제목("## ")과 불릿("- ")만 사용하세요(표·코드블록 금지). 아래 구성을 그대로 따르세요.
 ${o.join('\n')}
@@ -43694,13 +43872,13 @@ ${u.text}`;
 const langLine=c=>{ const lg=V.norm((c.cfg||{}).lang); return lg==='ko'?'':'[영상 언어] '+V.get(lg).ai+' — 결과물은 전부 이 언어로 작성\n'; };
 const LB=(t,c)=>{ try{ return (window.BTMLearn&&window.BTMLearn.block)?window.BTMLearn.block(t,{lang:V.norm(((c&&c.cfg)||{}).lang)}):''; }catch(e){ return ''; } };   /* v121: 🎓 AI학습 — 배운 노하우를 요청 글 끝에 덧붙임(쌓인 게 없거나 꺼져 있으면 빈 글이라 요청이 예전과 똑같음) */
 const lenLine=(u,lang)=>(lang&&lang!=='ko')?'[Target length] '+V.lenNote(u.target,lang)+' ('+Math.round(u.target*0.9)+'–'+Math.round(u.target*1.1)+' characters excluding spaces)':'[이 챕터의 목표 분량] 공백 제외 약 '+u.target+'자 ('+Math.round(u.target*0.9)+'~'+Math.round(u.target*1.1)+'자)';
-const RPT_EN={indices:'Market thermometer — reading the major indices',eco:'Event calendar — economic checkpoints',market:'Market analysis — drivers up and down, flows and sentiment',theme:'Theme & sector analysis — leading themes and staying power',watch:'Watchlist check',warren:'Summary of The Whispers of Warren Kim',radar:'AI Stock Radar picks and strategy',tech:'Technical analysis points',strategy:'Trading strategy check'};
+const RPT_EN={indices:'Market thermometer — reading the major indices',eco:'Event calendar — economic checkpoints',market:'Market analysis — drivers up and down, flows and sentiment',after:'After-hours market analysis — futures and extended-hours moves after the close',theme:'Theme & sector analysis — leading themes and staying power',watch:'Watchlist check',warren:'Summary of The Whispers of Warren Kim',radar:'AI Stock Radar picks and strategy',tech:'Technical analysis points',strategy:'Trading strategy check'};
 const REP_LEN={en:'about 1,600–2,600 words',zh:'about 3,000–4,500 Chinese characters',ja:'about 3,500–5,000 Japanese characters'};
 const outLang=lg=>'[OUTPUT LANGUAGE] Write everything in '+lg.ai+'. The raw data and some of these notes may be in Korean — translate and localize all of it. '+(lg.units||'');
 function sysReportX(c){
   const lg=V.get(c.cfg.lang); let n=1; const o=[];
   o.push('## '+(n++)+'. One-line conclusion and key messages — one line starting with "One-line conclusion:" and 3 bullets titled "Three key messages"');
-  c.secs.forEach(k=>o.push('## '+(n++)+'. '+(RPT_EN[k]||META[k].rpt)));
+  rptSecs(c).forEach(k=>o.push('## '+(n++)+'. '+(RPT_EN[k]||META[k].rpt)));
   o.push('## '+(n++)+'. Scenarios and action plan — three scenarios (up / base / down), each with its trigger and indicators to check, plus a checklist for investors');
   o.push('## '+(n++)+'. Risk factors and counter-arguments');
   o.push('## '+(n++)+'. Video production guide — 3 candidate video titles, 3 thumbnail phrases, 2 opening-hook lines, and the video outline (key material and on-screen visuals for each chapter)');
@@ -43716,7 +43894,7 @@ ${outLang(lg)}
 4. For narrative sections (market analysis, theme analysis, etc.) compress the core argument, but cover bullish and bearish drivers, flows and sentiment, and how durable each theme is. Mention only stocks and sectors named in the raw data.
 5. No definitive forecasts, stock recommendations or return guarantees. Speak in scenarios and checkpoints, and present risks and counter-arguments together.
 6. If the raw data contains personal holdings, quantities, average prices or account details, do not write them; generalize (this is material for a public video).
-7. Professional but understandable to ordinary investors. No greetings, filler or self-introduction.
+7. Professional but understandable to ordinary investors. No greetings, filler or self-introduction.${liveRuleX(c)}
 
 [Output format] Use only markdown headings ("## ") and bullets ("- ") — no tables or code blocks. Follow this structure and write the headings in ${lg.ai} too:
 ${o.join('\n')}
@@ -44318,6 +44496,7 @@ function composeText(c){
   o.push('■ 시황 분석 유튜브 영상 기획안');
   o.push('기준일: '+baseLabel(c)+' · 영상 길이 목표 '+c.cfg.len+'분'+(scr?' · 말 속도 '+c.cfg.cpm+'자/분':''));
   o.push('반영 섹션: '+c.secs.map(labelOf).join(', '));
+  if(c.live&&c.live.at) o.push('실시간 온라인 시장조회(에프터마켓): '+liveStamp(c.live.at)+' 조회');   /* v190 */
   if(V.norm(c.cfg.lang)!=='ko') o.push('영상 언어: '+V.label(V.norm(c.cfg.lang)));
   if(c.cfg.extra) o.push('추가 요청: '+c.cfg.extra);
   if(rep) o.push('','━━━━━━━━ ① 종합 분석 보고서 ━━━━━━━━',(c.report||'(작성되지 않음)').trim(),'');
@@ -44370,14 +44549,14 @@ function recOf(c){
   return Object.assign({id:c.id,ts:c.ts,upd:Date.now(),date:baseLabel(c),cfg:c.cfg,secs:c.secs,provider:c.provider,report:c.report,status:c.status,
     plan:c.plan.map(u=>Object.assign({title:u.title,key:u.key,names:u.names,target:u.target,chars:u.chars,text:u.text,state:u.state},u.ix?{ix:u.ix}:null)),chars:c.plan.reduce((a,u)=>a+(u.chars||0),0),
     board:c.board?Object.assign({bible:c.board.bible,bibleDone:c.board.bibleDone,done:c.board.done,mode:c.board.mode,
-      units:c.board.units.map(u=>Object.assign({pi:u.pi,part:u.part,parts:u.parts,title:u.title,start:u.start,end:u.end,n:u.segs?u.segs.length:u.n,warn:!!u.warn,state:u.state,blocks:u.blocks},u.plw?{plw:true}:null))},c.board.tch?{tch:c.board.tch}:null):null},c.ed?{ed:c.ed}:null);   /* segs(구간별 나레이션)는 저장하지 않음 — 다시 만들 때 스크립트에서 계산. v119: 직접 고친 기록만 ed(고친 부분·시각)·board.tch(스토리보드 시간이 맞춰진 기준 글자 수)가 더 붙음 */
+      units:c.board.units.map(u=>Object.assign({pi:u.pi,part:u.part,parts:u.parts,title:u.title,start:u.start,end:u.end,n:u.segs?u.segs.length:u.n,warn:!!u.warn,state:u.state,blocks:u.blocks},u.plw?{plw:true}:null))},c.board.tch?{tch:c.board.tch}:null):null},c.ed?{ed:c.ed}:null,c.live?{live:c.live}:null);   /* segs(구간별 나레이션)는 저장하지 않음 — 다시 만들 때 스크립트에서 계산. v119: 직접 고친 기록만 ed(고친 부분·시각)·board.tch(스토리보드 시간이 맞춰진 기준 글자 수)가 더 붙음 */
 }
 function persist(){
   const c=S.ctx; if(!hasContent(c)) return Promise.resolve();
   return dbPut(recOf(c)).catch(e=>{ if(!S.dbWarned){ S.dbWarned=true; toast('이력 저장에 실패했어요 — '+((e&&e.message)||'')); } });
 }
 /* 이력 레코드 → 화면용 ctx 형태(복사·TXT 저장 재사용) */
-function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u)),board:r.board||null,ed:r.ed||null}; }
+function ctxOfRec(r){ return {id:r.id,ts:r.ts,base:r.date,cfg:r.cfg,secs:r.secs||[],report:r.report||'',provider:r.provider,status:r.status,plan:(r.plan||[]).map(u=>Object.assign({},u)),board:r.board||null,ed:r.ed||null,live:r.live||null}; }
 
 /* ═════════ 영상 스튜디오(BTMVideo)에 넘길 자료 — 챕터별 문단·문장(화면 지시 포함) + 스토리보드 구간·스타일 ═════════ */
 function videoSource(c){
@@ -44424,7 +44603,7 @@ function makerHtml(){
    +'<div class="sc-f" id="scBoardF" style="display:none"><div class="sc-lb">스토리보드 설정 <span class="sc-opt">· 장면 단위로 묘사해요</span></div><div class="sc-lb2">장면 길이 <span class="sc-opt">· 장면(클립) 하나의 길이</span></div><div id="scSegMode" class="sc-segmode" role="radiogroup" aria-label="장면 길이 정하는 방식"><label class="sc-sm" data-m="fixed" title="모든 장면을 내가 정한 같은 길이로 나눠요"><input type="radio" name="scSegMode" value="fixed" class="mobile-keep"><span><b>직접 정하기</b><small>모든 장면을 같은 길이로</small></span></label><label class="sc-sm" data-m="auto" title="AI 가 내용을 읽고, 중요하고 설명할 내용이 많은 곳은 길게 그렇지 않은 곳은 짧게 장면마다 길이를 정해요"><input type="radio" name="scSegMode" value="auto" class="mobile-keep"><span><b>✨ AI 자동</b><small>내용·분량에 맞춰 장면마다 다르게</small></span></label></div><div class="sc-line" id="scSegFixed"><span class="sc-u">모든 장면</span><input id="scSeg" type="number" min="'+MIN_SEG+'" max="'+MAX_SEG+'" step="1" inputmode="numeric" class="mobile-keep" aria-label="장면 길이(초)" title="스토리보드 한 구간(장면)의 길이 — AI 영상 도구가 한 번에 만드는 클립 길이에 맞추면 편해요"><span class="sc-u">초</span></div><div class="sc-line" id="scSegAuto" style="display:none"><span class="sc-u">범위</span><input id="scSegMin" type="number" min="'+MIN_SEG+'" max="'+MAX_SEG+'" step="1" inputmode="numeric" class="mobile-keep" aria-label="장면 최소 길이(초)" title="AI 가 정하는 장면의 가장 짧은 길이"><span class="sc-u">~</span><input id="scSegMax" type="number" min="'+MIN_SEG+'" max="'+MAX_SEG+'" step="1" inputmode="numeric" class="mobile-keep" aria-label="장면 최대 길이(초)" title="AI 가 정하는 장면의 가장 긴 길이 — AI 영상 도구가 한 번에 만드는 클립 길이를 넘기지 않게 정하세요"><span class="sc-u">초 사이</span></div><div class="sc-hint" id="scSegHint"></div><div class="sc-lb2">스타일 <span class="sc-opt">· 시황을 브리핑하는 방식</span></div><select id="scBPre" class="mobile-keep" aria-label="스토리보드 스타일" title="영상으로 시황을 브리핑하는 방식을 골라요 — 선택한 방식으로 설계서와 모든 장면을 써요">'+bpreOptions()+'</select><div class="sc-hint" id="scBPreHint"></div><div class="sc-lb2">세부 컨셉 <span class="sc-opt">· 선택</span></div><textarea id="scBStyle" rows="3" class="mobile-keep" placeholder="'+BSTYLE_PH+'"></textarea></div>'
    +'<div class="sc-f"><div class="sc-lb">영상 길이</div><div class="sc-line"><input id="scLen" type="number" min="1" max="'+MAX_LEN+'" step="1" inputmode="decimal" class="mobile-keep" aria-label="영상 길이(분)"><span class="sc-u">분</span></div><div class="sc-hint" id="scHint"></div></div>'
    +'<div class="sc-f" id="scCpmF"><div class="sc-lb">말 속도 <span class="sc-opt">· 스크립트 분량 계산용</span></div><div class="sc-line"><input id="scCpm" type="number" min="150" max="1200" step="10" inputmode="numeric" class="mobile-keep" aria-label="말 속도(자/분)" title="1분에 말하는 글자 수(공백 제외). 한국어 300~360 · 영어 750~900 · 중국어 240~300 · 일본어 320~380 — 천천히 말하는 편이면 낮추세요"><span class="sc-u">자/분</span></div></div>'
-   +'<div class="sc-f"><div class="sc-lb">반영할 섹션 <span class="sc-links"><a data-act="secCore">기본 4개</a><a data-act="secAll">전체</a><a data-act="secNone">해제</a></span></div><div id="scSecs"><div class="sc-grp">핵심</div>'+SECS.filter(s=>s.core).map(row).join('')+'<div class="sc-grp">추가 (선택)</div>'+SECS.filter(s=>!s.core).map(row).join('')+'</div></div>'
+   +'<div class="sc-f"><div class="sc-lb">반영할 섹션 <span class="sc-links"><a data-act="secCore">기본 4개</a><a data-act="secAll">전체</a><a data-act="secNone">해제</a></span></div><div id="scSecs"><div class="sc-grp">핵심</div>'+SECS.filter(s=>s.core).map(row).join('')+'<div class="sc-grp">추가 (선택)</div>'+SECS.filter(s=>!s.core).map(row).join('')+'</div><div class="sc-hint" id="scLiveHint"></div><div class="sc-livepv" id="scLivePv" style="display:none"></div></div>'
    +'<div class="sc-f"><div class="sc-lb">AI</div><select id="scProv" class="mobile-keep" aria-label="AI 공급자">'+provOptions()+'</select></div>'
    +'<div class="sc-f"><div class="sc-lb">추가 요청 <span class="sc-opt">· 선택</span></div><textarea id="scExtra" rows="3" class="mobile-keep" placeholder="예) 채널 이름·말투, 강조하고 싶은 종목·이슈, 피하고 싶은 표현 …"></textarea></div>'
    +'</div><div class="sc-sfoot"><div class="sc-act"><button type="button" id="scGo" class="sc-btn pri mobile-keep" data-act="go">🎬 만들기</button><button type="button" id="scStop" class="sc-btn dng mobile-keep" data-act="stop" style="display:none">⏹ 중단</button><button type="button" id="scRestart" class="sc-btn mobile-keep" data-act="restart" style="display:none" title="지금까지 만든 내용을 버리고 처음부터 다시 만들어요">↺ 처음부터</button></div>'
@@ -44438,7 +44617,7 @@ function ensureMaker(){
   const el=document.createElement('div'); el.id='scMakerModal'; el.className='sc-ov no-print'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','스크립트 만들기');
   el.innerHTML=makerHtml(); document.body.appendChild(el); _mk=el;
   el.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-act]'); if(b) makerAct(b.getAttribute('data-act'),b); });
-  const sync=()=>{ saveCfg(readCfg()); updateHint(); syncGo(); };
+  const sync=()=>{ saveCfg(readCfg()); updateHint(); syncGo(); paintLive(); };
   ['scLen','scCpm','scSeg','scSegMin','scSegMax'].forEach(id=>$(id).addEventListener('input',sync));
   $('scSegMode').addEventListener('change',()=>{ paintSegMode(); sync(); });
   $('scSecs').addEventListener('change',sync);
@@ -44496,6 +44675,7 @@ function fillForm(cfg){
     row.classList.toggle('empty',inf.n===0); row.querySelector('.st').textContent=inf.txt;
   });
   try{ const rk=window._resolveAiProvider&&window._resolveAiProvider(MAP_KEY); $('scProv').value=(rk&&rk.provider)||'claude'; }catch(e){}
+  paintLive();   /* v190 */
 }
 function readCfg(){
   const prev=loadCfg(), secs=[];
@@ -44599,10 +44779,12 @@ function makerAct(act,btn){
   else if(act==='edSegAdd') edSegAdd(btn);
   else if(act==='edSegDel') edSegDel(btn);
   else if(act==='retime') edRetime();
+  else if(act==='livePv') livePreview();   /* v190 */
+  else if(act==='livePvX'){ const bx=$('scLivePv'); if(bx) bx.style.display='none'; }
   else if(act==='secCore'||act==='secAll'||act==='secNone'){
     if(S.running) return;
     SECS.forEach(s=>{ const cb=$('scSecs').querySelector('input[data-k="'+s.k+'"]'); if(cb&&!cb.disabled) cb.checked=act==='secAll'?true:act==='secNone'?false:!!s.core; });
-    saveCfg(readCfg()); updateHint(); syncGo();
+    saveCfg(readCfg()); updateHint(); syncGo(); paintLive();
   }
   else if(act==='copyAll'||act==='txt'||act==='copyRep'||act==='copyScr'||act==='copyBrd'||act==='copyBrdCh'){
     const c=S.ctx; if(!hasContent(c)){ toast('아직 복사할 내용이 없어요'); return; }
@@ -44627,7 +44809,7 @@ function newCtx0(cfg){
   const secs=SECS.map(s=>s.k).filter(k=>act.indexOf(k)>=0);
   const rep=cfg.rep!==false, scr=cfg.scr!==false, brd=cfg.board===true, old=!rep&&scr?reusableReport(cfg):'';   /* 스크립트만 만들면 화면에 있는 같은 조건의 보고서를 바탕으로 */
   return {id:'sc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),cfg:Object.assign({len:cfg.len,cpm:cfg.cpm>=150?cfg.cpm:DEF_CFG.cpm,secs:cfg.secs.slice(),extra:cfg.extra,rep,scr,board:brd,seg:brd?(isAuto(cfg)?segOf(cfg):cfg.seg):DEF_SEG,bstyle:brd?cfg.bstyle||'':'',bpre:brd&&bpreOf(cfg.bpre)?cfg.bpre:'',lang:V.norm(cfg.lang),vtitle:String(cfg.vtitle||'').trim().slice(0,80)},isAuto(cfg)?{segMode:'auto',segMin:segRange(cfg).min,segMax:segRange(cfg).max}:null),secs,pack,psig:packSig(pack,secs),base:repDate(),
-    plan:scr||brd?buildPlan(cfg.len,cfg.cpm,secs,cfg.lang):[],report:old,reportDone:!!old,board:null,shr:sharesOf(rep,scr,brd),status:'run',provider:'',sig:sigOf(cfg)};   /* 스토리보드만 만들 땐 챕터 구성(plan)만 있고 글은 없음 */
+    plan:scr||brd?buildPlan(cfg.len,cfg.cpm,secs,cfg.lang):[],report:old,reportDone:!!old,board:null,shr:sharesOf(rep,scr,brd),status:'run',provider:'',sig:sigOf(cfg),live:act.indexOf('live')>=0?{at:LIVE.at,sess:LIVE.sess,nq:LIVE.nq,ns:LIVE.ns,news:LIVE.news,text:LIVE.text}:null};   /* 스토리보드만 만들 땐 챕터 구성(plan)만 있고 글은 없음 */
 }
 function newCtx(cfg){   /* v177: 주요 지수 섹션이 든 대본이면 보고서 화면의 지수 칸(등락률·최종 수치)을 구조 그대로 c.ixd 에 읽어 둠 — 챕터 지시의 참고 목록과 영상 스튜디오의 지수 화면이 씀 */
   const c=newCtx0(cfg); try{ if((c.secs||[]).indexOf('indices')>=0){ const d=ixRowsDom(); if(d.length) c.ixd=d; } }catch(e){ console.warn('주요 지수 자료를 읽지 못했어요',e); } return c;
@@ -44644,7 +44826,7 @@ function progFor(c,i,curFrac){   /* 보고서를 같이 만들면 보고서가 1
   return c.shr.rw+c.shr.sw*(done+c.plan[i].target*Math.min(1,curFrac))/sum;
 }
 async function run(fresh){
-  if(S.running) return;
+  if(S.running||S.liveBusy) return;
   if(edAny()){ if(edDirty()){ showErr('수정 중인 내용이 있어요. 저장하거나 취소한 뒤 만들어 주세요.'); return; } edCancelAll(); }   /* v119 — 저장 안 한 수정이 있으면 막고, 없으면 수정 모드만 닫고 진행 */
   const cfg=readCfg(), bad=validate(cfg);
   if(bad){ showErr(bad); return; }
@@ -44661,6 +44843,7 @@ async function run(fresh){
     beginBoard(c,cfg);
   }   /* 스토리보드만 — 화면의 완성된 스크립트에 덧붙임(같은 이력 기록에 저장) */
   else {
+    if(cfg.secs.indexOf('live')>=0&&!(await liveEnsure())) return;   /* v190: 실시간 온라인 시장조회 — 만들기 직전에 인터넷에서 */
     c=newCtx(cfg);
     if(!c.secs.length){ showErr('선택한 섹션에 내용이 없어요. 섹션에 내용을 채우거나 다른 섹션을 선택해 주세요.'); return; }
     const miss=cfg.secs.filter(k=>c.secs.indexOf(k)<0);
@@ -44794,7 +44977,7 @@ async function showDetail(id){
   const canBoard=c.plan.length>0&&c.plan.every(u=>u.state==='done'&&u.text);   /* 끝까지 만든 스크립트가 있어야 그 기록으로 스토리보드를 만들 수 있음 */
   $('shTitle').textContent='🕘 '+rec.date+' · '+rec.cfg.len+'분 영상'; $('shSub').textContent=dateOfTs(rec.ts)+' '+timeOf(rec.ts)+' 생성'; $('shBar').style.display='none'; _hs.querySelector('.sc-back').style.display='';
   body.innerHTML='<div class="sc-dact"><button type="button" class="sc-mini pri mobile-keep" data-act="dCopyAll">전체 복사</button>'+(rep?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyRep">보고서 복사</button>':'')+(scr?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyScr" title="챕터 소제목·[화면: …] 지시를 뺀 나레이션만 복사해요">스크립트 복사</button>':'')+(brd?'<button type="button" class="sc-mini mobile-keep" data-act="dCopyBrd" title="스타일 → 스토리보드 → 분위기 순서로 전체를 복사해요">스토리보드 복사</button>':'')+'<button type="button" class="sc-mini mobile-keep" data-act="dTxt">TXT 저장</button><button type="button" class="sc-mini mobile-keep" data-act="dReuse" title="이 영상 길이·섹션·말 속도로 새로 만들기 화면을 엽니다">↩ 이 설정으로 만들기</button>'+(hasContent(c)?'<button type="button" class="sc-mini mobile-keep" data-act="dEdit" title="이 기록을 스크립트 만들기 화면으로 불러와 내용을 직접 고쳐요">✏️ 수정</button>':'')+(canBoard?'<button type="button" class="sc-mini mobile-keep" data-act="dBoard" title="이 기록의 스크립트를 바탕으로 스토리보드를 만들어 이 기록에 덧붙여요">🎞 스토리보드 '+(brd?'다시 ':'')+'만들기</button>':'')+(canBoard?'<button type="button" class="sc-mini pri mobile-keep" data-act="dVideo" title="이 스크립트로 영상 만들기 — 음성(TTS)·자막·화면·내보내기">🎥 영상 만들기</button>':'')+'<span class="sc-sp"></span><button type="button" class="sc-mini dng mobile-keep" data-act="dDel">삭제</button></div>'
-    +'<div class="sc-dmeta">'+(V.norm(rec.cfg.lang)!=='ko'?'<b>영상 언어</b> '+esc(V.label(V.norm(rec.cfg.lang)))+' · ':'')+'<b>반영 섹션</b> '+esc((rec.secs||[]).map(labelOf).join(', '))+(scr||brd?' · <b>말 속도</b> '+rec.cfg.cpm+'자/분':'')+(brd?' · <b>장면 길이</b> '+(isAuto(rec.cfg)?'AI 자동('+segRange(rec.cfg).min+'~'+segRange(rec.cfg).max+'초)':'약 '+(rec.cfg.seg||DEF_SEG)+'초')+(bpreOf(rec.cfg.bpre)?' · <b>스토리보드 스타일</b> '+esc(bpreOf(rec.cfg.bpre).icon+' '+bpreOf(rec.cfg.bpre).name):''):'')+' · <b>AI</b> '+esc(provLabel(rec.provider))+(rec.cfg.extra?'<br><b>추가 요청</b> '+esc(rec.cfg.extra):'')+(brd&&rec.cfg.bstyle?'<br><b>스타일·컨셉 요청</b> '+esc(rec.cfg.bstyle):'')+(rec.status!=='done'?'<br><span class="sc-tag">'+(rec.status==='error'?'오류':'중단됨')+'</span> 끝까지 만들어지지 않은 기록이에요.':'')+'</div>'
+    +'<div class="sc-dmeta">'+(V.norm(rec.cfg.lang)!=='ko'?'<b>영상 언어</b> '+esc(V.label(V.norm(rec.cfg.lang)))+' · ':'')+'<b>반영 섹션</b> '+esc((rec.secs||[]).map(labelOf).join(', '))+(rec.live&&rec.live.at?' · <b>실시간 조회</b> '+esc(liveStamp(rec.live.at)):'')+(scr||brd?' · <b>말 속도</b> '+rec.cfg.cpm+'자/분':'')+(brd?' · <b>장면 길이</b> '+(isAuto(rec.cfg)?'AI 자동('+segRange(rec.cfg).min+'~'+segRange(rec.cfg).max+'초)':'약 '+(rec.cfg.seg||DEF_SEG)+'초')+(bpreOf(rec.cfg.bpre)?' · <b>스토리보드 스타일</b> '+esc(bpreOf(rec.cfg.bpre).icon+' '+bpreOf(rec.cfg.bpre).name):''):'')+' · <b>AI</b> '+esc(provLabel(rec.provider))+(rec.cfg.extra?'<br><b>추가 요청</b> '+esc(rec.cfg.extra):'')+(brd&&rec.cfg.bstyle?'<br><b>스타일·컨셉 요청</b> '+esc(rec.cfg.bstyle):'')+(rec.status!=='done'?'<br><span class="sc-tag">'+(rec.status==='error'?'오류':'중단됨')+'</span> 끝까지 만들어지지 않은 기록이에요.':'')+'</div>'
     +(rep?'<section class="sc-sec"><div class="sc-sh"><b>① 종합 분석 보고서</b><span class="sc-meta">'+(c.report?c.report.replace(/\s+/g,'').length.toLocaleString()+'자':'')+edMark(c,'rep')+'</span></div><div class="sc-doc">'+(c.report?mdLite(c.report):'<div class="sc-wait">—</div>')+'</div></section>':'')
     +(scr?'<section class="sc-sec"><div class="sc-sh"><b>② 영상 스크립트</b><span class="sc-meta">'+rec.cfg.len+'분 · '+t.chars.toLocaleString()+'자 / 목표 '+t.target.toLocaleString()+'자 (약 '+fmtDur(t.sec)+')'+edMark(c,'scr')+'</span></div><div class="sc-doc">'+scriptHtml(c)+'</div></section>':'')
     +(brd?'<section class="sc-sec"><div class="sc-sh"><b>③ 스토리보드</b><span class="sc-meta">'+esc(boardMeta(c))+edMark(c,'brd')+'</span></div><div class="sc-doc">'+boardHtml(c,true)+'</div></section>':'');
@@ -45140,7 +45323,7 @@ window.openScriptHistory=()=>openHistory();
 window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
   _dbg:{ixRowsDom,ixHint,ixPctOf,buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
     buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur,
-    V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,
+    V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,liveRun,liveEnsure,liveFresh,liveSession,liveChart,liveNews,liveTickers,liveStockLine,rptSecs,paintLive,livePreview,liveStamp,kstParts,get LIVE(){ return LIVE; },set LIVE(v){ LIVE=v; },
     isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted,
     ED,edOpen,edSave,edCancel,edCancelAll,edLeave,edReadRep,edReadScr,edReadBrd,edApplyRep,edApplyScr,edApplyBrd,edSegAdd,edSegDel,edSegCheck,edRetime,parseClock,cleanEdit,normT,canEdit,retimeBoard,boardStale,chapRanges,curChars}};
 })();
@@ -59004,12 +59187,12 @@ function agdCueItems(c){   /* '이름: 설명 | 이름: 설명' → [{t,d}] (최
 }
 /* 대본에 목차 지시가 없을 때 — 챕터 이름 + 챕터 종류별 기본 설명 */
 const AGD_DESC={
-  ko:{indices:'주요 지수 등락률과 시장 분위기',eco:'주목할 주요 경제 일정',market:'상승·하락 요인과 수급·심리 분석',theme:'주도 테마와 섹터별 흐름 점검',watch:'관심 종목의 전일 흐름 점검',warren:'Warren Kim 코멘트의 핵심 관점',radar:'AI Stock Radar 포착 종목',tech:'기술적 분석의 핵심 레벨',strategy:'매매 전략의 핵심 원칙',scenario:'시나리오와 대응 전략 정리'},
-  en:{indices:'Major index moves and market mood',eco:'Key economic events to watch',market:'Drivers, flows and sentiment',theme:'Leading themes and sector trends',watch:'Watchlist check',warren:"Warren Kim's key view",radar:'AI Stock Radar picks',tech:'Key technical levels',strategy:'Core trading principles',scenario:'Scenarios and action plan'}
+  ko:{indices:'주요 지수 등락률과 시장 분위기',eco:'주목할 주요 경제 일정',market:'상승·하락 요인과 수급·심리 분석',after:'에프터마켓 선물·시간외 시세 점검',theme:'주도 테마와 섹터별 흐름 점검',watch:'관심 종목의 전일 흐름 점검',warren:'Warren Kim 코멘트의 핵심 관점',radar:'AI Stock Radar 포착 종목',tech:'기술적 분석의 핵심 레벨',strategy:'매매 전략의 핵심 원칙',scenario:'시나리오와 대응 전략 정리'},
+  en:{indices:'Major index moves and market mood',eco:'Key economic events to watch',market:'Drivers, flows and sentiment',after:'After-hours futures and extended-hours moves',theme:'Leading themes and sector trends',watch:'Watchlist check',warren:"Warren Kim's key view",radar:'AI Stock Radar picks',tech:'Key technical levels',strategy:'Core trading principles',scenario:'Scenarios and action plan'}
 };
 function agdChapItems(p){
   p=p||P; const ko=isKo(p&&p.lang), D=AGD_DESC[ko?'ko':'en'];
-  return ovChapters(p).map(c=>{ const keys=String(chKey(p,c.ci)||'').split('+').filter(k=>D[k]), d=(keys[0]==='indices'&&keys[1]==='eco')?(ko?'주요 지수 등락률과 경제 일정':'Index moves and the economic calendar'):(keys.length?D[keys[0]]:''); return {t:ovShort(c.name),d}; }).slice(0,5);
+  return ovChapters(p).map(c=>{ const keys=String(chKey(p,c.ci)||'').split('+').filter(k=>D[k]), d=(keys[0]==='indices'&&keys[1]==='eco')?(ko?'주요 지수 등락률과 경제 일정':'Index moves and the economic calendar'):(keys[0]==='market'&&keys[1]==='after')?(ko?'시황 분석과 에프터마켓 현황':'Market drivers and the after-hours picture'):(keys.length?D[keys[0]]:''); return {t:ovShort(c.name),d}; }).slice(0,5);
 }
 function agdBlock(span,items){   /* 목차 블록 하나 — 줄마다 이름을 말하는 순간(ovRuleBlock 이 안내 문장에서 이름의 낱말을 찾아 맞춤, 못 찾으면 앞뒤 사이에 고르게)에 나타남 */
   const b=ovRuleBlock(span,items.map((x,i)=>({n:i+1,name:x.t}))); if(!b||!b.parts||!b.parts.length) return null;
@@ -60301,7 +60484,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v189';
+const KL_BUILD='v190';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
