@@ -43771,12 +43771,12 @@ const liveRuleX=c=>liveOn(c)?'\n8. The "Live online market lookup" in the raw da
 /* ══ /v190 ══ */
 /* ══ v191 (2026-11-13) — 실시간 속보 = 시황 분석 안의 '주요 속보' + 스튜디오의 '속보 소개 화면'(제목 + 두 줄 요약) ═══════════════════════════════════
    요청: '추가 (선택)'에 '실시간 속보' 항목 — 고르면 시황 분석에 실시간 속보 중 중요한 내용을 추려 '제목 + 간단한 두 줄 요약'으로 소개하는 화면을 만들 수 있게.
-   · 내용은 만들기를 누를 때 뉴스글루(newsgloo.com) 속보·뉴스를 모음(⚡ 실시간 속보 팝업과 같은 피드 — _nfFetchFeed·_nfBuild): 최근 24시간·시장 관련(미국장·한국장·금리환율·원자재지정학) 기사만 중요도·최신순 36건(flashRun).
+   · 내용은 만들기를 누를 때 뉴스글루(newsgloo.com) 속보·뉴스를 모음(⚡ 실시간 속보 팝업과 같은 피드 — _nfFetchFeed·_nfBuild): 최근 6시간 이내(v194 — 예전엔 24시간, 기사가 적으면 48시간까지)·시장 관련(미국장·한국장·금리환율·원자재지정학) 기사만 중요도·최신순 36건까지(flashRun).
      개인 보유·관심 종목 분류(hold·watch)는 쓰지 않음(공개 영상용).
    · 스크립트: buildPlan 이 챕터 'flash'(주요 속보)를 시황 분석·에프터마켓 시황 뒤에 넣고 fixedParts 가 시황 분석 부 안에 합침('3) 주요 속보'). 그 문단 앞에 속보 지시 줄 [화면: 속보 | 제목: 요약 | …](nwsRole)을 AI 가 씀
      → 영상 스튜디오(v191)가 읽어 '제목 + 두 줄 요약' 화면으로. 보고서: '주요 속보 브리핑' 섹션(rptSecs). 정규장·에프터마켓과 무관(속보는 언제든).
    검색: flashRun · flashEnsure · FLASH · flashFresh · nwsRole · flashRule · paintFlash ── */
-const FLASH_TTL=3*60*1000, FLASH_HOURS=24, FLASH_MAX=36;   /* 모은 값을 다시 쓰는 시간 3분 · 기본 범위 24시간(기사가 12건 미만이면 48시간) · 보낼 기사 수 */
+const FLASH_TTL=3*60*1000, FLASH_HOURS=6, FLASH_MAX=36;   /* 모은 값을 다시 쓰는 시간 3분 · 조회 기준 = 최근 6시간 이내(v194 — 기사가 적어도 더 넓히지 않음) · 보낼 기사 수 */
 let FLASH={at:0,text:'',n:0,total:0};
 const flashFresh=()=>!!FLASH.text&&Date.now()-FLASH.at<FLASH_TTL;
 const flashAgo=()=>{ const m=Math.floor((Date.now()-FLASH.at)/60000); return (m<1?'방금 모음':m+'분 전 모음')+(FLASH.n?' · '+FLASH.n+'건':''); };
@@ -43797,7 +43797,7 @@ async function flashRun(){   /* 속보·뉴스 피드를 모아 글로 — {ok,t
   let items=[]; try{ items=_nfBuild(bj,nj).items||[]; }catch(e){ errs.push('분류 '+((e&&e.message)||e)); }
   const KEYS=['us','kr','macro','geo'], mk=it=>!!it.tags&&KEYS.some(k=>it.tags.has(k));   /* 미국장·한국장·금리환율·원자재지정학 — 보유·관심 종목 분류(hold·watch)는 일부러 안 씀 */
   const within=h=>items.filter(it=>isFinite(it.t)&&at-it.t<=h*3600e3&&it.t-at<3600e3&&mk(it));
-  let pool=within(FLASH_HOURS), hours=FLASH_HOURS; if(pool.length<12){ pool=within(48); hours=48; }
+  let pool=within(FLASH_HOURS); const hours=FLASH_HOURS;   /* v194: 최근 6시간 이내만 — 기사가 적어도 48시간으로 넓히지 않음 */
   const total=pool.length, sc=it=>(it.imp||0)*3+(it.feed==='b'?2:0)-(at-it.t)/3600e3/6+(it.tags.size>1?0.5:0);
   pool=pool.map(it=>({it,s:sc(it)})).sort((a,b)=>b.s-a.s).slice(0,FLASH_MAX).map(x=>x.it).sort((a,b)=>b.t-a.t);
   const hm=ms=>{ const o=kstParts(ms); return o.month+'-'+o.day+' '+o.hour+':'+o.minute; };
@@ -43805,7 +43805,7 @@ async function flashRun(){   /* 속보·뉴스 피드를 모아 글로 — {ok,t
     return {id:'f'+i,t:'['+time+(tg.length?' · '+tg.join('·'):'')+']'+(src?' ('+src+')':'')+' '+ti+(bd?' — '+bd:''),time,tags:tg,src,title:ti,body:bd,s:sc(it)}; });
   rows.slice().sort((x,y)=>y.s-x.s).slice(0,PICK_REC).forEach(r=>{ r.rec=true; });   /* ★ 추천 — 점수 상위 5건(고르기 창에서 미리 체크) */
   const F={at,hours,total,rows};
-  return {ok:rows.length>=3,text:flashCompose(F,null),rows,at,n:rows.length,total,hours,errs};
+  return {ok:rows.length>=1,text:flashCompose(F,null),rows,at,n:rows.length,total,hours,errs};   /* v194: 6시간 안이라 기사가 몇 건 안 될 수 있어 1건부터 인정(직접 고르는 창에서 고름) */
 }
 async function flashEnsure(force,quiet){   /* 만들기 전에 속보 모으기 — true 면 계속(모음 성공 또는 '그 자료 없이 계속' 선택) */
   if(!force&&flashFresh()) return true;
@@ -43814,7 +43814,7 @@ async function flashEnsure(force,quiet){   /* 만들기 전에 속보 모으기 
   S.liveBusy=false; if(go) go.disabled=false; setProg(0,'대기 중');
   if(r&&r.ok){ FLASH={at:r.at,text:r.text,n:r.n,total:r.total,hours:r.hours,rows:r.rows}; paintFlash(); return true; }
   paintFlash(); if(quiet) return false;
-  return confirm('실시간 속보를 가져오지 못했어요 — 인터넷 연결이나 뉴스글루(newsgloo.com) 접속을 확인해 주세요.'+((r&&r.errs&&r.errs.length)?'\n('+r.errs.slice(0,2).join(' · ')+')':(r&&r.ok===false&&!(r.errs&&r.errs.length)?'\n(시장 관련 속보가 거의 없었어요)':''))+'\n\n그 자료 없이 나머지 섹션으로 계속 만들까요?');
+  return confirm('실시간 속보를 가져오지 못했어요 — 인터넷 연결이나 뉴스글루(newsgloo.com) 접속을 확인해 주세요.'+((r&&r.errs&&r.errs.length)?'\n('+r.errs.slice(0,2).join(' · ')+')':(r&&r.ok===false&&!(r.errs&&r.errs.length)?'\n(최근 '+FLASH_HOURS+'시간 이내에 나온 시장 관련 속보가 없었어요)':''))+'\n\n그 자료 없이 나머지 섹션으로 계속 만들까요?');
 }
 async function flashPreview(){   /* [지금 모아서 보기] — 만들 때 쓸 자료를 미리 봄(3분 안에 만들면 그 값을 그대로 씀) */
   if(S.running||S.liveBusy) return; const box=$('scFlashPv'); if(!box) return; box.style.display=''; box.innerHTML='<div>속보 모으는 중… (최대 35초)</div>';
@@ -43824,7 +43824,7 @@ async function flashPreview(){   /* [지금 모아서 보기] — 만들 때 쓸
 function paintFlash(){   /* '실시간 속보' 줄의 상태 글 + 고르면 나오는 안내 */
   const sc=$('scSecs'); if(!sc) return; const st=sc.querySelector('.sc-sr[data-k="flash"] .st'); if(st) st.textContent=secInfo('flash').txt;
   const h=$('scFlashHint'); if(!h) return; const cb=sc.querySelector('input[data-k="flash"]'), on=!!(cb&&cb.checked); h.style.display=on?'':'none'; if(!on) return;
-  h.innerHTML='⚡ <b>실시간 속보</b>를 골랐어요 — <b>만들기</b>를 누르면 뉴스글루(newsgloo.com)의 최근 속보·뉴스 제목을 모아 시황과 관련된 것만 추려, <b>시황 분석</b> 안에 \'주요 속보\'를 만들어요. 영상 스튜디오에서는 고른 속보를 <b>제목 + 두 줄 요약</b>으로 소개하는 화면이 돼요. <b>반영할 속보는 직접 고를 수 있어요</b>(만들기를 누르면 고르는 창이 먼저 나와요). <a data-act="flashPv">지금 모아서 보기</a>';
+  h.innerHTML='⚡ <b>실시간 속보</b>를 골랐어요 — <b>만들기</b>를 누르면 뉴스글루(newsgloo.com)의 <b>최근 '+FLASH_HOURS+'시간 이내</b> 속보·뉴스 제목 중 시황과 관련된 것을 모아, <b>시황 분석</b> 안에 \'주요 속보\'를 만들어요. 영상 스튜디오에서는 고른 속보를 <b>제목 + 두 줄 요약</b>으로 소개하는 화면이 돼요. <b>반영할 속보는 직접 고를 수 있어요</b>(만들기를 누르면 고르는 창이 먼저 나와요). <a data-act="flashPv">지금 모아서 보기</a>';
 }
 const flashRule=c=>{   /* v193: 사용자가 직접 고른 속보면(c.flash.manual) '고른 N건을 모두', 아니면 예전처럼 AI 가 3~5건을 고름 */
   if(!flashOn(c)) return ''; const man=!!(c.flash&&c.flash.manual), k=(c.flash&&c.flash.n)||0;
@@ -43909,7 +43909,7 @@ function pickRender(){
   }
   if(PICK.wf){
     const rows=FLASH.rows;
-    h+='<section class="sc-pk-sec flash"><div class="sc-pk-sh"><b>⚡ Breaking News에 반영할 항목</b><span class="m">실시간 속보 · '+esc(liveStamp(FLASH.at))+' 모음 · 최근 '+FLASH.hours+'시간 시장 관련 기사 '+FLASH.total+'건 중 중요도·최신순 '+rows.length+'건</span><span class="c" id="scPkCntF"></span><a data-act="pkRec" data-s="flash">★ 추천만</a><a data-act="pkAll" data-s="flash">전체 선택</a><a data-act="pkNone" data-s="flash">전체 해제</a></div><div class="sc-pk-st">★ 추천 '+PICK_REC+'건이 미리 체크돼 있어요(바꿔도 돼요). 고른 속보는 모두 소개하고, 영상 화면(BREAKING NEWS)에는 중요한 <b>최대 4건</b>이 나와요.</div><div class="sc-pk-g">'+rows.map(r=>pickRowF(r,PICK.sf.has(r.id))).join('')+'</div></section>';
+    h+='<section class="sc-pk-sec flash"><div class="sc-pk-sh"><b>⚡ Breaking News에 반영할 항목</b><span class="m">실시간 속보 · '+esc(liveStamp(FLASH.at))+' 모음 · 최근 '+FLASH.hours+'시간 이내 시장 관련 기사 '+FLASH.total+'건 중 중요도·최신순 '+rows.length+'건</span><span class="c" id="scPkCntF"></span><a data-act="pkRec" data-s="flash">★ 추천만</a><a data-act="pkAll" data-s="flash">전체 선택</a><a data-act="pkNone" data-s="flash">전체 해제</a></div><div class="sc-pk-st">★ 추천 '+PICK_REC+'건이 미리 체크돼 있어요(바꿔도 돼요). 고른 속보는 모두 소개하고, 영상 화면(BREAKING NEWS)에는 중요한 <b>최대 4건</b>이 나와요.</div><div class="sc-pk-g">'+rows.map(r=>pickRowF(r,PICK.sf.has(r.id))).join('')+'</div></section>';
   }
   h+='</div><div class="sc-pk-foot"><span class="sc-pk-note" id="scPkNote"></span><button type="button" class="sc-btn mobile-keep" data-act="pkCancel">취소</button><button type="button" class="sc-btn pri mobile-keep" data-act="pkApply" title="체크한 항목만 반영해서 스크립트를 만들어요 (Ctrl+Enter)">✅ 반영</button></div>';
   el.innerHTML=h; pickCounts();
@@ -60853,7 +60853,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v193';
+const KL_BUILD='v194';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
