@@ -2936,6 +2936,24 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-err{flex:1 1 220px;min-width:0;font-size:11.5px;line-height:1.5;color:#b91c1c;font-weight:700;word-break:keep-all}
 .vs-err.ok{color:#15803d}
 @media(max-width:680px){.vs-g{grid-template-columns:1fr}.vs-p{grid-template-columns:24px 1fr}.vs-p .ww,.vs-p .bb{grid-column:2;flex-direction:row;align-items:center}}
+/* ── v200 영상 스타일 주제별 기본 템플릿 — 스타일 설정 창 '시작하기'의 카드 모음 (2026-11-18) ── */
+.vs-tpl{display:flex;flex-direction:column;gap:9px}
+.vs-tg{display:flex;flex-direction:column;gap:4px}
+.vs-tgh{font-size:10.5px;font-weight:800;color:#b45309;letter-spacing:.02em}
+.vs-tc{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:6px}
+.vs-tb{position:relative;display:flex;align-items:center;gap:8px;text-align:left;padding:7px 10px;min-height:46px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;color:#334155;font-family:inherit;cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s}
+.vs-tb:hover{border-color:#fcd34d;background:#fffdf5}
+.vs-tb:focus-visible{outline:2px solid #d97706;outline-offset:1px}
+.vs-tb.on{border-color:#f59e0b;background:#fffbeb;box-shadow:0 0 0 2px rgba(245,158,11,.25)}
+.vs-tb .ic{flex:0 0 auto;font-size:21px;line-height:1}
+.vs-tb .tx{display:flex;flex-direction:column;min-width:0;gap:1px}
+.vs-tb .tx b{font-size:12.5px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vs-tb .tx i{font-style:normal;font-size:10.5px;line-height:1.35;color:#94a3b8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+.vs-tb .hv{display:none;margin-left:5px;font-size:11px;font-weight:900;color:#15803d}
+.vs-tb.have .hv{display:inline}
+.vs-tpn{font-size:11.5px;line-height:1.55;color:#78350f;background:#fffbeb;border:1px dashed #fcd34d;border-radius:8px;padding:7px 10px;word-break:keep-all}
+.vs-tpn .use{margin-top:3px;color:#475569}
+@media(max-width:680px){.vs-tc{grid-template-columns:repeat(2,minmax(0,1fr))}.vs-tb{padding:6px 8px;gap:6px}.vs-tb .ic{font-size:18px}.vs-tb .tx b{font-size:11.5px;line-height:1.25;white-space:normal;overflow:visible;text-overflow:clip}}
 </style>
 <!-- BTMSCRIPT-CSS-END -->
 <!-- BTMVIDEO-CSS-BEGIN -->
@@ -43533,7 +43551,7 @@ const labelOf=k=>(SECS.find(s=>s.k===k)||{label:k}).label;
        - brand: 오프닝 인사 한 줄·인사 화면에 쓰는 이름(비우면 공통 브랜드) / title: 영상 제목을 비워 뒀을 때 프로젝트 이름에 쓰는 기본 제목
    · 만든 결과(ctx·이력)에는 그때의 스타일 정의를 복사해 둠(c.vs) — 나중에 스타일을 고치거나 지워도 이력·영상 만들기는 그대로. 스타일을 고치면 sigOf 가 달라져 이어서 만들기는 안 됨.
    검색: vsAll · vsOf · vsClean · vsPaint · vsSwitch · vsEdOpen · buildPlanStyle · sysReportStyle · sysChapterStyleKo · vsOpenRole · vsCloseRole ── */
-const VS_KEY='BTMVideoStyles', VS_ID='market', VS_MAXN=12, VS_MAXP=10;
+const VS_KEY='BTMVideoStyles', VS_ID='market', VS_MAXN=30, VS_MAXP=10;   /* v200: 템플릿을 여러 개 만들어 둘 수 있게 12 → 30 */
 const VS_SEC_OK=['indices','eco','market','theme','marketD','themeD','watch','warren','radar','tech','strategy'];   /* 내가 만든 스타일에서 쓸 수 있는 섹션(실시간 주가 조회·속보는 시황 포맷 전용) */
 const VS_MARKET={id:VS_ID,name:'Market Brief',builtin:true,desc:'미국·한국 증시 시황을 브리핑하는 기본 영상 포맷',title:'Five-Minute Market Brief',brand:'',topic:{on:false,label:'',ph:''},rules:'',fin:true,secs:[],parts:[],close:{on:true,text:''},
   flow:['주요 지수 & 경제 일정','시황 분석','테마 & 섹터 분석','핵심 요약']};
@@ -44556,7 +44574,7 @@ function sysSegPlanX(scr,pre,lang){
 const sysSegPlanFor=(scr,pre,lang)=>(lang&&lang!=='ko')?sysSegPlanX(scr,pre,lang):sysSegPlan(scr,pre);
 const sysChapter=(rep,lang,v)=>vsIs(v)?((lang&&lang!=='ko')?sysChapterStyleX(rep,lang,v):sysChapterStyleKo(rep,v)):((lang&&lang!=='ko')?sysChapterX(rep,lang):sysChapterKo(rep));   /* v199: v = 내 영상 스타일 */
 /* ═════════ v199 — 내 영상 스타일의 프롬프트(보고서·챕터·오프닝·마무리) — Market Brief 는 이 함수들을 거치지 않음 ═════════ */
-const vsHasRisk=v=>(v.parts||[]).some(p=>/리스크|위험|반대\s*논리|risk/i.test(String(p.title||'')));
+const vsHasRisk=v=>(v.parts||[]).some(p=>/리스크|위험|반대\s*논리|한계|risk/i.test(String(p.title||'')));
 const vsPersona=v=>(v.fin?'20년 경력의 미국·한국 증시 분석 전문가이자, ':'')+'구독자 신뢰도가 높은 "'+v.name+'" 유튜브 채널의 진행자 겸 수석 분석가입니다.';
 const vsRulesBlock=v=>'[영상 스타일] '+v.name+(v.desc?' — '+v.desc:'')+(v.rules?'\n'+v.rules:'');
 function vsTopicLine(c){   /* 영상 주제 입력칸의 글 — '[분석할 테마] …' 한 줄(없으면 빈 글) */
@@ -45180,7 +45198,7 @@ function makerHtml(){
    +'<div class="sc-body">'
    +'<div class="sc-side"><div class="sc-sbody">'
    +'<div class="sc-f" id="scVStyleF"><div class="sc-lb">영상 스타일 <span class="sc-opt">· 영상 제작 포맷</span></div>'
-     +'<div class="sc-vsrow"><select id="scVStyle" class="mobile-keep" aria-label="영상 스타일" title="영상을 어떤 제작 포맷으로 만들지 골라요 — 스타일마다 영상 구성·AI 지침이 달라요"></select><button type="button" class="sc-mini pri mobile-keep" data-act="vsAdd" title="완전히 새로운 영상 스타일(제작 포맷)을 만들어요 — 한 번 세팅해 두면 그 스타일로 만들 때마다 세팅대로 영상이 만들어져요">＋ 스타일 추가</button></div>'
+     +'<div class="sc-vsrow"><select id="scVStyle" class="mobile-keep" aria-label="영상 스타일" title="영상을 어떤 제작 포맷으로 만들지 골라요 — 스타일마다 영상 구성·AI 지침이 달라요"></select><button type="button" class="sc-mini pri mobile-keep" data-act="vsAdd" title="완전히 새로운 영상 스타일(제작 포맷)을 만들어요 — 주제별 기본 템플릿(실적 발표·이슈 분석·종목 분석 등)에서 골라 시작하거나 직접 만들 수 있고, 한 번 세팅해 두면 그 스타일로 만들 때마다 세팅대로 영상이 만들어져요">＋ 스타일 추가</button></div>'
      +'<div class="sc-vsact" id="scVStyleAct"><button type="button" class="sc-mini mobile-keep" data-act="vsEdit" title="이 스타일의 구성·지침·자료를 고쳐요">✎ 설정</button><button type="button" class="sc-mini mobile-keep" data-act="vsDup" title="이 스타일을 복제해 새 스타일로 만들어요">⧉ 복제</button><button type="button" class="sc-mini dng mobile-keep" data-act="vsDel" title="이 영상 스타일을 삭제해요">🗑 삭제</button></div>'
      +'<div class="sc-hint" id="scVStyleHint"></div>'
      +'<div id="scVTopicF" style="display:none"><div class="sc-lb2"><span id="scVTopicLb">영상 주제</span> <span class="sc-opt">· 필수</span></div><input id="scVTopic" type="text" class="sc-vt sc-vtp mobile-keep" maxlength="80" autocomplete="off" spellcheck="false" aria-label="영상 주제"><div class="sc-hint" id="scVTopicHint"></div></div></div>'
@@ -45441,11 +45459,12 @@ function vsSwitch(){
 const vsErr=(m,ok)=>{ const e=$('vsErr'); if(e){ e.textContent=m||''; e.className='vs-err'+(ok?' ok':''); } };
 function vsEdHtml(){
   return '<div class="sc-card vs" role="document">'
-   +'<div class="sc-head"><span class="sc-title" id="vsHeadT">🎞 영상 스타일 추가</span><span class="sc-sub">영상 제작 포맷을 새로 만들어요 — 한 번 세팅해 두면 이 스타일로 영상을 만들 때마다 세팅대로 적용돼요</span><button type="button" class="sc-x mobile-keep" data-vs="close" title="닫기 (Esc)">✕</button></div>'
+   +'<div class="sc-head"><span class="sc-title" id="vsHeadT">🎞 영상 스타일 추가</span><span class="sc-sub">영상 제작 포맷을 새로 만들어요 — 주제별 기본 템플릿에서 골라 시작하거나 직접 만들 수 있고, 한 번 세팅해 두면 이 스타일로 영상을 만들 때마다 세팅대로 적용돼요</span><button type="button" class="sc-x mobile-keep" data-vs="close" title="닫기 (Esc)">✕</button></div>'
    +'<div class="vs-body" id="vsBody">'
-   +'<div class="vs-sec"><h4>시작하기 <small>· 칸을 채우는 방법을 고르세요 — 채운 뒤에도 모두 고칠 수 있어요</small></h4>'
-     +'<div class="vs-f"><label for="vsIdea">만들고 싶은 영상 스타일을 한두 문장으로 <small>(✨ AI 구성 제안에 쓰여요)</small></label><textarea id="vsIdea" rows="2" class="mobile-keep" placeholder="예) 시황이나 핵심 요약 없이, 특정 테마 하나를 깊이 있게 분석해서 핵심 내용을 소개하는 영상"></textarea></div>'
-     +'<div class="vs-start"><button type="button" class="sc-mini pri mobile-keep" data-vs="ai" id="vsAiBtn">✨ AI로 구성 제안</button><button type="button" class="sc-mini mobile-keep" data-vs="tplTheme" title="Theme Brief — 한 가지 테마를 깊이 파고드는 영상 구성을 채워요">🧭 Theme Brief 예시로 채우기</button><button type="button" class="sc-mini mobile-keep" data-vs="clear">↺ 비우기</button></div></div>'
+   +'<div class="vs-sec"><h4>시작하기 <small>· 주제별 기본 템플릿 '+VS_TPLS.length+'종에서 골라 시작하거나, AI 에게 구성을 맡기세요 — 채운 뒤에도 모두 고칠 수 있어요</small></h4>'
+     +'<div class="vs-tpl" id="vsTpl">'+vsTplHtml()+'</div><div class="vs-tpn" id="vsTplNote"></div>'
+     +'<div class="vs-f"><label for="vsIdea">또는 만들고 싶은 영상 스타일을 한두 문장으로 <small>(✨ AI 구성 제안에 쓰여요)</small></label><textarea id="vsIdea" rows="2" class="mobile-keep" placeholder="예) 시황이나 핵심 요약 없이, 특정 테마 하나를 깊이 있게 분석해서 핵심 내용을 소개하는 영상"></textarea></div>'
+     +'<div class="vs-start"><button type="button" class="sc-mini pri mobile-keep" data-vs="ai" id="vsAiBtn">✨ AI로 구성 제안</button><button type="button" class="sc-mini mobile-keep" data-vs="clear">↺ 비우기</button></div></div>'
    +'<div class="vs-sec"><h4>① 기본 정보</h4><div class="vs-g">'
      +'<div class="vs-f"><label for="vsName">영상 스타일 이름 <b style="color:#dc2626">*</b></label><input id="vsName" type="text" maxlength="30" autocomplete="off" spellcheck="false" class="mobile-keep" placeholder="예) Theme Brief"></div>'
      +'<div class="vs-f"><label for="vsTtl">기본 영상 제목 <small>· 영상 제목을 비우면 프로젝트 이름에 들어가요</small></label><input id="vsTtl" type="text" maxlength="80" autocomplete="off" spellcheck="false" class="mobile-keep" placeholder="예) Theme Brief"></div>'
@@ -45520,7 +45539,7 @@ function vsEdOpen(id){
   const m=ensureVsModal(); S.vsEdit=v?v.id:null;
   $('vsHeadT').textContent=v?'🎞 영상 스타일 설정 — '+v.name:'🎞 영상 스타일 추가';
   vsEdFill(v||{name:'',title:'',desc:'',brand:'',topic:{on:false,label:'',ph:''},rules:'',fin:true,secs:['indices','eco','market','theme'],parts:[],close:{on:true,text:''}});
-  $('vsIdea').value=''; vsErr(''); $('vsBody').scrollTop=0;
+  $('vsIdea').value=''; vsErr(''); $('vsBody').scrollTop=0; S.vsTplSig=''; vsTplMark(''); vsTplHave();   /* v200: 템플릿 표시 처음으로 · 이미 만든 것에 '✓ 있음' */
   m.classList.add('open'); setTimeout(()=>{ try{ $('vsName').focus(); }catch(e){} },40);
 }
 function vsEdClose(){
@@ -45532,8 +45551,8 @@ function vsEdAct(act,btn){
   if(act==='close') vsEdClose();
   else if(act==='save') vsEdSave();
   else if(act==='ai') vsAiSuggest();
-  else if(act==='tplTheme') vsTplTheme();
-  else if(act==='clear'){ if(!vsEdDirty()||confirm('입력한 내용을 모두 비울까요?')){ vsEdFill({name:'',title:'',desc:'',brand:'',topic:{on:false,label:'',ph:''},rules:'',fin:true,secs:[],parts:[],close:{on:true,text:''}}); vsErr(''); } }
+  else if(act==='tpl') vsTplPick(btn.getAttribute('data-t'));   /* v200: 주제별 기본 템플릿 카드 */
+  else if(act==='clear'){ if(!vsEdDirty()||confirm('입력한 내용을 모두 비울까요?')){ vsEdFill({name:'',title:'',desc:'',brand:'',topic:{on:false,label:'',ph:''},rules:'',fin:true,secs:[],parts:[],close:{on:true,text:''}}); vsErr(''); vsTplMark(''); S.vsTplSig=''; } }
   else if(act==='partAdd'){ const l=vsPartsRead(); if(l.length<VS_MAXP){ l.push({title:'',focus:'',w:15}); vsPartsPaint(l); const t=$('vsParts').querySelectorAll('.vs-pt'); if(t.length) t[t.length-1].focus(); } }
   else if(act==='partUp'||act==='partDn'||act==='partDel'){
     const row=btn.closest('.vs-p'), i=+row.getAttribute('data-i'), l=vsPartsRead();
@@ -45586,20 +45605,324 @@ function vsAct(act){
   else if(act==='vsDel'){ const v=vsOf(($('scVStyle')||{}).value); if(vsIs(v)) vsDel(v.id); }
 }
 
-/* ── 시작점 ① Theme Brief 예시 ── */
-const VS_TPL_THEME={name:'Theme Brief',title:'Theme Brief',brand:'테마 브리핑',desc:'한 가지 테마를 깊이 있게 분석해 핵심 내용을 소개하는 영상(시황·핵심 요약 없이)',
+/* ═════════ v200 (2026-11-18) — 영상 스타일 '주제별 기본 템플릿' 15종 ═════════
+   요청: 영상 스타일을 새로 추가할 때 고를 수 있는 주제별 기본 템플릿 — ① 기업 실적발표 분석(분석·평가·전망) ② 사회적 이슈(전쟁·질병·국가의 큰 변화 …)의 본질·배경·원인·파장·증시 영향
+         ③ 그 밖에 증시 시황 채널이 쓸 만한 10가지 이상을 골라서 작업할 수 있게.
+   · 템플릿은 코드 안의 목록(VS_TPLS) — 스타일 추가/설정 창의 '시작하기'에서 카드를 누르면 ①~⑤ 칸이 한꺼번에 채워지고(이름·구성·지침 모두 고칠 수 있음), [저장]을 눌러야 내 스타일이 됨.
+     저장된 뒤에는 직접 만든 스타일과 똑같이 동작(vsClean 이 아는 칸만 저장) — 템플릿 자체는 저장되지 않으니 새 템플릿을 더해도 옛 스타일은 그대로.
+   · 항목: {k 열쇠, g 묶음 번호(VS_TPL_GROUPS), ic 아이콘, sub 카드의 한 줄, use 쓰는 법 안내(창에서만 보임), st 스타일 정의(name·title·brand·desc·topic·fin·rules·secs·parts·close)}
+   · 자료는 리포트의 텍스트 박스(시황 분석·시황 분석_Detail·테마 분석 …)에서 옴 — 각 템플릿의 secs 는 그중 그 영상에 쓸 만한 것. 주제를 켠 템플릿은 만들 때 주제 입력칸이 생김.
+   · 부 제목에는 ·(가운뎃점)·~ 를 쓰지 않음(영상 스튜디오 splitOpen 이 '오프닝 · 이름' 꼴로 읽음) / 수치는 [원자료]에 있는 것만 말하게 하는 규칙은 보고서·챕터 요청에 항상 들어 있어, 각 지침은 그 영상만의 관점·순서·주의점 위주
+   검색: VS_TPLS · VS_TPL_GROUPS · vsTplHtml · vsTplPick · vsTplMark · vsTplName · vsTplHave ── */
+const vsRl=(...a)=>a.join('\n');
+const VS_TPL_GROUPS=['기업·종목','이슈·거시','시황·전망','테마·학습'];
+const VS_TPLS=[
+/* ── 기업·종목 ── */
+{k:'earnings',g:0,ic:'📊',sub:'기업 실적발표 분석·평가·전망',
+ use:'분석할 실적 자료(보도자료 수치·시장 예상치·컨퍼런스콜 요약)와 평가 글을 리포트의 텍스트 박스(시황 분석·시황 분석_Detail 등)에 넣어 두고, 만들 때 ‘분석할 기업·분기’에 기업과 분기를 적으세요. 자료에 있는 수치만 말해요.',
+ st:{name:'Earnings Brief',title:'Earnings Brief',brand:'실적 브리핑',desc:'기업 실적발표 결과를 분석·평가하고 앞으로의 전망까지 짚어 주는 영상',
+  topic:{on:true,label:'분석할 기업·분기',ph:'엔비디아 2026 3분기 실적'},fin:true,
+  rules:vsRl('이 영상은 증권 전문가가 한 기업의 실적발표 결과를 분석하고 평가하고 전망하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [분석할 기업·분기]로 정한 기업의 이번 실적발표 하나에 끝까지 집중하세요. 오늘의 지수·경제 일정·다른 종목 이야기는 이 실적과 직접 이어질 때만 짧게 언급하세요.',
+   '- 수치(매출·영업이익·순이익·EPS·마진·가이던스·시장 예상치·전년 동기와 전 분기 대비 증감)는 [원자료]에 있는 것만 말하고, 없으면 지어내지 말고 "자료에 없음"이라고 밝히세요. 시장 예상치(컨센서스)가 자료에 있으면 실제 결과와 반드시 비교해 상회·부합·하회를 분명히 말하세요.',
+   '- 숫자를 나열하지 말고 "무엇이 좋았고 무엇이 아쉬웠나 → 왜 그랬나 → 앞으로 무엇을 봐야 하나" 순서로 해석하세요. 일회성 요인과 구조적(앞으로도 이어질) 변화를 구분하세요.',
+   '- 평가는 단정하지 말고 긍정 요인과 부정 요인을 균형 있게, 전망은 가이던스와 업황을 근거로 낙관·기본·비관 시나리오로 제시하세요.',
+   '- 발표 직후 주가 반응이 자료에 있으면 소개하되, 매수·매도 권유나 목표주가는 말하지 마세요.'),
+  secs:['market','marketD','theme','themeD','watch','radar','tech','warren','strategy'],
+  parts:[{title:'실적 한눈에 보기',focus:'이번 실적발표의 핵심 결과를 먼저 정리 — 매출·영업이익·순이익(또는 EPS)을 시장 예상치와 비교해 상회·부합·하회로 짚고, 전년 동기·전 분기 대비 증감을 소개한 뒤 이번 발표를 한 문장으로 평가',w:16},
+   {title:'사업 부문별 성적표',focus:'실적을 이끈 사업 부문·지역·제품별 성적을 풀어서 설명하고, 좋았던 부분과 부진했던 부분을 구분 — 마진 변화와 일회성 요인(환율·충당금·재고 등)이 있으면 함께 설명',w:22},
+   {title:'경영진 발언과 가이던스',focus:'컨퍼런스콜·보도자료에서 나온 경영진의 핵심 발언과 다음 분기·연간 가이던스(실적 전망)를 소개하고, 시장의 기대와 어떻게 다른지 짚음',w:20},
+   {title:'시장 반응과 평가',focus:'발표 직후의 주가·거래 반응과 시장·애널리스트의 평가를 소개하고, 이번 실적을 긍정 요인과 부정 요인으로 나누어 균형 있게 평가',w:16},
+   {title:'전망과 체크포인트',focus:'가이던스와 업황을 근거로 낙관·기본·비관 시나리오를 제시하고, 앞으로 확인할 지표·일정(다음 실적 발표, 신제품, 규제 등)을 체크리스트로 정리(종목 추천 없이)',w:16}],
+  close:{on:true,text:'이번 실적의 핵심을 한 문장으로 정리 → 앞으로 지켜볼 지표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'stock',g:0,ic:'🔎',sub:'한 종목 사업·실적·가치·리스크',
+ use:'기업 정보·실적·밸류에이션 자료를 리포트의 텍스트 박스(테마 분석_Detail·관심 종목 등)에 넣어 두고, ‘분석할 종목’에 종목 이름을 적으세요. 자료에 없는 수치는 "자료에 없음"으로 말해요.',
+ st:{name:'Stock Deep Dive',title:'Stock Deep Dive',brand:'종목 딥다이브',desc:'한 종목(기업)의 사업·실적·가치·리스크를 깊이 있게 분석해 소개하는 영상',
+  topic:{on:true,label:'분석할 종목',ph:'엔비디아'},fin:true,
+  rules:vsRl('이 영상은 하나의 종목(기업)을 사업 → 실적 → 가치 → 경쟁 → 리스크 순서로 깊이 있게 분석해 소개하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [분석할 종목] 하나에 끝까지 집중하고, 시황·지수·다른 종목은 이 종목과 직접 이어질 때만 짧게 언급하세요.',
+   '- 이 기업이 "어떻게 돈을 버는지"를 시청자가 이해하도록 사업 구조를 쉽게 풀고, 숫자(매출·이익·성장률·밸류에이션 지표)는 [원자료]에 있는 것만 말하세요. 없으면 "자료에 없음"이라고 밝히세요.',
+   '- "좋은 기업"과 "좋은 주식(가격)"을 구분하세요. 기업의 경쟁력을 설명한 뒤, 지금 가격이 그것을 이미 반영했는지는 밸류에이션 자료가 있을 때만 이야기하세요.',
+   '- 장점만 말하지 말고 약점·경쟁 위협·반대 논리를 같은 비중으로 소개하세요.',
+   '- 매수·매도 의견이나 목표주가는 말하지 말고, 앞으로 확인할 지표와 이벤트를 체크리스트로 제시하세요.'),
+  secs:['market','marketD','theme','themeD','watch','radar','tech','warren','strategy'],
+  parts:[{title:'기업 한눈에 보기',focus:'이 기업이 무엇을 하는 회사인지, 어떻게 돈을 버는지(사업 구조·매출 구성·핵심 제품)를 쉽게 소개',w:14},
+   {title:'실적과 성장성',focus:'최근 실적 흐름과 성장 동력을 풀어서 설명하고, 성장이 얼마나 오래 이어질 수 있는지 점검',w:20},
+   {title:'밸류에이션과 주가',focus:'주가가 지금 어떤 수준인지(PER·PBR 같은 지표, 과거·동종업계와의 비교)를 자료가 있는 만큼만 소개 — 비싼지 싼지는 단정하지 않음',w:16},
+   {title:'경쟁력과 경쟁 구도',focus:'경쟁사와 비교한 강점과 약점, 진입 장벽과 시장 지위를 짚음',w:18},
+   {title:'리스크와 체크포인트',focus:'약점·반대 논리·외부 변수를 균형 있게 짚고, 앞으로 확인할 지표·이벤트를 정리(매수·매도 의견 없이)',w:18}],
+  close:{on:true,text:'이 종목의 핵심을 한 문장으로 정리 → 앞으로 확인할 지표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'deal',g:0,ic:'🤝',sub:'상장·인수합병·분할·증자 이벤트',
+ use:'발표 내용(조건·금액·일정)과 관련 기사·분석을 리포트의 텍스트 박스에 넣어 두고, ‘다룰 기업 이벤트’에 이벤트를 한 줄로 적으세요.',
+ st:{name:'Deal Brief',title:'Deal Brief',brand:'기업 이벤트 브리핑',desc:'신규 상장·인수합병·분할·유상증자 같은 기업 이벤트의 내용과 영향을 분석하는 영상',
+  topic:{on:true,label:'다룰 기업 이벤트',ph:'A사의 B사 인수 발표'},fin:true,
+  rules:vsRl('이 영상은 신규 상장(IPO)·인수합병(M&A)·분할·유상증자·자사주 매입 같은 기업 이벤트가 발표됐을 때 그 내용과 주주·시장에 미치는 영향을 분석하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [다룰 기업 이벤트] 하나에 집중하고, 이벤트가 무엇이고(구조·조건·규모·일정) 왜 하는지(배경·목적)를 먼저 정확히 전하세요.',
+   '- 금액·지분율·가격·일정·조건은 [원자료]에 있는 것만 말하고, 없으면 "자료에 없음"이라고 하세요. 확정된 사항과 협의·승인 중인 사항을 구분하세요.',
+   '- 이벤트가 기존 주주(희석·프리미엄·배당)와 관련 기업·업종에 어떤 영향을 주는지 구체적으로 설명하세요.',
+   '- 장밋빛 전망만 말하지 말고 성사 여부·규제 승인·통합 위험·자금 조달 같은 리스크를 함께 짚으세요.',
+   '- 매수·매도 의견은 말하지 말고, 앞으로의 승인·주주총회·상장 일정 같은 확인 포인트를 알려 주세요.'),
+  secs:['market','marketD','theme','themeD','watch','radar','warren','strategy'],
+  parts:[{title:'무슨 일이 발표됐나',focus:'이벤트의 핵심 내용을 한눈에 정리 — 누가·무엇을·언제 발표했는지와 지금 어느 단계(발표·협의·승인·완료)인지',w:14},
+   {title:'거래의 구조와 조건',focus:'규모·가격·지분·지급 방식(현금·주식)·일정 같은 핵심 조건을 쉬운 말로 풀어서 설명',w:20},
+   {title:'배경과 목적',focus:'왜 이 이벤트를 하는지(성장 전략·자금 조달·구조 개편·경쟁 대응)를 당사자의 입장에서 설명',w:18},
+   {title:'주주와 시장에 미치는 영향',focus:'기존 주주(희석·프리미엄·배당)와 관련 기업·업종에 미치는 영향, 발표 직후 시장 반응을 짚음',w:24},
+   {title:'리스크와 앞으로의 일정',focus:'성사 여부·규제 승인·통합 위험·자금 조달 같은 리스크와, 앞으로 확인할 승인·주주총회·상장 일정을 정리(종목 추천 없이)',w:16}],
+  close:{on:true,text:'이벤트의 핵심과 시장에 주는 의미를 한 문장으로 정리 → 앞으로 확인할 일정 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'etf',g:0,ic:'🧺',sub:'ETF 구성·성과·비교',
+ use:'ETF 소개 자료(추종 지수·구성 종목·보수·수익률)를 리포트의 텍스트 박스에 넣어 두고, ‘다룰 ETF’에 이름을 적으세요(비교하려면 "A와 B 비교").',
+ st:{name:'ETF Brief',title:'ETF Brief',brand:'ETF 브리핑',desc:'ETF의 구성·성과·특징을 분석하고 비슷한 ETF와 비교해 활용법을 알려 주는 영상',
+  topic:{on:true,label:'다룰 ETF',ph:'QQQ와 SCHD 비교'},fin:true,
+  rules:vsRl('이 영상은 하나(또는 두세 개 비교)의 ETF를 구성·성과·특징·활용법 중심으로 소개하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [다룰 ETF]에 집중하고, 이 ETF가 무엇을 사서(추종 지수·구성 종목) 어떻게 수익이 나는 상품인지를 초보자도 알도록 쉽게 설명하세요.',
+   '- 수익률·보수·배당률·순자산·구성 비중 같은 수치는 [원자료]에 있는 것만 말하고, 없으면 지어내지 말고 "자료에 없음"이라고 하세요. 과거 수익률이 미래를 보장하지 않는다는 점을 한 번 밝히세요.',
+   '- 비교할 ETF가 있으면 같은 기준(구성·보수·성과·변동성·배당)으로 나란히 비교하고, 어떤 투자 목적에 어울리는지로 정리하세요.',
+   '- 장점만 말하지 말고 한계(쏠림·변동성·환율·세금·괴리율·추적 오차)를 함께 짚으세요.',
+   '- 어떤 ETF를 사라고 권하지 말고, 투자자가 스스로 점검할 질문을 체크리스트로 제시하세요.'),
+  secs:['market','marketD','theme','themeD','watch','tech','strategy'],
+  parts:[{title:'ETF 한눈에 보기',focus:'이 ETF가 어떤 상품인지(추종 지수·운용사·보수·규모)와 어떤 투자자를 위한 상품인지 한눈에 정리',w:14},
+   {title:'구성 종목과 투자 대상',focus:'상위 보유 종목·업종 비중·집중도 등 안에 무엇이 담겨 있는지 풀어서 설명',w:20},
+   {title:'성과와 특징',focus:'수익률·변동성·배당 같은 성과와 특징을 자료에 있는 만큼만 소개하고, 과거 성과가 미래를 보장하지 않는다는 점을 짚음',w:20},
+   {title:'비교와 활용법',focus:'비슷한 ETF와 같은 기준으로 나란히 비교하고, 포트폴리오에서 어떤 역할(성장·배당·분산)에 어울리는지 정리',w:24},
+   {title:'한계와 체크포인트',focus:'쏠림·변동성·환율·세금·괴리율·추적 오차 같은 한계와, 투자 전에 스스로 점검할 질문을 정리(종목 추천 없이)',w:14}],
+  close:{on:true,text:'ETF의 핵심 특징을 한 문장으로 정리 → 투자 전에 스스로 점검할 질문 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+/* ── 이슈·거시 ── */
+{k:'issue',g:1,ic:'🌍',sub:'전쟁·감염병 등 이슈의 증시 영향',
+ use:'이슈의 경과·배경·시장 반응 자료를 리포트의 텍스트 박스(시황 분석_Detail 등)에 넣어 두고, ‘다룰 이슈’에 한 줄로 적으세요. 무슨 일인가 → 왜 일어났나 → 경제와 사회로 번지는 경로 → 시장 반응 → 업종별 영향 → 시나리오 순서로 풀어 줘요. 자료에 없는 전개는 지어내지 않아요.',
+ st:{name:'Issue Brief',title:'Issue Brief',brand:'이슈 브리핑',desc:'전쟁·감염병·국가의 큰 변화 같은 이슈가 왜 일어났고 증시로 어떻게 번지는지 짚는 영상',
+  topic:{on:true,label:'다룰 이슈',ph:'중동 확전과 국제유가 급등'},fin:true,
+  rules:vsRl('이 영상은 주식시장에 영향을 줄 수 있는 사회적 이슈(전쟁·감염병·재난·특정 국가의 정치·경제 변화 등)가 터졌을 때, 이슈가 무엇이고 왜 일어났는지 그리고 증시로 어떻게 번지는지를 차분히 해설하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [다룰 이슈] 하나에 끝까지 집중하세요. 시청자가 이슈 자체를 먼저 이해하게 한 뒤(무슨 일인가 → 왜 일어났나), 충격이 경제와 시장으로 번지는 경로 → 시장 반응 → 업종별 영향 → 앞으로의 시나리오 순서로 이어 가세요.',
+   '- 사건·날짜·피해 규모·발언 같은 사실은 [원자료]에 있는 것만 말하고, 없는 전개를 지어내지 마세요. 확인되지 않은 내용은 "알려진 바로는", "보도에 따르면"처럼 불확실함을 밝히세요.',
+   '- 어느 한쪽 편을 들거나 선정적으로 묘사하지 말고, 피해자와 당사자에 대한 존중을 지키며 시장에 미치는 영향 중심으로 말하세요.',
+   '- 이 이슈가 일시적 소음인지 구조를 바꾸는 충격인지를 규모·지속 기간·경제로 번지는 경로를 기준으로 가늠하고, 시장이 이미 얼마나 반영했는지를 함께 짚으세요.',
+   '- 증시 영향은 단기 충격(공포·변동성)과 중장기 영향(공급망·물가·금리·기업 실적)으로 나누어 설명하세요. 과거 비슷한 사례는 널리 알려진 사실만 말하고 구체적인 수치는 원자료에 있을 때만 쓰세요.',
+   '- 전망은 확정 예측이 아니라 시나리오와 각 시나리오에서 확인할 신호로 제시하세요.'),
+  secs:['indices','eco','market','marketD','theme','themeD','watch','warren','strategy'],
+  parts:[{title:'무슨 일이 벌어졌나',focus:'이슈의 핵심 사실을 시간 순서대로 간결하게 정리 — 언제·어디서·누가·무엇을 했는지, 지금 어느 단계인지, 확인된 사실과 아직 불확실한 부분을 구분하고 이 이슈를 한 문장으로 정의',w:14},
+   {title:'왜 일어났나',focus:'이 일이 벌어지게 된 오랜 구조적 배경과 지금 터지게 만든 직접적인 도화선을 나누어 설명하고, 당사자(국가·기업·기관)의 입장과 이해관계를 균형 있게 소개 — 확인된 원인과 추정에 그치는 원인을 구분',w:16},
+   {title:'경제와 사회로 번지는 경로',focus:'이슈의 규모와 지속 기간을 가늠하고, 충격이 정치·사회(여론·정책 대응·이동과 생활의 변화)에서 실물경제(공급망·원자재·물가·소비·고용)와 금융(금리·환율·위험 선호)으로 번지는 경로를 순서대로 풀어서 설명 — 일시적 소음인지 구조를 바꾸는 충격인지 판단하는 기준을 함께 제시',w:20},
+   {title:'시장은 어떻게 반응했나',focus:'지금까지의 금융시장 반응(주가·변동성·유가·금·환율·금리)을 짚고, 시장이 이 이슈를 얼마나 이미 반영했는지 점검 — 과거 비슷한 사례가 있으면 널리 알려진 사실만 인용해 공통점과 이번의 차이를 설명(구체적인 수치는 원자료에 있을 때만)',w:16},
+   {title:'수혜와 피해 업종',focus:'영향이 엇갈리는 업종·기업군을 이유(비용·수요·공급망·정책)와 함께 설명하고, 단기 충격과 중장기 영향을 나누어 짚음 — 원자료에 이름이 나온 업종·기업만 사례로 소개',w:20},
+   {title:'시나리오와 체크 신호',focus:'앞으로 전개될 시나리오(확산·장기화·진정)별로 시장이 어떻게 움직일 수 있는지와, 시나리오마다 확인할 신호·일정(발표·회의·지표)을 정리하고 투자자가 지켜볼 리스크 관리 관점을 제시(종목 추천 없이)',w:16}],
+  close:{on:true,text:'이슈의 핵심과 시장에 주는 의미를 한 문장으로 정리 → 앞으로 확인할 신호 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'policy',g:1,ic:'🏛',sub:'정책·규제·선거의 증시 영향',
+ use:'정책 발표문·관련 기사·시장 반응 자료를 리포트의 텍스트 박스에 넣어 두고, ‘다룰 정책·사건’에 한 줄로 적으세요. 확정된 내용과 협상 중인 내용을 구분해 말해요.',
+ st:{name:'Policy Brief',title:'Policy Brief',brand:'정책 브리핑',desc:'정부 정책·규제·관세·선거 같은 제도 변화가 증시에 미치는 영향을 분석하는 영상',
+  topic:{on:true,label:'다룰 정책·사건',ph:'미국 반도체 관세 인상'},fin:true,
+  rules:vsRl('이 영상은 정부 정책·규제·관세·세제·선거 같은 제도적 변화가 발표됐을 때 그 내용과 증시에 미치는 영향을 분석하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [다룰 정책·사건] 하나에 집중하세요. 무엇이 결정(발표)됐고 언제부터 누구에게 적용되는지를 먼저 정확히 전하고, 확정된 내용과 협상·입법 중인 내용을 반드시 구분하세요.',
+   '- 정책의 내용·일정·수치(세율·관세율·규모 등)는 [원자료]에 있는 것만 말하고, 없으면 "자료에 없음"이라고 하세요.',
+   '- 정당·국가·정치 성향에 대한 가치 판단은 하지 말고, 정책의 의도와 경제적 효과를 중립적으로 설명하세요.',
+   '- "누가 이득을 보고 누가 손해를 보나"를 업종·기업군·국가별로 근거와 함께 설명하고, 한국 시장과 투자자에게 주는 의미까지 연결하세요.',
+   '- 전망은 확정이 아니라 시나리오(원안 시행·완화·지연·철회)별 시장 반응으로 제시하세요.'),
+  secs:['indices','eco','market','marketD','theme','themeD','watch','warren','strategy'],
+  parts:[{title:'정책의 핵심 내용',focus:'무엇이 발표·결정됐는지 핵심 내용과 시행 시기·적용 대상을 정리 — 확정된 것과 협상·입법 진행 중인 것을 구분',w:16},
+   {title:'배경과 의도',focus:'왜 지금 이 정책이 나왔는지(정치·경제 배경, 당사자의 목적)와 과거 비슷한 정책이 시장에 준 영향을 짚음',w:16},
+   {title:'수혜와 피해',focus:'업종·기업군·국가별로 득을 보는 쪽과 손해를 보는 쪽을 이유(비용·수요·경쟁력·공급망)와 함께 설명하고 한국 시장에 주는 의미를 연결',w:24},
+   {title:'시장 반응과 시나리오',focus:'발표 직후 시장 반응을 짚고, 앞으로 원안 시행·완화·지연 같은 시나리오별로 시장이 어떻게 움직일 수 있는지 설명',w:22},
+   {title:'앞으로의 일정과 체크포인트',focus:'후속 일정(협상·표결·시행일)과 확인할 신호, 투자자가 유의할 점을 정리(종목 추천 없이)',w:16}],
+  close:{on:true,text:'정책의 핵심과 시장에 주는 의미를 한 문장으로 정리 → 앞으로 확인할 일정 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'macro',g:1,ic:'🏦',sub:'금리·물가·고용·중앙은행',
+ use:'발표 수치·시장 예상치·중앙은행 발언 자료와 주요 지수·경제 일정을 리포트에 넣어 두고, ‘다룰 지표·이벤트’에 적으세요. 예상치와 비교해 의미를 풀어 줘요.',
+ st:{name:'Macro Brief',title:'Macro Brief',brand:'거시경제 브리핑',desc:'금리·물가·고용·환율과 중앙은행 결정이 증시에 주는 의미를 쉽게 풀어 주는 영상',
+  topic:{on:true,label:'다룰 지표·이벤트',ph:'11월 FOMC 기준금리 결정'},fin:true,
+  rules:vsRl('이 영상은 거시경제 지표(금리·물가·고용·성장률·환율)와 중앙은행 결정(FOMC·한국은행 등)이 나왔을 때 그 의미와 증시에 미치는 영향을 쉽게 풀어 주는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [다룰 지표·이벤트] 하나에 집중하고, 지표의 이름이 아니라 "그래서 경제와 시장에 무슨 뜻인가"를 중심으로 설명하세요.',
+   '- 발표 수치·시장 예상치·이전 수치는 [원자료]에 있는 것만 말하세요. 예상치와 비교해 서프라이즈(상회·부합·하회) 여부를 분명히 하고, 없으면 "자료에 없음"이라고 하세요.',
+   '- 어려운 경제 용어는 처음 나올 때 한 문장으로 풀어 설명하고, 일상의 비유를 써도 좋습니다.',
+   '- 중앙은행 결정은 발표문·발언에 담긴 방향(매파적·비둘기파적)을 중심으로 해석하되, 앞으로의 금리 경로를 단정하지 말고 시나리오로 말하세요.',
+   '- 시장 영향은 금리·환율·채권·주식 순서로 연결하고, 주식은 성장주·가치주·업종별로 영향이 어떻게 갈리는지 근거와 함께 설명하세요.'),
+  secs:['indices','eco','market','marketD','theme','warren','strategy','tech'],
+  parts:[{title:'발표 한눈에 보기',focus:'이번 지표·결정의 결과를 시장 예상치·이전 수치와 비교해 한눈에 정리하고, 시장에 서프라이즈가 있었는지 짚음',w:14},
+   {title:'이 지표가 말하는 경제',focus:'지표의 의미를 쉬운 말로 풀고, 최근 흐름(추세)과 함께 지금 경제가 어떤 국면인지 설명',w:20},
+   {title:'중앙은행의 시각',focus:'발표문·기자회견 발언의 핵심과 정책 방향(매파·비둘기파)을 해석하고, 앞으로의 정책 경로에 대한 단서를 시나리오로 정리',w:20},
+   {title:'시장에 미치는 영향',focus:'금리·환율·채권·주식(성장주·가치주·업종별)에 미치는 영향을 차례로 연결해 설명',w:24},
+   {title:'다음 일정과 시나리오',focus:'다음 발표·회의 일정과 앞으로 시장이 주목할 신호를 시나리오별로 정리(종목 추천 없이)',w:14}],
+  close:{on:true,text:'이번 지표·결정의 의미를 한 문장으로 정리 → 다음에 주목할 발표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'commodity',g:1,ic:'🛢',sub:'유가·금·달러·국채 해설',
+ use:'가격 흐름과 원인을 다룬 자료(뉴스·분석)를 리포트의 텍스트 박스에 넣어 두고, ‘다룰 자산’에 적으세요. 가격·재고 같은 수치는 자료에 있는 것만 말해요.',
+ st:{name:'Commodity Brief',title:'Commodity Brief',brand:'원자재 브리핑',desc:'유가·금·구리·달러·국채 같은 원자재·환율·채권의 움직임과 증시 영향을 해설하는 영상',
+  topic:{on:true,label:'다룰 자산',ph:'국제유가(WTI) 급등'},fin:true,
+  rules:vsRl('이 영상은 원자재(유가·금·구리·곡물 등)·환율·채권처럼 주식이 아닌 자산이 크게 움직였을 때, 그 이유와 증시에 미치는 영향을 해설하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [다룰 자산] 하나에 집중하고, 가격이 어떻게 움직였는지보다 왜 움직였는지(수요·공급·정책·달러·금리·투기 자금)를 중심으로 설명하세요.',
+   '- 가격·등락률·재고·생산량 같은 수치는 [원자료]에 있는 것만 말하고, 없으면 지어내지 말고 "자료에 없음"이라고 하세요.',
+   '- 이 자산이 오르내릴 때 이득을 보는 업종과 손해를 보는 업종을 근거와 함께 연결하세요(예: 유가 → 정유·항공·화학, 금 → 안전자산 선호).',
+   '- 달러·금리·주가와의 관계는 "대체로 그런 경향이 있다"고 표현하고 항상 그렇다고 단정하지 마세요.',
+   '- 전망은 가격 목표가 아니라 가격을 움직일 변수와 시나리오로 제시하세요.'),
+  secs:['indices','eco','market','marketD','theme','themeD','tech','warren','strategy'],
+  parts:[{title:'가격 움직임 한눈에',focus:'이 자산의 최근 가격 움직임(방향·폭·속도)을 자료에 있는 수치로 한눈에 정리',w:14},
+   {title:'움직임의 원인',focus:'수요·공급·정책·달러·금리·투기 자금 등 가격을 움직인 요인을 중요한 순서대로 풀어서 설명',w:22},
+   {title:'증시와 업종에 미치는 영향',focus:'이 자산이 오르내릴 때 득을 보는 업종과 손해를 보는 업종, 물가·금리를 거쳐 증시 전체에 미치는 영향을 근거와 함께 설명',w:24},
+   {title:'다른 자산과의 연결',focus:'달러·금리·주가 등 다른 자산과 어떻게 얽혀 움직이는지를 "대체로 그런 경향"으로 설명',w:16},
+   {title:'앞으로의 변수와 시나리오',focus:'앞으로 가격을 움직일 변수(발표·회의·계절·정책)와 시나리오별 시장 영향을 정리(종목 추천 없이)',w:16}],
+  close:{on:true,text:'이 자산이 움직인 이유와 증시에 주는 의미를 한 문장으로 정리 → 앞으로 가격을 움직일 변수 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+/* ── 시황·전망 ── */
+{k:'outlook',g:2,ic:'🔭',sub:'이번 주 일정·변수·시나리오',
+ use:'주제 입력 없이 만들어요 — 리포트의 경제 일정·주요 지수·시황 분석·테마 분석 등을 채워 두면 그 내용으로 이번 주를 전망해요. 일정은 경제 일정에 있는 것만 말해요.',
+ st:{name:'Weekly Outlook',title:'Weekly Outlook',brand:'주간 전망',desc:'이번 주 증시의 핵심 일정과 변수를 짚고 시나리오별 대응 포인트를 정리하는 영상',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 앞으로 한 주의 증시를 전망하는 영상입니다. 지난주 정리는 짧게, 이번 주의 일정과 변수에 무게를 두세요.',
+   '- 핵심 일정(경제 지표·중앙은행 일정·주요 기업 실적·이벤트)은 [원자료]의 경제 일정과 분석 글에 있는 것만 날짜·시간과 함께 말하고, 없는 일정을 지어내지 마세요.',
+   '- 일정을 모두 나열하지 말고 시장에 영향이 큰 3~5개를 골라 "무엇이 나오고, 결과에 따라 시장이 어떻게 반응할 수 있는지"를 설명하세요.',
+   '- 전망은 하나의 예측이 아니라 시나리오(낙관·기본·비관)와 각 시나리오에서 확인할 신호로 제시하고, 확정적인 표현을 쓰지 마세요.',
+   '- 주목할 업종·테마는 그 이유(일정·실적·정책)를 함께 설명하세요.',
+   '- 특정 종목의 매수·매도를 권하지 말고, 투자자가 점검할 체크리스트로 마무리하세요.'),
+  secs:['indices','eco','market','theme','marketD','themeD','watch','warren','radar','tech','strategy'],
+  parts:[{title:'지난주 돌아보기',focus:'지난 한 주의 시장 흐름을 핵심만 짧게 — 이번 주 전망의 출발점이 되는 부분 위주',w:12},
+   {title:'이번 주 핵심 일정',focus:'이번 주 시장에 영향이 큰 일정 3~5개(경제 지표·중앙은행·주요 실적·이벤트)를 날짜순으로 짚고 결과에 따른 시장 반응을 설명',w:24},
+   {title:'시장을 움직일 변수',focus:'금리·환율·유가·실적·정책 등 이번 주 시장 방향을 좌우할 변수를 우선순위로 설명',w:20},
+   {title:'주목할 업종과 테마',focus:'이번 주 주목할 업종·테마와 그 이유(일정·실적·정책)를 소개',w:18},
+   {title:'시나리오와 대응 포인트',focus:'낙관·기본·비관 시나리오와 각 시나리오에서 확인할 신호를 정리하고, 체크리스트로 마무리(종목 추천 없이)',w:16}],
+  close:{on:true,text:'이번 주 가장 중요한 일정과 시나리오를 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'review',g:2,ic:'📅',sub:'지난 한 주 시장 결산',
+ use:'주제 입력 없이 만들어요 — 한 주의 주요 지수·시황 분석·테마 분석 등을 리포트에 채워 두면 그 내용으로 결산해요.',
+ st:{name:'Weekly Review',title:'Weekly Review',brand:'주간 결산',desc:'지난 한 주 증시의 성적표와 주요 이슈·강세와 약세 테마를 결산하는 영상',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 지난 한 주의 증시를 결산하는 영상입니다. 결과(성적표)보다 "왜 그렇게 움직였나"에 무게를 두세요.',
+   '- 지수·섹터·자산의 주간 등락과 수치는 [원자료]에 있는 것만 말하고, 없으면 "자료에 없음"이라고 하세요.',
+   '- 하루하루의 시황을 나열하지 말고, 한 주를 관통한 흐름과 변곡점(분위기가 바뀐 날과 그 계기)을 중심으로 이야기를 구성하세요.',
+   '- 강세·약세 테마와 종목은 이유(실적·정책·수급·이슈)와 함께 소개하고, 원자료에 이름이 나온 것만 말하세요.',
+   '- 투자 심리와 수급(외국인·기관·개인, 변동성)이 자료에 있으면 한 주의 분위기를 설명하는 데 쓰세요.',
+   '- 마지막에는 다음 주로 이어질 포인트를 짧게 정리하되, 예측은 확정하지 말고 시나리오로 말하세요.'),
+  secs:['indices','eco','market','theme','marketD','themeD','watch','warren','radar','tech','strategy'],
+  parts:[{title:'한 주 성적표',focus:'주요 지수·섹터·자산의 한 주 등락을 한눈에 정리하고, 이번 주 시장을 한 문장으로 요약',w:16},
+   {title:'시장을 움직인 이슈',focus:'한 주를 관통한 핵심 이슈 2~3개와 분위기가 바뀐 변곡점(날짜와 계기)을 이야기로 풀어서 설명',w:22},
+   {title:'강세와 약세 테마',focus:'오른 테마와 내린 테마를 이유(실적·정책·수급·이슈)와 함께 소개 — 원자료에 이름이 나온 업종·종목만',w:22},
+   {title:'수급과 투자 심리',focus:'외국인·기관·개인 수급과 변동성·심리 지표가 자료에 있으면 한 주의 분위기를 설명하는 데 활용',w:16},
+   {title:'다음 주로 이어질 포인트',focus:'다음 주로 이어질 핵심 변수와 일정을 짧게 정리하고 시나리오로 말함(종목 추천 없이)',w:14}],
+  close:{on:true,text:'한 주의 흐름을 한 문장으로 정리 → 다음 주 주목할 포인트 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'strategy',g:2,ic:'🎯',sub:'시장 국면 진단과 전략의 틀',
+ use:'시장 진단의 근거(주요 지수·시황 분석·전략 메모)를 리포트에 채워 두고, ‘전략 주제’에 적으세요. 종목 추천 없이 업종·자산군 단위의 일반론으로 말해요.',
+ st:{name:'Strategy Brief',title:'Strategy Brief',brand:'투자 전략 브리핑',desc:'지금 시장 국면을 진단하고 시나리오와 리스크 관리 원칙으로 투자 전략의 틀을 정리하는 영상',
+  topic:{on:true,label:'전략 주제',ph:'연말 포트폴리오 점검'},fin:true,
+  rules:vsRl('이 영상은 지금의 시장 국면을 진단하고 투자자가 참고할 전략의 틀(시나리오·자산 배분 아이디어·리스크 관리 원칙)을 일반론으로 정리하는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [전략 주제]에 맞춰 "지금 시장이 어떤 국면인가 → 시나리오 → 배분 아이디어 → 리스크 관리" 순서로 논리를 쌓으세요.',
+   '- 특정 종목의 매수·매도·비중 확대를 권하지 마세요. 업종·자산군 단위의 일반적인 아이디어로 말하고, 모든 아이디어에 "이런 경우에 어울리는 전략"이라는 조건을 붙이세요.',
+   '- 시장 국면 진단의 근거(지수 흐름·금리·환율·심리·실적 등)는 [원자료]에 있는 것만 사용하세요.',
+   '- 수익을 약속하는 표현을 쓰지 말고, 손실 가능성과 리스크 관리(분산·현금 비중·분할 접근·손실 기준 점검)를 반드시 포함하세요.',
+   '- 시청자마다 투자 기간과 위험 감수 정도가 다르다는 점을 밝히고, 스스로 점검할 질문으로 마무리하세요.'),
+  secs:['indices','eco','market','theme','marketD','themeD','watch','warren','radar','tech','strategy'],
+  parts:[{title:'지금 시장 국면 진단',focus:'지수 흐름·금리·환율·심리·실적 같은 근거로 지금 시장이 어떤 국면(상승·조정·횡보·위기)에 있는지 진단',w:18},
+   {title:'핵심 시나리오',focus:'앞으로 가능한 시나리오(낙관·기본·비관)와 각 시나리오가 성립하는 조건·신호를 정리',w:20},
+   {title:'자산과 업종 배분 아이디어',focus:'시나리오별로 어떤 자산군·업종이 상대적으로 유리하거나 불리할 수 있는지 일반론으로 설명(특정 종목 추천 없이, 조건부로)',w:22},
+   {title:'리스크 관리 원칙',focus:'분산·현금 비중·분할 접근·손실 기준 점검 같은 리스크 관리 원칙을 쉬운 말로 설명',w:22},
+   {title:'앞으로의 체크리스트',focus:'전략을 점검할 지표·일정과, 시청자가 자신의 투자 기간과 위험 감수 정도에 맞게 스스로 던져 볼 질문을 정리',w:12}],
+  close:{on:true,text:'지금 국면의 핵심 전략 틀을 한 문장으로 정리 → 시청자가 스스로 점검할 질문 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+/* ── 테마·학습 ── */
+{k:'theme',g:3,ic:'🧭',sub:'한 테마를 깊이 파고들기',
+ use:'테마 자료를 리포트의 ‘테마 분석’·‘테마 분석_Detail’ 박스에 넣어 두고, ‘분석할 테마’에 테마 이름을 적으세요.',
+ st:{name:'Theme Brief',title:'Theme Brief',brand:'테마 브리핑',desc:'한 가지 테마를 깊이 있게 분석해 핵심 내용을 소개하는 영상(시황·핵심 요약 없이)',
   topic:{on:true,label:'분석할 테마',ph:'AI 데이터센터 전력 인프라'},fin:true,
-  rules:'이 영상은 시황 브리핑이 아니라 하나의 테마를 깊이 파고드는 분석 영상입니다.\n- 오늘의 주요 지수·경제 일정·시황 분석은 다루지 마세요(원자료에 있어도 이 테마와 직접 이어질 때만 짧게 언급).\n- [분석할 테마]로 정한 테마 하나에 끝까지 집중하고, 개념 → 성장 동력 → 구조(밸류체인) → 핵심 기업 → 리스크 → 앞으로의 체크 포인트 순서로 한 겹씩 깊이 파고드세요.\n- 일반 투자자가 이 테마를 한 번에 이해하도록 쉬운 비유와 사례를 쓰되, 원자료에 없는 수치·실적·뉴스는 지어내지 마세요.\n- 특정 종목의 매수·매도를 권하지 말고, 원자료에 이름이 나온 기업만 사례로 언급하세요.',
+  rules:vsRl('이 영상은 시황 브리핑이 아니라 하나의 테마를 깊이 파고드는 분석 영상입니다.',
+   '- 오늘의 주요 지수·경제 일정·시황 분석은 다루지 마세요(원자료에 있어도 이 테마와 직접 이어질 때만 짧게 언급).',
+   '- [분석할 테마]로 정한 테마 하나에 끝까지 집중하고, 개념 → 성장 동력 → 구조(밸류체인) → 핵심 기업 → 리스크 → 앞으로의 체크 포인트 순서로 한 겹씩 깊이 파고드세요.',
+   '- 일반 투자자가 이 테마를 한 번에 이해하도록 쉬운 비유와 사례를 쓰되, 원자료에 없는 수치·실적·뉴스는 지어내지 마세요.',
+   '- 특정 종목의 매수·매도를 권하지 말고, 원자료에 이름이 나온 기업만 사례로 언급하세요.'),
   secs:['theme','themeD','warren','radar','tech','strategy','watch'],
   parts:[{title:'테마 개요',focus:'이 테마가 무엇인지 한눈에 정의하고, 왜 지금 주목받는지(배경·계기)를 짚어 줌',w:14},
-    {title:'성장 동력',focus:'이 테마를 키우는 핵심 동력(수요·기술·정책·자금)을 하나씩 풀어서 설명하고, 얼마나 오래 갈지 점검',w:20},
-    {title:'밸류체인과 핵심 기업',focus:'산업 구조(밸류체인)를 단계별로 나누어 설명하고, 원자료에 나온 대표 기업과 각각의 역할·강점을 소개',w:24},
-    {title:'리스크와 반대 논리',focus:'이 테마의 약점·변수·반대 논리(밸류에이션, 경쟁, 규제, 사이클)를 균형 있게 짚음',w:16},
-    {title:'투자 포인트와 체크리스트',focus:'앞으로 확인해야 할 지표·일정·신호와 시나리오별 시사점을 정리(종목 추천 없이)',w:16}],
-  close:{on:true,text:'이 테마의 핵심을 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}};
-function vsTplTheme(){
-  if(vsEdDirty()&&!confirm('지금 입력한 내용이 Theme Brief 예시로 바뀌어요. 계속할까요?')) return;
-  vsEdFill(JSON.parse(JSON.stringify(VS_TPL_THEME))); vsErr('Theme Brief 예시를 채웠어요 — 이름·구성·지침을 내 스타일에 맞게 고친 뒤 [저장]을 누르세요.',true);
+   {title:'성장 동력',focus:'이 테마를 키우는 핵심 동력(수요·기술·정책·자금)을 하나씩 풀어서 설명하고, 얼마나 오래 갈지 점검',w:20},
+   {title:'밸류체인과 핵심 기업',focus:'산업 구조(밸류체인)를 단계별로 나누어 설명하고, 원자료에 나온 대표 기업과 각각의 역할·강점을 소개',w:24},
+   {title:'리스크와 반대 논리',focus:'이 테마의 약점·변수·반대 논리(밸류에이션, 경쟁, 규제, 사이클)를 균형 있게 짚음',w:16},
+   {title:'투자 포인트와 체크리스트',focus:'앞으로 확인해야 할 지표·일정·신호와 시나리오별 시사점을 정리(종목 추천 없이)',w:16}],
+  close:{on:true,text:'이 테마의 핵심을 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'sector',g:3,ic:'🏭',sub:'업종 업황·구조·주요 기업',
+ use:'업황·기업 자료를 리포트의 ‘테마 분석’ 박스 등에 넣어 두고, ‘분석할 업종’에 업종을 적으세요. 업종의 사이클이 어디쯤인지를 중심으로 풀어 줘요.',
+ st:{name:'Sector Brief',title:'Sector Brief',brand:'업종 브리핑',desc:'한 업종(산업)의 업황·경쟁 구조·주요 기업·리스크를 짚어 주는 영상',
+  topic:{on:true,label:'분석할 업종',ph:'반도체'},fin:true,
+  rules:vsRl('이 영상은 하나의 업종(산업)을 업황 → 구조 → 주요 기업 → 리스크 순서로 짚어 주는 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [분석할 업종] 하나에 집중하고, 지금 이 업종이 사이클의 어디쯤(회복·확장·정점·둔화)에 있는지를 중심 질문으로 삼으세요.',
+   '- 업황은 수요·공급·가격·재고·정책 같은 핵심 변수를 구분해서 쉬운 말로 풀어 주세요. 수치는 [원자료]에 있는 것만 말하고, 없으면 "자료에 없음"이라고 하세요.',
+   '- 주요 기업은 원자료에 이름이 나온 곳만 사례로 소개하고, 업종 안에서 역할(수혜 구조)이 어떻게 다른지 설명하세요.',
+   '- 호재만 말하지 말고 업종 고유의 약점(사이클 변동성·규제·경쟁·원가)과 반대 논리를 같은 비중으로 짚으세요.',
+   '- 특정 종목의 매수·매도를 권하지 말고, 업황을 판단할 때 앞으로 확인할 지표·이벤트를 체크리스트로 제시하세요.'),
+  secs:['theme','themeD','market','marketD','watch','radar','tech','warren','strategy'],
+  parts:[{title:'업종 한눈에 보기',focus:'이 업종이 무엇을 하는 산업인지, 시장에서 차지하는 위치와 최근 주목받는 이유를 한눈에 정리',w:14},
+   {title:'업황과 사이클',focus:'수요·공급·가격·재고·정책으로 지금 업황을 설명하고, 사이클의 어디쯤(회복·확장·정점·둔화)인지 점검',w:22},
+   {title:'구조와 주요 기업',focus:'업종의 구조(밸류체인·경쟁 구도)를 설명하고, 원자료에 나온 주요 기업의 역할과 강점을 소개',w:22},
+   {title:'변수와 리스크',focus:'정책·기술·원가 등 업황을 흔들 변수와 업종 고유의 약점·반대 논리를 균형 있게 짚음',w:20},
+   {title:'체크포인트',focus:'업황을 판단할 때 앞으로 확인할 지표·일정·신호를 체크리스트로 정리(종목 추천 없이)',w:14}],
+  close:{on:true,text:'업종의 핵심을 한 문장으로 정리 → 앞으로 확인할 지표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'chart',g:3,ic:'📈',sub:'차트 기술적 분석 해설',
+ use:'‘My Technical Analysis With AI’ 박스에 차트 분석을 채워 두고, ‘분석할 대상’에 지수나 종목을 적으세요. 가격대는 그 글에 있는 것만 말해요.',
+ st:{name:'Chart Lab',title:'Chart Lab',brand:'차트 브리핑',desc:'지수·종목의 차트를 추세·지지와 저항·시나리오 중심으로 해설하는 기술적 분석 영상',
+  topic:{on:true,label:'분석할 대상',ph:'나스닥100 지수'},fin:true,
+  rules:vsRl('이 영상은 지수 또는 종목의 차트를 기술적 분석으로 해설하는 영상입니다. 기업 가치나 시황 이야기는 차트 해석에 필요한 만큼만 하세요.',
+   '- [분석할 대상] 하나에 집중하고, 큰 흐름(추세) → 가격대(지지·저항) → 보조 신호(이동평균·거래량·지표) → 시나리오 순서로 설명하세요.',
+   '- 가격·이동평균·지지·저항 같은 레벨 수치는 [원자료]의 기술적 분석 내용에 있는 것만 말하세요. 없는 가격대를 지어내지 마세요.',
+   '- 차트를 "미래를 맞히는 도구"가 아니라 "확률과 기준을 세우는 도구"로 소개하고, 같은 차트도 다르게 해석될 수 있음을 한 번 밝히세요.',
+   '- 시청자가 화면의 차트를 따라 볼 수 있도록 "어디를 보면 되는지"를 말로 안내하세요(예: "이 선 위에서 지지를 받았습니다").',
+   '- 매수·매도 타이밍을 찍어 주지 말고, 돌파·이탈 같은 조건과 그때의 시나리오, 손실 관리 관점을 설명하세요.'),
+  secs:['tech','indices','watch','radar','market','marketD','strategy'],
+  parts:[{title:'큰 흐름과 추세',focus:'장기·중기 추세의 방향과 현재 위치를 한눈에 설명 — 상승·하락·횡보 중 어디에 있는지',w:20},
+   {title:'지지와 저항',focus:'자료에 있는 주요 지지선·저항선(가격대)과 그 의미, 최근 그 가격대에서 어떤 반응이 있었는지 설명',w:22},
+   {title:'보조 신호 점검',focus:'이동평균·거래량·모멘텀 지표가 가리키는 신호를 쉽게 풀어 설명하고, 신호끼리 엇갈릴 때의 해석 주의점을 짚음',w:20},
+   {title:'돌파와 이탈 시나리오',focus:'주요 가격대를 돌파할 때와 이탈할 때 각각 어떤 시나리오가 가능한지, 확인할 신호와 함께 정리',w:22},
+   {title:'리스크 관리 포인트',focus:'차트 해석의 한계와 손실 관리 관점(기준 가격 점검, 분할 접근)을 정리(매수·매도 타이밍 지시 없이)',w:12}],
+  close:{on:true,text:'차트의 핵심 기준 가격대와 시나리오를 한 문장으로 정리 → 구독·좋아요 안내 → 차트 해석은 참고용이며 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'learn',g:3,ic:'🎓',sub:'투자 개념 쉬운 교육',
+ use:'개념 이름만 적어도 만들 수 있어요(자료는 선택). 실제 사례를 쓰려면 리포트 박스에 자료를 넣어 두세요. 계산 예시는 가상의 숫자로만 말해요.',
+ st:{name:'Investing 101',title:'Investing 101',brand:'투자 교실',desc:'증시와 투자의 핵심 개념을 쉬운 비유와 사례로 알려 주는 교육형 영상',
+  topic:{on:true,label:'설명할 개념',ph:'PER과 PBR 쉽게 이해하기'},fin:true,
+  rules:vsRl('이 영상은 투자 초보자에게 증시·투자의 핵심 개념 하나를 쉬운 비유와 사례로 알려 주는 교육형 영상입니다. 시황 브리핑이 아닙니다.',
+   '- [설명할 개념] 하나에 집중하고, "정의 → 왜 중요한가 → 어떻게 계산·해석하나 → 흔한 오해 → 실전 활용" 순서로 한 걸음씩 가르치세요.',
+   '- 전문 용어는 처음 나올 때 일상의 언어로 풀고, 일상의 비유를 하나 이상 쓰세요. 한 문장에는 개념 하나만 담으세요.',
+   '- 계산 예시가 필요하면 쉬운 가상의 숫자를 쓰되 반드시 "예를 들어", "가정하면"처럼 가상의 예임을 밝히고, 실제 기업의 수치처럼 말하지 마세요. 실제 사례는 [원자료]에 있는 것만 쓰세요.',
+   '- 개념의 한계와 오해를 정직하게 말하세요(예: 지표 하나만으로 투자 판단을 할 수 없다).',
+   '- 특정 종목을 추천하지 말고, 시청자가 스스로 점검해 볼 수 있는 질문과 연습 문제로 마무리하세요.'),
+  secs:['market','marketD','theme','themeD','strategy'],
+  parts:[{title:'개념 한눈에 보기',focus:'오늘 배울 개념이 무엇인지 한 문장으로 정의하고, 일상의 비유로 감을 잡게 함',w:14},
+   {title:'왜 중요한가',focus:'이 개념을 알면 투자 판단에서 무엇이 달라지는지, 모르면 어떤 실수를 하기 쉬운지 설명',w:14},
+   {title:'이렇게 계산하고 해석해요',focus:'개념을 계산하거나 읽는 방법을 쉬운 가상의 숫자 예시로 한 걸음씩 설명(가상의 예임을 밝힘)',w:24},
+   {title:'흔한 오해와 한계',focus:'초보자가 흔히 하는 오해와 이 개념만으로 판단할 수 없는 한계를 정직하게 짚음',w:18},
+   {title:'실전에서 활용하기',focus:'실제 투자에서 이 개념을 어떻게 활용하는지 점검 질문과 연습 문제로 정리(종목 추천 없이)',w:20}],
+  close:{on:true,text:'오늘 배운 핵심을 세 줄로 복습 → 스스로 풀어볼 질문 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}}
+];
+
+/* ── 템플릿 고르기 UI — 스타일 설정 창 '시작하기' ── */
+function vsTplHtml(){   /* 묶음별 카드 */
+  return VS_TPL_GROUPS.map((g,gi)=>'<div class="vs-tg"><div class="vs-tgh">'+esc(g)+'</div><div class="vs-tc">'
+    +VS_TPLS.filter(t=>t.g===gi).map(t=>'<button type="button" class="vs-tb mobile-keep" data-vs="tpl" data-t="'+t.k+'" aria-pressed="false" title="'+esc(t.st.desc)+'"><span class="ic">'+t.ic+'</span><span class="tx"><b>'+esc(t.st.name)+'<span class="hv">✓</span></b><i>'+esc(t.sub)+'</i></span></button>').join('')
+    +'</div></div>').join('');
+}
+function vsTplMark(k){   /* 고른 카드 표시 + 안내 글 */
+  const r=$('vsTpl'), n=$('vsTplNote'); if(!r||!n) return;
+  r.querySelectorAll('.vs-tb').forEach(b=>{ const on=!!k&&b.getAttribute('data-t')===k; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
+  const t=k&&VS_TPLS.find(x=>x.k===k);
+  n.innerHTML=t?'<b>'+t.ic+' '+esc(t.st.name)+'</b> — '+esc(t.st.desc)+'<div class="use">💡 '+esc(t.use)+'</div>':'카드를 누르면 아래 ①~⑤ 칸이 한꺼번에 채워져요 — 이름·구성·지침은 모두 내 스타일에 맞게 고칠 수 있어요.';
+}
+function vsTplHave(){   /* 이미 같은 이름으로 만들어 둔 템플릿 이름 뒤에 ✓ 표시 */
+  const r=$('vsTpl'); if(!r) return; const names=vsLoad().filter(x=>x.id!==(S.vsEdit||'')).map(x=>x.name.toLowerCase());
+  r.querySelectorAll('.vs-tb').forEach(b=>{ const t=VS_TPLS.find(x=>x.k===b.getAttribute('data-t')), have=!!t&&names.indexOf(t.st.name.toLowerCase())>=0; b.classList.toggle('have',have); if(t) b.title=t.st.desc+(have?' — 같은 이름의 스타일을 이미 만들어 뒀어요(✓)':''); });
+}
+function vsTplName(nm){   /* 같은 이름의 스타일이 이미 있으면 ' 2', ' 3' … 을 붙임 */
+  const used=n=>vsAll().some(x=>x.id!==(S.vsEdit||'')&&x.name.toLowerCase()===n.toLowerCase());
+  if(!used(nm)) return nm;
+  for(let i=2;i<100;i++){ const c=nm.slice(0,26)+' '+i; if(!used(c)) return c; }
+  return nm;
+}
+function vsTplPick(k){
+  const t=VS_TPLS.find(x=>x.k===k); if(!t) return;
+  const sig=JSON.stringify(vsEdRead());
+  if(vsEdDirty()&&sig!==S.vsTplSig&&!confirm('지금 입력한 내용이 ‘'+t.st.name+'’ 템플릿으로 바뀌어요. 계속할까요?')) return;   /* 방금 템플릿으로 채운 그대로(손대지 않음)면 묻지 않고 바꿔 봄 */
+  const v=JSON.parse(JSON.stringify(t.st)); v.name=S.vsEdit?($('vsName').value||v.name):vsTplName(v.name);   /* 설정을 고치는 중이면 이름은 그대로 */
+  vsEdFill(v); S.vsTplSig=JSON.stringify(vsEdRead()); vsTplMark(k);
+  vsErr('‘'+t.st.name+'’ 템플릿을 채웠어요 — 이름·구성·지침을 내 스타일에 맞게 고친 뒤 [저장]을 누르세요.',true);
+  try{ const b=$('vsBody'), s=b&&b.querySelectorAll('.vs-sec')[1]; if(s) b.scrollTo({top:Math.max(0,b.scrollTop+s.getBoundingClientRect().top-b.getBoundingClientRect().top-10),behavior:'smooth'}); }catch(e){}   /* ① 기본 정보가 창 맨 위에 오도록 내려가 채워진 칸을 보여 줌 */
 }
 /* ── 시작점 ② ✨ AI 가 구성 제안 ── */
 const sysVsSuggest=()=>'당신은 유튜브 영상 기획자이자 방송 작가입니다. 사용자가 설명한 "영상 스타일(영상 제작 포맷)"에 맞는 영상 구성을 설계하세요. 이 앱은 투자 리포트(주요 지수·경제 일정·시장 분석·테마 분석 등의 섹션)를 바탕으로 유튜브 영상 스크립트를 만듭니다.\n영상 본문을 4~6개의 부로 나누고 부마다 다룰 내용을 구체적으로 쓰세요. 오프닝(후킹·인사·목차)과 마무리는 시스템이 따로 만들므로 부에 넣지 마세요.\n결과는 아래 JSON 객체 하나만 출력하세요(설명·마크다운·코드블록 금지).\n{"desc":"스타일 한 줄 설명(50자 안팎)","title":"기본 영상 제목(영문 가능, 3단어 안팎)","brand":"오프닝 인사에 쓸 이름(2~12글자, 예: 테마 브리핑)","topic":{"on":true 또는 false,"label":"영상마다 직접 입력할 주제의 이름(예: 분석할 테마)","ph":"입력 예시(선택)"},"rules":"이 스타일의 작성 지침 — 3~6개 문장(다룰 것·다루지 말 것·톤·분석 깊이)","parts":[{"title":"부 이름(2~14글자, 가운뎃점·물결표 금지)","focus":"그 부에서 다룰 내용 1~2문장","w":10~30 사이의 정수(길이 비중)}],"close":"마무리에서 말할 내용을 화살표(→)로 이은 한 줄","fin":true 또는 false(투자·금융 영상이면 true),"secs":["아래 [쓸 수 있는 자료]의 키 중 이 영상에 맞는 것"]}\n영상마다 주제가 달라지는 스타일(예: 테마 분석, 종목 분석)이면 topic.on 을 true 로, 매번 같은 틀이면 false 로 하세요.';
@@ -45627,7 +45950,7 @@ async function vsAiSuggest(){
   try{
     const raw=await ai(sysVsSuggest(),vsSuggestUser(nm,idea),null,S.vsCtrl.signal), o=vsParseAi(raw);
     if(!o||!Array.isArray(o.parts)||!o.parts.length) throw new Error('AI 가 읽을 수 있는 구성을 보내지 않았어요. 한 번 더 눌러 주세요.');
-    vsEdFill(vsFromAi(o,nm||vsStr(o.name,30))); vsErr('AI 제안을 채웠어요 — 내용을 확인하고 고친 뒤 [저장]을 누르세요. (이름이 비어 있으면 직접 써 주세요)',true);
+    vsEdFill(vsFromAi(o,nm||vsStr(o.name,30))); vsTplMark(''); S.vsTplSig=''; vsErr('AI 제안을 채웠어요 — 내용을 확인하고 고친 뒤 [저장]을 누르세요. (이름이 비어 있으면 직접 써 주세요)',true);
   }catch(e){ if(!(e&&e.name==='AbortError')) vsErr('AI 제안에 실패했어요 — '+((e&&e.message)||e)); }
   finally{ S.vsBusy=false; S.vsCtrl=null; btn.textContent=t0; btn.disabled=false; }
 }
@@ -46162,7 +46485,7 @@ document.addEventListener('keydown',e=>{
 window.openScriptMaker=()=>openMaker();
 window.openScriptHistory=()=>openHistory();
 window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
-  _dbg:{vsAll,vsOf,vsClean,vsLoad,vsSaveAll,vsIs,vsAllows,vsDefSecs,vsPaint,vsSwitch,vsEdOpen,vsEdClose,vsEdSave,vsEdFill,vsEdRead,vsEdCheck,vsTplTheme,VS_TPL_THEME,vsDel,vsDup,vsParseAi,vsFromAi,sysReportStyle,sysReportStyleX,sysChapterStyleKo,sysChapterStyleX,buildPlanStyle,vsOpenRole,vsCloseRole,greetLine,vsSwap,vsSig,vsHash,ixRowsDom,ixHint,ixPctOf,buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
+  _dbg:{vsAll,vsOf,vsClean,vsLoad,vsSaveAll,vsIs,vsAllows,vsDefSecs,vsPaint,vsSwitch,vsEdOpen,vsEdClose,vsEdSave,vsEdFill,vsEdRead,vsEdCheck,VS_TPLS,VS_TPL_GROUPS,vsTplHtml,vsTplPick,vsTplName,vsDel,vsDup,vsParseAi,vsFromAi,sysReportStyle,sysReportStyleX,sysChapterStyleKo,sysChapterStyleX,buildPlanStyle,vsOpenRole,vsCloseRole,greetLine,vsSwap,vsSig,vsHash,ixRowsDom,ixHint,ixPctOf,buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
     buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur,
     V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,liveRun,liveEnsure,liveFresh,liveScan,liveNewsOf,liveRowText,liveName,liveClockSess,liveSessLine,liveIdxNow,liveIdxNorm,liveIdxLabels,LIVE_IDX,LIVE_MODE,rptSecs,paintLive,livePreview,liveStamp,kstParts,flashRun,flashEnsure,flashFresh,flashPreview,paintFlash,flashHrsNow,flashHrsNorm,FLASH_HRS,nwsRole,liveCompose,flashCompose,flashFocus,pickEnsure,pickApply,pickCancel,pickRender,pickCount,paintPickSum,PICK,get FLASH(){ return FLASH; },set FLASH(v){ FLASH=v; },get LIVE(){ return LIVE; },set LIVE(v){ LIVE=v; },
     isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted,
@@ -61448,7 +61771,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v199';
+const KL_BUILD='v200';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
