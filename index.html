@@ -2954,6 +2954,20 @@ body.guest-mode #mbtnScriptWrap{display:none!important}
 .vs-tpn{font-size:11.5px;line-height:1.55;color:#78350f;background:#fffbeb;border:1px dashed #fcd34d;border-radius:8px;padding:7px 10px;word-break:keep-all}
 .vs-tpn .use{margin-top:3px;color:#475569}
 @media(max-width:680px){.vs-tc{grid-template-columns:repeat(2,minmax(0,1fr))}.vs-tb{padding:6px 8px;gap:6px}.vs-tb .ic{font-size:18px}.vs-tb .tx b{font-size:11.5px;line-height:1.25;white-space:normal;overflow:visible;text-overflow:clip}}
+/* ── v201 영상 구성의 부 ↔ 리포트 섹션 '자료 연결' · Daily 시황브리핑 묶음 설명 (2026-11-18) ── */
+.vs-bd{margin-top:2px;border:1px dashed #fcd34d;border-radius:8px;background:#fffdf5;padding:2px 9px}
+.vs-bd.on{border-style:solid;background:#fffbeb}
+.vs-bd>summary{cursor:pointer;font-size:11px;font-weight:700;color:#92400e;padding:4px 0;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.vs-bd>summary .bs{font-weight:800;color:#b45309}
+.vs-bd:not(.on)>summary .bs{font-weight:500;color:#94a3b8}
+.vs-bh{font-size:10.5px;line-height:1.5;color:#94a3b8;padding:2px 0 5px;word-break:keep-all}
+.vs-bc{display:flex;flex-wrap:wrap;gap:4px 5px;padding:1px 0 7px}
+.vs-bk{display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 6px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;font-size:11px;font-weight:600;color:#475569;cursor:pointer;user-select:none}
+.vs-bk input{width:13px;height:13px;margin:0;accent-color:#d97706;cursor:pointer}
+.vs-bk:hover{border-color:#fcd34d}
+.vs-bk.on{border-color:#f59e0b;background:#fef3c7;color:#92400e}
+.vs-tgh small{font-weight:500;color:#94a3b8;margin-left:7px;font-size:10.5px;letter-spacing:0}
+#scVStyleHint .flow i.cd{background:#fff;border:1px dashed #f59e0b;padding:0 7px}
 </style>
 <!-- BTMSCRIPT-CSS-END -->
 <!-- BTMVIDEO-CSS-BEGIN -->
@@ -43546,13 +43560,16 @@ const labelOf=k=>(SECS.find(s=>s.k===k)||{label:k}).label;
    · Market Brief(id 'market') = 지금까지의 포맷 그대로 — 코드 안에 있고 고치거나 지울 수 없음. 이 스타일에서는 AI 에 보내는 글·챕터 구성이 예전과 한 글자도 다르지 않음(vs 가 없는 길로 감).
    · 내가 만든 스타일 = localStorage 'BTMVideoStyles' 의 배열 [{id:'vs_…',name,desc,title,brand,topic:{on,label,ph},rules,fin,secs[],parts[{title,focus,w}],close:{on,text}}]
        - topic: 영상마다 직접 입력하는 주제(예: 분석할 테마) — 켜면 만들기 화면에 입력칸이 생기고 [영상 주제]로 보고서·챕터 요청에 들어감 / rules: AI 에게 주는 이 스타일의 작성 지침([영상 스타일]로 들어감)
-       - fin: 투자·금융 영상이면 종목 추천 금지·개인 보유 비공개·면책 규칙을 넣음(끄면 일반 영상) / secs: 이 스타일에서 고를 수 있는 보고서 섹션(실시간 주가·속보는 시황 전용이라 뺌)
+       - fin: 투자·금융 영상이면 종목 추천 금지·개인 보유 비공개·면책 규칙을 넣음(끄면 일반 영상) / secs: 이 스타일에서 고를 수 있는 보고서 섹션(v201: 실시간 주가 조회·속보는 부에 연결해야 쓸 수 있음)
        - parts: 영상 본문의 구성(부) — 오프닝(후킹→인사→목차)은 첫 부에 붙고('open+p1' — 영상 스튜디오 splitOpen 이 가름), 마무리는 따로 한 챕터('close')
+       - v201: 부마다 sec[] = 연결한 리포트 섹션(indices·eco·market·marketD·live·flash·theme·themeD·watch·warren·radar·tech·strategy) — 연결한 부는 Market Brief 챕터처럼 만들어짐(키가 섹션 키라 영상 스튜디오의 주요 지수·경제 일정·속보 전용 화면이 이어지고, 그 섹션의 META 지시가 붙음 · 내용이 없는 섹션의 부는 빠짐 — vsActiveParts·vsSecItem·buildPlanStyle)
        - brand: 오프닝 인사 한 줄·인사 화면에 쓰는 이름(비우면 공통 브랜드) / title: 영상 제목을 비워 뒀을 때 프로젝트 이름에 쓰는 기본 제목
    · 만든 결과(ctx·이력)에는 그때의 스타일 정의를 복사해 둠(c.vs) — 나중에 스타일을 고치거나 지워도 이력·영상 만들기는 그대로. 스타일을 고치면 sigOf 가 달라져 이어서 만들기는 안 됨.
    검색: vsAll · vsOf · vsClean · vsPaint · vsSwitch · vsEdOpen · buildPlanStyle · sysReportStyle · sysChapterStyleKo · vsOpenRole · vsCloseRole ── */
 const VS_KEY='BTMVideoStyles', VS_ID='market', VS_MAXN=30, VS_MAXP=10;   /* v200: 템플릿을 여러 개 만들어 둘 수 있게 12 → 30 */
-const VS_SEC_OK=['indices','eco','market','theme','marketD','themeD','watch','warren','radar','tech','strategy'];   /* 내가 만든 스타일에서 쓸 수 있는 섹션(실시간 주가 조회·속보는 시황 포맷 전용) */
+const VS_SEC_OK=['indices','eco','market','theme','marketD','themeD','live','flash','watch','warren','radar','tech','strategy'];   /* 내가 만든 스타일에서 쓸 수 있는 섹션 — v201: 실시간 주가 조회·속보는 영상 구성의 부에 연결돼 있을 때만(vsClean) */
+const VS_BIND_OK=['indices','eco','market','marketD','live','flash','theme','themeD','watch','warren','radar','tech','strategy'];   /* v201: 부에 연결할 수 있는 섹션 — Market Brief 의 챕터 순서(주요 지수 → 경제 일정 → 시황 → 에프터마켓 → 속보 → 테마 → …) */
+const VS_BIND_LB={indices:'주요 지수',eco:'경제 일정',market:'시황 분석',marketD:'시황 Detail',live:'실시간 주가',flash:'실시간 속보',theme:'테마 분석',themeD:'테마 Detail',watch:'관심 종목',warren:'Warren Kim',radar:'AI Radar',tech:'기술적 분석',strategy:'매매 전략'};
 const VS_MARKET={id:VS_ID,name:'Market Brief',builtin:true,desc:'미국·한국 증시 시황을 브리핑하는 기본 영상 포맷',title:'Five-Minute Market Brief',brand:'',topic:{on:false,label:'',ph:''},rules:'',fin:true,secs:[],parts:[],close:{on:true,text:''},
   flow:['주요 지수 & 경제 일정','시황 분석','테마 & 섹터 분석','핵심 요약']};
 const vsStr=(v,n)=>String(v==null?'':v).replace(/\r/g,'').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'').trim().slice(0,n);
@@ -43560,8 +43577,9 @@ function vsClean(o){   /* 저장·불러온 스타일 정의를 안전한 모양
   if(!o||typeof o!=='object') return null;
   const id=/^vs_[a-z0-9]{4,20}$/.test(String(o.id))?String(o.id):''; if(!id) return null;
   const name=vsStr(o.name,30).replace(/\s+/g,' '); if(!name) return null;
-  const secs=(Array.isArray(o.secs)?o.secs:[]).filter((k,i,a)=>VS_SEC_OK.indexOf(k)>=0&&a.indexOf(k)===i);
-  const parts=(Array.isArray(o.parts)?o.parts:[]).slice(0,VS_MAXP).map(p=>({title:vsStr(p&&p.title,30).replace(/[·~]+/g,' ').replace(/\s+/g,' ').trim(),focus:vsStr(p&&p.focus,500),w:Math.max(3,Math.min(60,Math.round(+(p&&p.w))||15))})).filter(p=>p.title);   /* 제목에 ·(가운뎃점)·~ 는 쓰지 않음 — 영상 스튜디오 splitOpen 이 '오프닝 · 이름' 꼴로 읽음 */
+  const raw=(Array.isArray(o.parts)?o.parts:[]).slice(0,VS_MAXP).map(p=>({title:vsStr(p&&p.title,30).replace(/[·~]+/g,' ').replace(/\s+/g,' ').trim(),focus:vsStr(p&&p.focus,500),w:Math.max(3,Math.min(60,Math.round(+(p&&p.w))||15)),sr:(p&&Array.isArray(p.sec))?p.sec:[]})).filter(p=>p.title);   /* 제목에 ·(가운뎃점)·~ 는 쓰지 않음 — 영상 스튜디오 splitOpen 이 '오프닝 · 이름' 꼴로 읽음 */
+  const used=new Set(), parts=raw.map(r=>{ const q={title:r.title,focus:r.focus,w:r.w}, sec=VS_BIND_OK.filter(k=>r.sr.indexOf(k)>=0&&!used.has(k)); sec.forEach(k=>used.add(k)); if(sec.length) q.sec=sec; return q; });   /* v201: 부에 연결한 리포트 섹션(sec) — Market Brief 의 챕터 순서로 · 한 섹션은 한 부에만 · 연결이 없으면 칸 자체가 없어 예전 저장본과 같은 모양 */
+  const secs=(Array.isArray(o.secs)?o.secs:[]).filter((k,i,a)=>VS_SEC_OK.indexOf(k)>=0&&a.indexOf(k)===i&&((k!=='live'&&k!=='flash')||used.has(k)));   /* 실시간 주가 조회·속보는 부에 연결돼 있을 때만 */
   const t=(o.topic&&typeof o.topic==='object')?o.topic:{}, c=(o.close&&typeof o.close==='object')?o.close:{};
   return {id,name,desc:vsStr(o.desc,100),title:vsStr(o.title,80),brand:vsStr(o.brand,40),topic:{on:t.on===true,label:vsStr(t.label,20)||'영상 주제',ph:vsStr(t.ph,60)},rules:vsStr(o.rules,1500),fin:o.fin!==false,secs,parts,close:{on:c.on!==false,text:vsStr(c.text,300)},ts:+o.ts>0?+o.ts:0};
 }
@@ -43572,21 +43590,45 @@ const vsOf=id=>vsAll().find(x=>x.id===id)||VS_MARKET;
 const vsIs=v=>!!v&&!!v.id&&v.id!==VS_ID;   /* 내가 만든 스타일인가(Market Brief 면 false) */
 const vsTopicOn=v=>vsIs(v)&&!!(v.topic&&v.topic.on);
 const vsAllows=(v,k)=>{ const s=SECS.find(x=>x.k===k); return !!s&&(vsIs(v)?v.secs.indexOf(k)>=0:!s.x); };   /* 이 스타일에서 고를 수 있는 섹션 */
-const vsDefSecs=v=>vsIs(v)?v.secs.slice():DEF_CFG.secs.slice();   /* 처음 선택되는 섹션 — Market Brief 는 핵심 4개, 내 스타일은 고를 수 있는 것 모두 */
+const vsDefSecs=v=>vsIs(v)?v.secs.filter(k=>k!=='live'&&k!=='flash'):DEF_CFG.secs.slice();   /* 처음 선택되는 섹션 — Market Brief 는 핵심 4개, 내 스타일은 고를 수 있는 것 모두(v201: 실시간 주가 조회·속보는 만들 때 인터넷에서 가져오고 고르는 창이 떠서 처음엔 꺼 둠) */
 const vsHash=v=>vsIs(v)?hashOf(JSON.stringify([v.name,v.desc,v.title,v.brand,v.topic,v.rules,v.fin,v.secs,v.parts,v.close])):0;
 const vsSig=c=>{ const v=vsOf(c&&c.vstyle); return vsIs(v)?['vs',v.id,vsHash(v),String(c.vtopic||'')]:[]; };   /* sigOf 에 덧붙임 — Market Brief 는 빈 배열이라 예전 서명과 같음 */
 const vsUid=()=>'vs_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const vsKindOf=c=>(c&&vsIs(c.vs))?c.vs.name:'시황 분석';
 const vsSwap=(sys,c)=>{ if(!(c&&vsIs(c.vs))) return sys; const n=c.vs.name; return String(sys).split('시황 분석 유튜브 영상').join(n+' 유튜브 영상').split('시황 분석 영상').join(n+' 영상'); };   /* 스토리보드 요청의 '시황 분석 영상' 표현을 이 스타일 이름으로(내 스타일만) */
 
-/* ── 챕터 구성(부) — 내 스타일 ── */
+/* ── 챕터 구성(부) — 내 스타일 ──
+   v201: 부를 리포트 섹션에 '연결'할 수 있음(part.sec) — 연결한 부는 Market Brief 의 챕터처럼 만들어짐: 챕터 키가 섹션 키(indices·eco·market·after·flash·theme …)라 영상 스튜디오의
+   주요 지수·경제 일정·속보 전용 화면이 이어지고, 챕터 지시에 그 섹션의 Market Brief 용 지시(META)가 붙음(부의 focus 는 그 앞에 '관점'으로). 섹션이 둘 이상이면 Market Brief 처럼 한 챕터 안의 번호 소제목.
+   연결한 섹션에 내용이 없거나 고르지 않았으면 그 부는 빠짐(오프닝은 남은 첫 부에 붙음). 연결이 없는 부는 예전과 같음 — 연결한 부가 하나라도 있는 스타일의 연결 없는 부는 자료 없이 보고서만 보고 씀(Market Brief 의 시나리오·마무리처럼). */
+const vsBound=v=>(v.parts||[]).some(p=>p.sec&&p.sec.length);
+function vsActiveParts(v,secs){   /* 이 만들기에서 쓰는 부 — 연결한 섹션에 내용이 있는 부 + 연결 없는 부(모두 빠지면 연결 없는 부, 그것도 없으면 첫 부) */
+  const ps=(v.parts||[]).slice(0,VS_MAXP), sc=secs||[];
+  let a=ps.filter(p=>!(p.sec&&p.sec.length)||p.sec.some(k=>sc.indexOf(k)>=0));
+  if(!a.length) a=ps.filter(p=>!(p.sec&&p.sec.length));
+  if(!a.length) a=ps.slice(0,1);
+  return a;
+}
+function vsSecItem(k,lang){   /* 연결한 섹션 하나 → Market Brief 챕터 항목처럼(이름·지시·자료). '실시간 주가 조회'(live)는 챕터 키 after·자료 키 live */
+  const ik=k==='live'?'after':k, m=META[ik]||{chap:k,focus:''}, fm=(k==='flash'&&FLASH.picked);   /* v193: 직접 고른 속보는 그 건수를 모두 소개하는 지시 */
+  const nm=(lang&&lang!=='ko'&&V.get(lang).chap&&V.get(lang).chap[ik])||m.chap;
+  return {key:ik,name:nm,focus:fm?flashFocus(FLASH.pickN):m.focus,data:[k]};
+}
 function buildPlanStyle(L,cpm,secs,lang,v){
   const ct=(key,ko)=>(lang&&lang!=='ko'&&V.get(lang).chap&&V.get(lang).chap[key])||ko;
-  let parts=(v.parts||[]).slice(0,VS_MAXP); if(!parts.length) parts=[{title:v.name,focus:v.desc||(v.name+' 본문'),w:60}];
+  let parts=vsActiveParts(v,secs); if(!parts.length) parts=[{title:v.name,focus:v.desc||(v.name+' 본문'),w:60}];
+  const bound=vsBound(v);
   const open={title:ct('open','오프닝'),w:7,focus:'이 영상의 핵심을 하나의 수치나 한마디로 정의하는 후킹 한 문장 → 정해진 인사 → 이번 영상의 목차(목차 지시 줄 + 한 문장 소개)'};
-  const mk=(p,i)=>({key:'p'+(i+1),title:p.title,w:p.w,data:secs.slice(),focus:p.focus||p.title});
-  const body=parts.map(mk), f0=body[0];
-  const first={key:'open+'+f0.key,title:f0.title,names:[open.title,f0.title],foci:[open.focus,f0.focus],w:open.w+f0.w,data:f0.data.slice(),focus:'1) '+open.title+': '+open.focus+'\n2) '+f0.title+': '+f0.focus};   /* 오프닝은 첫 부에 붙음 — 영상 스튜디오 splitOpen 이 'open+…' 키와 이름 목록으로 가름 */
+  const mk=(p,i)=>{
+    const sl=(p.sec||[]).filter(k=>secs.indexOf(k)>=0);
+    if(!sl.length){ const f=p.focus||p.title; return {key:'p'+(i+1),title:p.title,w:p.w,data:bound?[]:secs.slice(),names:[p.title],foci:[f],focus:f}; }
+    const its=sl.map(k=>vsSecItem(k,lang)), data=[]; its.forEach(x=>x.data.forEach(d=>{ if(data.indexOf(d)<0) data.push(d); }));
+    const foci=its.map(x=>x.focus), names=its.length===1?[p.title]:its.map(x=>x.name); if(p.focus) foci[0]=p.focus+'\n'+foci[0];
+    const w=p.w+(sl.indexOf('flash')>=0&&FLASH.picked?Math.max(0,FLASH.pickN-4)*1.5:0);   /* v193: 직접 고른 속보는 고른 건수만큼 분량을 조금 늘림 */
+    return {key:its.map(x=>x.key).join('+'),title:p.title,w,data,names,foci,focus:names.length===1?foci[0]:foci.map((f,j)=>(j+1)+') '+names[j]+': '+f).join('\n')};
+  };
+  const body=parts.map(mk), f0=body[0], fn=[open.title].concat(f0.names), ff=[open.focus].concat(f0.foci);
+  const first={key:'open+'+f0.key,title:f0.title,names:fn,foci:ff,w:open.w+f0.w,data:f0.data.slice(),focus:fn.map((nm,j)=>(j+1)+') '+nm+': '+ff[j]).join('\n')};   /* 오프닝은 첫 부에 붙음 — 영상 스튜디오 splitOpen 이 'open+…' 키와 이름 목록(키 수와 같아야 함)으로 가름 */
   const it=[first].concat(body.slice(1));
   if(v.close&&v.close.on!==false) it.push({key:'close',title:ct('close','마무리'),w:6,data:[],focus:vsCloseText(v)});
   it.forEach(x=>{ if(!x.names){ x.names=[x.title]; x.foci=[x.focus]; } });
@@ -44391,7 +44433,7 @@ function chapterUser(c,u,i){
   if(!rep){ if(u.data.length) rest=digestBlocks(c,u.data,DIG_OTHER); else data=digestBlocks(c,[],DIG_ALL); }
   return `${langLine(c)}[영상 정보] 총 ${c.cfg.len}분 · 기준일 ${dLabel(c.base,c.cfg.lang)} · 챕터 ${i+1}/${c.plan.length}: "${u.title}" (예상 구간 ${fmtTime(sec)}~${fmtTime(end)})
 ${lenLine(u,c.cfg.lang)}${v?vsInfo(c,v):''}
-[이 챕터에서 다룰 내용] ${u.focus}${role}${(!v&&(u.data||[]).indexOf('indices')>=0)?ixHint(c):''}
+[이 챕터에서 다룰 내용] ${u.focus}${role}${((!v||String(u.key||'').split('+').indexOf('indices')>=0)&&(u.data||[]).indexOf('indices')>=0)?ixHint(c):''}
 ${c.cfg.extra?'[추가 요청] '+c.cfg.extra+'\n':''}
 [전체 챕터 구성]
 ${outline}
@@ -44581,29 +44623,34 @@ function vsTopicLine(c){   /* 영상 주제 입력칸의 글 — '[분석할 테
   const v=c&&c.vs; if(!vsTopicOn(v)) return '';
   const t=String((c.cfg||{}).vtopic||'').trim(); return t?'['+(v.topic.label||'영상 주제')+'] '+t+'\n':'';
 }
+const vsRuleTx=s=>String(s||'').replace(/^\n\d+\.\s*/,'');   /* v201: liveRule·flashRule 의 앞 번호를 뗌 — 내 스타일 보고서는 원칙 번호를 새로 매김 */
 function sysReportStyle(c){
-  const v=c.vs; let n=1; const o=[];
+  const v=c.vs, ap=vsActiveParts(v,c.secs||[]), H={}; let n=1; const o=[];   /* H: 연결한 섹션 → 그 부의 소제목(보고서에서 그 자료를 다룰 곳) */
   o.push('## '+(n++)+'. 한 줄 결론과 핵심 메시지 — "한 줄 결론:" 한 줄과 "핵심 메시지 3가지" 불릿 3개');
-  v.parts.forEach(p=>o.push('## '+(n++)+'. '+p.title+(p.focus?' — '+p.focus:'')));
+  ap.forEach(p=>{ (p.sec||[]).forEach(k=>{ H[k]=p.title; }); o.push('## '+(n++)+'. '+p.title+(p.focus?' — '+p.focus:'')); });
   if(v.fin&&!vsHasRisk(v)) o.push('## '+(n++)+'. 리스크 요인과 반대 논리');   /* 구성에 이미 리스크를 다루는 부가 있으면 같은 소제목을 또 만들지 않음 */
   o.push('## '+(n++)+'. 영상 제작 가이드 — 영상 제목 후보 3개, 썸네일 문구 3개, 오프닝 훅 멘트 2개, 영상 구성안(챕터별 핵심 소재와 보여줄 화면 자료)');
   const P=['사실과 해석을 구분하세요. 사실(수치·일정·종목·발언)은 [원자료]에 있는 것만 쓰고, 원자료에 없는 수치·이벤트·실적·뉴스를 절대 지어내지 마세요. 자료가 부족한 부분은 "자료에 없음"이라고 짧게 밝히세요. 개념·구조·원리 같은 일반적인 설명은 해도 됩니다.',
     '아래 구성에 적힌 각 부의 내용을 빠뜨리지 말고, 부마다 핵심 논지를 압축해 쓰세요. 원자료에 이름이 나온 종목·기업·섹터만 사례로 언급하세요.'];
   if(v.fin){ P.push('확정적 예측, 종목 추천, 수익 보장 표현은 금지합니다. 시나리오와 점검 포인트로 말하고, 리스크와 반대 논리를 함께 제시하세요.'); P.push('원자료에 개인 보유 종목·수량·평단·계좌 정보로 보이는 내용이 있으면 보고서에 쓰지 말고 일반론으로 바꿔 쓰세요(공개 영상용 자료입니다).'); }
   P.push('한국어로, 전문적이되 일반 시청자가 이해할 수 있게 쓰세요. 인사말·사족·자기소개는 쓰지 마세요.');
+  const lr=H.live?vsRuleTx(liveRule(c)).split('"에프터마켓 시장 분석"').join('"'+H.live+'"'):'', fr=H.flash?vsRuleTx(flashRule(c)).split('"주요 속보 브리핑"').join('"'+H.flash+'"'):'';   /* v201: 실시간 주가 조회·속보 자료를 다루는 법 — Market Brief 의 규칙을 그 자료를 연결한 부의 소제목으로 */
+  if(lr) P.push(lr); if(fr) P.push(fr);
   return '당신은 '+vsPersona(v)+'\n사용자가 주는 [원자료]'+(vsTopicOn(v)?'와 ['+(v.topic.label||'영상 주제')+'] 입력을':'를')+' 근거로, "'+v.name+'" 스타일의 유튜브 영상을 만들 수 있는 "종합 분석 보고서"를 작성하세요. 이 보고서는 곧바로 영상 스크립트의 근거 자료가 됩니다.\n\n'
     +vsRulesBlock(v)+'\n\n[작성 원칙]\n'+P.map((t,i)=>(i+1)+'. '+t).join('\n')+'\n\n[출력 형식] 마크다운 소제목("## ")과 불릿("- ")만 사용하세요(표·코드블록 금지). 아래 구성을 그대로 따르세요.\n'+o.join('\n')+'\n\n분량은 공백 포함 약 3,000~4,500자입니다.';
 }
 function sysReportStyleX(c){
-  const lg=V.get(c.cfg.lang), v=c.vs; let n=1; const o=[];
+  const lg=V.get(c.cfg.lang), v=c.vs, ap=vsActiveParts(v,c.secs||[]), H={}; let n=1; const o=[];
   o.push('## '+(n++)+'. One-line conclusion and key messages — one line starting with "One-line conclusion:" and 3 bullets titled "Three key messages"');
-  v.parts.forEach(p=>o.push('## '+(n++)+'. '+p.title+(p.focus?' — '+p.focus:'')));
+  ap.forEach(p=>{ (p.sec||[]).forEach(k=>{ H[k]=p.title; }); o.push('## '+(n++)+'. '+p.title+(p.focus?' — '+p.focus:'')); });
   if(v.fin&&!vsHasRisk(v)) o.push('## '+(n++)+'. Risk factors and counter-arguments');
   o.push('## '+(n++)+'. Video production guide — 3 candidate video titles, 3 thumbnail phrases, 2 opening-hook lines, and the video outline (key material and on-screen visuals for each chapter)');
   const P=['Separate fact from interpretation. Use facts (figures, schedules, names, quotes) only if they appear in the raw data; never invent figures, events, earnings or news. Where data is missing, say briefly that it is not in the data. General explanations of concepts, structures and mechanisms are fine.',
     'Cover what is listed for each part of the structure below and compress the core argument of each part. Mention only companies, sectors and names that appear in the raw data.'];
   if(v.fin){ P.push('No definitive forecasts, stock recommendations or return guarantees. Speak in scenarios and checkpoints, and present risks and counter-arguments together.'); P.push('If the raw data contains personal holdings, quantities, average prices or account details, do not write them; generalize (this is material for a public video).'); }
   P.push('Professional but understandable to ordinary viewers. No greetings, filler or self-introduction.');
+  const lr=H.live?vsRuleTx(liveRuleX(c)).split('"After-hours market analysis"').join('"'+H.live+'"'):'', fr=H.flash?vsRuleTx(flashRuleX(c)).split('"Breaking news briefing"').join('"'+H.flash+'"'):'';
+  if(lr) P.push(lr); if(fr) P.push(fr);
   return 'You are '+(v.fin?'a market analyst with 20 years of experience covering US and Korean equities and ':'')+'the chief analyst of a trusted YouTube channel for the "'+v.name+'" video format.\nBased on the [raw data]'+(vsTopicOn(v)?' and the ['+(v.topic.label||'video topic')+']':'')+' the user provides, write a "comprehensive analysis report" from which a "'+v.name+'" YouTube video can be made. This report becomes the evidence base of the video script.\n\n'
     +outLang(lg)+'\n\n[Video style] '+v.name+(v.desc?' — '+v.desc:'')+(v.rules?'\n'+v.rules:'')+'\n\n[Principles]\n'+P.map((t,i)=>(i+1)+'. '+t).join('\n')+'\n\n[Output format] Use only markdown headings ("## ") and bullets ("- ") — no tables or code blocks. Follow this structure and write the headings in '+lg.ai+' too:\n'+o.join('\n')+'\n\nLength: '+(REP_LEN[lg.id]||REP_LEN.en)+'.';
 }
@@ -44627,7 +44674,7 @@ function sysChapterStyleX(rep,lang,v){   /* 영어 지시문(sysChapterX)에서 
 const vsInfo=(c,v)=>'\n[영상 스타일] '+v.name+(v.desc?' — '+v.desc:'')+(vsTopicLine(c)?'\n'+vsTopicLine(c).replace(/\n$/,''):'');
 function vsOpenRole(c,v,cwd,awd){   /* 첫 챕터 — 후킹 → 인사 → 목차(이 영상의 주제·구성에 맞게) */
   const tp=String((c.cfg||{}).vtopic||'').trim();
-  return '\n[첫 챕터입니다] 오프닝은 이 순서로 쓰세요. ① 후킹 — 첫 문단에는 이 영상의 핵심('+(tp?'주제: "'+tp+'"':'"'+v.name+'" 영상의 주제')+')을 하나의 핵심 수치나 한마디로 정의하는 짧고 강렬한 한 문장(25자 안팎)만 쓰세요. 설명이나 인사를 덧붙이지 마세요. ② 인사 — 다음 문단은 정해진 인사 한 줄로 시작하세요: "안녕하십니까. '+greetLine(c)+'입니다." (이 문장은 바꾸지 마세요.) ③ 이번 영상의 목차 — 인사 다음 문단은 이번 영상에서 다룰 내용을 소개하는 목차 문단입니다. 이 문단 바로 앞에 목차 지시 한 줄을 따로 쓰세요: ['+cwd+': '+awd+' | 이름: 설명 | 이름: 설명 | 이름: 설명] — 항목은 3~4개, 영상에서 다루는 순서대로([전체 챕터 구성]의 흐름을 따르세요), 이름은 2~7글자 명사형, 설명은 10~16자 명사형 구로 쓰되 이 영상이 실제로 다루는 내용에 맞게 쓰세요(이 줄은 화면에만 나오고 말하지 않습니다). 목차 문단은 그 이름들을 같은 순서로 자연스럽게 말하는 한 문장입니다. 목차 문단이 오프닝의 마지막이고, 그 바로 다음부터 첫 본문을 시작하세요. 후킹 → 인사 → 목차 순서는 바꾸지 마세요.';
+  return '\n[첫 챕터입니다] 오프닝은 이 순서로 쓰세요. ① 후킹 — 첫 문단에는 이 영상의 핵심('+(tp?'주제: "'+tp+'"':(vsBound(v)?'오늘 시장의 가장 중요한 변화':'"'+v.name+'" 영상의 주제'))+')을 하나의 핵심 수치나 한마디로 정의하는 짧고 강렬한 한 문장(25자 안팎)만 쓰세요. 설명이나 인사를 덧붙이지 마세요. ② 인사 — 다음 문단은 정해진 인사 한 줄로 시작하세요: "안녕하십니까. '+greetLine(c)+'입니다." (이 문장은 바꾸지 마세요.) ③ 이번 영상의 목차 — 인사 다음 문단은 이번 영상에서 다룰 내용을 소개하는 목차 문단입니다. 이 문단 바로 앞에 목차 지시 한 줄을 따로 쓰세요: ['+cwd+': '+awd+' | 이름: 설명 | 이름: 설명 | 이름: 설명] — 항목은 3~4개, 영상에서 다루는 순서대로([전체 챕터 구성]의 흐름을 따르세요), 이름은 2~7글자 명사형, 설명은 10~16자 명사형 구로 쓰되 이 영상이 실제로 다루는 내용에 맞게 쓰세요(이 줄은 화면에만 나오고 말하지 않습니다). 목차 문단은 그 이름들을 같은 순서로 자연스럽게 말하는 한 문장입니다. 목차 문단이 오프닝의 마지막이고, 그 바로 다음부터 첫 본문을 시작하세요. 후킹 → 인사 → 목차 순서는 바꾸지 마세요.';
 }
 const vsCloseRole=(c,v)=>'\n[마지막 챕터입니다] '+vsCloseText(v)+' 순서로 마무리하세요.';
 
@@ -45198,7 +45245,7 @@ function makerHtml(){
    +'<div class="sc-body">'
    +'<div class="sc-side"><div class="sc-sbody">'
    +'<div class="sc-f" id="scVStyleF"><div class="sc-lb">영상 스타일 <span class="sc-opt">· 영상 제작 포맷</span></div>'
-     +'<div class="sc-vsrow"><select id="scVStyle" class="mobile-keep" aria-label="영상 스타일" title="영상을 어떤 제작 포맷으로 만들지 골라요 — 스타일마다 영상 구성·AI 지침이 달라요"></select><button type="button" class="sc-mini pri mobile-keep" data-act="vsAdd" title="완전히 새로운 영상 스타일(제작 포맷)을 만들어요 — 주제별 기본 템플릿(실적 발표·이슈 분석·종목 분석 등)에서 골라 시작하거나 직접 만들 수 있고, 한 번 세팅해 두면 그 스타일로 만들 때마다 세팅대로 영상이 만들어져요">＋ 스타일 추가</button></div>'
+     +'<div class="sc-vsrow"><select id="scVStyle" class="mobile-keep" aria-label="영상 스타일" title="영상을 어떤 제작 포맷으로 만들지 골라요 — 스타일마다 영상 구성·AI 지침이 달라요"></select><button type="button" class="sc-mini pri mobile-keep" data-act="vsAdd" title="완전히 새로운 영상 스타일(제작 포맷)을 만들어요 — 주제별 기본 템플릿(Daily 시황브리핑·실적 발표·이슈 분석·종목 분석 등)에서 골라 시작하거나 직접 만들 수 있고, 한 번 세팅해 두면 그 스타일로 만들 때마다 세팅대로 영상이 만들어져요">＋ 스타일 추가</button></div>'
      +'<div class="sc-vsact" id="scVStyleAct"><button type="button" class="sc-mini mobile-keep" data-act="vsEdit" title="이 스타일의 구성·지침·자료를 고쳐요">✎ 설정</button><button type="button" class="sc-mini mobile-keep" data-act="vsDup" title="이 스타일을 복제해 새 스타일로 만들어요">⧉ 복제</button><button type="button" class="sc-mini dng mobile-keep" data-act="vsDel" title="이 영상 스타일을 삭제해요">🗑 삭제</button></div>'
      +'<div class="sc-hint" id="scVStyleHint"></div>'
      +'<div id="scVTopicF" style="display:none"><div class="sc-lb2"><span id="scVTopicLb">영상 주제</span> <span class="sc-opt">· 필수</span></div><input id="scVTopic" type="text" class="sc-vt sc-vtp mobile-keep" maxlength="80" autocomplete="off" spellcheck="false" aria-label="영상 주제"><div class="sc-hint" id="scVTopicHint"></div></div></div>'
@@ -45430,8 +45477,8 @@ function vsPaint(cfg){
   const sel=$('scVStyle'); if(!sel) return;
   const v=vsOf(cfg?cfg.vstyle:sel.value), cust=vsIs(v); S.vsCur=v.id;
   sel.innerHTML=vsAll().map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join(''); sel.value=v.id;
-  const flow=cust?v.parts.map(p=>p.title):VS_MARKET.flow;
-  $('scVStyleHint').innerHTML='<b>'+esc(v.name)+'</b>'+(v.desc?' — '+esc(v.desc):'')+(flow.length?'<div class="flow">'+flow.map((t,i)=>'<i>'+(i+1)+'. '+esc(t)+'</i>').join('')+'</div>':'');
+  const flow=cust?v.parts.map(p=>({t:p.title,c:!!(p.sec&&p.sec.length)})):VS_MARKET.flow.map(t=>({t,c:false}));   /* v201: 자료 연결이 있는 부는 점선 알약 — 그 섹션에 내용이 있을 때만 만들어짐 */
+  $('scVStyleHint').innerHTML='<b>'+esc(v.name)+'</b>'+(v.desc?' — '+esc(v.desc):'')+(flow.length?'<div class="flow">'+flow.map((x,i)=>'<i'+(x.c?' class="cd" title="이 부의 자료(섹션)에 내용이 있을 때만 만들어져요"':'')+'>'+(i+1)+'. '+esc(x.t)+'</i>').join('')+'</div>':'');
   $('scVStyleAct').classList.toggle('on',cust);
   const to=vsTopicOn(v); $('scVTopicF').style.display=to?'':'none';
   if(to){ $('scVTopicLb').textContent=v.topic.label||'영상 주제'; $('scVTopic').placeholder=v.topic.ph?'예) '+v.topic.ph:'여기에 입력하세요'; $('scVTopicHint').textContent='이 영상의 중심 주제예요 — 보고서·스크립트가 이 주제에 맞춰 만들어져요.'; }
@@ -45474,22 +45521,36 @@ function vsEdHtml(){
    +'<div class="vs-sec"><h4>② 영상 주제 <small>· 영상마다 달라지는 주제(예: 분석할 테마)를 만들 때 직접 입력하게 할 수 있어요</small></h4>'
      +'<label class="vs-chk"><input type="checkbox" id="vsTopicOn" class="mobile-keep"> 만들 때마다 영상 주제를 직접 입력해요</label>'
      +'<div class="vs-g" id="vsTopicBox"><div class="vs-f"><label for="vsTopicLb">입력칸 이름</label><input id="vsTopicLb" type="text" maxlength="20" autocomplete="off" class="mobile-keep" placeholder="예) 분석할 테마"></div><div class="vs-f"><label for="vsTopicPh">입력 예시 <small>(선택)</small></label><input id="vsTopicPh" type="text" maxlength="60" autocomplete="off" class="mobile-keep" placeholder="예) AI 데이터센터 전력 인프라"></div></div></div>'
-   +'<div class="vs-sec"><h4>③ 영상 구성 <small>· 오프닝(후킹 → 인사 → 목차)은 첫 부에 자동으로 붙어요</small></h4>'
+   +'<div class="vs-sec"><h4>③ 영상 구성 <small>· 오프닝(후킹 → 인사 → 목차)은 첫 부에 자동으로 붙어요 · 부마다 ‘자료 연결’로 리포트 섹션(주요 지수·경제 일정·속보 등)에 이어 줄 수 있어요</small></h4>'
      +'<div class="vs-pl" id="vsParts"></div><div class="vs-pa"><button type="button" class="sc-mini mobile-keep" data-vs="partAdd" id="vsPartAdd">＋ 부 추가</button><span class="vs-pn" id="vsPartNote"></span></div>'
      +'<div class="vs-fx"><label class="vs-chk"><input type="checkbox" id="vsCloseOn" class="mobile-keep"> 마무리 챕터를 따로 둬요</label><textarea id="vsCloseTx" rows="2" class="mobile-keep" placeholder="마무리에서 말할 내용 — 비우면 기본(핵심 한 줄 정리 → 구독·좋아요 안내 → 면책 멘트)을 써요"></textarea></div></div>'
    +'<div class="vs-sec"><h4>④ AI 지침 <small>· 보고서와 스크립트를 쓸 때 AI 가 따르는 이 스타일의 원칙</small></h4>'
      +'<textarea id="vsRules" rows="5" class="mobile-keep" placeholder="예) 시황 브리핑이 아니라 한 가지 테마를 깊이 파고드는 영상입니다. 개념 → 성장 동력 → 구조 → 핵심 기업 → 리스크 순서로 한 겹씩 들어가세요 …"></textarea>'
      +'<label class="vs-chk"><input type="checkbox" id="vsFin" class="mobile-keep"> 투자·금융 영상이에요 <small>· 종목 추천·수익 보장 금지, 개인 보유 비공개, 면책 멘트 규칙을 넣어요(일반 영상이면 끄세요)</small></label></div>'
-   +'<div class="vs-sec"><h4>⑤ 사용할 자료 <small>· 이 스타일로 만들 때 [반영할 섹션]에 보일 리포트 섹션</small></h4><div class="vs-sg" id="vsSecs">'+VS_SEC_OK.map(k=>'<label class="vs-sr" data-k="'+k+'"><input type="checkbox" class="mobile-keep" data-k="'+k+'"><span>'+esc(labelOf(k))+'</span></label>').join('')+'</div><div class="vs-hint">처음 열면 여기서 고른 섹션이 모두 선택돼 있어요(내용이 있는 것만). 영상 주제를 켠 스타일은 자료 없이 주제만으로도 만들 수 있어요.</div></div>'
+   +'<div class="vs-sec"><h4>⑤ 사용할 자료 <small>· 이 스타일로 만들 때 [반영할 섹션]에 보일 리포트 섹션</small></h4><div class="vs-sg" id="vsSecs">'+VS_SEC_OK.map(k=>'<label class="vs-sr" data-k="'+k+'"><input type="checkbox" class="mobile-keep" data-k="'+k+'"><span>'+esc(labelOf(k))+'</span></label>').join('')+'</div><div class="vs-hint">처음 열면 여기서 고른 섹션이 모두 선택돼 있어요(내용이 있는 것만). 영상 주제를 켠 스타일은 자료 없이 주제만으로도 만들 수 있어요. 실시간 주가 조회·실시간 속보는 ③ 영상 구성의 ‘자료 연결’에서 부에 이어야 쓸 수 있고, 만들 때 인터넷에서 가져오므로 처음엔 꺼져 있어요.</div></div>'
    +'</div>'
    +'<div class="vs-foot"><button type="button" class="sc-btn pri mobile-keep" data-vs="save" id="vsSave">💾 저장</button><button type="button" class="sc-btn mobile-keep" data-vs="close">취소</button><div class="vs-err" id="vsErr" role="alert"></div></div></div>';
 }
+function vsBdSum(row){   /* v201: 부의 '자료 연결' 요약 글·표시 — 고른 섹션 이름들(없으면 '없음') */
+  if(!row) return; const on=[...row.querySelectorAll('.vs-bk input')].filter(i=>i.checked).map(i=>i.getAttribute('data-b'));
+  row.querySelectorAll('.vs-bk').forEach(l=>l.classList.toggle('on',l.querySelector('input').checked));
+  const s=row.querySelector('.vs-bd .bs'); if(s) s.textContent=on.length?on.map(k=>VS_BIND_LB[k]||k).join(' · '):'없음';
+  const d=row.querySelector('.vs-bd'); if(d) d.classList.toggle('on',on.length>0);
+}
+function vsBindChange(cb){   /* 같은 섹션은 한 부에만 — 다른 부에 이미 연결돼 있으면 그쪽에서 뺌 */
+  const k=cb.getAttribute('data-b'), row=cb.closest('.vs-p');
+  if(cb.checked) [...$('vsParts').querySelectorAll('.vs-p')].forEach(r=>{ if(r===row) return; const o=r.querySelector('.vs-bk input[data-b="'+k+'"]'); if(o&&o.checked){ o.checked=false; vsBdSum(r); } });
+  vsBdSum(row);
+}
 function vsPartRow(p,i,n){
-  return '<div class="vs-p" data-i="'+i+'"><span class="no">'+(i+1)+'</span><div class="tt"><input type="text" class="vs-pt mobile-keep" maxlength="30" autocomplete="off" placeholder="부 이름 — 예) 성장 동력" value="'+esc(p.title)+'"><textarea class="vs-pf mobile-keep" rows="2" placeholder="이 부에서 다룰 내용 — 예) 이 테마를 키우는 핵심 동력(수요·기술·정책·자금)을 풀어서 설명">'+esc(p.focus)+'</textarea></div>'
+  const sec=Array.isArray(p.sec)?p.sec:[];
+  return '<div class="vs-p" data-i="'+i+'"><span class="no">'+(i+1)+'</span><div class="tt"><input type="text" class="vs-pt mobile-keep" maxlength="30" autocomplete="off" placeholder="부 이름 — 예) 성장 동력" value="'+esc(p.title)+'"><textarea class="vs-pf mobile-keep" rows="2" placeholder="이 부에서 다룰 내용 — 예) 이 테마를 키우는 핵심 동력(수요·기술·정책·자금)을 풀어서 설명">'+esc(p.focus)+'</textarea>'
+    +'<details class="vs-bd'+(sec.length?' on':'')+'"><summary>자료 연결 <b class="bs">'+(sec.length?sec.map(k=>esc(VS_BIND_LB[k]||k)).join(' · '):'없음')+'</b></summary><div class="vs-bh">이 부를 만들 때 쓸 리포트 섹션을 고르면 Market Brief 의 챕터처럼 만들어져요 — 주요 지수·경제 일정·속보는 영상 스튜디오의 전용 화면까지 이어져요. 고른 섹션에 내용이 없으면 이 부는 빠지고, 연결하지 않은 부는 보고서만 보고 써요.</div>'
+    +'<div class="vs-bc">'+VS_BIND_OK.map(k=>'<label class="vs-bk'+(sec.indexOf(k)>=0?' on':'')+'"><input type="checkbox" class="mobile-keep" data-b="'+k+'"'+(sec.indexOf(k)>=0?' checked':'')+'>'+esc(VS_BIND_LB[k]||k)+'</label>').join('')+'</div></details></div>'
     +'<div class="ww"><span>길이 비중</span><input type="number" class="vs-pw mobile-keep" min="3" max="60" step="1" value="'+(+p.w>0?Math.round(+p.w):15)+'"></div>'
     +'<div class="bb"><button type="button" class="sc-mini mobile-keep" data-vs="partUp"'+(i===0?' disabled':'')+' title="위로">▲</button><button type="button" class="sc-mini mobile-keep" data-vs="partDn"'+(i===n-1?' disabled':'')+' title="아래로">▼</button><button type="button" class="sc-mini dng mobile-keep" data-vs="partDel"'+(n<=1?' disabled':'')+' title="이 부 삭제">🗑</button></div></div>';
 }
-const vsPartsRead=()=>[...$('vsParts').querySelectorAll('.vs-p')].map(r=>({title:r.querySelector('.vs-pt').value,focus:r.querySelector('.vs-pf').value,w:parseInt(r.querySelector('.vs-pw').value,10)||15}));
+const vsPartsRead=()=>[...$('vsParts').querySelectorAll('.vs-p')].map(r=>({title:r.querySelector('.vs-pt').value,focus:r.querySelector('.vs-pf').value,w:parseInt(r.querySelector('.vs-pw').value,10)||15,sec:[...r.querySelectorAll('.vs-bk input')].filter(i=>i.checked).map(i=>i.getAttribute('data-b'))}));
 function vsPartsPaint(list){
   const n=list.length; $('vsParts').innerHTML=list.map((p,i)=>vsPartRow(p,i,n)).join('');
   $('vsPartAdd').disabled=n>=VS_MAXP; $('vsPartNote').textContent=n+' / '+VS_MAXP+'개 · 길이 비중은 부끼리의 상대 비율이에요(오프닝·마무리는 자동)';
@@ -45518,6 +45579,10 @@ function vsEdCheck(o,selfId){   /* 저장 전 검사 — 문제가 있으면 안
   if(!parts.length) return '영상 구성(부)을 하나 이상 만들어 주세요 — 부 이름을 입력하세요.';
   if(o.topic&&o.topic.on&&!vsStr(o.topic.label,20)) return '영상 주제 입력칸의 이름을 입력해 주세요(예: 분석할 테마).';
   if(!(o.secs||[]).length&&!(o.topic&&o.topic.on)) return '사용할 자료(섹션)를 하나 이상 고르거나, 영상 주제 입력을 켜 주세요.';
+  const bnd=[]; let dup=''; (o.parts||[]).forEach(p=>(p.sec||[]).forEach(k=>{ if(bnd.indexOf(k)>=0&&!dup) dup=k; bnd.push(k); }));   /* v201: 한 섹션은 한 부에만 */
+  if(dup) return '‘'+labelOf(dup)+'’ 자료가 두 부에 연결돼 있어요 — 한 부에만 연결해 주세요.';
+  const lf=['live','flash'].filter(k=>(o.secs||[]).indexOf(k)>=0&&bnd.indexOf(k)<0);
+  if(lf.length) return '‘'+lf.map(labelOf).join('’·‘')+'’ 자료를 쓰려면 영상 구성의 부에 연결해야 해요 — 부의 ‘자료 연결’에서 골라 주세요.';
   return '';
 }
 function ensureVsModal(){
@@ -45530,6 +45595,7 @@ function ensureVsModal(){
     const t=e.target; if(!t) return;
     if(t.id==='vsTopicOn') vsTopicPaint(); else if(t.id==='vsCloseOn') vsClosePaint();
     else if(t.closest&&t.closest('#vsSecs')){ const l=t.closest('.vs-sr'); if(l) l.classList.toggle('on',t.checked); }
+    else if(t.getAttribute&&t.getAttribute('data-b')) vsBindChange(t);   /* v201: 부의 자료 연결 칩 */
   });
   return el;
 }
@@ -45605,7 +45671,8 @@ function vsAct(act){
   else if(act==='vsDel'){ const v=vsOf(($('scVStyle')||{}).value); if(vsIs(v)) vsDel(v.id); }
 }
 
-/* ═════════ v200 (2026-11-18) — 영상 스타일 '주제별 기본 템플릿' 15종 ═════════
+/* ═════════ v200 (2026-11-18) — 영상 스타일 '주제별 기본 템플릿' ═════════
+   ★ v201(2026-11-18): 맨 앞에 'Daily 시황브리핑' 묶음 5종(Morning·Closing·Headline·Event Day·Quick Brief) — Five-Minute Market Brief 를 다른 구성으로. 부마다 sec 로 리포트 섹션에 연결(주요 지수·경제 일정·속보 전용 화면까지 Market Brief 와 같게 — buildPlanStyle), 인사 이름(brand)은 비워 공통 브랜드를 씀.
    요청: 영상 스타일을 새로 추가할 때 고를 수 있는 주제별 기본 템플릿 — ① 기업 실적발표 분석(분석·평가·전망) ② 사회적 이슈(전쟁·질병·국가의 큰 변화 …)의 본질·배경·원인·파장·증시 영향
          ③ 그 밖에 증시 시황 채널이 쓸 만한 10가지 이상을 골라서 작업할 수 있게.
    · 템플릿은 코드 안의 목록(VS_TPLS) — 스타일 추가/설정 창의 '시작하기'에서 카드를 누르면 ①~⑤ 칸이 한꺼번에 채워지고(이름·구성·지침 모두 고칠 수 있음), [저장]을 눌러야 내 스타일이 됨.
@@ -45615,10 +45682,96 @@ function vsAct(act){
    · 부 제목에는 ·(가운뎃점)·~ 를 쓰지 않음(영상 스튜디오 splitOpen 이 '오프닝 · 이름' 꼴로 읽음) / 수치는 [원자료]에 있는 것만 말하게 하는 규칙은 보고서·챕터 요청에 항상 들어 있어, 각 지침은 그 영상만의 관점·순서·주의점 위주
    검색: VS_TPLS · VS_TPL_GROUPS · vsTplHtml · vsTplPick · vsTplMark · vsTplName · vsTplHave ── */
 const vsRl=(...a)=>a.join('\n');
-const VS_TPL_GROUPS=['기업·종목','이슈·거시','시황·전망','테마·학습'];
+const VS_TPL_GROUPS=[{n:'Daily 시황브리핑',s:'Five-Minute Market Brief 를 다른 구성으로 — 주요 지수·경제 일정 화면과 실시간 주가·속보를 그대로 써요'},
+  {n:'기업·종목'},{n:'이슈·거시'},{n:'시황·전망'},{n:'테마·학습'}];   /* v201: 맨 앞에 Daily 시황브리핑 묶음 */
 const VS_TPLS=[
+/* ── Daily 시황브리핑 — Five-Minute Market Brief 를 다른 구성으로 (v201) — 부마다 sec 로 리포트 섹션에 연결: 주요 지수·경제 일정·속보 전용 화면까지 Market Brief 와 같게. 인사 이름(brand)은 비워 공통 브랜드(5분 증시 브리핑)를 씀 ── */
+{k:'morning',g:0,ic:'🌅',sub:'간밤 미국장부터 오늘 일정까지',
+ use:'리포트의 주요 지수·경제 일정·시황 분석·테마 분석을 채워 두고 만드세요(영상 길이는 5~8분이 알맞아요). [반영할 섹션]에서 ‘실시간 주가 조회’·‘실시간 속보’를 고르면 ‘시간외와 주요 속보’ 부가 생겨요. 주요 지수·경제 일정은 Market Brief 와 같은 전용 화면으로 만들어지고, 인사 이름은 공통 브랜드(5분 증시 브리핑)를 써요.',
+ st:{name:'Morning Brief',title:'Five-Minute Market Brief (Morning)',brand:'',desc:'간밤 미국 증시부터 오늘의 일정·테마까지, 한국 장이 열리기 전에 꼭 알아야 할 것을 짚는 아침 브리핑',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 한국 시장이 열리기 전에 보는 아침 시황 브리핑입니다. 시청자가 출근길에 "오늘 장에서 무엇을 봐야 하나"를 몇 분 안에 파악하게 하는 것이 목적입니다.',
+   '- 시점은 한국 시간 아침입니다. 미국 증시는 "간밤", 일정은 "오늘"로 말하세요. 지나간 일(간밤 마감)은 짧게, 앞으로 일어날 일(오늘의 일정·변수)에 무게를 두세요.',
+   '- 오프닝 후킹은 간밤 시장의 가장 큰 변화를 하나의 수치나 한마디로 정의하세요.',
+   '- 모든 부는 "그래서 오늘 한국 시장에 무슨 뜻인가"로 이어 가세요. 수치·일정은 [원자료]에 있는 것만 말하고, 지표를 나열하지 말고 중요한 변화만 골라 해석하세요.',
+   '- 마지막 부는 오늘 장에서 확인할 포인트 3가지와 상승·보합·하락 시나리오로 정리하세요(확정 예측·종목 추천 없이).'),
+  secs:['indices','eco','market','theme','live','flash'],
+  parts:[{title:'간밤 글로벌 증시',focus:'간밤 미국 증시 마감을 중심으로, 한국 시청자가 장 시작 전에 듣는 시점에서',w:18,sec:['indices']},
+   {title:'간밤 시장을 움직인 요인',focus:'간밤 시장을 움직인 재료·수급·심리를 오늘 한국 시장과 연결해서',w:20,sec:['market']},
+   {title:'시간외와 주요 속보',focus:'장 시작 전 시장을 흔들 수 있는 시간외 움직임과 새로 나온 속보를 중심으로',w:12,sec:['live','flash']},
+   {title:'오늘의 핵심 일정',focus:'오늘과 이번 주 일정 중 한국 시장에 영향이 큰 것을 중심으로',w:16,sec:['eco']},
+   {title:'오늘 주목할 테마',focus:'오늘 한국 시장에서 관심이 쏠릴 만한 강세·약세 테마를 중심으로',w:14,sec:['theme']},
+   {title:'오늘 장 체크포인트',focus:'오늘 장에서 확인할 포인트 3가지와 상승·보합·하락 시나리오를 한눈에 정리(종목 추천 없이)',w:14}],
+  close:{on:true,text:'오늘 가장 중요한 포인트를 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'closing',g:0,ic:'🌇',sub:'오늘 시장 결산과 내일 체크',
+ use:'리포트의 주요 지수·시황 분석·테마 분석·경제 일정을 채워 두고 만드세요(영상 길이는 5~8분이 알맞아요). ‘실시간 주가 조회’·‘실시간 속보’를 고르면 ‘마감 후 움직임’ 부가 생겨요. 주요 지수·경제 일정은 Market Brief 와 같은 전용 화면으로 만들어져요.',
+ st:{name:'Closing Brief',title:'Five-Minute Market Brief (Closing)',brand:'',desc:'오늘 장이 끝난 뒤, 시장이 어떻게 움직였고 왜 그랬는지를 결산하고 내일 볼 것을 짚는 마감 브리핑',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 장이 끝난 뒤 보는 마감 결산 브리핑입니다. 오늘 시장이 어떻게 움직였는지(결과)보다 왜 그렇게 움직였는지(이유)와 내일 무엇을 볼지에 무게를 두세요.',
+   '- 시점은 장 마감 뒤입니다. 오늘 일은 지난 일로 정리하고, 내일은 시나리오로 말하세요.',
+   '- 오프닝 후킹은 오늘 시장의 가장 큰 변화를 하나의 수치나 한마디로 정의하세요.',
+   '- 지수·업종의 등락을 나열하지 말고, 오늘 시장을 하나의 이야기(원인 → 결과 → 의미)로 엮으세요. 수치는 [원자료]에 있는 것만 말하세요.',
+   '- 마지막은 내일 확인할 일정과 시나리오로 마무리하세요(확정 예측·종목 추천 없이).'),
+  secs:['indices','eco','market','theme','live','flash'],
+  parts:[{title:'오늘의 시장 성적표',focus:'오늘 마감 기준으로, 시장 전체의 성적을 한눈에',w:18,sec:['indices']},
+   {title:'시장을 움직인 요인',focus:'오늘 상승·하락의 원인을 이야기 흐름으로',w:22,sec:['market']},
+   {title:'강세와 약세 테마',focus:'오늘 시장에서 강했던 쪽과 약했던 쪽을 이유와 함께',w:20,sec:['theme']},
+   {title:'마감 후 움직임',focus:'장 마감 뒤 나온 시간외 움직임과 속보 중 내일 장에 영향을 줄 수 있는 것을 중심으로',w:12,sec:['live','flash']},
+   {title:'내일을 위한 체크포인트',focus:'내일과 이번 주 남은 일정을 중심으로, 내일 장의 시나리오와 함께',w:16,sec:['eco']}],
+  close:{on:true,text:'오늘의 핵심을 한 문장으로 정리 → 내일 가장 먼저 볼 것 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'headline',g:0,ic:'📰',sub:'오늘의 핵심 이슈 3가지',
+ use:'리포트의 시황 분석을 채워 두고 만드세요(영상 길이는 5~8분이 알맞아요). ‘실시간 속보’를 고르면 ‘오늘의 헤드라인’ 부(속보 소개 화면)가 생겨요. 이슈는 시황 분석·속보 목록에 있는 것에서 중요도순으로 골라 풀어요.',
+ st:{name:'Headline Brief',title:'Five-Minute Market Brief (Headline)',brand:'',desc:'지수 나열 대신 오늘 시장을 움직인 핵심 이슈 3가지를 이야기로 풀고, 시장 반응과 영향 업종을 확인하는 브리핑',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 숫자 나열이 아니라 "오늘 시장을 움직인 이슈"를 이야기로 풀어 주는 헤드라인 중심 브리핑입니다.',
+   '- 오늘의 이슈를 중요도순으로 3가지 안팎으로 고르세요. 이슈마다 "무슨 일이 있었나 → 왜 중요한가 → 시장에 어떤 의미인가"의 같은 틀로 짧고 선명하게 말하고, 이슈끼리 이어지면 이어서 설명하세요.',
+   '- 사건·사실·수치는 [원자료]에 있는 것만 쓰고, 없는 사건을 지어내지 마세요. 확인되지 않은 내용은 "보도에 따르면"처럼 밝히세요.',
+   '- 지수와 업종은 이슈에 대한 시장의 반응을 확인하는 용도로만 쓰세요(이슈 → 반응 순서).',
+   '- 오프닝 후킹은 가장 큰 이슈를 한마디로 정의하세요. 확정 예측·종목 추천은 하지 마세요.'),
+  secs:['market','indices','theme','flash'],
+  parts:[{title:'오늘의 헤드라인',focus:'오늘 시장에 영향을 준 속보를 짧게 훑으며 시작',w:12,sec:['flash']},
+   {title:'가장 큰 이슈',focus:'오늘 시장을 가장 크게 움직인 이슈 하나를 골라, 무슨 일이고 왜 중요한지를 이야기로',w:22,sec:['market']},
+   {title:'두 번째 이슈',focus:'두 번째로 중요한 이슈를 같은 틀(무슨 일 → 왜 중요한가 → 시장 의미)로 간결하게 — [원자료]에서 앞의 이슈와 겹치지 않는 것을 고르기',w:16},
+   {title:'놓치기 쉬운 이슈',focus:'눈에 덜 띄지만 알아 둘 만한 이슈(정책·실적·업종 뉴스) 한 가지를 짧게',w:12},
+   {title:'시장은 어떻게 반응했나',focus:'이 이슈들에 시장이 어떻게 반응했는지를 지수·변동성으로 확인',w:16,sec:['indices']},
+   {title:'영향 받는 업종',focus:'이슈의 영향이 엇갈리는 업종·테마를 중심으로',w:14,sec:['theme']}],
+  close:{on:true,text:'오늘의 이슈를 한 문장으로 정리 → 내일 이어질 포인트 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'eventday',g:0,ic:'📌',sub:'일정·이벤트와 결과별 시나리오',
+ use:'리포트의 경제 일정을 채워 두고 만드세요(영상 길이는 5~8분이 알맞아요). 주요 지수·시황·테마 분석이 있으면 ‘이벤트를 앞둔 시장 분위기’와 ‘이벤트에 민감한 업종’ 부가 함께 만들어져요. 경제 일정은 Market Brief 와 같은 전용 화면으로 만들어져요.',
+ st:{name:'Event Day Brief',title:'Five-Minute Market Brief (Event Day)',brand:'',desc:'FOMC·물가·실적 발표처럼 큰 이벤트가 있는 날, 일정과 결과별 시나리오를 중심으로 풀어 주는 브리핑',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 FOMC·물가·고용·주요 기업 실적 같은 큰 이벤트가 있는 날의 브리핑입니다. 이미 일어난 일보다 "곧 나올 이벤트와 결과별 시장 반응"에 무게를 두세요.',
+   '- 이벤트는 [원자료]의 경제 일정에 있는 것만 날짜·시간과 함께 말하고, 시장에 영향이 큰 1~3개에 집중하세요. 없는 일정·예상치를 지어내지 마세요.',
+   '- 이벤트마다 "시장이 무엇을 기대하나 → 예상 상회·부합·하회 때 시장·금리·환율·업종이 어떻게 반응할 수 있나"를 시나리오로 설명하세요. 확정 예측을 하지 마세요.',
+   '- 지금 시장의 분위기(변동성·위험 선호)와 지수 흐름은 이벤트를 앞둔 상태를 점검하는 용도로 쓰세요.',
+   '- 오프닝 후킹은 오늘 가장 큰 이벤트와 시장의 긴장을 한마디로 정의하세요. 종목 추천은 하지 마세요.'),
+  secs:['eco','indices','market','theme'],
+  parts:[{title:'오늘의 핵심 일정',focus:'오늘(또는 이번 주) 시장을 가장 크게 흔들 이벤트 1~3개에 집중',w:26,sec:['eco']},
+   {title:'결과별 시나리오',focus:'주요 이벤트마다 예상 상회·부합·하회 세 가지 결과가 나왔을 때 시장·금리·환율·업종이 어떻게 반응할 수 있는지를 시나리오로 정리(확정 예측 없이)',w:22},
+   {title:'이벤트를 앞둔 시장 분위기',focus:'이벤트를 앞둔 지금 시장의 위험 선호와 변동성(VIX·Fear & Greed 포함)을 점검',w:18,sec:['indices','market']},
+   {title:'이벤트에 민감한 업종',focus:'이벤트 결과에 따라 영향이 갈릴 업종·테마와 그 이유를 중심으로',w:16,sec:['theme']},
+   {title:'발표 전후 체크리스트',focus:'발표 전후에 확인할 지표·시간·신호를 체크리스트로 정리하고, 변동성이 커질 때의 리스크 관리 관점을 제시',w:12}],
+  close:{on:true,text:'오늘 가장 중요한 이벤트와 시나리오를 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
+{k:'quick',g:0,ic:'⏱',sub:'3분 쾌속 압축 브리핑',
+ use:'시간이 없는 날 쓰세요 — 영상 길이를 3~4분으로 두고 만들면 알맞아요. 리포트의 주요 지수·시황 분석(·경제 일정·테마 분석)을 채워 두면 돼요. ‘실시간 속보’를 고르면 ‘오늘의 핵심 이슈’ 끝에 속보 소개가 붙어요.',
+ st:{name:'Quick Brief',title:'Five-Minute Market Brief (Quick)',brand:'',desc:'시간이 없는 날 3분 안에 끝내는 압축 브리핑 — 시장 한눈에, 오늘의 핵심 이슈, 다음에 볼 것 세 가지만',
+  topic:{on:false,label:'',ph:''},fin:true,
+  rules:vsRl('이 영상은 3분 안팎으로 끝내는 압축 시황 브리핑입니다. 모든 것을 다루지 말고 "오늘 꼭 알아야 할 것"만 남기세요.',
+   '- 문장은 짧고 단정하게, 한 부에 핵심 하나만 담으세요. 지표를 나열하지 말고 가장 중요한 변화 2~3개만 고르세요.',
+   '- 수치는 [원자료]에 있는 것만 말하세요. 설명은 "무엇이 → 왜 → 그래서" 세 가지만 남기고 나머지는 덜어내세요.',
+   '- 오프닝 후킹은 오늘 시장을 한마디로 정의하세요. 마지막은 시청자가 가져갈 한 줄로 끝내세요(확정 예측·종목 추천 없이).'),
+  secs:['indices','market','eco','theme','flash'],
+  parts:[{title:'시장 한눈에',focus:'가장 중요한 변화 2~3개만 골라 한눈에',w:30,sec:['indices']},
+   {title:'오늘의 핵심 이슈',focus:'오늘 시장을 움직인 핵심 이슈 1~2개를 무슨 일이고 왜 중요한지 중심으로 압축해서',w:40,sec:['market','flash']},
+   {title:'다음에 볼 것',focus:'앞으로 확인할 일정과 주목할 테마를 한두 가지씩만',w:22,sec:['eco','theme']}],
+  close:{on:true,text:'오늘의 한 줄 요약 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
+
 /* ── 기업·종목 ── */
-{k:'earnings',g:0,ic:'📊',sub:'기업 실적발표 분석·평가·전망',
+{k:'earnings',g:1,ic:'📊',sub:'기업 실적발표 분석·평가·전망',
  use:'분석할 실적 자료(보도자료 수치·시장 예상치·컨퍼런스콜 요약)와 평가 글을 리포트의 텍스트 박스(시황 분석·시황 분석_Detail 등)에 넣어 두고, 만들 때 ‘분석할 기업·분기’에 기업과 분기를 적으세요. 자료에 있는 수치만 말해요.',
  st:{name:'Earnings Brief',title:'Earnings Brief',brand:'실적 브리핑',desc:'기업 실적발표 결과를 분석·평가하고 앞으로의 전망까지 짚어 주는 영상',
   topic:{on:true,label:'분석할 기업·분기',ph:'엔비디아 2026 3분기 실적'},fin:true,
@@ -45636,7 +45789,7 @@ const VS_TPLS=[
    {title:'전망과 체크포인트',focus:'가이던스와 업황을 근거로 낙관·기본·비관 시나리오를 제시하고, 앞으로 확인할 지표·일정(다음 실적 발표, 신제품, 규제 등)을 체크리스트로 정리(종목 추천 없이)',w:16}],
   close:{on:true,text:'이번 실적의 핵심을 한 문장으로 정리 → 앞으로 지켜볼 지표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'stock',g:0,ic:'🔎',sub:'한 종목 사업·실적·가치·리스크',
+{k:'stock',g:1,ic:'🔎',sub:'한 종목 사업·실적·가치·리스크',
  use:'기업 정보·실적·밸류에이션 자료를 리포트의 텍스트 박스(테마 분석_Detail·관심 종목 등)에 넣어 두고, ‘분석할 종목’에 종목 이름을 적으세요. 자료에 없는 수치는 "자료에 없음"으로 말해요.',
  st:{name:'Stock Deep Dive',title:'Stock Deep Dive',brand:'종목 딥다이브',desc:'한 종목(기업)의 사업·실적·가치·리스크를 깊이 있게 분석해 소개하는 영상',
   topic:{on:true,label:'분석할 종목',ph:'엔비디아'},fin:true,
@@ -45654,7 +45807,7 @@ const VS_TPLS=[
    {title:'리스크와 체크포인트',focus:'약점·반대 논리·외부 변수를 균형 있게 짚고, 앞으로 확인할 지표·이벤트를 정리(매수·매도 의견 없이)',w:18}],
   close:{on:true,text:'이 종목의 핵심을 한 문장으로 정리 → 앞으로 확인할 지표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'deal',g:0,ic:'🤝',sub:'상장·인수합병·분할·증자 이벤트',
+{k:'deal',g:1,ic:'🤝',sub:'상장·인수합병·분할·증자 이벤트',
  use:'발표 내용(조건·금액·일정)과 관련 기사·분석을 리포트의 텍스트 박스에 넣어 두고, ‘다룰 기업 이벤트’에 이벤트를 한 줄로 적으세요.',
  st:{name:'Deal Brief',title:'Deal Brief',brand:'기업 이벤트 브리핑',desc:'신규 상장·인수합병·분할·유상증자 같은 기업 이벤트의 내용과 영향을 분석하는 영상',
   topic:{on:true,label:'다룰 기업 이벤트',ph:'A사의 B사 인수 발표'},fin:true,
@@ -45672,7 +45825,7 @@ const VS_TPLS=[
    {title:'리스크와 앞으로의 일정',focus:'성사 여부·규제 승인·통합 위험·자금 조달 같은 리스크와, 앞으로 확인할 승인·주주총회·상장 일정을 정리(종목 추천 없이)',w:16}],
   close:{on:true,text:'이벤트의 핵심과 시장에 주는 의미를 한 문장으로 정리 → 앞으로 확인할 일정 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'etf',g:0,ic:'🧺',sub:'ETF 구성·성과·비교',
+{k:'etf',g:1,ic:'🧺',sub:'ETF 구성·성과·비교',
  use:'ETF 소개 자료(추종 지수·구성 종목·보수·수익률)를 리포트의 텍스트 박스에 넣어 두고, ‘다룰 ETF’에 이름을 적으세요(비교하려면 "A와 B 비교").',
  st:{name:'ETF Brief',title:'ETF Brief',brand:'ETF 브리핑',desc:'ETF의 구성·성과·특징을 분석하고 비슷한 ETF와 비교해 활용법을 알려 주는 영상',
   topic:{on:true,label:'다룰 ETF',ph:'QQQ와 SCHD 비교'},fin:true,
@@ -45691,7 +45844,7 @@ const VS_TPLS=[
   close:{on:true,text:'ETF의 핵심 특징을 한 문장으로 정리 → 투자 전에 스스로 점검할 질문 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
 /* ── 이슈·거시 ── */
-{k:'issue',g:1,ic:'🌍',sub:'전쟁·감염병 등 이슈의 증시 영향',
+{k:'issue',g:2,ic:'🌍',sub:'전쟁·감염병 등 이슈의 증시 영향',
  use:'이슈의 경과·배경·시장 반응 자료를 리포트의 텍스트 박스(시황 분석_Detail 등)에 넣어 두고, ‘다룰 이슈’에 한 줄로 적으세요. 무슨 일인가 → 왜 일어났나 → 경제와 사회로 번지는 경로 → 시장 반응 → 업종별 영향 → 시나리오 순서로 풀어 줘요. 자료에 없는 전개는 지어내지 않아요.',
  st:{name:'Issue Brief',title:'Issue Brief',brand:'이슈 브리핑',desc:'전쟁·감염병·국가의 큰 변화 같은 이슈가 왜 일어났고 증시로 어떻게 번지는지 짚는 영상',
   topic:{on:true,label:'다룰 이슈',ph:'중동 확전과 국제유가 급등'},fin:true,
@@ -45711,7 +45864,7 @@ const VS_TPLS=[
    {title:'시나리오와 체크 신호',focus:'앞으로 전개될 시나리오(확산·장기화·진정)별로 시장이 어떻게 움직일 수 있는지와, 시나리오마다 확인할 신호·일정(발표·회의·지표)을 정리하고 투자자가 지켜볼 리스크 관리 관점을 제시(종목 추천 없이)',w:16}],
   close:{on:true,text:'이슈의 핵심과 시장에 주는 의미를 한 문장으로 정리 → 앞으로 확인할 신호 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'policy',g:1,ic:'🏛',sub:'정책·규제·선거의 증시 영향',
+{k:'policy',g:2,ic:'🏛',sub:'정책·규제·선거의 증시 영향',
  use:'정책 발표문·관련 기사·시장 반응 자료를 리포트의 텍스트 박스에 넣어 두고, ‘다룰 정책·사건’에 한 줄로 적으세요. 확정된 내용과 협상 중인 내용을 구분해 말해요.',
  st:{name:'Policy Brief',title:'Policy Brief',brand:'정책 브리핑',desc:'정부 정책·규제·관세·선거 같은 제도 변화가 증시에 미치는 영향을 분석하는 영상',
   topic:{on:true,label:'다룰 정책·사건',ph:'미국 반도체 관세 인상'},fin:true,
@@ -45729,7 +45882,7 @@ const VS_TPLS=[
    {title:'앞으로의 일정과 체크포인트',focus:'후속 일정(협상·표결·시행일)과 확인할 신호, 투자자가 유의할 점을 정리(종목 추천 없이)',w:16}],
   close:{on:true,text:'정책의 핵심과 시장에 주는 의미를 한 문장으로 정리 → 앞으로 확인할 일정 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'macro',g:1,ic:'🏦',sub:'금리·물가·고용·중앙은행',
+{k:'macro',g:2,ic:'🏦',sub:'금리·물가·고용·중앙은행',
  use:'발표 수치·시장 예상치·중앙은행 발언 자료와 주요 지수·경제 일정을 리포트에 넣어 두고, ‘다룰 지표·이벤트’에 적으세요. 예상치와 비교해 의미를 풀어 줘요.',
  st:{name:'Macro Brief',title:'Macro Brief',brand:'거시경제 브리핑',desc:'금리·물가·고용·환율과 중앙은행 결정이 증시에 주는 의미를 쉽게 풀어 주는 영상',
   topic:{on:true,label:'다룰 지표·이벤트',ph:'11월 FOMC 기준금리 결정'},fin:true,
@@ -45747,7 +45900,7 @@ const VS_TPLS=[
    {title:'다음 일정과 시나리오',focus:'다음 발표·회의 일정과 앞으로 시장이 주목할 신호를 시나리오별로 정리(종목 추천 없이)',w:14}],
   close:{on:true,text:'이번 지표·결정의 의미를 한 문장으로 정리 → 다음에 주목할 발표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'commodity',g:1,ic:'🛢',sub:'유가·금·달러·국채 해설',
+{k:'commodity',g:2,ic:'🛢',sub:'유가·금·달러·국채 해설',
  use:'가격 흐름과 원인을 다룬 자료(뉴스·분석)를 리포트의 텍스트 박스에 넣어 두고, ‘다룰 자산’에 적으세요. 가격·재고 같은 수치는 자료에 있는 것만 말해요.',
  st:{name:'Commodity Brief',title:'Commodity Brief',brand:'원자재 브리핑',desc:'유가·금·구리·달러·국채 같은 원자재·환율·채권의 움직임과 증시 영향을 해설하는 영상',
   topic:{on:true,label:'다룰 자산',ph:'국제유가(WTI) 급등'},fin:true,
@@ -45766,7 +45919,7 @@ const VS_TPLS=[
   close:{on:true,text:'이 자산이 움직인 이유와 증시에 주는 의미를 한 문장으로 정리 → 앞으로 가격을 움직일 변수 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
 /* ── 시황·전망 ── */
-{k:'outlook',g:2,ic:'🔭',sub:'이번 주 일정·변수·시나리오',
+{k:'outlook',g:3,ic:'🔭',sub:'이번 주 일정·변수·시나리오',
  use:'주제 입력 없이 만들어요 — 리포트의 경제 일정·주요 지수·시황 분석·테마 분석 등을 채워 두면 그 내용으로 이번 주를 전망해요. 일정은 경제 일정에 있는 것만 말해요.',
  st:{name:'Weekly Outlook',title:'Weekly Outlook',brand:'주간 전망',desc:'이번 주 증시의 핵심 일정과 변수를 짚고 시나리오별 대응 포인트를 정리하는 영상',
   topic:{on:false,label:'',ph:''},fin:true,
@@ -45784,7 +45937,7 @@ const VS_TPLS=[
    {title:'시나리오와 대응 포인트',focus:'낙관·기본·비관 시나리오와 각 시나리오에서 확인할 신호를 정리하고, 체크리스트로 마무리(종목 추천 없이)',w:16}],
   close:{on:true,text:'이번 주 가장 중요한 일정과 시나리오를 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'review',g:2,ic:'📅',sub:'지난 한 주 시장 결산',
+{k:'review',g:3,ic:'📅',sub:'지난 한 주 시장 결산',
  use:'주제 입력 없이 만들어요 — 한 주의 주요 지수·시황 분석·테마 분석 등을 리포트에 채워 두면 그 내용으로 결산해요.',
  st:{name:'Weekly Review',title:'Weekly Review',brand:'주간 결산',desc:'지난 한 주 증시의 성적표와 주요 이슈·강세와 약세 테마를 결산하는 영상',
   topic:{on:false,label:'',ph:''},fin:true,
@@ -45802,7 +45955,7 @@ const VS_TPLS=[
    {title:'다음 주로 이어질 포인트',focus:'다음 주로 이어질 핵심 변수와 일정을 짧게 정리하고 시나리오로 말함(종목 추천 없이)',w:14}],
   close:{on:true,text:'한 주의 흐름을 한 문장으로 정리 → 다음 주 주목할 포인트 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'strategy',g:2,ic:'🎯',sub:'시장 국면 진단과 전략의 틀',
+{k:'strategy',g:3,ic:'🎯',sub:'시장 국면 진단과 전략의 틀',
  use:'시장 진단의 근거(주요 지수·시황 분석·전략 메모)를 리포트에 채워 두고, ‘전략 주제’에 적으세요. 종목 추천 없이 업종·자산군 단위의 일반론으로 말해요.',
  st:{name:'Strategy Brief',title:'Strategy Brief',brand:'투자 전략 브리핑',desc:'지금 시장 국면을 진단하고 시나리오와 리스크 관리 원칙으로 투자 전략의 틀을 정리하는 영상',
   topic:{on:true,label:'전략 주제',ph:'연말 포트폴리오 점검'},fin:true,
@@ -45821,7 +45974,7 @@ const VS_TPLS=[
   close:{on:true,text:'지금 국면의 핵심 전략 틀을 한 문장으로 정리 → 시청자가 스스로 점검할 질문 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
 /* ── 테마·학습 ── */
-{k:'theme',g:3,ic:'🧭',sub:'한 테마를 깊이 파고들기',
+{k:'theme',g:4,ic:'🧭',sub:'한 테마를 깊이 파고들기',
  use:'테마 자료를 리포트의 ‘테마 분석’·‘테마 분석_Detail’ 박스에 넣어 두고, ‘분석할 테마’에 테마 이름을 적으세요.',
  st:{name:'Theme Brief',title:'Theme Brief',brand:'테마 브리핑',desc:'한 가지 테마를 깊이 있게 분석해 핵심 내용을 소개하는 영상(시황·핵심 요약 없이)',
   topic:{on:true,label:'분석할 테마',ph:'AI 데이터센터 전력 인프라'},fin:true,
@@ -45838,7 +45991,7 @@ const VS_TPLS=[
    {title:'투자 포인트와 체크리스트',focus:'앞으로 확인해야 할 지표·일정·신호와 시나리오별 시사점을 정리(종목 추천 없이)',w:16}],
   close:{on:true,text:'이 테마의 핵심을 한 문장으로 정리 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'sector',g:3,ic:'🏭',sub:'업종 업황·구조·주요 기업',
+{k:'sector',g:4,ic:'🏭',sub:'업종 업황·구조·주요 기업',
  use:'업황·기업 자료를 리포트의 ‘테마 분석’ 박스 등에 넣어 두고, ‘분석할 업종’에 업종을 적으세요. 업종의 사이클이 어디쯤인지를 중심으로 풀어 줘요.',
  st:{name:'Sector Brief',title:'Sector Brief',brand:'업종 브리핑',desc:'한 업종(산업)의 업황·경쟁 구조·주요 기업·리스크를 짚어 주는 영상',
   topic:{on:true,label:'분석할 업종',ph:'반도체'},fin:true,
@@ -45856,7 +46009,7 @@ const VS_TPLS=[
    {title:'체크포인트',focus:'업황을 판단할 때 앞으로 확인할 지표·일정·신호를 체크리스트로 정리(종목 추천 없이)',w:14}],
   close:{on:true,text:'업종의 핵심을 한 문장으로 정리 → 앞으로 확인할 지표 한 가지 → 구독·좋아요 안내 → 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'chart',g:3,ic:'📈',sub:'차트 기술적 분석 해설',
+{k:'chart',g:4,ic:'📈',sub:'차트 기술적 분석 해설',
  use:'‘My Technical Analysis With AI’ 박스에 차트 분석을 채워 두고, ‘분석할 대상’에 지수나 종목을 적으세요. 가격대는 그 글에 있는 것만 말해요.',
  st:{name:'Chart Lab',title:'Chart Lab',brand:'차트 브리핑',desc:'지수·종목의 차트를 추세·지지와 저항·시나리오 중심으로 해설하는 기술적 분석 영상',
   topic:{on:true,label:'분석할 대상',ph:'나스닥100 지수'},fin:true,
@@ -45874,7 +46027,7 @@ const VS_TPLS=[
    {title:'리스크 관리 포인트',focus:'차트 해석의 한계와 손실 관리 관점(기준 가격 점검, 분할 접근)을 정리(매수·매도 타이밍 지시 없이)',w:12}],
   close:{on:true,text:'차트의 핵심 기준 가격대와 시나리오를 한 문장으로 정리 → 구독·좋아요 안내 → 차트 해석은 참고용이며 투자 권유가 아니라는 면책 멘트'}}},
 
-{k:'learn',g:3,ic:'🎓',sub:'투자 개념 쉬운 교육',
+{k:'learn',g:4,ic:'🎓',sub:'투자 개념 쉬운 교육',
  use:'개념 이름만 적어도 만들 수 있어요(자료는 선택). 실제 사례를 쓰려면 리포트 박스에 자료를 넣어 두세요. 계산 예시는 가상의 숫자로만 말해요.',
  st:{name:'Investing 101',title:'Investing 101',brand:'투자 교실',desc:'증시와 투자의 핵심 개념을 쉬운 비유와 사례로 알려 주는 교육형 영상',
   topic:{on:true,label:'설명할 개념',ph:'PER과 PBR 쉽게 이해하기'},fin:true,
@@ -45895,7 +46048,7 @@ const VS_TPLS=[
 
 /* ── 템플릿 고르기 UI — 스타일 설정 창 '시작하기' ── */
 function vsTplHtml(){   /* 묶음별 카드 */
-  return VS_TPL_GROUPS.map((g,gi)=>'<div class="vs-tg"><div class="vs-tgh">'+esc(g)+'</div><div class="vs-tc">'
+  return VS_TPL_GROUPS.map((g,gi)=>'<div class="vs-tg"><div class="vs-tgh">'+esc(g.n)+(g.s?'<small>'+esc(g.s)+'</small>':'')+'</div><div class="vs-tc">'
     +VS_TPLS.filter(t=>t.g===gi).map(t=>'<button type="button" class="vs-tb mobile-keep" data-vs="tpl" data-t="'+t.k+'" aria-pressed="false" title="'+esc(t.st.desc)+'"><span class="ic">'+t.ic+'</span><span class="tx"><b>'+esc(t.st.name)+'<span class="hv">✓</span></b><i>'+esc(t.sub)+'</i></span></button>').join('')
     +'</div></div>').join('');
 }
@@ -45926,7 +46079,7 @@ function vsTplPick(k){
 }
 /* ── 시작점 ② ✨ AI 가 구성 제안 ── */
 const sysVsSuggest=()=>'당신은 유튜브 영상 기획자이자 방송 작가입니다. 사용자가 설명한 "영상 스타일(영상 제작 포맷)"에 맞는 영상 구성을 설계하세요. 이 앱은 투자 리포트(주요 지수·경제 일정·시장 분석·테마 분석 등의 섹션)를 바탕으로 유튜브 영상 스크립트를 만듭니다.\n영상 본문을 4~6개의 부로 나누고 부마다 다룰 내용을 구체적으로 쓰세요. 오프닝(후킹·인사·목차)과 마무리는 시스템이 따로 만들므로 부에 넣지 마세요.\n결과는 아래 JSON 객체 하나만 출력하세요(설명·마크다운·코드블록 금지).\n{"desc":"스타일 한 줄 설명(50자 안팎)","title":"기본 영상 제목(영문 가능, 3단어 안팎)","brand":"오프닝 인사에 쓸 이름(2~12글자, 예: 테마 브리핑)","topic":{"on":true 또는 false,"label":"영상마다 직접 입력할 주제의 이름(예: 분석할 테마)","ph":"입력 예시(선택)"},"rules":"이 스타일의 작성 지침 — 3~6개 문장(다룰 것·다루지 말 것·톤·분석 깊이)","parts":[{"title":"부 이름(2~14글자, 가운뎃점·물결표 금지)","focus":"그 부에서 다룰 내용 1~2문장","w":10~30 사이의 정수(길이 비중)}],"close":"마무리에서 말할 내용을 화살표(→)로 이은 한 줄","fin":true 또는 false(투자·금융 영상이면 true),"secs":["아래 [쓸 수 있는 자료]의 키 중 이 영상에 맞는 것"]}\n영상마다 주제가 달라지는 스타일(예: 테마 분석, 종목 분석)이면 topic.on 을 true 로, 매번 같은 틀이면 false 로 하세요.';
-const vsSuggestUser=(name,idea)=>'[스타일 이름] '+(name||'(아직 없음 — 어울리는 이름은 만들지 말고 그대로 비워 두세요)')+'\n[만들고 싶은 영상] '+idea+'\n[쓸 수 있는 자료]\n'+VS_SEC_OK.map(k=>k+': '+labelOf(k)).join('\n');
+const vsSuggestUser=(name,idea)=>'[스타일 이름] '+(name||'(아직 없음 — 어울리는 이름은 만들지 말고 그대로 비워 두세요)')+'\n[만들고 싶은 영상] '+idea+'\n[쓸 수 있는 자료]\n'+VS_SEC_OK.filter(k=>k!=='live'&&k!=='flash').map(k=>k+': '+labelOf(k)).join('\n');
 function vsParseAi(t){
   const s=String(t||'').replace(/^\s*```[a-z]*\s*\n?/i,'').replace(/\n?```\s*$/,'').trim(), a=s.indexOf('{'), b=s.lastIndexOf('}'); if(a<0||b<=a) return null;
   try{ const o=JSON.parse(s.slice(a,b+1)); return (o&&typeof o==='object')?o:null; }catch(e){ return null; }
@@ -45934,7 +46087,7 @@ function vsParseAi(t){
 function vsFromAi(o,name){
   const t=(o.topic&&typeof o.topic==='object')?o.topic:{};
   return {name:name||'',title:o.title,desc:o.desc,brand:o.brand,topic:{on:t.on===true,label:t.label,ph:t.ph},rules:o.rules,fin:o.fin!==false,
-    secs:(Array.isArray(o.secs)?o.secs:[]).filter(k=>VS_SEC_OK.indexOf(k)>=0),
+    secs:(Array.isArray(o.secs)?o.secs:[]).filter(k=>VS_SEC_OK.indexOf(k)>=0&&k!=='live'&&k!=='flash'),
     parts:(Array.isArray(o.parts)?o.parts:[]).slice(0,VS_MAXP).map(p=>({title:vsStr(p&&p.title,30).replace(/[·~]+/g,' '),focus:vsStr(p&&p.focus,500),w:Math.max(3,Math.min(60,Math.round(+(p&&p.w))||15))})),
     close:{on:true,text:typeof o.close==='string'?o.close:''}};
 }
@@ -46485,7 +46638,7 @@ document.addEventListener('keydown',e=>{
 window.openScriptMaker=()=>openMaker();
 window.openScriptHistory=()=>openHistory();
 window.BTMScript={openMaker,openHistory,close:()=>closeMaker(true),videoSource,
-  _dbg:{vsAll,vsOf,vsClean,vsLoad,vsSaveAll,vsIs,vsAllows,vsDefSecs,vsPaint,vsSwitch,vsEdOpen,vsEdClose,vsEdSave,vsEdFill,vsEdRead,vsEdCheck,VS_TPLS,VS_TPL_GROUPS,vsTplHtml,vsTplPick,vsTplName,vsDel,vsDup,vsParseAi,vsFromAi,sysReportStyle,sysReportStyleX,sysChapterStyleKo,sysChapterStyleX,buildPlanStyle,vsOpenRole,vsCloseRole,greetLine,vsSwap,vsSig,vsHash,ixRowsDom,ixHint,ixPctOf,buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
+  _dbg:{vsAll,vsOf,vsClean,vsLoad,vsSaveAll,vsIs,vsAllows,vsDefSecs,vsPaint,vsSwitch,vsEdOpen,vsEdClose,vsEdSave,vsEdFill,vsEdRead,vsEdCheck,VS_TPLS,VS_TPL_GROUPS,vsTplHtml,vsTplPick,vsTplName,vsActiveParts,vsSecItem,vsBound,vsBdSum,vsBindChange,VS_BIND_OK,vsDel,vsDup,vsParseAi,vsFromAi,sysReportStyle,sysReportStyleX,sysChapterStyleKo,sysChapterStyleX,buildPlanStyle,vsOpenRole,vsCloseRole,greetLine,vsSwap,vsSig,vsHash,ixRowsDom,ixHint,ixPctOf,buildPlan,fixedParts,mergeShort,GRP_T,setFixed:v=>{ FIXED_PARTS=!!v; },sysReport,reportUser,sysChapter,chapterUser,digestBlocks,narrOnly,narrationText,reusableReport,showRep,showScr,showBoard,
     buildBoard,newBoard,sentUnits,parseBlocks,parseBible,finalizeBlocks,boardText,bibleUser,boardUser,sysBoardSeg,SYS_BIBLE,boardShape,boardBase,ctxOfRec,cleanNarr,cleanReport,narrChars,mdLite,rawBlock,secInfo,composeText,recOf,previewOf,get S(){ return S; },SECS,META,loadCfg,saveCfg,readCfg,validate,newCtx,dbAll,dbDel,dbPut,fmtTime,fmtDur,
     V,langLine,lenLine,sysAdjust,sysBible,sysBoardSegFor,sysReportX,sysChapterX,sysAdjustX,sysBibleX,sysBoardSegX,adjustUser,adjustUserX,baseLabel,dLabel,CUE_RE,cueText,run,liveRun,liveEnsure,liveFresh,liveScan,liveNewsOf,liveRowText,liveName,liveClockSess,liveSessLine,liveIdxNow,liveIdxNorm,liveIdxLabels,LIVE_IDX,LIVE_MODE,rptSecs,paintLive,livePreview,liveStamp,kstParts,flashRun,flashEnsure,flashFresh,flashPreview,paintFlash,flashHrsNow,flashHrsNorm,FLASH_HRS,nwsRole,liveCompose,flashCompose,flashFocus,pickEnsure,pickApply,pickCancel,pickRender,pickCount,paintPickSum,PICK,get FLASH(){ return FLASH; },set FLASH(v){ FLASH=v; },get LIVE(){ return LIVE; },set LIVE(v){ LIVE=v; },
     isAuto,segRange,segCfgOf,fitSegs,parseSegPlan,uniformSegs,segPlanUser,sysSegPlan,sysSegPlanX,sysSegPlanFor,unitsOf,autoChapters,planBoard,runBoard,segStat,boardMeta,boardHtml,segHtml,sigOf,boardStarted,
@@ -61771,7 +61924,7 @@ async function klFinalAi(specs,ss,ctx,signal){
 }
 /* ── v131: 이미 있는 클립도 놓치지 않게 — 제목과 '똑같은' 글은 종류·칸을 가리지 않고 지우고, 열 때·내보내기 전·제목을 손으로 고친 뒤에도 정리 ──
    (v130 은 새로 만들 때의 길만 막았음 — 옛 버전에서 만든 클립, 만든 뒤 제목을 고쳐서 본문 글과 같아진 클립, 'title' 종류 블록은 거름망 밖이었음) ── */
-const KL_BUILD='v200';
+const KL_BUILD='v201';
 /* ── v132: 제목 전용 글 — 영상 제목·시리즈 이름·브랜드·오프닝 타이틀 화면 글은 머리말·타이틀 화면에만 쓰고 본문(구성요소)에는 안 씀 ──
    원인: 거름망이 아는 제목은 '이 장면의 챕터·AI 가 정한 clip 제목·영상 제목 통째'뿐이었음. 오프닝 챕터 이름('Five Minute Market Brief')과 타이틀 화면에 따로 적은 윗글('The FIVE')은
    다른 챕터 장면에서는 그냥 스토리보드 글자(로고·고정 라벨)로 보여, '화면에 나온다고 한 글자는 꼭 넣기'에 걸려 본문 요점이 됨 ── */
