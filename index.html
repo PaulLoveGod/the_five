@@ -5327,9 +5327,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-more:hover{color:#0f766e;text-decoration:underline}
 /* 목록 보기 */
 #plnModal .pln-ls{display:none;flex:1;min-height:0;overflow:auto}
-#plnModal .pln-gh{position:sticky;top:0;z-index:1;background:#f1f5f9;padding:5px 16px;font-size:11px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0}
-#plnModal .pln-gh.t{background:#fef3c7;color:#92400e}
-#plnModal .pln-gh.hl{background:#fde68a}
+#plnModal .pln-rw.hl{background:#fde68a}   /* 그날로 이동했을 때 잠깐 강조 */
 #plnModal .pln-rw{display:flex;gap:10px;padding:8px 16px;border-bottom:1px solid #f1f5f9;align-items:flex-start}
 #plnModal .pln-rw.p{opacity:.6}
 #plnModal .pln-tm{width:78px;flex:none;font-size:12px;font-weight:700;color:#0f766e;line-height:1.35}
@@ -11267,6 +11265,7 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v216 요청: "목록 보기의 날짜 머리 줄('2026년 11월 24일 (화) · 내일')은 표출되지 않게 없애줘" — 날짜별 머리 줄(.pln-gh)을 없애고 줄 맨 앞의 날짜만 남김. 줄에 data-day 를 달아 showDay(+N건 더보기·확정 줄 클릭)가 그 줄로 스크롤·강조(.hl). 오늘/내일 같은 상대 표기(relLabel)는 함께 없어짐.
    v215 요청: "일정 list(달력의 [목록] 보기)에 시간은 표시하지 않고, 시간이 표기되던 맨 앞에 날짜를 표기 · '종일'이라는 시간은 표기하지 않음" — rowHtml 첫 칸을 시간 표기 대신 날짜 `월/일 (요일)`(dateCell)로, 여러 날 일정은 그 아래 줄에 ~끝 날짜. 달력 칩·왼쪽 확정 일정 줄·수정 창의 시간 표기는 그대로.
    v214 요청: "Google Calendar 는 즉시 연동되는데 Google Task 는 연동이 잘 안 되고 몇 개씩 누락 — 상태 확인·즉시 연동 · 미정에서 드래그해 달력에 옮긴 것·달력에서 직접 쓴 것 등 모든 미정/확정 일정이 연동"
      · 원인(가짜 구글로 재현): ① 달력에서 직접 입력한 일정(td=0)은 Tasks 와 연결이 없었음(누락의 주된 원인) ② Tasks 쪽 일시적 오류(네트워크·5xx)가 나면 다음 변경·60초 점검 때까지 재시도가 없음 ③ 캘린더 단계가 실패한 동기화에서는 Tasks 단계가 같이 건너뛰어짐(날짜 접두 갱신 지연).
@@ -12050,7 +12049,6 @@ function paintSet(){
 function toast(msg){ const t=$('plnToast'); if(!t) return; t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2800); }
 
 /* ── 화면: 라벨 ── */
-function relLabel(d,today){ const diff=dayDiff(d,today); return diff===0?'오늘':diff===1?'내일':diff===2?'모레':diff===-1?'어제':diff>0?diff+'일 후':(-diff)+'일 전'; }
 function dateLabel(d){ const p=parseYmd(d); return p.getFullYear()+'년 '+(p.getMonth()+1)+'월 '+p.getDate()+'일 ('+WD[p.getDay()]+')'; }
 function remLabel(r){ if(r<0) return '알림 없음'; if(r===0) return '정시'; if(r%1440===0) return (r/1440)+'일 전'; if(r%60===0) return (r/60)+'시간 전'; return r+'분 전'; }
 function dateCell(it){   /* 목록 보기 줄 맨 앞: 날짜(월/일)+요일 — 시간·'종일'은 표시하지 않음. 여러 날 일정은 그 아래 줄에 ~끝 날짜(v215) */
@@ -12060,22 +12058,21 @@ const mStart=d=>new Date(d.getFullYear(),d.getMonth(),1);
 function ensureVm(){ if(!vm) vm=mStart(new Date()); }
 
 /* ── 화면: 목록 보기의 한 줄 ── */
-function rowHtml(it,today){
+function rowHtml(it,today,day){
   const past=it.d2<today;
   const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'')+(it.r>=0?'<span class="pln-bd" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'')+(it.x?'<span class="pln-bd" title="완료한 할 일(구글 Tasks 체크)">✔</span>':'');
   const sy=gcfg.on?(needsPush(it)?'<span class="pln-sy w" title="구글 캘린더에 아직 반영되지 않음">⏳</span>':'<span class="pln-sy" title="구글 캘린더와 동기화됨">☁</span>'):'';
-  return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'"><div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'"><div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
 }
 function renderList(){
   const box=$('plnList'); if(!box) return; ensureVm();
   const a=ymd(vm), b=ymd(new Date(vm.getFullYear(),vm.getMonth()+1,0)), today=todayY();
   const list=items.filter(it=>it.d&&it.d2>=a&&it.d<=b).sort(cmp);
   if(!list.length){ box.innerHTML='<div class="pln-em">이 달에는 일정이 없습니다.<br>달력으로 돌아가 날짜를 누르거나, 왼쪽 To Do 를 날짜에 끌어다 놓으세요.</div>'; return; }
-  let html='', last='';
+  let html='';
   list.forEach(it=>{
-    const day=it.d<a?a:it.d;                                                /* 전달에서 이어지는 여러 날 일정은 이 달 1일 아래에 */
-    if(day!==last){ last=day; html+='<div class="pln-gh'+(day===today?' t':'')+'" data-day="'+day+'">'+esc(dateLabel(day))+' · '+esc(relLabel(day,today))+'</div>'; }
-    html+=rowHtml(it,today);
+    const day=it.d<a?a:it.d;                                                /* 전달에서 이어지는 여러 날 일정은 이 달 1일 줄로(v216: 날짜 머리 줄 없이 각 줄 맨 앞에 날짜) */
+    html+=rowHtml(it,today,day);
   });
   box.innerHTML=html;
 }
@@ -12409,7 +12406,7 @@ function showDay(day){   /* 그날이 보이게 목록 보기로 */
   const d=parseYmd(day); if(!d) return;
   ui.view='list'; saveUi(); vm=mStart(d); renderMain();
   const list=$('plnList'); if(!list) return;
-  const hs=[...list.querySelectorAll('.pln-gh')], h=hs.find(x=>x.getAttribute('data-day')>=day)||hs[hs.length-1];
+  const hs=[...list.querySelectorAll('.pln-rw')], h=hs.find(x=>x.getAttribute('data-day')>=day)||hs[hs.length-1];   /* 그날(또는 그 뒤 첫) 줄 */
   if(h){ try{ h.scrollIntoView({block:'start'}); }catch(_){} h.classList.add('hl'); setTimeout(()=>h.classList.remove('hl'),1600); }
 }
 function month(delta){ ensureVm(); vm=new Date(vm.getFullYear(),vm.getMonth()+(+delta||0),1); renderMain(); }
