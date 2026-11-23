@@ -1263,14 +1263,13 @@ body.guest-mode .guest-mask{color:transparent!important;-webkit-text-fill-color:
 .vz-tb.on{background:#2563eb;color:#fff}
 .vz-tb[data-m="viz"].has::after{content:'';display:inline-block;width:5px;height:5px;margin-left:4px;border-radius:50%;background:#22c55e;vertical-align:1px}
 .vz-tb[data-m="viz"].has.on::after{background:#bbf7d0}
-/* Footprints in Books 헤더 — 토글이 들어가면 책제목 입력칸이 눌려(폭 1100px 이하에서 10px, 진도율·메뉴·✨ 가 잘림) 한 줄에 안 들어갈 때는 다음 줄로 접고, 입력칸은 최소 60px 을 지킴 */
+/* Footprints in Books 헤더 — (v223: 토글은 없앴지만 좁은 폭 안전장치로 그대로 둠) 한 줄에 안 들어갈 때(예전엔 토글 때문에 폭 1100px 이하에서 입력칸이 10px 으로 눌리고 진도율·메뉴·✨ 가 잘림)는 다음 줄로 접고, 입력칸은 최소 60px 을 지킴 */
 #footprintBlock>div:first-child{flex-wrap:wrap!important;row-gap:4px}
 /* Footprints in Books 제목 줄 간격(2026-10-19, 재조정): 위 박스→블록 간격 10px → 5px(열 gap 10px + margin-top −5px, 맨 위 섹션이면 그대로) · 제목 줄→아래 본문 박스 간격 4px → 2px(제목 줄 margin-bottom, 인라인) */
 #footprintBlock:not(:first-child){margin-top:-5px}
 #footprintBookTitle{flex:1 1 60px!important;min-width:60px!important}
 .vz-wrap{position:relative;display:block;min-width:0;flex:0 0 auto}
 .vz-wrap>.vz-body{position:absolute;top:0;left:0;right:0;bottom:0;width:auto;height:auto;min-height:0;margin:0;resize:none;z-index:1}
-#qtBibleDisplay__vz{background:#f0f4ff}
 .vz-wrap:not(.vz-on)>.vz-body{visibility:hidden;pointer-events:none}
 .vz-wrap.vz-on>.vz-main{opacity:0;pointer-events:none}   /* 인포그래픽 보기: 글 쪽은 투명하게만(visibility:hidden 이면 innerText 가 빈 글이 되어 글자 수·AI 참고 자료가 깨짐) — 포커스·클릭은 JS 가 inert 로 막음 */
 .vz-body img{max-width:100%}
@@ -5210,7 +5209,7 @@ body.guest-mode #plnMenuBtn{display:none!important}
 #plnModal .pln-st code{background:#e0f2fe;border-radius:4px;padding:1px 5px;font-size:11px;word-break:break-all}
 /* 본문 2단: 왼쪽 To Do · 오른쪽 달력 */
 #plnModal .pln-body{flex:1;min-height:0;display:flex}
-#plnModal .pln-todo{flex:0 0 clamp(250px,27%,360px);display:flex;flex-direction:column;min-height:0;border-right:1px solid #e2e8f0;background:#f8fafc;--spt:.535;--spb:.465;overflow:hidden}
+#plnModal .pln-todo{flex:0 0 clamp(250px,27%,360px);display:flex;flex-direction:column;min-height:0;border-right:1px solid #e2e8f0;background:#f8fafc;--spt:42;--spb:38;--spf:20;overflow:hidden}   /* 구역 높이 비율(×100) — flex-grow 합이 1 미만이면 남는 공간을 다 못 채우므로(한 구역을 접으면 나머지 둘의 합이 1 아래가 됨) 100 단위로 둠(v222) */
 #plnModal .pln-th{padding:12px 14px 6px;font-size:14px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;flex-shrink:0}
 #plnModal .pln-th small{font-size:10.5px;font-weight:600;color:#64748b}
 #plnModal .pln-th .sp{flex:1}
@@ -5221,6 +5220,7 @@ body.guest-mode #plnMenuBtn{display:none!important}
 #plnModal .pln-sec{display:flex;flex-direction:column;min-height:0;min-width:0;flex:1 1 0;position:relative;overflow:hidden}
 #plnModal .pln-sec.top{flex:var(--spt) 1 0;min-height:210px}
 #plnModal .pln-sec.bot{flex:var(--spb) 1 0;min-height:96px;background:#f1f5f9}
+#plnModal .pln-sec.fin{flex:var(--spf) 1 0;min-height:96px;background:#eaeff5}   /* 맨 아래: 완료 일정(v222) */
 /* 구분선 = 끌어서 높이를 조절하는 손잡이(v210) */
 #plnModal .pln-split{flex:none;height:10px;display:flex;align-items:center;justify-content:center;cursor:row-resize;background:#e2e8f0;border-top:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;touch-action:none;user-select:none}
 #plnModal .pln-split:hover,#plnModal .pln-split.drag,#plnModal .pln-split:focus-visible{background:#c7d2fe;outline:none}
@@ -5235,19 +5235,18 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-pnb svg.dn{transform:scaleY(-1)}
 #plnModal .pln-th{white-space:nowrap}
 #plnModal .pln-th small{min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}   /* 좁은 패널에서도 머리가 한 줄로 — 부제가 먼저 줄어듦 */
-/* 최대화: 그 구역이 왼쪽 패널 전체를 덮음(다른 구역·구분선은 숨김) */
-#plnModal .pln-todo[data-pm="maxTop"] .pln-sec.bot,#plnModal .pln-todo[data-pm="maxTop"] .pln-split,#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top,#plnModal .pln-todo[data-pm="maxBot"] .pln-split{display:none}
-#plnModal .pln-todo[data-pm="maxTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.bot{flex:1 1 auto;min-height:0}
-/* 최소화: 제목 줄만 남기고 다른 구역이 나머지를 채움 */
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot{flex:0 0 auto;min-height:0}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top>:not(.pln-th),#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot>:not(.pln-th){display:none}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.bot,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.top{flex:1 1 0}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th{cursor:pointer}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th small,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th small,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-sortb{display:none!important}
+/* 최대화(maxTop·maxBot·maxFin): 그 구역이 왼쪽 패널 전체를 덮음(다른 구역·구분선은 숨김) — v222: 세 구역 */
+#plnModal .pln-todo[data-pm^="max"] .pln-sec,#plnModal .pln-todo[data-pm^="max"] .pln-split{display:none}
+#plnModal .pln-todo[data-pm="maxTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.bot,#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.fin{display:flex;flex:1 1 auto;min-height:0}
+/* 최소화(minTop·minBot·minFin): 제목 줄만 남기고 나머지 두 구역이 원래 비율대로 나머지를 채움 */
+#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin{flex:0 0 auto;min-height:0}
+#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top>:not(.pln-th),#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot>:not(.pln-th),#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin>:not(.pln-th){display:none}
+#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-th{cursor:pointer}
+#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th small,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th small,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-sortb,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-th small{display:none!important}
 /* 가려지거나 접힌 ‘일정 미정’ 구역에도 날짜 있는 일정을 끌어다 놓아 되돌릴 수 있게 — 끄는 동안만 안내 막이 있는 줄로 나타남 */
-#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm{display:flex;flex:0 0 66px;min-height:0}
+#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.top.arm{display:flex;flex:0 0 66px;min-height:0}
 #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm{flex:0 0 66px}
-#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm>:not(.pln-th){display:none}
+#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm>:not(.pln-th){display:none}
 /* 날짜가 정해진 일정(달력 칩·확정 일정 줄)을 끌고 있을 때 — 위쪽 '일정 미정' 영역이 놓는 자리: 놓으면 날짜가 지워지고 일정 미정으로 돌아감 */
 #plnModal .pln-sec.top.arm::after{content:'↩ 여기에 놓으면 날짜가 지워지고\A ‘미정 일정’으로 돌아갑니다';white-space:pre;position:absolute;inset:4px;z-index:3;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.7;font-size:13px;font-weight:800;color:#0f766e;background:rgba(240,253,250,.9);border:2px dashed #5eead4;border-radius:10px;pointer-events:none}
 #plnModal .pln-sec.top.arm.over::after{background:rgba(204,251,241,.95);border:2px solid #0f766e}
@@ -5401,19 +5400,20 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 @media(max-width:860px){
   #plnModal .pln-body{flex-direction:column}
   #plnModal .pln-todo{flex:0 0 auto;height:42%;border-right:none;border-bottom:1px solid #e2e8f0;flex-direction:row}   /* 좁은 창: 위(일정 미정)·아래(확정 일정)를 좌우로 나란히 */
-  #plnModal .pln-sec.top,#plnModal .pln-sec.bot{min-height:0;min-width:150px}
+  #plnModal .pln-sec.top,#plnModal .pln-sec.bot,#plnModal .pln-sec.fin{min-height:0;min-width:120px}
   #plnModal .pln-split{width:10px;height:auto;cursor:col-resize;border:none;border-left:1px solid #cbd5e1;border-right:1px solid #cbd5e1}
   #plnModal .pln-split i{width:4px;height:34px}
   #plnModal .pln-pnb svg{transform:rotate(-90deg)}
   #plnModal .pln-pnb svg.dn{transform:rotate(-90deg) scaleY(-1)}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot{flex:0 0 34px;min-width:0}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th{writing-mode:vertical-rl;padding:10px 6px;flex:1;gap:8px}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-cnt,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-cnt{writing-mode:horizontal-tb}
-  #plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm{flex:0 0 170px;min-width:0}
+  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin{flex:0 0 34px;min-width:0}
+  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-th{writing-mode:vertical-rl;padding:10px 6px;flex:1;gap:8px}
+  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-cnt,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-cnt,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-cnt{writing-mode:horizontal-tb}
+  #plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm{flex:0 0 170px;min-width:0}
   #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm .pln-th{writing-mode:horizontal-tb;flex:none}
   #plnModal .pln-tf textarea{min-height:30px;height:30px}
 }
 @media(max-width:560px){
+  #plnModal .pln-sec.top,#plnModal .pln-sec.bot,#plnModal .pln-sec.fin{min-width:96px}   /* 폰 폭에서도 세 구역이 나란히 들어가게(v222) */
   #plnModal .pln-tm{width:62px}
   #plnModal .pln-tb b{min-width:90px;font-size:15px}
 }
@@ -5471,7 +5471,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       <div class="pln-todo">
         <!-- 위: 일정 미정(날짜가 정해지지 않은 To Do) — 적어 두었다가 오른쪽 달력의 날짜로 끌어다 놓음 -->
         <div class="pln-sec top">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'top')" title="달력이나 ‘확정 일정’의 항목을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정으로 돌아옵니다">📝 미정 일정 <small>To Do</small><span class="sp"></span><span id="plnTodoCnt" class="pln-cnt" title="날짜가 정해지지 않은 항목 수">0</span><button type="button" class="pln-pnb" data-k="top" data-a="max" title="미정 일정 최대화 — 확정 일정 영역을 아래로 덮고 크게 봅니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="top" data-a="min" title="미정 일정 최소화 — 제목만 남기고 위로 접습니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'top')" title="달력이나 ‘확정 일정’의 항목을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정으로 돌아옵니다">📝 미정 일정 <small>To Do</small><span class="sp"></span><span id="plnTodoCnt" class="pln-cnt" title="날짜가 정해지지 않은 항목 수">0</span><button type="button" class="pln-pnb" data-k="top" data-a="max" title="미정 일정 최대화 — 확정·완료 일정 영역을 아래로 덮고 크게 봅니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="top" data-a="min" title="미정 일정 최소화 — 제목만 남기고 위로 접습니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div class="pln-tf">
             <input id="plnTodoIn" type="text" maxlength="200" autocomplete="off" placeholder="일정 입력 후 Enter — 앞에 ‘11/25 ’처럼 날짜를 쓰면 바로 확정" title="날짜가 정해지지 않은 일정을 적으세요. 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면 그 날짜의 확정 일정(달력)으로 바로 등록됩니다(‘11/25 (화) ’처럼 요일을 붙여도 됩니다)" onkeydown="BTMPlanner.enter(event,'todo')">
             <textarea id="plnTodoMemo" rows="2" maxlength="4000" placeholder="메모 (선택)"></textarea>
@@ -5483,8 +5483,15 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         <div id="plnSplit" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 위·아래 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event)" onkeydown="BTMPlanner.splitKey(event)" ondblclick="BTMPlanner.splitReset()"><i></i></div>
         <!-- 아래: 날짜가 확정된 일정 — 위에서 달력으로 옮겨 날짜를 정하면 여기로 내려와 '월/일'과 함께 모임(날짜 최신순) -->
         <div class="pln-sec bot">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 미정 일정 영역을 위로 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 미정·완료 일정 영역을 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div id="plnDoneList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
+        </div>
+        <!-- 구분선 2 — 확정 일정 ↔ 완료 일정 높이를 조절(더블클릭=원래 비율, ↑↓ 키도 됨) -->
+        <div id="plnSplit2" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 확정·완료 일정 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event,2)" onkeydown="BTMPlanner.splitKey(event,2)" ondblclick="BTMPlanner.splitReset()"><i></i></div>
+        <!-- 맨 아래: 완료 일정(v222) — 미정·확정 일정에서 체크(☑)한 일정이 여기로 옮겨짐(최근 완료한 순). 체크를 풀면 원래 목록(날짜 없으면 미정·있으면 확정)으로 돌아감 -->
+        <div class="pln-sec fin">
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'fin')" title="미정·확정 일정에서 체크(☑)한 일정이 모입니다 — 체크를 풀면 원래 목록으로 돌아갑니다">✅ 완료 일정 <small>체크한 일정</small><span class="sp"></span><span id="plnFinCnt" class="pln-cnt" title="완료한 일정 수">0</span><button type="button" class="pln-pnb" data-k="fin" data-a="max" title="완료 일정 최대화 — 미정·확정 일정 영역을 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="fin" data-a="min" title="완료 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div id="plnFinList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
       </div>
       <div class="pln-cal">
@@ -5864,7 +5871,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
           <div class="routine-left">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;min-height:24px;flex-shrink:0">
               <span style="display:flex;align-items:center;gap:8px">
-                <span id="stid-bible" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="font-size:11.5px;font-weight:600;color:var(--accent2);white-space:nowrap">📖 오늘의 말씀</span><span class="vz-tg pdf-export-hide" data-for="qtBibleDisplay" role="group" aria-label="오늘의 말씀 본문 보기"><span class="vz-tb on" data-m="text" role="button" tabindex="0" aria-pressed="true" title="글로 입력한 본문을 봅니다">텍스트</span><span class="vz-tb" data-m="viz" role="button" tabindex="0" aria-pressed="false" title="인포그래픽 이미지로 채운 본문을 봅니다">인포그래픽</span></span>
+                <span id="stid-bible" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="font-size:11.5px;font-weight:600;color:var(--accent2);white-space:nowrap">📖 오늘의 말씀</span>
                 <a href="https://prs.app/ko/bible/gen.1.nkrv" target="_blank" rel="noopener" class="pdf-export-hide" style="font-size:10px;color:#3b82f6;text-decoration:none;white-space:nowrap;font-weight:600;border:1px solid rgba(59,130,246,.35);padding:2px 8px;border-radius:10px;letter-spacing:.1px">드라마성경 바로가기 ↗</a>
               </span>
               <span class="pdf-export-hide" style="display:flex;align-items:center;gap:5px;flex-shrink:0">
@@ -5874,41 +5881,31 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
                 <button class="ai-btn pdf-export-hide" onclick="openAIChat('qtBibleDisplay','오늘의 말씀')" title="AI 어시스턴트 열기" style="flex-shrink:0">✨</button>
               </span>
             </div>
-            <div class="vz-wrap vz-nat" id="qtBibleDisplay__wrap">
-              <div class="vz-main" id="qtBibleDisplay" onfocus="if(this.contentEditable==='true')ftFocus(this)" onblur="ftBlur()" style="
+            <div id="qtBibleDisplay" onfocus="if(this.contentEditable==='true')ftFocus(this)" onblur="ftBlur()" style="
               width:100%;height:380px;border:1px solid var(--border);border-radius:4px;
               padding:8px 10px;font-size:13px;line-height:1.65;color:var(--text);
               background:#f0f4ff;overflow-y:auto;overflow-x:hidden;word-break:break-all;
               font-family:inherit;resize:vertical;box-sizing:border-box;
             "><span style="color:var(--muted);font-style:italic">「자동 가져오기」 버튼을 누르면 오늘의 말씀이 여기에 표시됩니다.</span></div>
-              <div id="qtBibleDisplay__vz" class="rich-editor vz-body" contenteditable="true" spellcheck="false" placeholder="아직 인포그래픽이 없어요 — ✨ AI 로 인포그래픽을 만들어 ‘본문에 반영’하면 여기에 들어갑니다." onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData();BTMVz.touch('qtBibleDisplay')"></div>
-              <div class="vz-grip pdf-export-hide" data-for="qtBibleDisplay" title="드래그하여 높이 조절">⠿</div>
-            </div>
             <input type="hidden" id="qtContent" oninput="saveData()"/>
             <input type="hidden" id="qtBibleHTML"/>
           </div>
           <!-- 나의 묵상 노트 -->
           <div class="routine-memo-col">
-            <div class="section-label" style="min-height:32px;display:flex;align-items:center;margin-bottom:4px;flex-shrink:0"><span id="stid-meditation" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">✍️ 나의 묵상 노트</span><span class="vz-tg pdf-export-hide" data-for="qtMemo" role="group" aria-label="나의 묵상 노트 본문 보기"><span class="vz-tb on" data-m="text" role="button" tabindex="0" aria-pressed="true" title="글로 입력한 본문을 봅니다">텍스트</span><span class="vz-tb" data-m="viz" role="button" tabindex="0" aria-pressed="false" title="인포그래픽 이미지로 채운 본문을 봅니다">인포그래픽</span></span><button class="ai-btn" onclick="openAIChat('qtMemo','나의 묵상 노트')" title="AI 어시스턴트 열기">✨</button></div>
-            <div class="vz-wrap" id="qtMemo__wrap">
-              <div id="qtMemo" class="rich-editor vz-main" contenteditable="true" placeholder="말씀을 읽고 묵상한 내용, 깨달은 점, 오늘의 적용을 자유롭게 적으세요." style="height:180px;resize:none;box-sizing:border-box;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
-              <div id="qtMemo__vz" class="rich-editor vz-body" contenteditable="true" spellcheck="false" placeholder="아직 인포그래픽이 없어요 — ✨ AI 로 인포그래픽을 만들어 ‘본문에 반영’하면 여기에 들어갑니다." onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData();BTMVz.touch('qtMemo')"></div>
-            </div>
+            <div class="section-label" style="min-height:32px;display:flex;align-items:center;margin-bottom:4px;flex-shrink:0"><span id="stid-meditation" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">✍️ 나의 묵상 노트</span><button class="ai-btn" onclick="openAIChat('qtMemo','나의 묵상 노트')" title="AI 어시스턴트 열기">✨</button></div>
+            <div id="qtMemo" class="rich-editor" contenteditable="true" placeholder="말씀을 읽고 묵상한 내용, 깨달은 점, 오늘의 적용을 자유롭게 적으세요." style="height:180px;resize:none;box-sizing:border-box;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
             <div id="qtMemoGrip" class="text-bot-grip" title="드래그하여 높이 조절">⠿</div>
           </div>
           <!-- 감사와 간구 -->
           <div class="routine-memo-col">
             <div class="section-label" style="min-height:24px;display:flex;align-items:center;margin-bottom:4px;flex-shrink:0">
-              <span id="stid-gratitude" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">🙏 감사와 간구</span><span class="vz-tg pdf-export-hide" data-for="prayerContent" role="group" aria-label="감사와 간구 본문 보기"><span class="vz-tb on" data-m="text" role="button" tabindex="0" aria-pressed="true" title="글로 입력한 본문을 봅니다">텍스트</span><span class="vz-tb" data-m="viz" role="button" tabindex="0" aria-pressed="false" title="인포그래픽 이미지로 채운 본문을 봅니다">인포그래픽</span></span>
+              <span id="stid-gratitude" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">🙏 감사와 간구</span>
               <button class="ai-btn" onclick="openAIChat('prayerContent','감사와 간구')" title="AI 어시스턴트 열기">✨</button>
             </div>
-            <div class="vz-wrap" id="prayerContent__wrap">
-              <div id="prayerContent" class="rich-editor vz-main" contenteditable="true"
+            <div id="prayerContent" class="rich-editor" contenteditable="true"
               placeholder="오늘의 감사 제목과 기도 제목을 적으세요."
               style="height:300px;resize:none;box-sizing:border-box;"
               onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
-              <div id="prayerContent__vz" class="rich-editor vz-body" contenteditable="true" spellcheck="false" placeholder="아직 인포그래픽이 없어요 — ✨ AI 로 인포그래픽을 만들어 ‘본문에 반영’하면 여기에 들어갑니다." onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData();BTMVz.touch('prayerContent')"></div>
-            </div>
             <div id="prayerCornerGrip" class="text-bot-grip" title="드래그하여 높이 조절">⠿</div>
           </div>
         </div>
@@ -5991,7 +5988,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
           <!-- Footprints in Books -->
           <div id="footprintBlock" style="min-width:0;overflow:hidden;position:relative">
             <div style="display:flex;align-items:center;gap:5px;flex-wrap:nowrap;margin-bottom:2px;min-height:32px;overflow:hidden;min-width:0">
-              <span id="stid-books" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="font-size:11.5px;font-weight:600;color:var(--accent2);white-space:nowrap;flex-shrink:0">📚 Footprints in Books :</span><span class="vz-tg pdf-export-hide" data-for="footprintContent" role="group" aria-label="Footprints in Books 본문 보기"><span class="vz-tb on" data-m="text" role="button" tabindex="0" aria-pressed="true" title="글로 입력한 본문을 봅니다">텍스트</span><span class="vz-tb" data-m="viz" role="button" tabindex="0" aria-pressed="false" title="인포그래픽 이미지로 채운 본문을 봅니다">인포그래픽</span></span>
+              <span id="stid-books" class="stid-edit" contenteditable="true" spellcheck="false" title="클릭하여 제목 수정" oninput="saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" style="font-size:11.5px;font-weight:600;color:var(--accent2);white-space:nowrap;flex-shrink:0">📚 Footprints in Books :</span>
               <input type="text" id="footprintBookTitle" placeholder="책제목(저자명)"
                 style="font-size:11px;border:none;border-radius:3px;background:#f3f4f6;outline:none;
                        height:22px!important;min-height:0!important;padding:0 5px;flex:1 1 auto;min-width:0;color:var(--text);cursor:text;box-sizing:border-box;"
@@ -6018,10 +6015,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
                        background:#6b7280;color:#fff;">메뉴</button>
               <button class="ai-btn" onclick="openAIChat('footprintContent','Footprints in Books')" title="AI 어시스턴트 열기">✨</button>
             </div>
-            <div class="vz-wrap" id="footprintContent__wrap">
-              <div id="footprintContent" class="rich-editor vz-main" contenteditable="true" placeholder="이번에 읽은 책의 핵심 인사이트, 인상 깊은 구절, 투자에 적용할 원칙을 정리하세요." style="height:180px;resize:none;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
-              <div id="footprintContent__vz" class="rich-editor vz-body" contenteditable="true" spellcheck="false" placeholder="아직 인포그래픽이 없어요 — ✨ AI 로 인포그래픽을 만들어 ‘본문에 반영’하면 여기에 들어갑니다." onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData();BTMVz.touch('footprintContent')"></div>
-            </div>
+            <div id="footprintContent" class="rich-editor" contenteditable="true" placeholder="이번에 읽은 책의 핵심 인사이트, 인상 깊은 구절, 투자에 적용할 원칙을 정리하세요." style="height:180px;resize:none;" onfocus="ftFocus(this)" onblur="ftBlur()" oninput="saveData()"></div>
             <div id="footprintGrip" class="text-bot-grip" title="드래그하여 높이 조절">⠿</div>
           </div>
         </div>
@@ -7954,7 +7948,7 @@ function _sizeOutside(e){
   if(dd) dd.style.display='none';
 }
 /* ── 텍스트박스 수직 배치 ── */
-const _VALIGN_IDS=['qtBibleDisplay','qtMemo','myLifeContent','prayerContent','footprintContent','marketAnalysis','sectorAnalysis','marketAnalysisDetail','sectorAnalysisDetail','tradingStrategy','warrenKim','aiStockRadar','technicalAnalysis','dibContent','qtBibleDisplay__vz','qtMemo__vz','prayerContent__vz','myLifeContent__vz','footprintContent__vz','marketAnalysis__vz','sectorAnalysis__vz','marketAnalysisDetail__vz','sectorAnalysisDetail__vz','warrenKim__vz','aiStockRadar__vz','tradingStrategy__vz'];
+const _VALIGN_IDS=['qtBibleDisplay','qtMemo','myLifeContent','prayerContent','footprintContent','marketAnalysis','sectorAnalysis','marketAnalysisDetail','sectorAnalysisDetail','tradingStrategy','warrenKim','aiStockRadar','technicalAnalysis','dibContent','myLifeContent__vz','marketAnalysis__vz','sectorAnalysis__vz','marketAnalysisDetail__vz','sectorAnalysisDetail__vz','warrenKim__vz','aiStockRadar__vz','tradingStrategy__vz'];
 /* 새로 생긴 박스(v197) — 저장본에 세로 정렬 값이 아예 없는 옛 기록은 시황·테마 분석처럼 '가운데'로 보임(저장본에 값이 있으면 그 값 — 위쪽 정렬도 그대로) */
 const _VALIGN_CENTER_NEW=['marketAnalysisDetail','sectorAnalysisDetail'];
 const _BOX_HEIGHT_IDS=['qtBibleDisplay','qtMemo','myLifeContent','prayerContent','footprintContent','marketAnalysis','sectorAnalysis','marketAnalysisDetail','sectorAnalysisDetail','tradingStrategy','warrenKim','aiStockRadar','technicalAnalysis','sbCard','kwCard','dibCard','investorStatusNote','watchlistNote'];
@@ -11332,6 +11326,14 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v223 요청: "오늘의 말씀·나의 묵상 노트·감사와 간구·Footprints in Books 섹션에서 '텍스트 | 인포그래픽' 버튼(.vz-tg)을 삭제"  — (이전에 기술적 분석에서 한 것과 같은 방식, 2026-10-18 v66)
+     · 네 섹션의 제목 옆 토글과 이중 본문 구조(#id__wrap 래퍼·인포그래픽 본문 #id__vz·오늘의 말씀의 .vz-grip)를 걷어내 예전 모양(글 편집기 하나)으로. BTMVz.IDS 에서 빼고 LEGACY 에 넣음 — 옛 저장본(vzBodies)에 이 섹션들의 인포그래픽이 있으면 restore 가 글 본문 뒤에 이어 붙여 잃지 않음(저장하면 글 본문에 들어감).
+     · AI 팝업 '본문에 반영'·인포그래픽 붙여넣기는 #id__vz 가 없는 곳의 예전 방식(한 본문에 글+이미지)으로 동작. 오늘의 말씀 박스는 글이 hidden 두 개(qtContent·qtBibleHTML)에서 다시 그려져 DOM 만 바꾸면 저장·불러오기 때 사라지므로, 박스에 이어 붙인 내용(옛 인포그래픽·AI 반영)은 _qtCommitFromDisplay 가 [수정]→[완료]와 같이 hidden 에 적어 둠.
+     · Footprints 헤더의 좁은 폭 줄바꿈 안전장치 CSS 는 그대로 둠(토글이 없어져 더 넉넉할 뿐).
+   v222 요청: "미정 일정·확정 일정만 있는데 '완료 일정'도 하단에 하나 추가 — 미정·확정 일정에서 체크박스로 완료 체크를 하면 그 일정이 완료 일정으로 옮겨지게 · 완료 일정도 전체 보기(최대화)·최소화 등 같은 방식으로"
+     · 왼쪽 패널(.pln-todo)이 위(미정 .top) · 가운데(확정 .bot) · 아래(완료 .fin) 세 구역 + 구분선 둘(#plnSplit·#plnSplit2). 완료(x=1)한 항목은 미정·확정 목록에서 빠지고 아래 '완료 일정'(#plnFinList, 건수 #plnFinCnt)에 최근 완료한 순으로 모임(항목 필드 xt = 완료한 시각, 앱에만 저장·폰에서 체크한 작업은 Tasks updated). 체크를 풀면(x=0) 날짜 없으면 미정·있으면 확정 목록으로 돌아감 — 구글 Tasks 와의 완료 연동(toggleDone→afterChange(false))은 그대로.
+     · 구역마다 [최대화][최소화] 단추 — ui.pm = '' | maxTop|maxBot|maxFin | minTop|minBot|minFin (이름은 기존 저장값과 호환되게 가운데=Bot·아래=Fin). 구분선을 끌면 두 구역 사이만 조절(위/가운데는 ui.sp = 위 구역 비율, 가운데/아래는 ui.sf = 아래 구역 비율, 가운데 = 나머지; 각 ≥ 0.10). 더블클릭/Enter = 기본 비율(0.42·0.38·0.20).
+     · 날짜가 정해진 일정을 끌어 위쪽 미정 영역에 놓으면 날짜가 지워지는 동작(arm)은 위가 가려진 상태(maxBot·maxFin·minTop)에서도 그대로.
    v221 요청: "월세 보증금 준비처럼 11/23~24 연속으로 있는 일정이 두 날짜로 나뉘어 두 개로 보이지 않고, 구글 캘린더처럼 이어진 하나의 막대로 · 이어진 날짜로 표시되는 일정은 언제나 칸의 맨 위에"
      · 달력(월간)에서 여러 날 일정(d2>d, 시간 일정 포함)은 칸마다 칩을 나누지 않고 주(週)마다 칸 경계를 넘어 이어진 막대 하나(.pln-mb)로 그림 — #plnGrid 위에 겹친 .pln-bars 격자(칸과 같은 7열×주 행)에 grid-column/span 으로 놓아 칸 사이 선도 가림. 제목은 막대 시작에 한 번(주가 바뀌면 그 주 첫 칸에서 다시), 앞·뒤 주에서 이어지면 그쪽 모서리를 네모로(.cl/.cr).
      · 막대는 언제나 칸의 맨 위 줄들(weekBars: 시작이 이르고 긴 것부터 lane 0,1,…)이고 일반 칩은 그 아래(칸마다 .pln-sp 빈 칸으로 막대 줄 수만큼 비움). 칸이 낮아 줄이 모자라면 fitCal 이 아래 줄 막대부터 감추고 '+N건 더보기'에 포함(막대 줄은 최대 줄 수-1). dayMap 은 여러 날 일정을 빼고(칩 목록엔 하루짜리만).
@@ -11435,9 +11437,12 @@ const CID_DEFAULT='';                       /* 배포 파일에 클라이언트 
 const WIN_BACK=90, WIN_FWD=730;             /* 동기화 창: 오늘−90일 ~ +730일 */
 const REC_BACK=7, REC_FWD=60;               /* 반복 일정의 날짜별 항목은 이 범위만 앱에 가져옴(매일 반복이 수백 줄이 되지 않게) */
 const POLL_MS=60000, TPOLL_MS=15000, CHIP_H=20;   /* 창이 열려 있는 동안: 전체 동기화 60초마다 · Tasks 만 15초마다 */
-const DEF_SP=0.535;                          /* 왼쪽 위(일정 미정) 구역의 기본 높이 비율 */
-const PM_OK=['','maxTop','maxBot','minTop','minBot'];
-const clampSp=r=>Math.min(0.88,Math.max(0.12,(+r)||DEF_SP));
+const DEF_SP=0.42, DEF_SF=0.2;                          /* 왼쪽 위(일정 미정) 구역의 기본 높이 비율 */
+const PM_OK=['','maxTop','maxBot','maxFin','minTop','minBot','minFin'];
+const MIN_F=0.1;                              /* 왼쪽 패널 세 구역이 각각 차지하는 비율의 아래 한계(v222) */
+const clampSp=r=>Math.min(1-2*MIN_F,Math.max(MIN_F,(+r)||DEF_SP));   /* 위(미정 일정) 구역의 비율 */
+const clampSf=r=>Math.min(1-2*MIN_F,Math.max(MIN_F,(+r)||DEF_SF));   /* 아래(완료 일정) 구역의 비율 */
+const trio=(t,f)=>{ t=clampSp(t); f=Math.min(1-t-MIN_F,clampSf(f)); return [t,1-t-f,f]; };   /* [위, 가운데(확정), 아래(완료)] 비율 — 합 1, 각각 ≥ MIN_F */
 const FIELDS=['d','t','d2','t2','s','m','r','c'];
 const GRP={T:['d','t','d2','t2'],S:['s'],M:['m'],R:['r'],C:['c']};   /* 병합 단위: 시간 · 제목 · 메모 · 알림 · 색상(v209) */
 /* 구글 캘린더 일정 색 11가지(colorId 1~11) — 구글 캘린더 앱에 보이는 이름·색과 같게. 앱의 칩·줄 색도 이 값 */
@@ -11500,7 +11505,7 @@ let busyP=null, again=false, timer=null, poll=null, opened=false, pendFull=false
 let editId='', editBase=null, dlgTodo=false, setOn=false, dlgColor='', clrOn=false, ccTry='', ccMsg='';
 let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자동 재시도 횟수·타이머 · 마지막 전체 동기화 시각 · 이 캘린더의 일정을 한 번이라도 가져왔는지(v214) */
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
-let ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
+let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,pm:''}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null;
 const WKEY='BTMPlannerWork_v1', WK_TITLE='오늘 업무';                      /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 */
 let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''};
@@ -11537,6 +11542,7 @@ function norm(x){
     g:todo?'':String(x.g||''), gu:todo?'':String(x.gu||''), mod:+x.mod||0, rec:(!todo&&x.rec)?1:0, src:x.src==='g'?'g':'app', b:todo?null:normB(x.b), mr:(!todo&&typeof x.mr==='string')?x.mr.slice(0,8000):null,
     td,
     x:x.x?1:0,                          /* 완료(체크) — Tasks 의 완료와 연동 */
+    xt:(x.x&&+x.xt>0)?+x.xt:0,          /* 완료한 시각 — '완료 일정' 목록의 최근 완료순(v222). 앱에만 저장(구글에 올리지 않음) */
     k:td?String(x.k||'').slice(0,300):'', ku:td?String(x.ku||''):'', tb:(td&&x.k)?normTb(x.tb):null };   /* Tasks 작업 id · 그 작업의 updated · 마지막으로 맞춘 작업 값 */
   return fix0(it);
 }
@@ -11568,7 +11574,8 @@ function load(){
   if(autoDateAll()) save();                                      /* 이미 적어 둔 일정 미정 항목 중 제목 맨 앞에 'MM/DD ' 가 있는 것은 한 번 확정 일정으로(v208) */
   const gr=lsGet(GKEY);
   if(gr){ try{ const c=JSON.parse(gr); if(c&&typeof c==='object') gcfg=parseG(c); }catch(_){} }
-  try{ const u=JSON.parse(lsGet(UIKEY)||'null'); if(u&&(u.view==='list'||u.view==='cal')) ui.view=u.view; if(u&&(u.sort==='asc'||u.sort==='desc')) ui.sort=u.sort; if(u&&typeof u.sp==='number') ui.sp=clampSp(u.sp); if(u&&PM_OK.indexOf(u.pm)>=0) ui.pm=u.pm; }catch(_){}
+  try{ const u=JSON.parse(lsGet(UIKEY)||'null'); if(u&&(u.view==='list'||u.view==='cal')) ui.view=u.view; if(u&&(u.sort==='asc'||u.sort==='desc')) ui.sort=u.sort; if(u&&typeof u.sf==='number'){ ui.sf=clampSf(u.sf); if(typeof u.sp==='number') ui.sp=clampSp(u.sp); } else if(u&&typeof u.sp==='number'&&Math.abs(u.sp-0.535)>0.001) ui.sp=clampSp(u.sp*(1-DEF_SF));   /* v222 이전 저장본(구역 둘): 기본 비율이면 새 기본값, 직접 조절한 비율이면 줄어든 공간 안에서 그 비율대로 */
+    if(u&&PM_OK.indexOf(u.pm)>=0) ui.pm=u.pm; }catch(_){}
   wkLoad();                                                      /* 오늘 업무(v218) */
   calReady=!!gcfg.last;                                          /* 이 브라우저에서 캘린더 동기화를 한 번이라도 마쳤으면 준비됨(v214) */
   if(!gcfg.cid&&CID_DEFAULT) gcfg.cid=CID_DEFAULT;
@@ -11896,7 +11903,7 @@ function tMerge(L,R,res){   /* 작업 R 과 앱 항목 L 을 3자 병합 — 기
     if(lc&&!rc) useRemote=false;                 /* 앱에서만 고침 → 앱 값을 작업에 올림 */
     else if(!lc&&rc) useRemote=true;             /* 폰에서만 고침 → 앱에 반영 */
     else useRemote=ru>(L.mod||0);                /* 양쪽이 다르게 고침 → 나중에 고친 쪽 */
-    if(useRemote){ if(f==='x') L.x=rv?1:0; else L[f]=rv; pulled=true; }
+    if(useRemote){ if(f==='x'){ L.x=rv?1:0; L.xt=L.x?(ru||Date.now()):0; } else L[f]=rv; pulled=true; }
   });
   /* P: 폰에서 제목 맨 앞에 'MM/DD ' 를 새로 쓰거나 바꾸면 그 날짜로 — 일정 미정이면 확정 일정(달력)으로, 이미 날짜가 있으면 그 날짜로 이동(시간·길이 유지).
      앱에서 날짜를 바꾼 것이 나중이면 앱 값을 작업에 올림(tDirty). 폰에서 날짜를 지우기만 한 경우(rp 가 빔)는 앱의 날짜가 우선 — 다음 동기화에 다시 붙임 */
@@ -11919,7 +11926,7 @@ function tGone(L,res){   /* 폰에서 작업이 지워짐 → 앱 항목도 지�
 }
 const fromRemoteTask=R=>{   /* 폰에서 만든 작업 → 일정 미정 To Do. 제목 맨 앞에 'MM/DD ' 가 있으면 그 날짜의 확정 일정(v208) */
   const rs=tkSnap(R,null);
-  const it=norm({id:newId(),d:'',s:rs.s,m:rs.m,r:900,c:gcfg.dc,mod:0,src:'app',td:1,x:rs.x?1:0,k:R.id,ku:R.updated||'',tb:rs});
+  const it=norm({id:newId(),d:'',s:rs.s,m:rs.m,r:900,c:gcfg.dc,mod:0,src:'app',td:1,x:rs.x?1:0,xt:rs.x?(Date.parse(R.updated||'')||0):0,k:R.id,ku:R.updated||'',tb:rs});
   if(it&&rs.p){ const d=mdToYmd(+rs.p.slice(0,2),+rs.p.slice(3),''); if(d){ it.d=d; it.d2=d; it.mod=Math.max(0,Date.parse(R.updated||'')||0); } }
   return it;
 };
@@ -12273,16 +12280,19 @@ function doneHtml(it,today){                                          /* 왼쪽 
 }
 const inDone=x=>!!x.d&&(!!x.td||x.src==='app');   /* 아래 '확정 일정' 목록 = To Do 에서 시작한 항목 + 이 앱에서 만든 일정(달력에서 직접 입력 포함) — 폰·구글 캘린더에서 만든 일정은 제외 */
 function renderTodo(){
-  const box=$('plnTodoList'), dbox=$('plnDoneList'); if(!box) return;
-  const todos=items.filter(x=>!x.d).sort((a,b)=>(a.x?1:0)-(b.x?1:0));   /* 위: 일정 미정 — 완료한 것은 아래로(입력 순서는 유지) */
+  const box=$('plnTodoList'), dbox=$('plnDoneList'), fbox=$('plnFinList'); if(!box) return;
+  const todos=items.filter(x=>!x.d&&!x.x);   /* 위: 일정 미정 — 완료한 것은 맨 아래 '완료 일정'으로(v222, 입력 순서는 유지) */
   const c=$('plnTodoCnt'); if(c) c.textContent=todos.length;
   box.innerHTML=todos.length?todos.map(todoHtml).join(''):'<div class="pln-em">날짜가 정해지지 않은 일정을 위에 적어 두세요.<br>적은 항목을 오른쪽 달력의 날짜로 끌어다 놓으면(또는 📅 로 날짜를 고르면) 그날의 일정이 되어 아래 ‘확정 일정’으로 내려갑니다.<br>반대로 달력의 일정이나 ‘확정 일정’ 줄을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정이 됩니다.<br>또는 제목 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면(‘11/25 (화) ’처럼 요일을 붙여도 됩니다) 그 날짜의 확정 일정이 됩니다.</div>';
   if(!dbox) return;
-  const done=items.filter(inDone).sort(cmp); if(ui.sort!=='asc') done.reverse();   /* 아래: 날짜가 확정된 항목(To Do 출신 + 이 앱에서 만든 일정) — 기본은 날짜 최신순 */
+  const done=items.filter(x=>inDone(x)&&!x.x).sort(cmp); if(ui.sort!=='asc') done.reverse();   /* 아래: 날짜가 확정된 항목(To Do 출신 + 이 앱에서 만든 일정) — 기본은 날짜 최신순 */
   const dc=$('plnDoneCnt'); if(dc) dc.textContent=done.length;
   const sl=$('plnSortLab'); if(sl) sl.textContent=ui.sort==='asc'?'빠른 날짜순':'날짜 최신순';
   const today=todayY();
   dbox.innerHTML=done.length?done.map(it=>doneHtml(it,today)).join(''):'<div class="pln-em">아직 날짜를 정한 일정이 없습니다.<br>위 ‘미정 일정’ 항목을 달력의 날짜로 옮기거나 달력에 일정을 직접 입력하면 ‘월/일’과 함께 여기에 모입니다.</div>';
+  const fin=items.filter(x=>x.x&&(!x.d||inDone(x))).sort((a,b)=>(xtOf(b)-xtOf(a))||(a.d<b.d?1:a.d>b.d?-1:0)||(a.s<b.s?-1:a.s>b.s?1:0));   /* 맨 아래: 완료 일정 — 미정·확정 일정에서 체크한 것, 최근 완료한 순(v222) */
+  const fc=$('plnFinCnt'); if(fc) fc.textContent=fin.length;
+  if(fbox) fbox.innerHTML=fin.length?fin.map(it=>it.d?doneHtml(it,today):todoHtml(it)).join(''):'<div class="pln-em">아직 완료한 일정이 없습니다.<br>‘미정 일정’이나 ‘확정 일정’의 체크박스(☑)를 누르면 그 일정이 여기로 옮겨집니다.<br>체크를 풀면 원래 목록으로 돌아갑니다.</div>';
 }
 function sortToggle(){ ui.sort=ui.sort==='asc'?'desc':'asc'; saveUi(); renderTodo(); }
 
@@ -12498,8 +12508,8 @@ function unassign(id){
   return true;
 }
 function flashTodo(id){   /* 일정 미정 목록에서 그 줄이 보이게 하고 잠깐 노랗게 */
-  const box=$('plnTodoList'); if(!box) return;
-  const row=[...box.children].find(x=>x.getAttribute&&x.getAttribute('data-id')===id); if(!row) return;
+  const box=$('plnTodoList'), fin=$('plnFinList'); if(!box) return;
+  const row=[...box.children,...(fin?fin.children:[])].find(x=>x.getAttribute&&x.getAttribute('data-id')===id); if(!row) return;   /* 완료한 항목이면 '완료 일정' 쪽(v222) */
   try{ row.scrollIntoView({block:'nearest'}); }catch(_){}
   row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); setTimeout(()=>row.classList.remove('flash'),1700);
 }
@@ -12512,9 +12522,10 @@ function listClick(ev){   /* 목록 보기의 ✏️·🗑 */
   const id=row.getAttribute('data-id'), a=b.getAttribute('data-a');
   if(a==='edit') openDlg({id}); else if(a==='del') del(id);
 }
-function toggleDone(id,val){   /* 완료 체크 — To Do 출신(td)이면 구글 Tasks 의 체크와 연동(캘린더는 건드리지 않음), 달력에서 직접 만든 일정은 이 앱에만 저장(v213) */
+const xtOf=it=>it.xt||it.mod||0;   /* 완료한 시각(없으면 마지막 고친 시각) — 완료 일정 목록 정렬(v222) */
+function toggleDone(id,val){   /* 완료 체크 — v222: 체크하면 '완료 일정' 구역으로, 풀면 원래 목록으로(렌더가 x 로 나눔); — To Do 출신(td)이면 구글 Tasks 의 체크와 연동(캘린더는 건드리지 않음), 달력에서 직접 만든 일정은 이 앱에만 저장(v213) */
   load(); const it=items.find(x=>x.id===id); if(!it) return;
-  it.x=(val===undefined?!it.x:!!val)?1:0;
+  it.x=(val===undefined?!it.x:!!val)?1:0; it.xt=it.x?Date.now():0;
   if(!it.td){ save(); render(); updateBtn(); return; }
   it.mod=Date.now();
   afterChange(false);
@@ -12682,57 +12693,65 @@ async function syncWork(list){   /* 전체 동기화의 캘린더 단계에서: 
 }
 
 /* ── 왼쪽 위(일정 미정)·아래(확정 일정): 최대화·최소화·높이 조절(v210) ── */
-const PN={top:'미정 일정',bot:'확정 일정'};
+const PN={top:'미정 일정',bot:'확정 일정',fin:'완료 일정'}, SUF={top:'Top',bot:'Bot',fin:'Fin'};   /* 구역 이름 · ui.pm 접미(가운데=Bot — 기존 저장값과 호환, 아래=Fin) */
 const PN_TIP={
-  maxTop:['미정 일정 최대화 — 확정 일정 영역을 아래로 덮고 크게 봅니다','원래 크기로(미정 일정 최대화 해제)'],
+  maxTop:['미정 일정 최대화 — 확정·완료 일정 영역을 아래로 덮고 크게 봅니다','원래 크기로(미정 일정 최대화 해제)'],
   minTop:['미정 일정 최소화 — 제목만 남기고 위로 접습니다','원래 크기로(미정 일정 최소화 해제)'],
-  maxBot:['확정 일정 최대화 — 미정 일정 영역을 위로 덮고 크게 봅니다','원래 크기로(확정 일정 최대화 해제)'],
-  minBot:['확정 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(확정 일정 최소화 해제)']};
+  maxBot:['확정 일정 최대화 — 미정·완료 일정 영역을 덮고 크게 봅니다','원래 크기로(확정 일정 최대화 해제)'],
+  minBot:['확정 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(확정 일정 최소화 해제)'],
+  maxFin:['완료 일정 최대화 — 미정·확정 일정 영역을 덮고 크게 봅니다','원래 크기로(완료 일정 최대화 해제)'],
+  minFin:['완료 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(완료 일정 최소화 해제)']};
 function applyPanel(){
   const box=document.querySelector('#plnModal .pln-todo'); if(!box) return;
-  const r=clampSp(ui.sp); box.style.setProperty('--spt',r.toFixed(4)); box.style.setProperty('--spb',(1-r).toFixed(4));
+  const [rt,rm,rf]=trio(ui.sp,ui.sf); box.style.setProperty('--spt',(rt*100).toFixed(3)); box.style.setProperty('--spb',(rm*100).toFixed(3)); box.style.setProperty('--spf',(rf*100).toFixed(3));   /* ×100: 한 구역을 접어도 나머지 둘의 flex-grow 합이 1 이상이라 남는 높이를 모두 채움 */
   if(ui.pm) box.setAttribute('data-pm',ui.pm); else box.removeAttribute('data-pm');
-  box.querySelectorAll('.pln-pnb').forEach(b=>{ const key=b.getAttribute('data-a')+(b.getAttribute('data-k')==='top'?'Top':'Bot'), on=ui.pm===key; b.classList.toggle('on',on); b.title=PN_TIP[key][on?1:0]; b.setAttribute('aria-pressed',on?'true':'false'); });
+  box.querySelectorAll('.pln-pnb').forEach(b=>{ const key=b.getAttribute('data-a')+(SUF[b.getAttribute('data-k')]||'Bot'), on=ui.pm===key; b.classList.toggle('on',on); b.title=PN_TIP[key][on?1:0]; b.setAttribute('aria-pressed',on?'true':'false'); });
 }
-function panel(k,a){   /* k='top'|'bot' 구역 · a='max'|'min' — 같은 단추를 다시 누르면 원래대로 */
-  load(); const want=a+(k==='top'?'Top':'Bot'); ui.pm=(ui.pm===want)?'':want; saveUi(); applyPanel(); return ui.pm;
+function panel(k,a){   /* k='top'|'bot'|'fin' 구역 · a='max'|'min' — 같은 단추를 다시 누르면 원래대로 */
+  load(); const want=a+(SUF[k]||'Bot'); ui.pm=(ui.pm===want)?'':want; saveUi(); applyPanel(); return ui.pm;
 }
 function panelClick(ev,k){   /* 구역 머리 클릭: 최대화·최소화 단추 · 접힌 제목 줄을 누르면 원래대로 */
   const t=ev&&ev.target; if(!t||!t.closest) return;
   const b=t.closest('button.pln-pnb'); if(b){ panel(b.getAttribute('data-k'),b.getAttribute('data-a')); return; }
   if(t.closest('button')) return;
-  if(ui.pm==='min'+(k==='top'?'Top':'Bot')){ ui.pm=''; saveUi(); applyPanel(); }
+  if(ui.pm==='min'+(SUF[k]||'Bot')){ ui.pm=''; saveUi(); applyPanel(); }
 }
-function splitSave(){   /* 끝난 위치의 실제 비율을 저장(구역별 최소 크기에 걸렸으면 그 값으로) */
+function splitSave(){   /* 끝난 위치의 실제 비율을 저장(구역별 최소 크기에 걸렸으면 그 값으로) — 위·가운데·아래 세 구역 */
   const box=document.querySelector('#plnModal .pln-todo'); if(!box) return;
-  const t=box.querySelector('.pln-sec.top').getBoundingClientRect(), b=box.querySelector('.pln-sec.bot').getBoundingClientRect();
-  const vertical=getComputedStyle(box).flexDirection!=='row', a=vertical?t.height:t.width, c=vertical?b.height:b.width;
-  if(a+c>0) ui.sp=clampSp(a/(a+c)); saveUi(); applyPanel();
+  const vertical=getComputedStyle(box).flexDirection!=='row', sz=c=>{ const r=box.querySelector('.pln-sec.'+c).getBoundingClientRect(); return vertical?r.height:r.width; };
+  const a=sz('top'), m=sz('bot'), f=sz('fin'), all=a+m+f;
+  if(all>0){ const [t,,ff]=trio(a/all,f/all); ui.sp=t; ui.sf=ff; } saveUi(); applyPanel();
 }
-function splitDown(ev){   /* 구분선을 끌어 높이(좁은 창에서는 폭) 비율 조절 — 끌면 최대/최소 상태는 풀림 */
+function splitDown(ev,n){   /* 구분선을 끌어 높이(좁은 창에서는 폭) 비율 조절 — n=1: 미정↔확정, n=2: 확정↔완료. 끌면 최대/최소 상태는 풀림 */
+  n=(n===2)?2:1;
   if(ev&&ev.button!==undefined&&ev.button!==0) return;
-  const box=document.querySelector('#plnModal .pln-todo'), sp=$('plnSplit'); if(!box||!sp) return;
+  const box=document.querySelector('#plnModal .pln-todo'), sp=$(n===2?'plnSplit2':'plnSplit'); if(!box||!sp) return;
   if(ev&&ev.preventDefault) ev.preventDefault();
   load(); if(ui.pm){ ui.pm=''; applyPanel(); }
   const vertical=getComputedStyle(box).flexDirection!=='row';
   sp.classList.add('drag'); document.body.classList.add('pln-resizing');
   const move=e=>{
-    const rc=box.getBoundingClientRect(), total=vertical?rc.height:rc.width, th=vertical?sp.offsetHeight:sp.offsetWidth;
-    const pos=(vertical?e.clientY-rc.top:e.clientX-rc.left)-th/2;
-    ui.sp=clampSp(pos/Math.max(1,total-th)); applyPanel();
+    const rc=box.getBoundingClientRect(), total=vertical?rc.height:rc.width, th=vertical?sp.offsetHeight:sp.offsetWidth, flex=Math.max(1,total-2*th);
+    const at=(vertical?e.clientY-rc.top:e.clientX-rc.left);
+    if(n===1) ui.sp=clampSp((at-th/2)/flex);                 /* 위 구역의 크기 = 구분선 위 */
+    else ui.sf=clampSf((total-at-th/2)/flex);                /* 아래(완료) 구역의 크기 = 구분선 아래 */
+    applyPanel();
   };
   const up=()=>{ window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up); sp.classList.remove('drag'); document.body.classList.remove('pln-resizing'); splitSave(); };
   window.addEventListener('pointermove',move); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up);
 }
-function splitKey(e){   /* 구분선에 초점이 있을 때 ↑↓(←→) 키로 조절 · Home/End = 끝까지 · Enter = 원래 비율 */
+function splitKey(e,n){   /* 구분선에 초점이 있을 때 ↑↓(←→) 키로 조절 · Home/End = 끝까지 · Enter = 원래 비율 — n=1: 미정↔확정, n=2: 확정↔완료 */
+  n=(n===2)?2:1;
   const k=e.key; if(!/^(Arrow(Up|Down|Left|Right)|Home|End|Enter)$/.test(k)) return;
   e.preventDefault(); load();
   if(k==='Enter'){ splitReset(); return; }
   const dir=(k==='ArrowUp'||k==='ArrowLeft')?-1:(k==='ArrowDown'||k==='ArrowRight')?1:0;
-  ui.sp=(k==='Home')?0.12:(k==='End')?0.88:clampSp((ui.pm?DEF_SP:ui.sp)+dir*0.04);
+  const [ct,,cf]=trio(ui.pm?DEF_SP:ui.sp,ui.pm?DEF_SF:ui.sf);
+  if(n===1) ui.sp=(k==='Home')?MIN_F:(k==='End')?1:clampSp(ct+dir*0.04);            /* 구분선이 내려가면 위 구역이 커짐 */
+  else ui.sf=(k==='Home')?1:(k==='End')?MIN_F:clampSf(cf-dir*0.04);                 /* 구분선이 내려가면 아래(완료) 구역이 작아짐 */
   ui.pm=''; applyPanel(); splitSave();
 }
-function splitReset(){ load(); ui.sp=DEF_SP; ui.pm=''; saveUi(); applyPanel(); }
+function splitReset(){ load(); ui.sp=DEF_SP; ui.sf=DEF_SF; ui.pm=''; saveUi(); applyPanel(); }
 
 /* ── 끌어다 놓기(HTML5 드래그) ── */
 function clearOver(){ document.querySelectorAll('#plnGrid .pln-cell.over').forEach(x=>x.classList.remove('over')); }
@@ -12889,7 +12908,7 @@ window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,di
   month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,timeInput,showDay,goDay,sortToggle,toggleDone,tkToggle,unassign,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get ttomb(){ return ttomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tst(){ return tst; }, get tok(){ return tok; }, set tok(v){ tok=v; },
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
-       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
+       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
        snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
 })();
@@ -15587,6 +15606,20 @@ function _renderQtDisplay(raw){
   if(typeof _appendChurchCalToBible==='function') _appendChurchCalToBible();
 }
 
+/* ─────────── 오늘의 말씀 박스의 지금 모습을 hidden 두 개에 적어 둠(v223) ───────────
+   오늘의 말씀 글은 hidden 두 개(qtContent=가져온 글자, qtBibleHTML=수정한 서식 HTML)에서 박스로 다시 그려지고 저장도 그 hidden 값이므로, 박스 DOM 만 바꾸면(AI '본문에 반영'·옛 인포그래픽을 이어 붙임)
+   저장·불러오기 때 사라짐 — [수정]→[완료]가 하는 일(아래 toggleQtEdit)과 같게 박스 HTML(교회력 블록 제외)·글자를 hidden 에 적음.
+   번역 화면을 보는 중이면(force 아니면) 한국어 원본(hidden)은 건드리지 않음 — 수정한 번역문은 collectData()가 화면에서 직접 읽어 그 언어 저장소에 넣음. 날짜 기록을 불러오는 중(applyData)엔 force */
+function _qtCommitFromDisplay(force){
+  const qd=g('qtBibleDisplay'); if(!qd) return;
+  if(!force&&typeof _btmLang!=='undefined'&&_btmLang!=='ko') return;
+  const hc=g('qtContent'), hh=g('qtBibleHTML'); if(!hc||!hh) return;
+  const tmp=document.createElement('div'); tmp.innerHTML=qd.innerHTML;
+  const cc=tmp.querySelector('#qt-churchcal-block'); if(cc) cc.remove();
+  const w=tmp.querySelector(':scope > .valign-wrap'); if(w){ while(w.firstChild) tmp.insertBefore(w.firstChild,w); w.remove(); }   /* 세로정렬 래퍼는 박스 속성(data-valign)이 담당하니 저장본엔 뺌 */
+  hh.value=tmp.innerHTML;
+  if(!(hc.value||'').trim()) hc.value=(tmp.innerText||tmp.textContent||'').trim();
+}
 /* ─────────── 오늘의 말씀 수동 수정 토글 ─────────── */
 function toggleQtEdit(){
   const qd=g('qtBibleDisplay');
@@ -16887,7 +16920,7 @@ function _btmFailureSummary(){
    점검 중 화면 상태를 바꾸므로 시작 시 현재 리포트를 백업했다가 끝나면 그대로 복원(번역 데이터·표시 언어 포함). */
 const _BTM_NOT_TRANSLATED_IDS=new Set([
   'dibContent',        /* 인바디 이미지 붙여넣기 — 번역 대상 아님 */
-  'qtBibleDisplay__vz','qtMemo__vz','prayerContent__vz','myLifeContent__vz','footprintContent__vz','marketAnalysis__vz','sectorAnalysis__vz','marketAnalysisDetail__vz','sectorAnalysisDetail__vz','warrenKim__vz','aiStockRadar__vz','tradingStrategy__vz',   /* 섹션 본문의 '인포그래픽' 쪽(이미지) — 번역 대상 아님 */
+  'myLifeContent__vz','marketAnalysis__vz','sectorAnalysis__vz','marketAnalysisDetail__vz','sectorAnalysisDetail__vz','warrenKim__vz','aiStockRadar__vz','tradingStrategy__vz',   /* 섹션 본문의 '인포그래픽' 쪽(이미지) — 번역 대상 아님 */
   'autoFiveCount',     /* 리포트 번호 */
   'headlineFromText','sinceDateLabel', /* 고정 영문 문구 */
   'reportTitleText'    /* 리포트 제목 — 섹션 제목(_sstCollect의 mainTitle) 경로로 번역됨 */
@@ -31580,14 +31613,15 @@ function _initPfColResize(){
    섹션 본문 '텍스트' ↔ '인포그래픽' 보기 전환 (BTMVz, 2026-10-18)
    · AI ✨ 가 있는 10개 섹션마다 제목 옆 [텍스트 | 인포그래픽] 토글(.vz-tg). 글 본문 편집기(#id, 정본)와 인포그래픽 본문(#id__vz)을 래퍼(#id__wrap) 안에 같은 자리·같은 크기로 겹쳐 두고
      보기에 따라 한쪽만 보이게 함 — 글 편집기는 display:none·visibility:hidden 으로 숨기지 않고 opacity:0+inert(박스 높이·밑단 맞춤·그립·번역·AI 참고자료·글자 수가 전부 이 요소의 크기와 innerText 를 읽고 있어서).
-     ※ 기술적 분석(technicalAnalysis)은 차트 칸과 글 상자가 한 자리를 번갈아 써서 대상이 아님 — 사용자 요청(2026-10-18)으로 토글·인포그래픽 본문을 걷어냄(AI 팝업 반영은 예전처럼 한 본문에 글+이미지). 옛 저장본의 그 인포그래픽 본문은 restore 가 글 본문 뒤에 이어 붙임.
+     ※ v223(2026-11-24): 오늘의 말씀·나의 묵상 노트·감사와 간구·Footprints in Books 도 사용자 요청으로 토글·인포그래픽 본문을 걷어냄(기술적 분석과 같은 방식 — LEGACY). 지금 대상은 나의 삶·시황·테마(+Detail)·Warren Kim·AI Stock Radar·매매 전략 8곳.
+   ※ 기술적 분석(technicalAnalysis)은 차트 칸과 글 상자가 한 자리를 번갈아 써서 대상이 아님 — 사용자 요청(2026-10-18)으로 토글·인포그래픽 본문을 걷어냄(AI 팝업 반영은 예전처럼 한 본문에 글+이미지). 옛 저장본의 그 인포그래픽 본문은 restore 가 글 본문 뒤에 이어 붙임.
    · 저장: collectData 의 vzBodies{id:html}(내용 있는 것만)·vzModes{id:'viz'}(인포그래픽 보기인 것만) ↔ applyData 의 BTMVz.restore(d). 새 리포트·옛 기록은 비어 있고 '텍스트' 보기.
    · AI 팝업 '본문에 반영'(_applyToEditor)·인포그래픽 붙여넣기(_vizPaste)는 이미지를 #id__vz 에, 글(정리된 텍스트·일반 결과)은 #id 에 넣고 반영한 쪽 보기로 전환.
    · PDF·이미지 저장은 화면 그대로(토글은 .pdf-export-hide) — 인포그래픽 보기였던 섹션은 prepareClone 이 복제본 래퍼 높이를 화면 높이로 고정, 나의 삶 '내용숨기기'는 maskMyLife 가 인포그래픽도 덮음. */
 window.BTMVz=(()=>{
-  const IDS=['qtBibleDisplay','qtMemo','prayerContent','myLifeContent','footprintContent','marketAnalysis','sectorAnalysis','marketAnalysisDetail','sectorAnalysisDetail','warrenKim','aiStockRadar','tradingStrategy'];   /* v197: + 시황 분석_Detail · 테마 분석_Detail */
+  const IDS=['myLifeContent','marketAnalysis','sectorAnalysis','marketAnalysisDetail','sectorAnalysisDetail','warrenKim','aiStockRadar','tradingStrategy'];   /* v197: + 시황 분석_Detail · 테마 분석_Detail · v223: 오늘의 말씀·나의 묵상 노트·감사와 간구·Footprints 는 뺌(LEGACY) */
   const $=id=>document.getElementById(id);
-  const LEGACY=['technicalAnalysis'];   /* 예전엔 인포그래픽 본문이 있었으나 없앤 섹션 — 옛 저장본(vzBodies) 이어 붙이기용 */
+  const LEGACY=['technicalAnalysis','qtBibleDisplay','qtMemo','prayerContent','footprintContent'];   /* 예전엔 인포그래픽 본문이 있었으나 없앤 섹션 — 옛 저장본(vzBodies) 이어 붙이기용 */
   const wrapOf=id=>$(id+'__wrap'), vzOf=id=>$(id+'__vz');
   const modeOf=id=>{ const w=wrapOf(id); return (w&&w.classList.contains('vz-on'))?'viz':'text'; };
   const hasViz=id=>{ const v=vzOf(id); return !!v&&(!!v.querySelector('img')||!!(v.textContent||'').trim()); };
@@ -31633,6 +31667,12 @@ window.BTMVz=(()=>{
     LEGACY.forEach(id=>{
       const h=B[id], ed=$(id);
       if(typeof h!=='string'||!h.trim()||!ed||ed.innerHTML.indexOf(h)>=0) return;
+      if(id==='qtBibleDisplay'){   /* 오늘의 말씀 박스: 말씀이 아직 없으면(안내 문구만) 그 자리에 바로, 있으면 뒤에 — 그리고 hidden 에도 적어 둠(안 하면 다음 불러오기 때 사라짐) */
+        const hc=$('qtContent'), hh=$('qtBibleHTML'), none=!((hc&&hc.value)||'').trim()&&!((hh&&hh.value)||'').trim();
+        if(none) ed.innerHTML=h; else ed.insertAdjacentHTML('beforeend','<div><br></div>'+h);
+        if(typeof _qtCommitFromDisplay==='function'){ try{ _qtCommitFromDisplay(true); }catch(_){} }
+        return;
+      }
       ed.insertAdjacentHTML('beforeend',((ed.innerText||ed.textContent||'').trim()||ed.querySelector('img')?'<div><br></div>':'')+h);
     });
   }
@@ -31660,8 +31700,6 @@ window.BTMVz=(()=>{
     const t=e.target; if(!t||!t.closest) return;
     const b=t.closest('.vz-tb');
     if(b){ const tg=b.closest('.vz-tg'); if(tg) show(tg.getAttribute('data-for'),b.dataset.m); return; }
-    /* 오늘의 말씀 [가져오기]·[수정] 은 글 쪽을 바꾸므로 인포그래픽 보기였다면 글 보기로 */
-    if(t.closest('#qtFetchBtn,#qtEditBtn')) show('qtBibleDisplay','text');
   });
   document.addEventListener('keydown',e=>{
     if(e.key!=='Enter'&&e.key!==' ') return;
@@ -35293,6 +35331,7 @@ Rules:
       }
     }
 
+    if(_eid==='qtBibleDisplay'&&typeof _qtCommitFromDisplay==='function') _qtCommitFromDisplay();   /* 오늘의 말씀 박스는 hidden 에도 적어야 저장됨(v223) */
     if(typeof saveData==='function') saveData();
     if(mode==='overwrite'&&imgHtml&&_eid) _vizFitBox(_eid);   /* 덮어쓰기 — 본문에 이미지만 남았으니 텍스트 박스 높이를 이미지에 딱 맞춤(이미지를 읽은 뒤 비동기로, 끝나면 저장) */
     if(mode==='overwrite'&&imgHtml&&_mir) _vizFitBox(_mir.id);   /* '…_Detail' 박스도 같은 이미지에 맞춤(삭제해 둔 박스는 잴 수 없어 아무것도 안 함) */
@@ -37752,6 +37791,7 @@ ${viz?'':`<RESULT>
     if(after){ try{ const nr=document.createRange(); nr.setStartAfter(after); nr.collapse(true); _savedRange=nr; }catch(e){} }   /* 이어서 또 붙이면 방금 붙인 것 아래로 */
     if(isViz&&window.BTMVz) BTMVz.show(_eid,'viz',{silent:true});   /* 붙인 인포그래픽이 보이게 인포그래픽 보기로 */
     _ahSaveLeft();   /* 인포그래픽을 만든 왼쪽 칼럼 내용도 [🕘 기록]에 함께 저장 */
+    if(_eid==='qtBibleDisplay'&&typeof _qtCommitFromDisplay==='function') _qtCommitFromDisplay();   /* 오늘의 말씀 박스는 hidden 에도 적어야 저장됨(v223) */
     if(typeof saveData==='function') saveData();
     el.style.outline='2px solid #10b981'; setTimeout(()=>{ el.style.outline=''; },1400);
     box.setAttribute('data-pasted','1');
@@ -37769,6 +37809,7 @@ ${viz?'':`<RESULT>
     if(p.fit&&p.fit.ed&&p.fit.ed.isConnected) p.fit.ed.style.height=p.fit.prev;   /* 덮어쓰기로 맞춘 박스 높이도 원래대로 */
     p.el.dispatchEvent(new Event('input',{bubbles:true}));
     _savedRange=null;
+    if(p.el&&p.el.id==='qtBibleDisplay'&&typeof _qtCommitFromDisplay==='function') _qtCommitFromDisplay();   /* 붙인 것을 걷어낸 상태도 hidden 에(v223) */
     if(typeof saveData==='function') saveData();
     box._paste=null; box.removeAttribute('data-pasted');
     const u=box.querySelector('.ai-viz-undo'); if(u) u.remove();
