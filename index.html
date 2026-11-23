@@ -4689,7 +4689,7 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
       <button onclick="openQtMeditationModal();_closeMBtnMenus()">Q.T 묵상</button>
     </div>
   </div>
-  <button id="plnMenuBtn" class="btn mobile-keep" style="background:#1f6f8b" onclick="BTMPlanner.open()" title="일정 — 날짜·일정을 적으면 구글 캘린더(폰)와 양방향 동기화됩니다">일정</button>
+  <button id="plnMenuBtn" class="btn mobile-keep" style="background:#1f6f8b" onclick="BTMPlanner.open()" title="일정 / To Do List — 날짜 미정 To Do 를 달력에 끌어다 놓고, 구글 캘린더(폰)와 양방향 동기화">일정</button>
   <button class="btn mobile-keep" style="background:#2a5f65" onclick="openMemoModal()">메모장</button>
   <button id="adminMenuBtn" class="btn" style="background:#3d5068;display:none" onclick="openAdminPanel()">관리</button>
   <!-- Archive 검색창 -->
@@ -5164,15 +5164,16 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
     <div style="flex-shrink:0;padding:8px 18px 10px;border-top:1px solid var(--border,#e2e8f0);background:var(--bg-muted,#f8fafc);font-size:10px;line-height:1.55;color:#94a3b8">오른쪽 체크(켜짐)된 업체의 일정은 키움증권·Earningwhispers 탭에서 LIST를 열 때 '본문반영'이 자동으로 체크됩니다(티커 기준, <b style="color:#b45309">AUTO</b> 표시). 자동 체크돼도 <b>[적용]</b>을 눌러야 경제일정에 반영되고, LIST에서 자동 체크된 일정의 체크를 풀고 [적용]하면 이 목록에서도 그 업체의 체크가 해제됩니다.</div>
   </div>
 </div>
-<!-- ═══════ 일정 팝업(v202) — 날짜·시간·제목·메모를 적으면 구글 캘린더('BTM 일정')와 양방향 동기화되어 폰(안드로이드 구글 캘린더 앱)에도 표시 ═══════ -->
+<!-- ═══════ 일정 / To Do List 팝업(v204) — 메모장 '크게 보기'와 같은 크기 · 왼쪽 To Do(날짜 미정) → 오른쪽 월간 달력 날짜로 끌어다 놓기 · 달력/목록 보기 · 구글 캘린더(폰) 양방향 동기화 ═══════ -->
 <style id="plnStyle">
 #plnMenuBtn .pln-badge{display:inline-block;min-width:15px;height:15px;line-height:15px;padding:0 4px;margin-left:5px;border-radius:8px;background:#f59e0b;color:#fff;font-size:10px;font-weight:700;text-align:center;vertical-align:middle;box-sizing:border-box}
 body.guest-mode #plnMenuBtn{display:none!important}
-#plnModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10004;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+/* 팝업 크기 = 메모장 모달(#memoModal)과 똑같이: 바깥 여백 10px · 가로 min(1326px,98vw) · 세로 min(910px,95vh) */
+#plnModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:10004;align-items:center;justify-content:center;padding:10px;box-sizing:border-box;overflow:hidden}
 #plnModal *{box-sizing:border-box}
-#plnModal .pln-card{background:var(--card-bg,#fff);color:#1e293b;border-radius:14px;width:min(840px,100%);max-height:100%;box-shadow:0 8px 40px rgba(0,0,0,.35);border:1px solid var(--border,#e2e8f0);display:flex;flex-direction:column;overflow:hidden}
-#plnModal .pln-hd{background:#1e3a5f;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
-#plnModal .pln-hd b{font-size:14px;font-weight:700;margin-right:auto;white-space:nowrap}
+#plnModal .pln-card{position:relative;width:min(1326px,98vw);height:min(910px,95vh);background:var(--card-bg,#fff);color:#1e293b;border-radius:14px;box-shadow:0 8px 50px rgba(0,0,0,.38);display:flex;flex-direction:column;overflow:hidden}
+#plnModal .pln-hd{background:#1e3a5f;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+#plnModal .pln-hd b{font-size:15px;font-weight:700;margin-right:auto;white-space:nowrap}
 #plnModal #plnChip{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:14px;padding:3px 11px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 #plnModal .pln-ib{background:rgba(255,255,255,.14);border:none;color:#fff;border-radius:6px;padding:4px 9px;font-size:12px;line-height:1.2;cursor:pointer;white-space:nowrap}
 #plnModal .pln-ib.x{background:none;font-size:18px;padding:0 4px}
@@ -5182,25 +5183,90 @@ body.guest-mode #plnMenuBtn{display:none!important}
 #plnModal .pln-bar.warn{background:#fffbeb;color:#b45309}
 #plnModal .pln-bar.ok{background:#f0fdf4;color:#047857}
 #plnModal .pln-bar.info{background:#eff6ff;color:#1d4ed8}
-#plnModal .pln-fm{flex-shrink:0;padding:10px 16px 8px;border-bottom:1px solid var(--border,#e2e8f0);background:var(--bg-muted,#f8fafc)}
-#plnModal .pln-r1{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+#plnModal input[type=text],#plnModal input[type=date],#plnModal input[type=time],#plnModal input[type=month],#plnModal select,#plnModal textarea{padding:5px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;font-family:inherit;background:#fff;color:#1e293b;min-width:0}
+#plnModal textarea{width:100%;resize:vertical;min-height:34px;max-height:160px;line-height:1.45}
 #plnModal .pln-lb{font-size:11px;font-weight:700;color:#475569;white-space:nowrap}
-#plnModal input[type=text],#plnModal input[type=date],#plnModal input[type=time],#plnModal select,#plnModal textarea{padding:5px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;font-family:inherit;background:#fff;color:#1e293b;min-width:0}
-#plnModal textarea{width:100%;resize:vertical;min-height:34px;max-height:140px;line-height:1.45}
+#plnModal .pln-r1{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
 #plnModal .pln-pb{padding:6px 16px;background:#0f766e;border:none;border-radius:6px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap}
 #plnModal .pln-sb{padding:6px 12px;background:#e2e8f0;border:none;border-radius:6px;font-size:12px;font-weight:700;color:#475569;cursor:pointer;white-space:nowrap}
 #plnModal .pln-sb.b{background:#e0f2fe;color:#0369a1}
 #plnModal .pln-sb.r{background:#fee2e2;color:#b91c1c}
 #plnModal .pln-hint{font-size:10.5px;color:#94a3b8;line-height:1.4}
-#plnModal .pln-tabs{flex-shrink:0;display:flex;gap:4px;align-items:center;padding:6px 16px;border-bottom:1px solid var(--border,#e2e8f0);flex-wrap:wrap}
-#plnModal .pln-tab{border:none;background:#f1f5f9;color:#475569;border-radius:14px;padding:4px 12px;font-size:11.5px;font-weight:700;cursor:pointer}
-#plnModal .pln-tab.on{background:#1e3a5f;color:#fff}
-#plnModal .pln-ls{flex:1;overflow:auto;min-height:96px}
+/* 연결 설정(처음 한 번) */
+#plnModal .pln-st{display:none;flex-shrink:0;max-height:38%;overflow:auto;padding:10px 18px 6px;border-bottom:1px solid var(--border,#e2e8f0);background:#f0f9ff}
+#plnModal .pln-st.on{display:block}
+#plnModal .pln-st ol{margin:4px 0 8px 18px;padding:0;font-size:11.5px;line-height:1.6;color:#334155}
+#plnModal .pln-st li{margin-bottom:2px}
+#plnModal .pln-st a{color:#0369a1;font-weight:700}
+#plnModal .pln-st code{background:#e0f2fe;border-radius:4px;padding:1px 5px;font-size:11px;word-break:break-all}
+/* 본문 2단: 왼쪽 To Do · 오른쪽 달력 */
+#plnModal .pln-body{flex:1;min-height:0;display:flex}
+#plnModal .pln-todo{flex:0 0 clamp(250px,27%,360px);display:flex;flex-direction:column;min-height:0;border-right:1px solid #e2e8f0;background:#f8fafc}
+#plnModal .pln-th{padding:12px 14px 6px;font-size:14px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;flex-shrink:0}
+#plnModal .pln-th small{font-size:10.5px;font-weight:600;color:#64748b}
+#plnModal .pln-cnt{margin-left:auto;background:#1e3a5f;color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:0 8px;line-height:18px}
+#plnModal .pln-tf{padding:0 14px 8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+#plnModal .pln-tf textarea{min-height:44px}
+#plnModal .pln-tl{flex:1;min-height:0;overflow:auto;padding:4px 14px 10px;display:flex;flex-direction:column;gap:6px}
+#plnModal .pln-td{background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:7px 8px;display:flex;gap:6px;align-items:flex-start;cursor:grab;user-select:none}
+#plnModal .pln-td:hover{border-color:#0f766e;box-shadow:0 1px 6px rgba(15,118,110,.18)}
+#plnModal .pln-td.dragging{opacity:.4}
+#plnModal .pln-td .gr{color:#94a3b8;font-size:12px;line-height:1.3;letter-spacing:-2px;flex:none}
+#plnModal .pln-td .mn{flex:1;min-width:0}
+#plnModal .pln-td .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.35}
+#plnModal .pln-td .me{font-size:11px;color:#64748b;white-space:pre-wrap;word-break:break-word;margin-top:2px;line-height:1.4;max-height:3em;overflow:hidden}
+#plnModal .pln-td .ac{flex:none;display:flex;gap:2px}
+#plnModal .pln-td .ac button{border:none;background:transparent;border-radius:5px;padding:2px 4px;font-size:12px;cursor:pointer;opacity:.75}
+#plnModal .pln-td .ac button:hover{background:#e2e8f0;opacity:1}
+#plnModal .pln-tn{flex-shrink:0;padding:7px 14px 9px;border-top:1px solid #e2e8f0;font-size:10px;line-height:1.5;color:#94a3b8}
+#plnModal .pln-em{padding:26px 14px;text-align:center;font-size:12px;line-height:1.7;color:#94a3b8}
+#plnModal .pln-cal{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+#plnModal .pln-tb{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #e2e8f0;background:#fff;flex-wrap:wrap}
+#plnModal .pln-tb b{font-size:17px;font-weight:800;color:#0f172a;min-width:110px;text-align:center;cursor:pointer;border-radius:6px;padding:2px 8px;white-space:nowrap}
+#plnModal .pln-tb b:hover{background:#f1f5f9}
+#plnModal .pln-nb{border:1px solid #cbd5e1;background:#fff;border-radius:6px;width:30px;height:28px;font-size:12px;font-weight:700;color:#475569;cursor:pointer;padding:0}
+#plnModal .pln-nb:hover{background:#f1f5f9}
+#plnModal .pln-seg{display:flex;border:1px solid #cbd5e1;border-radius:7px;overflow:hidden}
+#plnModal .pln-seg button{border:none;background:#fff;padding:5px 12px;font-size:12px;font-weight:700;color:#64748b;cursor:pointer}
+#plnModal .pln-seg button.on{background:#1e3a5f;color:#fff}
+#plnModal .pln-cw{flex:1;min-height:0;display:flex;flex-direction:column}
+#plnModal .pln-wk{flex-shrink:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:#f1f5f9;border-bottom:1px solid #e2e8f0}
+#plnModal .pln-wk div{padding:5px 8px;font-size:11px;font-weight:700;color:#475569}
+#plnModal .pln-wk div:first-child{color:#dc2626}
+#plnModal .pln-wk div:last-child{color:#2563eb}
+#plnModal .pln-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+#plnModal .pln-cell{border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:3px 4px;min-height:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+#plnModal .pln-cell:nth-child(7n){border-right:none}
+#plnModal .pln-cell:hover{background:#f8fffe}
+#plnModal .pln-cell.out{background:#fafafa}
+#plnModal .pln-cell.out .pln-dn{color:#94a3b8}
+#plnModal .pln-cell.sun .pln-dn{color:#dc2626}
+#plnModal .pln-cell.sat .pln-dn{color:#2563eb}
+#plnModal .pln-cell.out.sun .pln-dn,#plnModal .pln-cell.out.sat .pln-dn{opacity:.6}
+#plnModal .pln-cell.over{outline:2px dashed #0f766e;outline-offset:-2px;background:#f0fdfa}
+#plnModal .pln-cell.flash{animation:plnFlash 1.4s ease-out}
+@keyframes plnFlash{from{background:#fde68a}to{background:transparent}}
+#plnModal .pln-dn{flex:none;height:20px;display:flex;align-items:center;font-size:12px;font-weight:700;color:#334155}
+#plnModal .pln-cell.today .pln-dn span{background:#1e3a5f;color:#fff;border-radius:11px;padding:0 7px;line-height:20px}
+#plnModal .pln-cl{display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden}
+#plnModal .pln-ch{flex:none;height:18px;line-height:18px;font-size:11px;padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;user-select:none}
+#plnModal .pln-ch.ad{background:#0f766e;color:#fff}
+#plnModal .pln-ch.tm{background:#e0f2fe;color:#0c4a6e;border-left:3px solid #0284c7}
+#plnModal .pln-ch.ct{opacity:.7}
+#plnModal .pln-ch.dragging{opacity:.35}
+#plnModal .pln-ch b{font-weight:700;margin-right:3px}
+#plnModal .pln-ch .mk{font-size:10px}
+#plnModal .pln-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-right:3px;vertical-align:middle}
+#plnModal .pln-more{flex:none;height:18px;line-height:18px;font-size:10.5px;font-weight:700;color:#475569;padding:0 4px;cursor:pointer}
+#plnModal .pln-more:hover{color:#0f766e;text-decoration:underline}
+/* 목록 보기 */
+#plnModal .pln-ls{display:none;flex:1;min-height:0;overflow:auto}
 #plnModal .pln-gh{position:sticky;top:0;z-index:1;background:#f1f5f9;padding:5px 16px;font-size:11px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0}
 #plnModal .pln-gh.t{background:#fef3c7;color:#92400e}
+#plnModal .pln-gh.hl{background:#fde68a}
 #plnModal .pln-rw{display:flex;gap:10px;padding:8px 16px;border-bottom:1px solid #f1f5f9;align-items:flex-start}
 #plnModal .pln-rw.p{opacity:.6}
-#plnModal .pln-tm{width:70px;flex:none;font-size:12px;font-weight:700;color:#0f766e;line-height:1.35}
+#plnModal .pln-tm{width:78px;flex:none;font-size:12px;font-weight:700;color:#0f766e;line-height:1.35}
 #plnModal .pln-tm small{display:block;font-weight:500;color:#94a3b8;font-size:10.5px}
 #plnModal .pln-mn{flex:1;min-width:0}
 #plnModal .pln-ti{font-size:13px;font-weight:600;color:#0f172a;word-break:break-word;line-height:1.4}
@@ -5210,26 +5276,32 @@ body.guest-mode #plnMenuBtn{display:none!important}
 #plnModal .pln-ac button{border:none;background:#f1f5f9;border-radius:5px;padding:3px 7px;font-size:12px;cursor:pointer}
 #plnModal .pln-sy{font-size:11px;color:#16a34a;margin-right:2px}
 #plnModal .pln-sy.w{color:#d97706}
-#plnModal .pln-em{padding:30px 18px;text-align:center;font-size:12.5px;line-height:1.7;color:#94a3b8}
-#plnModal .pln-st{display:none;flex-shrink:0;max-height:36vh;overflow:auto;padding:10px 16px 6px;border-bottom:1px solid var(--border,#e2e8f0);background:#f0f9ff}
-#plnModal .pln-st.on{display:block}
-#plnModal .pln-st ol{margin:4px 0 8px 18px;padding:0;font-size:11.5px;line-height:1.6;color:#334155}
-#plnModal .pln-st li{margin-bottom:2px}
-#plnModal .pln-st a{color:#0369a1;font-weight:700}
-#plnModal .pln-st code{background:#e0f2fe;border-radius:4px;padding:1px 5px;font-size:11px;word-break:break-all}
-#plnModal .pln-ft{flex-shrink:0;padding:6px 16px 8px;border-top:1px solid var(--border,#e2e8f0);background:var(--bg-muted,#f8fafc);font-size:10px;line-height:1.5;color:#94a3b8}
-@media(max-height:760px){ #plnModal .pln-ft{display:none} }
+/* 일정 입력/수정 대화상자(팝업 안에 겹쳐 뜸) */
+#plnModal .pln-dw{display:none;position:absolute;inset:0;background:rgba(15,23,42,.45);z-index:5;align-items:center;justify-content:center;padding:14px}
+#plnModal .pln-dw.on{display:flex}
+#plnModal .pln-dlg{background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.4);width:min(580px,100%);max-height:100%;overflow:auto}
+#plnModal .pln-dh{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#0f766e;color:#fff;padding:11px 16px;border-radius:12px 12px 0 0}
+#plnModal .pln-dh b{font-size:14px;font-weight:700}
+#plnModal .pln-db{padding:14px 16px 4px}
+#plnModal .pln-df{display:flex;gap:8px;justify-content:flex-end;padding:8px 16px 14px}
+#plnToast{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#0f766e;color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:18px;box-shadow:0 4px 18px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:6;max-width:90%;text-align:center}
+#plnToast.on{opacity:1}
+@media(max-width:860px){
+  #plnModal .pln-body{flex-direction:column}
+  #plnModal .pln-todo{flex:0 0 auto;height:40%;border-right:none;border-bottom:1px solid #e2e8f0}
+  #plnModal .pln-tf textarea{min-height:30px;height:30px}
+  #plnModal .pln-tn{display:none}
+}
 @media(max-width:560px){
-  #plnModal{padding:0}
-  #plnModal .pln-card{border-radius:0;height:100%}
-  #plnModal .pln-tm{width:58px}
+  #plnModal .pln-tm{width:62px}
+  #plnModal .pln-tb b{min-width:90px;font-size:15px}
 }
 </style>
 <div id="plnModal">
   <div class="pln-card">
     <!-- 헤더: 제목 · 연동 상태(눌러서 연결/동기화) · 🔄 · ⚙ · ✕ -->
     <div class="pln-hd">
-      <b>📅 일정</b>
+      <b>📅 일정 / To Do List</b>
       <button id="plnChip" onclick="BTMPlanner.chipClick()" title="">⚪ 폰 연동 안 됨</button>
       <button class="pln-ib" id="plnSyncBtn" onclick="BTMPlanner.syncClick()" title="지금 구글 캘린더와 동기화">🔄</button>
       <button class="pln-ib" id="plnGearBtn" onclick="BTMPlanner.toggleSet()" title="구글 캘린더 연결 설정">⚙ 연결 설정</button>
@@ -5241,7 +5313,7 @@ body.guest-mode #plnMenuBtn{display:none!important}
       <div style="font-size:12px;font-weight:700;color:#0c4a6e;margin-bottom:2px">📱 폰(안드로이드 구글 캘린더)과 연결하기 — 처음 한 번만 하면 됩니다 (약 5분)</div>
       <ol>
         <li><a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a> 에서 프로젝트를 하나 만들고, 'API 및 서비스 → 라이브러리'에서 <b>Google Calendar API</b> 를 <b>사용</b>으로 설정합니다.</li>
-        <li>'Google Auth Platform'(또는 'OAuth 동의 화면')에서 앱을 만듭니다(앱 이름은 아무거나, 대상은 <b>외부</b>). '테스트 사용자'에 <b>내 Gmail 주소</b>를 추가합니다.</li>
+        <li>'Google Auth Platform'(또는 'OAuth 동의 화면')에서 앱을 만듭니다(앱 이름은 아무거나, 대상은 <b>외부</b>). <b>'대상(Audience)' 화면의 '테스트 사용자'에 내 Gmail 주소를 꼭 추가</b>합니다 — 빠뜨리면 로그인 창에 ‘액세스 차단됨 · 403 access_denied’가 뜹니다.</li>
         <li>'클라이언트' → '클라이언트 만들기' → 유형 <b>웹 애플리케이션</b> → '승인된 자바스크립트 원본'에 <code id="plnOrigin">-</code> 를 추가하고 만듭니다. 나온 <b>클라이언트 ID</b> 를 아래에 붙여넣고 [저장]을 누릅니다. (클라이언트 보안 비밀번호는 필요 없습니다)</li>
         <li>[🔗 구글 캘린더 연결]을 누르고, 로그인 창에서 '확인되지 않은 앱' 경고가 나오면 <b>고급 → 이동</b>을 눌러 허용합니다. 허용하는 권한은 <b>이 앱이 만든 'BTM 일정' 캘린더만</b> 읽고 쓰는 것입니다(내 다른 일정은 볼 수 없음).</li>
         <li>폰의 구글 캘린더 앱(폰에 같은 구글 계정으로 로그인)에서 <b>'BTM 일정'</b>이 체크돼 있는지 확인합니다. 폰에서 일정을 만들 때 캘린더를 <b>'BTM 일정'</b>으로 고르면 이 앱에 들어옵니다.</li>
@@ -5261,35 +5333,65 @@ body.guest-mode #plnMenuBtn{display:none!important}
       </div>
       <div id="plnSetInfo" class="pln-hint" style="min-height:14px;margin-bottom:6px"></div>
     </div>
-    <!-- 입력/수정 양식 -->
-    <div class="pln-fm">
-      <div class="pln-r1">
-        <span class="pln-lb" id="plnFTitle">새 일정</span>
-        <input id="plnFD" type="date" title="날짜" onkeydown="if(event.key==='Enter'){event.preventDefault();BTMPlanner.submit();}">
-        <input id="plnFT" type="time" title="시작 시간 — 비우면 종일 일정" oninput="BTMPlanner.timeInput()" onchange="BTMPlanner.timeInput()">
-        <span class="pln-lb">~</span>
-        <input id="plnFD2" type="date" title="종료 날짜 — 비우면 시작과 같은 날(여러 날 일정일 때만)">
-        <input id="plnFT2" type="time" title="종료 시간 — 비우면 시작 1시간 뒤">
-        <select id="plnFR" title="알림(폰에 울립니다)"></select>
+    <!-- 본문: 왼쪽 To Do(날짜 미정) · 오른쪽 월간 달력 -->
+    <div class="pln-body">
+      <div class="pln-todo">
+        <div class="pln-th">📝 To Do <small>날짜 미정</small><span id="plnTodoCnt" class="pln-cnt">0</span></div>
+        <div class="pln-tf">
+          <input id="plnTodoIn" type="text" maxlength="200" autocomplete="off" placeholder="날짜가 정해지지 않은 일정 입력 후 Enter" onkeydown="BTMPlanner.enter(event,'todo')">
+          <textarea id="plnTodoMemo" rows="2" maxlength="4000" placeholder="메모 (선택)"></textarea>
+          <button class="pln-pb" onclick="BTMPlanner.addTodo()">＋ To Do 추가</button>
+        </div>
+        <div id="plnTodoList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
+        <div class="pln-tn">항목을 <b>끌어서 오른쪽 달력의 날짜에 놓으면</b> 그날의 일정이 되어 여기서 사라집니다(📅 단추로 날짜를 골라도 됩니다). 날짜가 정해진 일정만 구글 캘린더(폰)에 올라가고, To Do 는 이 브라우저에만 저장됩니다.</div>
       </div>
-      <div class="pln-r1">
-        <input id="plnFS" type="text" maxlength="200" autocomplete="off" placeholder="일정 내용 (예: 병원 예약, 가족 모임)" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter'){event.preventDefault();BTMPlanner.submit();}">
-        <button class="pln-pb" id="plnFSave" onclick="BTMPlanner.submit()">＋ 추가</button>
-        <span id="plnFCancelWrap" style="display:none"><button class="pln-sb" id="plnFCancel" onclick="BTMPlanner.cancelEdit()">취소</button></span>
+      <div class="pln-cal">
+        <div class="pln-tb">
+          <button class="pln-nb" onclick="BTMPlanner.month(-1)" title="이전 달">◀</button>
+          <b id="plnMonth" onclick="BTMPlanner.monthPick()" title="눌러서 월 선택">2026년 11월</b>
+          <button class="pln-nb" onclick="BTMPlanner.month(1)" title="다음 달">▶</button>
+          <button class="pln-sb" onclick="BTMPlanner.today()">오늘</button>
+          <span id="plnCount" class="pln-hint"></span>
+          <span style="flex:1"></span>
+          <button class="pln-sb b" onclick="BTMPlanner.openNew()" title="새 일정 입력">＋ 일정</button>
+          <div class="pln-seg"><button id="plnVCal" class="on" onclick="BTMPlanner.setView('cal')" title="월간 달력으로 보기">📅 달력</button><button id="plnVList" onclick="BTMPlanner.setView('list')" title="이 달의 일정을 목록으로 보기">📋 목록</button></div>
+        </div>
+        <div id="plnCalWrap" class="pln-cw" onclick="BTMPlanner.calClick(event)">
+          <div class="pln-wk"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+          <div id="plnGrid" class="pln-grid"></div>
+        </div>
+        <div id="plnList" class="pln-ls" onclick="BTMPlanner.listClick(event)"></div>
       </div>
-      <textarea id="plnFM" rows="1" placeholder="메모 (선택)" maxlength="4000"></textarea>
-      <div id="plnFMsg" class="pln-hint" style="margin-top:4px;min-height:13px">시간을 비우면 종일 일정으로 들어갑니다.</div>
     </div>
-    <!-- 보기 전환 -->
-    <div class="pln-tabs">
-      <button class="pln-tab on" id="plnTabUp" onclick="BTMPlanner.setFilter('up')">다가오는 일정</button>
-      <button class="pln-tab" id="plnTabPast" onclick="BTMPlanner.setFilter('past')">지난 일정</button>
-      <button class="pln-tab" id="plnTabAll" onclick="BTMPlanner.setFilter('all')">전체</button>
-      <span id="plnCount" class="pln-hint" style="margin-left:auto"></span>
+    <!-- 일정 입력/수정 대화상자 -->
+    <div id="plnDlg" class="pln-dw" onclick="if(event.target===this)BTMPlanner.closeDlg()">
+      <div class="pln-dlg">
+        <div class="pln-dh"><b id="plnFTitle">새 일정</b><button class="pln-ib x mobile-keep" onclick="BTMPlanner.closeDlg()" title="닫기">✕</button></div>
+        <div class="pln-db">
+          <div class="pln-r1">
+            <span class="pln-lb">시작</span>
+            <input id="plnFD" type="date" title="날짜" onkeydown="if(event.key==='Enter'){event.preventDefault();BTMPlanner.submit();}">
+            <input id="plnFT" type="time" title="시작 시간 — 비우면 종일 일정" oninput="BTMPlanner.timeInput()" onchange="BTMPlanner.timeInput()">
+            <span class="pln-lb">~ 종료</span>
+            <input id="plnFD2" type="date" title="종료 날짜 — 비우면 시작과 같은 날(여러 날 일정일 때만)">
+            <input id="plnFT2" type="time" title="종료 시간 — 비우면 시작 1시간 뒤">
+          </div>
+          <div class="pln-r1"><span class="pln-lb">알림</span><select id="plnFR" title="알림(폰에 울립니다)"></select></div>
+          <div class="pln-r1"><input id="plnFS" type="text" maxlength="200" autocomplete="off" placeholder="일정 내용 (예: 병원 예약, 가족 모임)" style="flex:1;min-width:200px" onkeydown="BTMPlanner.enter(event,'dlg')"></div>
+          <textarea id="plnFM" rows="3" placeholder="메모 (선택)" maxlength="4000"></textarea>
+          <div id="plnFMsg" class="pln-hint" style="margin-top:4px;min-height:13px">시간을 비우면 종일 일정으로 들어갑니다.</div>
+        </div>
+        <div class="pln-df">
+          <span id="plnFDelWrap" style="display:none"><button class="pln-sb r" onclick="BTMPlanner.dlgDelete()">🗑 삭제</button></span>
+          <button class="pln-sb" onclick="BTMPlanner.closeDlg()">취소</button>
+          <button class="pln-pb" id="plnFSave" onclick="BTMPlanner.submit()">💾 저장</button>
+        </div>
+      </div>
     </div>
-    <!-- 목록(넘치면 이 영역만 스크롤) -->
-    <div id="plnList" class="pln-ls" onclick="BTMPlanner.listClick(event)"></div>
-    <div class="pln-ft">일정은 이 브라우저에 저장되고(리포트·Archive·Publish 와 별개, 게스트에게 보이지 않음), 구글 캘린더에 연결하면 'BTM 일정' 캘린더와 양방향으로 맞춰집니다. 서버가 없어서 동기화는 이 창을 열어 둔 동안(1분마다)과 일정을 고칠 때 일어나며, 구글 로그인은 약 1시간 유지됩니다. 폰에서 'BTM 일정' 캘린더에 만든 일정만 앱으로 들어옵니다.</div>
+    <div id="plnToast"></div>
+    <!-- 날짜·월 고르기용(화면에는 안 보이고 달력 선택기만 띄움) -->
+    <input id="plnPick" type="date" tabindex="-1" aria-hidden="true" style="position:absolute;left:0;top:0;opacity:0;width:1px;height:1px;border:0;padding:0;pointer-events:none" onchange="BTMPlanner.onPick()">
+    <input id="plnMonthPick" type="month" tabindex="-1" aria-hidden="true" style="position:absolute;left:0;top:0;opacity:0;width:1px;height:1px;border:0;padding:0;pointer-events:none" onchange="BTMPlanner.onMonthPick()">
   </div>
 </div>
 <div id="newReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:none;align-items:center;justify-content:center">
@@ -6752,7 +6854,7 @@ const _LS_LABELS={
   'BTM_CUSTOM_TICKERS':'사용자 티커','btm_church_calendar':'교회력 말씀','BTMSectionTitleMgmt':'섹션 제목 관리',
   'BTMExRate_v1':'환율 기록','BTMPublished':'Publish 상태','BTMAutoCheck_v1':'Auto Check 업체 목록',
   'BTMPlanner_v1':'일정 목록','BTMPlannerG_v1':'일정 구글 연결 설정',
-  'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정'
+  'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정','BTMPlannerUI_v1':'일정 화면 설정'
 };
 function _lsLabel(k){ return _LS_LABELS[k]||k; }
 function _lsEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -11065,14 +11167,22 @@ window.openAutoCheck=function(){
 };
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
-/* ══ v202 (2026-11-23) — [일정] 메뉴 + 구글 캘린더 양방향 동기화(폰 연동) ═══════════════════════════════════════════
-   요청: "report 메뉴에 '일정'을 추가하고 날짜·일정을 써 넣으면 내 핸드폰(안드로이드)에도 표시되게 — 앱→폰, 폰→앱 모두"
+/* ══ v204 (2026-11-23) — [일정 / To Do List] 팝업 개편 (엔진은 v202 의 구글 캘린더 양방향 동기화 그대로) ══════════════════════════════════════
+   요청: "일정을 누르면 메모 '크게 보기'와 같은 크기로 팝업 · 왼쪽엔 아직 날짜가 정해지지 않은 일정(To Do)을 입력, 오른쪽엔 월간 달력 · To Do 를 끌어서 달력 날짜에 놓으면 왼쪽에서는 지워지고 달력에 표기
+         · 달력이 기본이지만 그 달의 일정을 목록으로도 볼 수 있게"
+   화면: 팝업 크기 = 메모장 #memoModal 과 같은 값(바깥 여백 10px · 가로 min(1326px,98vw) · 세로 min(910px,95vh)). 왼쪽 .pln-todo(To Do 입력·목록) | 오른쪽 .pln-cal(월 이동·[달력|목록] 전환).
+     · 달력: 일요일 시작 7열 · 5~6주 · 날짜 칸마다 일정 칩(종일=초록, 시간 일정=파랑, 여러 날 일정은 이어서 ↳) · 칸이 좁으면 '+N건 더보기'(누르면 그날로 목록 보기) · 빈 칸을 누르면 그날의 새 일정, 칩을 누르면 수정
+     · 끌어다 놓기(HTML5 드래그): To Do → 날짜 칸 = 그날 종일 일정(왼쪽에서 사라짐) · 달력의 칩 → 다른 날짜 칸 = 그 일정의 날짜 이동(여러 날 일정은 길이 유지). 놓은 칸이 잠깐 노랗게 번쩍임
+     · To Do 줄의 📅 로 날짜를 골라도 같음(끌기 어려운 환경용). 드래그 중에는 동기화 결과로 화면을 다시 그리지 않고 끝난 뒤에 그림(끌던 항목이 사라져 취소되지 않게)
+     · 일정 입력/수정은 팝업 안의 대화상자(시작·종료 날짜/시간·알림·내용·메모) — To Do 를 고칠 때만 날짜를 비워 둘 수 있음(비우면 To Do 로 남음)
+   데이터: To Do = 날짜가 없는 항목(d:'') — localStorage 'BTMPlanner_v1' 에만 저장되고 구글 캘린더에는 올리지 않음(날짜가 정해지는 순간 일반 일정이 되어 동기화 대상). 화면 설정 'BTMPlannerUI_v1'={view:'cal'|'list'}.
+   (아래 엔진 설명은 v202 그대로)
    구조(서버 없이 브라우저가 구글 캘린더 API 를 직접 부름):
    · 일정 목록의 원본은 이 브라우저 localStorage 'BTMPlanner_v1' = {v:1, items:[…], tomb:[{g,at}]} — 리포트 데이터·Archive·Publish 와 별개(게스트에게 안 보임, 메뉴 버튼도 게스트엔 숨김).
      구글 설정 'BTMPlannerG_v1' = {cid:클라이언트ID, cal:캘린더ID, last:마지막 동기화, on:연동 켬}. 로그인 토큰은 메모리 + sessionStorage 'BTMPlannerTok_v1'(탭을 닫으면 사라짐, 약 1시간).
    · 구글 계정에 전용 캘린더 'BTM 일정'을 만들어 그 안의 일정을 읽고 씀 — OAuth 권한은 calendar.app.created(앱이 만든 캘린더만, 내 다른 일정은 못 봄). 폰의 구글 캘린더 앱이 그 캘린더를 푸시로 동기화.
-   · 항목 {id,d,t,d2,t2,s,m,r,g,gu,b,mod,rec,src} — d/t=시작 날짜·시간('' 이면 종일), d2/t2=끝(종일은 d2 포함), s=제목, m=메모, r=알림(몇 분 전, -1=없음), g=구글 이벤트 id, gu=그 이벤트의 updated,
-     b=마지막으로 맞춘 구글 값의 사본(3자 병합의 기준), mod=앱에서 마지막으로 고친 시각, rec=반복 일정의 한 날짜(🔁), src='g' 면 폰·구글에서 만든 것(📱).
+   · 항목 {id,d,t,d2,t2,s,m,r,g,gu,b,mod,rec,src,mr} — d/t=시작 날짜·시간('' 이면 종일), d2/t2=끝(종일은 d2 포함), s=제목, m=메모, r=알림(몇 분 전, -1=없음), g=구글 이벤트 id, gu=그 이벤트의 updated,
+     b=마지막으로 맞춘 구글 값의 사본(3자 병합의 기준), mod=앱에서 마지막으로 고친 시각, rec=반복 일정의 한 날짜(🔁), src='g' 면 폰·구글에서 만든 것(📱), mr=구글 메모 원문.
    · 동기화(sync) = 창(오늘−90일 ~ +730일) 단위 비교: ① 앱에서 지운 것(tomb)은 구글에서 삭제 ② 구글 목록을 받아 항목별(시간·제목·메모·알림)로 3자 병합 — 한쪽만 고쳤으면 그쪽, 양쪽이 같은 항목을 고쳤으면 나중에 고친 쪽
      ③ 구글에서 지워진 일정은 앱에서도 지움(앱에서 고친 게 있으면 되살려 다시 올림) ④ 폰에서 새로 만든 일정은 앱에 추가 ⑤ 앱에서 새로 만든·고친 일정은 구글에 올림. 아무것도 안 바뀌면 쓰기 요청 0건.
    · 반복 일정은 구글이 날짜별로 펼쳐 준 것(singleEvents)을 항목으로 가져옴(오늘−7일~+60일만) — 앱에서 고치거나 지우면 그 날짜 하나에만 적용(구글의 '이 일정만'과 같음). 반복 규칙 자체는 앱에서 만들거나 고치지 않음.
@@ -11080,14 +11190,14 @@ window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='n
    · 시험: window.fetch 를 가짜 구글 서버로, google.accounts.oauth2 를 가짜 토큰 클라이언트로 바꿔 전 경로를 확인(BTMPlanner._t 로 상태 조회). 실제 구글 로그인·API 는 이 환경에서 못 해 봄(미검증). */
 (function(){
 'use strict';
-const KEY='BTMPlanner_v1', GKEY='BTMPlannerG_v1', TKEY='BTMPlannerTok_v1';
+const KEY='BTMPlanner_v1', GKEY='BTMPlannerG_v1', TKEY='BTMPlannerTok_v1', UIKEY='BTMPlannerUI_v1';
 const API='https://www.googleapis.com/calendar/v3';
 const SCOPE='https://www.googleapis.com/auth/calendar.app.created';   /* 앱이 만든 캘린더만 — 권한을 바꿔야 하면 여기 한 곳 */
 const CAL_NAME='BTM 일정';
 const CID_DEFAULT='';                       /* 배포 파일에 클라이언트 ID 를 미리 넣어 두려면 여기에(비밀값 아님) — 비워 두면 일정 창 [연결 설정]에서 붙여넣음 */
 const WIN_BACK=90, WIN_FWD=730;             /* 동기화 창: 오늘−90일 ~ +730일 */
 const REC_BACK=7, REC_FWD=60;               /* 반복 일정의 날짜별 항목은 이 범위만 앱에 가져옴(매일 반복이 수백 줄이 되지 않게) */
-const POLL_MS=60000, MAX_ROWS=400;
+const POLL_MS=60000, CHIP_H=20;
 const FIELDS=['d','t','d2','t2','s','m','r'];
 const GRP={T:['d','t','d2','t2'],S:['s'],M:['m'],R:['r']};   /* 병합 단위: 시간 · 제목 · 메모 · 알림 */
 const WD=['일','월','화','수','목','금','토'];
@@ -11108,6 +11218,7 @@ function addDays(s,n){ const d=parseYmd(s); if(!d) return s; d.setDate(d.getDate
 function toDate(d,t){ const p=parseYmd(d); if(!p) return null; if(t&&validHm(t)) p.setHours(+t.slice(0,2),+t.slice(3,5),0,0); return p; }
 const tzName=()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Seoul'; }catch(_){ return 'Asia/Seoul'; } };
 const todayY=()=>ymd(new Date());
+const dayDiff=(a,b)=>Math.round((parseYmd(a)-parseYmd(b))/86400000);
 /* 구글 이벤트 id 는 base32hex(0-9, a-v) 5자 이상 — 앱이 만든 일정은 이 id 를 그대로 구글에 써서, 응답을 못 받고 재시도해도 중복이 생기지 않음 */
 const newId=()=>'btm'+Date.now().toString(32)+Math.floor(Math.random()*1e9).toString(32);
 
@@ -11117,8 +11228,10 @@ let gcfg={cid:'',cal:'',last:0,on:false};
 let tok=null, tc=null, tcCid='', tokP=null, gsiP=null;
 let st={k:'off',msg:''};
 let busyP=null, again=false, timer=null, poll=null, opened=false;
-let editId='', editBase=null, filter='up', setOn=false;
+let editId='', editBase=null, dlgTodo=false, setOn=false;
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
+let ui={view:'cal'}, vm=null;               /* 화면 설정 · 지금 보는 달(그 달 1일) */
+let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null;
 
 /* ── 저장 ── (localStorage 쓰기가 막히면 앱 공용 감시 래퍼가 _lsPending 에 보관하고 경고 배너를 띄움) */
 function lsGet(k){
@@ -11131,17 +11244,19 @@ function normB(b){
   const o={}; o.d=validYmd(b.d)?b.d:''; o.t=validHm(b.t)?b.t:''; o.d2=validYmd(b.d2)?b.d2:o.d; o.t2=validHm(b.t2)?b.t2:'';
   o.s=String(b.s==null?'':b.s); o.m=String(b.m==null?'':b.m); o.r=(Number.isInteger(b.r)&&b.r>=-1&&b.r<=40320)?b.r:-1; return o;
 }
-function fix0(it){   /* 구조만 바로잡음(끝 날짜≥시작, 시간 일정의 끝 시간) — 길이를 늘리지는 않음(폰에서 만든 0분짜리 일정을 건드리지 않게) */
+function fix0(it){   /* 구조만 바로잡음(끝 날짜≥시작, 시간 일정의 끝 시간) — 길이를 늘리지는 않음(폰에서 만든 0분짜리 일정을 건드리지 않게). 날짜가 없으면(To Do) 시간도 비움 */
+  if(!it.d){ it.d2=''; it.t=''; it.t2=''; return it; }
   if(!validYmd(it.d2)||it.d2<it.d) it.d2=it.d;
   if(!it.t){ it.t2=''; return it; }
   if(!validHm(it.t2)||(it.d2===it.d&&it.t2<it.t)) it.t2=it.t;
   return it;
 }
 function norm(x){
-  if(!x||typeof x!=='object'||!validYmd(x.d)) return null;
-  const it={ id:(typeof x.id==='string'&&x.id.length>=5&&x.id.length<=300)?x.id:newId(), d:x.d, t:validHm(x.t)?x.t:'', d2:validYmd(x.d2)?x.d2:x.d, t2:validHm(x.t2)?x.t2:'',
+  if(!x||typeof x!=='object') return null;
+  const todo=!validYmd(x.d);                 /* 날짜가 없으면 To Do(날짜 미정) — 구글과 연결하지 않음 */
+  const it={ id:(typeof x.id==='string'&&x.id.length>=5&&x.id.length<=300)?x.id:newId(), d:todo?'':x.d, t:(!todo&&validHm(x.t))?x.t:'', d2:todo?'':(validYmd(x.d2)?x.d2:x.d), t2:(!todo&&validHm(x.t2))?x.t2:'',
     s:String(x.s==null?'':x.s).slice(0,300), m:String(x.m==null?'':x.m).slice(0,4000), r:(Number.isInteger(x.r)&&x.r>=-1&&x.r<=40320)?x.r:-1,
-    g:String(x.g||''), gu:String(x.gu||''), mod:+x.mod||0, rec:x.rec?1:0, src:x.src==='g'?'g':'app', b:normB(x.b), mr:(typeof x.mr==='string')?x.mr.slice(0,8000):null };
+    g:todo?'':String(x.g||''), gu:todo?'':String(x.gu||''), mod:+x.mod||0, rec:(!todo&&x.rec)?1:0, src:x.src==='g'?'g':'app', b:todo?null:normB(x.b), mr:(!todo&&typeof x.mr==='string')?x.mr.slice(0,8000):null };
   return fix0(it);
 }
 function load(){
@@ -11156,18 +11271,20 @@ function load(){
   }
   const gr=lsGet(GKEY);
   if(gr){ try{ const c=JSON.parse(gr); if(c&&typeof c==='object') gcfg={cid:String(c.cid||''),cal:String(c.cal||''),last:+c.last||0,on:!!c.on}; }catch(_){} }
+  try{ const u=JSON.parse(lsGet(UIKEY)||'null'); if(u&&(u.view==='list'||u.view==='cal')) ui.view=u.view; }catch(_){}
   if(!gcfg.cid&&CID_DEFAULT) gcfg.cid=CID_DEFAULT;
   try{ const t=JSON.parse(sessionStorage.getItem(TKEY)||'null'); if(t&&t.t&&t.exp>Date.now()+30000) tok=t; }catch(_){}
   st=(!gcfg.cid||!gcfg.on)?{k:'off',msg:''}:{k:tokOK()?'ok':'auth',msg:''};
 }
 const save=()=>lsSet(KEY,JSON.stringify({v:1,items,tomb}));
 const saveG=()=>lsSet(GKEY,JSON.stringify(gcfg));
+const saveUi=()=>lsSet(UIKEY,JSON.stringify(ui));
 
 /* ── 병합 단위·스냅샷 ── */
 const snap=it=>{ const o={}; FIELDS.forEach(f=>{ o[f]=it[f]; }); return o; };
 const gSame=(a,b,k)=>GRP[k].every(f=>a[f]===b[f]);
 const dirtyGroups=it=>it.b?Object.keys(GRP).filter(k=>!gSame(it,it.b,k)):Object.keys(GRP);
-const needsPush=it=>!it.g||dirtyGroups(it).length>0;
+const needsPush=it=>!!it.d&&(!it.g||dirtyGroups(it).length>0);          /* To Do(날짜 없음)는 구글에 올리지 않음 */
 const cmp=(a,b)=>a.d<b.d?-1:a.d>b.d?1:((a.t||'')<(b.t||'')?-1:(a.t||'')>(b.t||'')?1:(a.s<b.s?-1:a.s>b.s?1:0));
 const removeLocal=L=>{ items=items.filter(x=>x!==L); };
 const resetLinks=()=>{ items.forEach(it=>{ it.g=''; it.gu=''; it.b=null; if(!/^[0-9a-v]{5,}$/.test(it.id)) it.id=newId(); }); tomb=[]; };
@@ -11230,7 +11347,7 @@ function onTok(r){
 }
 function onTokErr(e){
   const w=tokWait; tokWait=null; const ty=e&&e.type; authDismissed=true;
-  const er=new Error(ty==='popup_closed'?'구글 로그인 창이 닫혔습니다':ty==='popup_failed_to_open'?'구글 로그인 창이 차단됐습니다 — 이 사이트의 팝업을 허용해 주세요':'구글 로그인에 실패했습니다'+(ty?' ('+ty+')':''));
+  const er=new Error(ty==='popup_closed'?'구글 로그인 창이 닫혔습니다 — 창에 ‘액세스 차단됨(403)’이 보였다면 ⚙ 연결 설정 2번의 ‘테스트 사용자’ 등록을 확인하세요':ty==='popup_failed_to_open'?'구글 로그인 창이 차단됐습니다 — 이 사이트의 팝업을 허용해 주세요':'구글 로그인에 실패했습니다'+(ty?' ('+ty+')':''));
   er.authFail=true; er.needAuth=true; if(w) w.rej(er);
 }
 /* 로그인 창은 클릭 같은 사용자 동작 안에서 바로 열어야 브라우저가 막지 않음 → 라이브러리가 이미 불러와져 있으면 동기적으로 요청 */
@@ -11325,7 +11442,7 @@ function reconcile(list,win){
   const res={pull:0,add:0,del:0,ins:0,upd:0,back:0,verify:[]};
   const rmap=new Map(); list.forEach(R=>{ if(R&&R.id&&R.status!=='cancelled') rmap.set(R.id,R); });
   const tg=new Set(tomb.map(x=>x.g)), have=new Set(), orphan=new Map();
-  items.forEach(x=>{ if(!x.g) orphan.set(x.id,x); });
+  items.forEach(x=>{ if(!x.g&&x.d) orphan.set(x.id,x); });               /* To Do(날짜 없음)는 구글과 짝지을 대상이 아님 */
   items.slice().forEach(L=>{
     if(!L.g) return;
     have.add(L.g);
@@ -11380,6 +11497,7 @@ async function patchItem(L,gs,res){
 async function pushAll(res){
   for(const L of items.slice()){
     if(!items.includes(L)) continue;
+    if(!L.d) continue;                                                   /* To Do 는 올리지 않음 */
     if(!L.g) await insertItem(L,res);
     else{ const gs=dirtyGroups(L); if(gs.length) await patchItem(L,gs,res); }
     save();
@@ -11456,51 +11574,121 @@ function paintSet(){
   const gb=$('plnGearBtn'); if(gb) gb.textContent=setOn?'⚙ 설정 닫기':'⚙ 연결 설정';
   if(setOn&&!/^https?:$/.test(location.protocol)) setInfo('⚠️ 이 주소('+location.protocol+')에서는 구글 로그인을 쓸 수 없습니다 — 배포한 사이트(https)에서 열어 주세요.','warn');
 }
+function toast(msg){ const t=$('plnToast'); if(!t) return; t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2800); }
 
-/* ── 화면: 목록 ── */
-function relLabel(d,today){ const diff=Math.round((parseYmd(d)-parseYmd(today))/86400000); return diff===0?'오늘':diff===1?'내일':diff===2?'모레':diff===-1?'어제':diff>0?diff+'일 후':(-diff)+'일 전'; }
+/* ── 화면: 라벨 ── */
+function relLabel(d,today){ const diff=dayDiff(d,today); return diff===0?'오늘':diff===1?'내일':diff===2?'모레':diff===-1?'어제':diff>0?diff+'일 후':(-diff)+'일 전'; }
 function dateLabel(d){ const p=parseYmd(d); return p.getFullYear()+'년 '+(p.getMonth()+1)+'월 '+p.getDate()+'일 ('+WD[p.getDay()]+')'; }
 function remLabel(r){ if(r<0) return '알림 없음'; if(r===0) return '정시'; if(r%1440===0) return (r/1440)+'일 전'; if(r%60===0) return (r/60)+'시간 전'; return r+'분 전'; }
 function timeLabel(it){
   if(!it.t) return '종일'+(it.d2>it.d?'<small>~'+esc(it.d2.slice(5))+'</small>':'');
   return esc(it.t)+(it.d2>it.d?'<small>~'+esc(it.d2.slice(5))+' '+esc(it.t2)+'</small>':(it.t2&&it.t2!==it.t?'<small>~'+esc(it.t2)+'</small>':''));
 }
+const mStart=d=>new Date(d.getFullYear(),d.getMonth(),1);
+function ensureVm(){ if(!vm) vm=mStart(new Date()); }
+
+/* ── 화면: 목록 보기의 한 줄 ── */
 function rowHtml(it,today){
   const past=it.d2<today;
   const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'')+(it.r>=0?'<span class="pln-bd" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'');
   const sy=gcfg.on?(needsPush(it)?'<span class="pln-sy w" title="구글 캘린더에 아직 반영되지 않음">⏳</span>':'<span class="pln-sy" title="구글 캘린더와 동기화됨">☁</span>'):'';
   return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'"><div class="pln-tm">'+timeLabel(it)+'</div><div class="pln-mn"><div class="pln-ti">'+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
 }
-function render(){
-  const box=$('plnList'); if(!box) return; load();
-  const today=todayY(), sorted=items.slice().sort(cmp);
-  const up=sorted.filter(x=>x.d2>=today), past=sorted.filter(x=>x.d2<today).reverse();
-  const list=filter==='up'?up:filter==='past'?past:sorted;
-  const ta=$('plnTabUp'), tp=$('plnTabPast'), tl=$('plnTabAll');
-  if(ta){ ta.className='pln-tab'+(filter==='up'?' on':''); ta.textContent='다가오는 일정 '+up.length; }
-  if(tp){ tp.className='pln-tab'+(filter==='past'?' on':''); tp.textContent='지난 일정 '+past.length; }
-  if(tl){ tl.className='pln-tab'+(filter==='all'?' on':''); tl.textContent='전체 '+sorted.length; }
-  const cn=$('plnCount'); if(cn){ const pend=gcfg.on?items.filter(needsPush).length:0; cn.textContent=pend?('구글에 반영 대기 '+pend+'건'):''; }
-  if(!list.length){
-    box.innerHTML='<div class="pln-em">'+(filter==='past'?'지난 일정이 없습니다.':'등록된 일정이 없습니다.<br>위에 날짜와 내용을 적고 <b>＋ 추가</b>를 누르세요.'+(gcfg.on?'':'<br>구글 캘린더에 연결하면 폰에도 표시됩니다 — <b>⚙ 연결 설정</b>'))+'</div>';
-    return;
-  }
-  let html='', last='', n=0;
-  for(const it of list){
-    if(n++>=MAX_ROWS){ html+='<div class="pln-em">… 외 '+(list.length-MAX_ROWS)+'건 (한 번에 '+MAX_ROWS+'건까지 표시)</div>'; break; }
-    if(it.d!==last){ last=it.d; html+='<div class="pln-gh'+(it.d===today?' t':'')+'">'+esc(dateLabel(it.d))+' · '+esc(relLabel(it.d,today))+'</div>'; }
+function renderList(){
+  const box=$('plnList'); if(!box) return; ensureVm();
+  const a=ymd(vm), b=ymd(new Date(vm.getFullYear(),vm.getMonth()+1,0)), today=todayY();
+  const list=items.filter(it=>it.d&&it.d2>=a&&it.d<=b).sort(cmp);
+  if(!list.length){ box.innerHTML='<div class="pln-em">이 달에는 일정이 없습니다.<br>달력으로 돌아가 날짜를 누르거나, 왼쪽 To Do 를 날짜에 끌어다 놓으세요.</div>'; return; }
+  let html='', last='';
+  list.forEach(it=>{
+    const day=it.d<a?a:it.d;                                                /* 전달에서 이어지는 여러 날 일정은 이 달 1일 아래에 */
+    if(day!==last){ last=day; html+='<div class="pln-gh'+(day===today?' t':'')+'" data-day="'+day+'">'+esc(dateLabel(day))+' · '+esc(relLabel(day,today))+'</div>'; }
     html+=rowHtml(it,today);
-  }
+  });
   box.innerHTML=html;
+}
+
+/* ── 화면: 월간 달력 ── */
+const evCmp=(a,b)=>{ const x=a.t?1:0, y=b.t?1:0; if(x!==y) return x-y; if(a.t!==b.t) return a.t<b.t?-1:1; if(a.d!==b.d) return a.d<b.d?-1:1; return a.s<b.s?-1:a.s>b.s?1:0; };   /* 종일 먼저 → 시간순 */
+function dayMap(a,b){   /* a~b(달력에 보이는 첫날~끝날)에 걸치는 일정을 날짜별로 — 여러 날 일정은 걸친 날마다 */
+  const map=new Map();
+  items.forEach(it=>{
+    if(!it.d||it.d2<a||it.d>b) return;
+    let d=it.d<a?a:it.d; const end=it.d2>b?b:it.d2; let g=0;
+    while(d<=end&&g++<400){ let arr=map.get(d); if(!arr){ arr=[]; map.set(d,arr); } arr.push(it); d=addDays(d,1); }
+  });
+  map.forEach(arr=>arr.sort(evCmp));
+  return map;
+}
+function chipHtml(it,day){
+  const ad=!it.t, cont=it.d<day;
+  const mk=(it.rec?'🔁':'')+(it.src==='g'?'📱':'');
+  const dot=(gcfg.on&&needsPush(it))?'<i class="pln-dot" title="구글 캘린더에 아직 반영되지 않음"></i>':'';
+  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+(it.d2>it.d?'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']':'')+(it.m?'\n'+it.m:'');
+  return '<div class="pln-ch '+(ad?'ad':'tm')+(cont?' ct':'')+'" draggable="true" data-id="'+esc(it.id)+'" title="'+esc(tip)+'">'+dot+(cont?'↳ ':'')+((ad||cont)?'':'<b>'+esc(it.t)+'</b>')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
+}
+function renderCal(){
+  const grid=$('plnGrid'); if(!grid) return; ensureVm();
+  const y=vm.getFullYear(), m=vm.getMonth(), lead=new Date(y,m,1).getDay(), dim=new Date(y,m+1,0).getDate(), weeks=Math.ceil((lead+dim)/7);
+  const start=new Date(y,m,1-lead), a=ymd(start), b=ymd(new Date(y,m,1-lead+weeks*7-1)), today=todayY();
+  const map=dayMap(a,b); let html='';
+  for(let i=0;i<weeks*7;i++){
+    const dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i), day=ymd(dt), dow=dt.getDay(), out=dt.getMonth()!==m;
+    const num=dt.getDate()===1?((dt.getMonth()+1)+'월 1일'):String(dt.getDate());
+    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span></div><div class="pln-cl">'+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
+  }
+  grid.style.gridTemplateRows='repeat('+weeks+',minmax(0,1fr))';
+  grid.innerHTML=html; fitCal();
+}
+function fitCal(){   /* 칸 높이에 맞게 칩 수를 줄이고 나머지는 '+N건 더보기' — 칸이 보이지 않을 때(높이 0)는 건너뜀 */
+  const grid=$('plnGrid'); if(!grid) return;
+  grid.querySelectorAll('.pln-cell').forEach(c=>{
+    const cl=c.querySelector('.pln-cl'), ch=cl?[...cl.children]:[]; if(!ch.length||!c.clientHeight) return;
+    const avail=c.clientHeight-c.querySelector('.pln-dn').offsetHeight-6, cap=Math.max(2,Math.floor(avail/CHIP_H));
+    if(ch.length>cap){
+      const keep=cap-1; ch.slice(keep).forEach(e=>e.remove());
+      const more=document.createElement('div'); more.className='pln-more'; more.setAttribute('data-day',c.getAttribute('data-day')); more.textContent='+'+(ch.length-keep)+'건 더보기'; cl.appendChild(more);
+    }
+  });
+}
+
+/* ── 화면: To Do 목록 ── */
+function todoHtml(it){
+  return '<div class="pln-td" draggable="true" data-id="'+esc(it.id)+'" title="달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span><div class="mn"><div class="ti">'+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac"><button data-a="pick" title="날짜 고르기">📅</button><button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+}
+function renderTodo(){
+  const box=$('plnTodoList'); if(!box) return;
+  const todos=items.filter(x=>!x.d);
+  const c=$('plnTodoCnt'); if(c) c.textContent=todos.length;
+  box.innerHTML=todos.length?todos.map(todoHtml).join(''):'<div class="pln-em">날짜가 정해지지 않은 일정을 위에 적어 두세요.<br>적은 항목을 오른쪽 달력의 날짜로 끌어다 놓으면 그날의 일정이 됩니다.</div>';
+}
+
+/* ── 화면: 전체 다시 그리기 ── */
+function renderMain(){
+  ensureVm();
+  const lab=$('plnMonth'); if(lab) lab.textContent=vm.getFullYear()+'년 '+(vm.getMonth()+1)+'월';
+  const cal=ui.view!=='list', w=$('plnCalWrap'), l=$('plnList');
+  if(w) w.style.display=cal?'flex':'none';
+  if(l) l.style.display=cal?'none':'block';
+  [['plnVCal',cal],['plnVList',!cal]].forEach(([id,on])=>{ const b=$(id); if(b) b.className=on?'on':''; });
+  if(cal) renderCal(); else renderList();
+  const a=ymd(vm), b=ymd(new Date(vm.getFullYear(),vm.getMonth()+1,0));
+  const n=items.filter(it=>it.d&&it.d2>=a&&it.d<=b).length, pend=gcfg.on?items.filter(needsPush).length:0;
+  const cn=$('plnCount'); if(cn) cn.textContent='이 달 일정 '+n+'건'+(pend?' · 구글 반영 대기 '+pend+'건':'');
+}
+function render(){
+  if(!opened) return;                                  /* 창이 닫혀 있으면 열 때 그림 */
+  if(dragId){ pendingRender=true; return; }            /* 끌고 있는 동안에는 미룸(끌던 항목이 사라져 취소되지 않게) */
+  load(); renderTodo(); renderMain();
 }
 function updateBtn(){
   const b=$('plnMenuBtn'); if(!b) return; load();
-  const t=todayY(), n=items.filter(x=>x.d<=t&&x.d2>=t).length;
+  const t=todayY(), n=items.filter(x=>x.d&&x.d<=t&&x.d2>=t).length;
   b.innerHTML='일정'+(n?'<span class="pln-badge">'+n+'</span>':'');
-  b.title='일정 — 날짜·일정을 적으면 구글 캘린더(폰)와 양방향 동기화됩니다'+(n?' · 오늘 '+n+'건':'');
+  b.title='일정 / To Do List — 날짜 미정 To Do 를 달력에 끌어다 놓고, 구글 캘린더(폰)와 양방향 동기화'+(n?' · 오늘 '+n+'건':'');
 }
 
-/* ── 화면: 입력 양식 ── */
+/* ── 입력 대화상자 ── */
 function fillRem(r){
   const sel=$('plnFR'); if(!sel) return;
   const allDay=!validHm($('plnFT').value), base=allDay?REM_A:REM_T;
@@ -11513,19 +11701,21 @@ function fillRem(r){
   sel.innerHTML=opts.map(o=>'<option value="'+o[0]+'">'+esc(o[1])+'</option>').join('');
   sel.value=String(cur);
 }
-function fillForm(it){
-  $('plnFD').value=it?it.d:todayY(); $('plnFT').value=it?it.t:''; $('plnFD2').value=(it&&it.d2!==it.d)?it.d2:''; $('plnFT2').value=it?it.t2:'';
+function fillForm(it,day){
+  $('plnFD').value=it?it.d:(day||''); $('plnFT').value=it?it.t:''; $('plnFD2').value=(it&&it.d2&&it.d2!==it.d)?it.d2:''; $('plnFT2').value=it?it.t2:'';
   $('plnFS').value=it?it.s:''; $('plnFM').value=it?it.m:'';
-  if(it){ $('plnFR').value=''; fillRem(it.r); } else { fillRem(null); }
-  const e=!!it; $('plnFTitle').textContent=e?(it.rec?'일정 수정(이 날짜만)':'일정 수정'):'새 일정'; $('plnFSave').textContent=e?'✔ 저장':'＋ 추가'; $('plnFCancelWrap').style.display=e?'':'none';
-  setFormMsg(e?'고친 뒤 [✔ 저장]을 누르세요.':'시간을 비우면 종일 일정으로 들어갑니다.');
+  $('plnFR').value=''; fillRem(it?it.r:null);
+  const t=$('plnFTitle'); if(t) t.textContent=it?(it.d?(it.rec?'일정 수정(이 날짜만)':'일정 수정'):'To Do 수정'):(day?'새 일정 — '+dateLabel(day):(dlgTodo?'새 To Do':'새 일정'));
+  const dw=$('plnFDelWrap'); if(dw) dw.style.display=it?'':'none';
+  setFormMsg(dlgTodo?'날짜를 정하면 달력으로 옮겨져 구글 캘린더(폰)에도 표시됩니다. 비워 두면 To Do 로 남습니다.':(it?'고친 뒤 [저장]을 누르세요.':'시간을 비우면 종일 일정으로 들어갑니다.'));
 }
 function readForm(fb){   /* fb = 수정을 시작할 때의 항목 값 — 시간 칸을 안 건드렸으면 끝>시작 검사를 건너뜀(폰에서 만든 0분짜리 일정도 제목은 고칠 수 있게) */
   const d=$('plnFD').value, t=$('plnFT').value, s=$('plnFS').value.trim().slice(0,300), m=$('plnFM').value.replace(/\r\n/g,'\n').trim().slice(0,4000);
-  let d2=$('plnFD2').value||d, t2=$('plnFT2').value; const r=+$('plnFR').value;
+  let d2=$('plnFD2').value||d, t2=$('plnFT2').value; const r=+$('plnFR').value, rr=Number.isInteger(r)?r:-1;
   if(!t) t2='';
   const timeSame=!!fb&&d===fb.d&&t===fb.t&&d2===fb.d2&&t2===fb.t2;
-  if(!validYmd(d)) return {err:'날짜를 선택해 주세요.'};
+  if(!d&&dlgTodo){ if(!s) return {err:'내용을 입력해 주세요.'}; return {d:'',t:'',d2:'',t2:'',s,m,r:rr}; }   /* To Do — 날짜 없이 저장 */
+  if(!validYmd(d)) return {err:dlgTodo?'날짜 형식을 확인해 주세요.':'날짜를 선택해 주세요. (날짜 없이 두려면 삭제한 뒤 왼쪽 To Do 에 다시 적어 주세요)'};
   if(!s) return {err:'일정 내용을 입력해 주세요.'};
   if(!validYmd(d2)) d2=d;
   if(d2<d) return {err:'종료 날짜가 시작 날짜보다 빠릅니다.'};
@@ -11536,59 +11726,155 @@ function readForm(fb){   /* fb = 수정을 시작할 때의 항목 값 — 시�
       if(!timeSame&&toDate(d2,t2)<=toDate(d,t)) return {err:'종료 시간이 시작 시간보다 빠르거나 같습니다.'};
     }else{ const en=new Date(toDate(d,t).getTime()+3600000); d2=ymd(en); t2=hm(en); }   /* 종료를 비우면 1시간 */
   }
-  return {d,t,d2,t2,s,m,r:Number.isInteger(r)?r:-1};
+  return {d,t,d2,t2,s,m,r:rr};
+}
+function openDlg(o){
+  load(); o=o||{};
+  const it=o.id?items.find(x=>x.id===o.id):null;
+  if(o.id&&!it) return;
+  editId=it?it.id:''; editBase=it?snap(it):null; dlgTodo=it?!it.d:!!o.todo;
+  fillForm(it,o.day||'');
+  const w=$('plnDlg'); if(w) w.classList.add('on');
+  const f=$('plnFS'); if(f) setTimeout(()=>{ try{ f.focus(); }catch(_){} },30);
+}
+function closeDlg(){ const w=$('plnDlg'); if(w) w.classList.remove('on'); editId=''; editBase=null; dlgTodo=false; }
+function openNew(day){
+  ensureVm(); let d=(typeof day==='string')?day:'';
+  if(!validYmd(d)){ const t=todayY(); d=(t.slice(0,7)===vm.getFullYear()+'-'+pad(vm.getMonth()+1))?t:ymd(vm); }   /* 보는 달에 오늘이 있으면 오늘, 아니면 그 달 1일 */
+  openDlg({day:d});
 }
 
 /* ── 사용자 동작 ── */
-function afterChange(){
+function afterChange(needSync){
   save(); render(); updateBtn();
+  if(needSync===false) return;                         /* To Do 만 바뀌었으면 구글과는 상관없음 */
   if(!gcfg.on||!gcfg.cid) return;
   if(busyP){ again=true; return; }
   if(tokOK()){ clearTimeout(timer); timer=setTimeout(()=>sync({}),500); }
   else{ setStatus('auth'); if(!authDismissed) sync({interactive:true}); }          /* 클릭 안이므로 로그인 창을 바로 열 수 있음(방금 닫은 적이 있으면 띄우지 않음 — 일정은 로컬에 저장돼 있고 [🔄]로 올림) */
 }
-function submit(){
+function submit(){   /* 대화상자 [저장] */
   load();
   const f=readForm(editId?editBase:null); if(f.err){ setFormMsg(f.err,'err'); return; }
-  let it=editId?items.find(x=>x.id===editId):null, lost=false;
+  let it=editId?items.find(x=>x.id===editId):null, lost=false, needSync;
   if(it){
     /* 양식을 연 뒤 폰에서 바뀐 값이 있을 수 있으므로, 내가 실제로 고친 병합 단위(시간·제목·메모·알림)만 덮어씀 */
     const base=editBase||snap(it); let ch=false;
     Object.keys(GRP).forEach(k=>{ if(GRP[k].some(ff=>f[ff]!==base[ff])){ GRP[k].forEach(ff=>{ it[ff]=f[ff]; }); ch=true; } });
     if(ch){ it.mod=Date.now(); fix0(it); }
+    needSync=!!it.d;
   }else{
     lost=!!editId;                                          /* 수정하던 일정이 그 사이 구글(폰)에서 지워졌으면 새 일정으로 저장 */
     it=norm({id:newId(),d:f.d,t:f.t,d2:f.d2,t2:f.t2,s:f.s,m:f.m,r:f.r,mod:Date.now(),src:'app'});
     if(it) items.push(it);
+    needSync=!!(it&&it.d);
   }
-  const keepD=f.d; editId=''; editBase=null; fillForm(null); $('plnFD').value=keepD;   /* 같은 날 이어서 입력하기 편하게 날짜는 유지 */
-  afterChange(); $('plnFS').focus();
-  setFormMsg((lost?'수정하던 일정이 그 사이 지워져 새 일정으로 저장했습니다. ':'✅ 저장했습니다')+(gcfg.on?' — 구글 캘린더에 반영 중…':' (구글 캘린더에 연결하면 폰에도 표시됩니다)'),'ok');
+  closeDlg(); afterChange(needSync);
+  toast((lost?'수정하던 일정이 그 사이 지워져 새 일정으로 저장했습니다. ':'✅ 저장했습니다')+(it&&it.d?(gcfg.on?' — 구글 캘린더에 반영 중…':' (구글 캘린더에 연결하면 폰에도 표시됩니다)'):''));
 }
-function edit(id){
-  const it=items.find(x=>x.id===id); if(!it) return;
-  editId=id; editBase=snap(it); fillForm(it);
-  const f=$('plnFS'); if(f){ f.focus(); try{ f.scrollIntoView({block:'nearest'}); }catch(_){} }
-}
-function cancelEdit(){ editId=''; editBase=null; fillForm(null); }
 function del(id){
   const it=items.find(x=>x.id===id); if(!it) return;
-  const label=(it.s||'(제목 없음)')+' — '+it.d+(it.t?' '+it.t:'');
-  if(!confirm('이 일정을 삭제할까요?\n\n'+label+(it.rec?'\n\n(반복 일정 중 이 날짜 하나만 삭제됩니다)':'')+(gcfg.on?'\n\n구글 캘린더(폰)에서도 삭제됩니다.':''))) return;
+  const label=(it.s||'(제목 없음)')+(it.d?' — '+it.d+(it.t?' '+it.t:''):'');
+  const msg=it.d?('이 일정을 삭제할까요?\n\n'+label+(it.rec?'\n\n(반복 일정 중 이 날짜 하나만 삭제됩니다)':'')+(gcfg.on?'\n\n구글 캘린더(폰)에서도 삭제됩니다.':'')):('이 To Do 를 삭제할까요?\n\n'+label);
+  if(!confirm(msg)) return;
   if(it.g) tomb.push({g:it.g,at:Date.now()});
   items=items.filter(x=>x!==it);
-  if(editId===id) cancelEdit();
-  afterChange();
+  if(editId===id) closeDlg();
+  afterChange(!!it.d);
 }
-function listClick(ev){
+function dlgDelete(){ if(editId) del(editId); }
+function addTodo(){
+  load();
+  const inp=$('plnTodoIn'), memo=$('plnTodoMemo'); if(!inp) return;
+  const s=(inp.value||'').trim().slice(0,300), m=((memo&&memo.value)||'').replace(/\r\n/g,'\n').trim().slice(0,4000);
+  if(!s){ toast('To Do 내용을 입력해 주세요.'); try{ inp.focus(); }catch(_){} return; }
+  items.push(norm({id:newId(),d:'',s,m,r:900,mod:Date.now(),src:'app'}));      /* 알림 기본값은 종일 일정과 같음(날짜가 정해질 때 그대로 씀) */
+  inp.value=''; if(memo) memo.value='';
+  afterChange(false);
+  const box=$('plnTodoList'); if(box) box.scrollTop=box.scrollHeight;
+  try{ inp.focus(); }catch(_){}
+}
+/* To Do → 날짜 정하기 / 달력의 일정 → 다른 날짜로 옮기기 (끌어다 놓기·날짜 고르기 공통) */
+function assign(id,day){
+  load(); const it=items.find(x=>x.id===id);
+  if(!it||!validYmd(day)) return false;
+  if(!it.d){                                              /* To Do → 그날 종일 일정 */
+    it.d=day; it.d2=day; it.t=''; it.t2=''; it.mod=Date.now();
+    afterChange(true); toast('📅 ‘'+(it.s||'(제목 없음)')+'’ → '+dateLabel(day)+' 일정으로 옮겼습니다');
+  }else{
+    if(it.d===day) return false;
+    const delta=dayDiff(day,it.d);
+    it.d=day; it.d2=addDays(it.d2,delta); it.mod=Date.now(); fix0(it);   /* 여러 날 일정은 길이를 유지한 채 통째로 */
+    afterChange(true); toast('📅 ‘'+(it.s||'(제목 없음)')+'’ → '+dateLabel(day)+' 로 옮겼습니다');
+  }
+  flash(day);                                             /* 이웃 달 칸에 놓은 경우도 그 칸에 그대로 보이므로 보는 달은 바꾸지 않음 */
+  return true;
+}
+function flash(day){ const c=document.querySelector('#plnGrid .pln-cell[data-day="'+day+'"]'); if(c){ c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),1500); } }
+function pickDate(id){ pickId=id; const i=$('plnPick'); if(!i) return; i.value=todayY(); try{ i.showPicker(); }catch(_){ try{ i.click(); }catch(__){} } }
+function onPick(){ const i=$('plnPick'); const day=i?i.value:''; if(pickId&&validYmd(day)) assign(pickId,day); pickId=''; }
+function listClick(ev){   /* 목록 보기의 ✏️·🗑 */
   const b=ev.target.closest&&ev.target.closest('button[data-a]'); if(!b) return;
   const row=b.closest('[data-id]'); if(!row) return;
-  const id=row.getAttribute('data-id');
-  if(b.getAttribute('data-a')==='edit') edit(id); else if(b.getAttribute('data-a')==='del') del(id);
+  const id=row.getAttribute('data-id'), a=b.getAttribute('data-a');
+  if(a==='edit') openDlg({id}); else if(a==='del') del(id);
 }
-function setFilter(k){ filter=(k==='past'||k==='all')?k:'up'; render(); }
+function todoClick(ev){   /* To Do 줄의 📅·✏️·🗑 */
+  const b=ev.target.closest&&ev.target.closest('button[data-a]'); if(!b) return;
+  const row=b.closest('[data-id]'); if(!row) return;
+  const id=row.getAttribute('data-id'), a=b.getAttribute('data-a');
+  if(a==='pick') pickDate(id); else if(a==='tedit') openDlg({id}); else if(a==='tdel') del(id);
+}
+function calClick(ev){   /* 달력: 칩=수정 · '+N건 더보기'=그날 목록 · 빈 칸=그날 새 일정 */
+  const t=ev.target; if(!t||!t.closest) return;
+  const ch=t.closest('.pln-ch'); if(ch){ openDlg({id:ch.getAttribute('data-id')}); return; }
+  const mo=t.closest('.pln-more'); if(mo){ showDay(mo.getAttribute('data-day')); return; }
+  const cell=t.closest('.pln-cell'); if(cell) openNew(cell.getAttribute('data-day'));
+}
+function showDay(day){   /* 그날이 보이게 목록 보기로 */
+  const d=parseYmd(day); if(!d) return;
+  ui.view='list'; saveUi(); vm=mStart(d); renderMain();
+  const list=$('plnList'); if(!list) return;
+  const hs=[...list.querySelectorAll('.pln-gh')], h=hs.find(x=>x.getAttribute('data-day')>=day)||hs[hs.length-1];
+  if(h){ try{ h.scrollIntoView({block:'start'}); }catch(_){} h.classList.add('hl'); setTimeout(()=>h.classList.remove('hl'),1600); }
+}
+function month(delta){ ensureVm(); vm=new Date(vm.getFullYear(),vm.getMonth()+(+delta||0),1); renderMain(); }
+function today(){ vm=mStart(new Date()); renderMain(); }
+function setView(v){ ui.view=(v==='list')?'list':'cal'; saveUi(); renderMain(); }
+function monthPick(){ ensureVm(); const i=$('plnMonthPick'); if(!i) return; i.value=vm.getFullYear()+'-'+pad(vm.getMonth()+1); try{ i.showPicker(); }catch(_){ try{ i.click(); }catch(__){} } }
+function onMonthPick(){ const i=$('plnMonthPick'), m=/^(\d{4})-(\d{2})$/.exec((i&&i.value)||''); if(m){ vm=new Date(+m[1],+m[2]-1,1); renderMain(); } }
 function timeInput(){ fillRem(null); }
 function toggleSet(force){ setOn=(force===undefined)?!setOn:!!force; paintSet(); if(setOn&&gcfg.cid) loadGsi().catch(()=>{}); }
+/* Enter 로 저장 — 한글 입력기에서 조합 중에 Enter 를 누르면 마지막 글자가 중복되거나 사라지므로, 조합이 끝난 뒤(compositionend)에 실행 */
+function enter(e,kind){
+  if(e.key!=='Enter'||e.shiftKey) return;
+  if(e.isComposing||e.keyCode===229){ e.target._pendEnter=kind; return; }
+  e.preventDefault(); if(kind==='todo') addTodo(); else submit();
+}
+document.addEventListener('compositionend',e=>{ const t=e.target; if(t&&t._pendEnter){ const k=t._pendEnter; t._pendEnter=''; setTimeout(()=>{ if(k==='todo') addTodo(); else submit(); },0); } },true);
+
+/* ── 끌어다 놓기(HTML5 드래그) ── */
+function clearOver(){ document.querySelectorAll('#plnGrid .pln-cell.over').forEach(x=>x.classList.remove('over')); }
+function endDrag(){ dragId=''; document.querySelectorAll('#plnModal .dragging').forEach(x=>x.classList.remove('dragging')); clearOver(); if(pendingRender){ pendingRender=false; render(); } }
+function readDragId(e){ let t=''; try{ t=e.dataTransfer.getData('text/plain')||''; }catch(_){} return t.indexOf('pln:')===0?t.slice(4):dragId; }
+document.addEventListener('dragstart',e=>{
+  const el=e.target&&e.target.closest&&e.target.closest('#plnModal [draggable="true"][data-id]'); if(!el) return;
+  dragId=el.getAttribute('data-id'); el.classList.add('dragging');
+  try{ e.dataTransfer.setData('text/plain','pln:'+dragId); e.dataTransfer.effectAllowed='move'; }catch(_){}
+});
+document.addEventListener('dragend',()=>{ if(dragId) endDrag(); });
+document.addEventListener('dragover',e=>{
+  if(!dragId) return; const c=e.target&&e.target.closest&&e.target.closest('#plnGrid .pln-cell'); if(!c) return;
+  e.preventDefault(); try{ e.dataTransfer.dropEffect='move'; }catch(_){}
+  if(!c.classList.contains('over')){ clearOver(); c.classList.add('over'); }
+});
+document.addEventListener('dragleave',e=>{ const c=e.target&&e.target.closest&&e.target.closest('#plnGrid .pln-cell'); if(c&&!c.contains(e.relatedTarget)) c.classList.remove('over'); });
+document.addEventListener('drop',e=>{
+  if(!dragId) return; const c=e.target&&e.target.closest&&e.target.closest('#plnGrid .pln-cell'); if(!c) return;
+  e.preventDefault(); const id=readDragId(e), day=c.getAttribute('data-day');
+  endDrag(); if(id&&day) assign(id,day);
+});
+window.addEventListener('resize',()=>{ if(!opened||ui.view==='list') return; clearTimeout(resizeT); resizeT=setTimeout(()=>{ if(opened&&!dragId) renderMain(); },150); });
 
 /* ── 연결 설정 ── */
 const validCid=s=>/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/i.test(String(s||'').trim());
@@ -11659,13 +11945,13 @@ function open(){
   if(document.body.classList.contains('guest-mode')) return;
   try{ if(typeof _authMode!=='undefined'&&_authMode==='guest') return; }catch(_){}
   load(); const m=$('plnModal'); if(!m) return;
-  opened=true; editId=''; fillForm(null); render(); paintChip();
+  opened=true; closeDlg(); dragId=''; pendingRender=false; vm=mStart(new Date()); paintChip();
   setOn=!gcfg.cid; paintSet();                                 /* 처음엔(클라이언트 ID 가 없으면) 연결 안내를 펼쳐서 보여 줌 */
-  m.style.display='flex';
+  m.style.display='flex'; render();                            /* 보이게 한 뒤에 그려야 달력 칸 높이를 잴 수 있음 */
   if(gcfg.cid) loadGsi().catch(()=>{});                        /* 로그인 창이 클릭 안에서 바로 열리도록 미리 불러 둠 */
   if(gcfg.on&&gcfg.cid){ startPoll(); sync({interactive:!authDismissed}); }
 }
-function close(){ const m=$('plnModal'); if(m) m.style.display='none'; opened=false; editId=''; editBase=null; stopPoll(); updateBtn(); }
+function close(){ const m=$('plnModal'); if(m) m.style.display='none'; opened=false; closeDlg(); endDrag(); stopPoll(); updateBtn(); }
 function onLogout(){ tok=null; try{ sessionStorage.removeItem(TKEY); }catch(_){} stopPoll(); close(); }
 function init(){ try{ updateBtn(); }catch(_){} }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
@@ -11679,15 +11965,17 @@ window.addEventListener('storage',e=>{
     else if(e.key===GKEY){ const c=JSON.parse(e.newValue||'null'); if(c&&typeof c==='object'){ gcfg={cid:String(c.cid||''),cal:String(c.cal||''),last:+c.last||0,on:!!c.on}; paintChip(); paintSet(); render(); } }
   }catch(_){}
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ if(editId){ cancelEdit(); } else close(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const w=$('plnDlg'); if(w&&w.classList.contains('on')) closeDlg(); else close(); } });
 
-window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,setFilter,timeInput,submit,edit,cancelEdit,del,listClick,onLogout,
+window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,
+  month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,timeInput,showDay,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tok(){ return tok; }, set tok(v){ tok=v; },
-       reset(){ items=[]; tomb=[]; gcfg={cid:'',cal:'',last:0,on:false}; tok=null; tc=null; tcCid=''; tokP=null; tokWait=null; st={k:'off',msg:''}; loaded=true; authDismissed=false; editId=''; editBase=null; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
+       get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; },
+       reset(){ items=[]; tomb=[]; gcfg={cid:'',cal:'',last:0,on:false}; tok=null; tc=null; tcCid=''; tokP=null; tokWait=null; st={k:'off',msg:''}; loaded=true; authDismissed=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal'}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; items=[]; tomb=[]; gcfg={cid:'',cal:'',last:0,on:false}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, setFilter, remLabel } };
+       snap, dirtyGroups, needsPush, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, remLabel, fitCal, renderMain } };
 })();
-/* ══ /v202 ══ */
+/* ══ /v204 ══ */
 
 
 /* ══ 일정 LIST 팝업 ══
