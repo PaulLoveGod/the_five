@@ -5235,18 +5235,18 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-pnb svg.dn{transform:scaleY(-1)}
 #plnModal .pln-th{white-space:nowrap}
 #plnModal .pln-th small{min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}   /* 좁은 패널에서도 머리가 한 줄로 — 부제가 먼저 줄어듦 */
-/* 최대화(maxTop·maxBot·maxFin): 그 구역이 왼쪽 패널 전체를 덮음(다른 구역·구분선은 숨김) — v222: 세 구역 */
-#plnModal .pln-todo[data-pm^="max"] .pln-sec,#plnModal .pln-todo[data-pm^="max"] .pln-split{display:none}
-#plnModal .pln-todo[data-pm="maxTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.bot,#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.fin{display:flex;flex:1 1 auto;min-height:0}
-/* 최소화(minTop·minBot·minFin): 제목 줄만 남기고 나머지 두 구역이 원래 비율대로 나머지를 채움 */
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin{flex:0 0 auto;min-height:0}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top>:not(.pln-th),#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot>:not(.pln-th),#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin>:not(.pln-th){display:none}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-th{cursor:pointer}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th small,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th small,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-sortb,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-th small{display:none!important}
+/* 최대화(data-mx = top·bot·fin 중 하나): 그 구역이 왼쪽 패널 전체를 덮음(다른 구역·구분선은 숨김) — 풀면 접어 둔 구역은 그대로(v224) */
+#plnModal .pln-todo[data-mx] .pln-sec,#plnModal .pln-todo[data-mx] .pln-split{display:none}
+#plnModal .pln-todo[data-mx="top"] .pln-sec.top,#plnModal .pln-todo[data-mx="bot"] .pln-sec.bot,#plnModal .pln-todo[data-mx="fin"] .pln-sec.fin{display:flex;flex:1 1 auto;min-height:0}
+/* 최소화(data-mn 에 든 구역들 — 구역마다 따로 접힘, 공백으로 이은 목록): 제목 줄만 남기고 접히지 않은 구역들이 원래 비율대로 나머지를 채움 */
+#plnModal .pln-todo[data-mn~="top"] .pln-sec.top,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin{flex:0 0 auto;min-height:0}
+#plnModal .pln-todo[data-mn~="top"] .pln-sec.top>:not(.pln-th),#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot>:not(.pln-th),#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin>:not(.pln-th){display:none}
+#plnModal .pln-todo[data-mn~="top"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot .pln-th,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin .pln-th{cursor:pointer}
+#plnModal .pln-todo[data-mn~="top"] .pln-sec.top .pln-th small,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot .pln-th small,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot .pln-sortb,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin .pln-th small{display:none!important}
 /* 가려지거나 접힌 ‘일정 미정’ 구역에도 날짜 있는 일정을 끌어다 놓아 되돌릴 수 있게 — 끄는 동안만 안내 막이 있는 줄로 나타남 */
-#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.top.arm{display:flex;flex:0 0 66px;min-height:0}
-#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm{flex:0 0 66px}
-#plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm>:not(.pln-th){display:none}
+#plnModal .pln-todo[data-mx="bot"] .pln-sec.top.arm,#plnModal .pln-todo[data-mx="fin"] .pln-sec.top.arm{display:flex;flex:0 0 66px;min-height:0}
+#plnModal .pln-todo[data-mn~="top"] .pln-sec.top.arm{flex:0 0 66px}
+#plnModal .pln-todo[data-mx="bot"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-mx="fin"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-mn~="top"] .pln-sec.top.arm>:not(.pln-th){display:none}
 /* 날짜가 정해진 일정(달력 칩·확정 일정 줄)을 끌고 있을 때 — 위쪽 '일정 미정' 영역이 놓는 자리: 놓으면 날짜가 지워지고 일정 미정으로 돌아감 */
 #plnModal .pln-sec.top.arm::after{content:'↩ 여기에 놓으면 날짜가 지워지고\A ‘미정 일정’으로 돌아갑니다';white-space:pre;position:absolute;inset:4px;z-index:3;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.7;font-size:13px;font-weight:800;color:#0f766e;background:rgba(240,253,250,.9);border:2px dashed #5eead4;border-radius:10px;pointer-events:none}
 #plnModal .pln-sec.top.arm.over::after{background:rgba(204,251,241,.95);border:2px solid #0f766e}
@@ -5405,11 +5405,11 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
   #plnModal .pln-split i{width:4px;height:34px}
   #plnModal .pln-pnb svg{transform:rotate(-90deg)}
   #plnModal .pln-pnb svg.dn{transform:rotate(-90deg) scaleY(-1)}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin{flex:0 0 34px;min-width:0}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-th,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-th{writing-mode:vertical-rl;padding:10px 6px;flex:1;gap:8px}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top .pln-cnt,#plnModal .pln-todo[data-pm="minBot"] .pln-sec.bot .pln-cnt,#plnModal .pln-todo[data-pm="minFin"] .pln-sec.fin .pln-cnt{writing-mode:horizontal-tb}
-  #plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="maxFin"] .pln-sec.top.arm,#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm{flex:0 0 170px;min-width:0}
-  #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm .pln-th{writing-mode:horizontal-tb;flex:none}
+  #plnModal .pln-todo[data-mn~="top"] .pln-sec.top,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin{flex:0 0 34px;min-width:0}
+  #plnModal .pln-todo[data-mn~="top"] .pln-sec.top .pln-th,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot .pln-th,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin .pln-th{writing-mode:vertical-rl;padding:10px 6px;flex:1;gap:8px}
+  #plnModal .pln-todo[data-mn~="top"] .pln-sec.top .pln-cnt,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot .pln-cnt,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin .pln-cnt{writing-mode:horizontal-tb}
+  #plnModal .pln-todo[data-mx="bot"] .pln-sec.top.arm,#plnModal .pln-todo[data-mx="fin"] .pln-sec.top.arm,#plnModal .pln-todo[data-mn~="top"] .pln-sec.top.arm{flex:0 0 170px;min-width:0}
+  #plnModal .pln-todo[data-mn~="top"] .pln-sec.top.arm .pln-th{writing-mode:horizontal-tb;flex:none}
   #plnModal .pln-tf textarea{min-height:30px;height:30px}
 }
 @media(max-width:560px){
@@ -5480,14 +5480,14 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
           <div id="plnTodoList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
         <!-- 구분선 — 끌어서 위·아래 높이를 조절(더블클릭=원래 비율, ↑↓ 키도 됨) -->
-        <div id="plnSplit" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 위·아래 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event)" onkeydown="BTMPlanner.splitKey(event)" ondblclick="BTMPlanner.splitReset()"><i></i></div>
+        <div id="plnSplit" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 위·아래 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event)" onkeydown="BTMPlanner.splitKey(event)" ondblclick="BTMPlanner.splitReset(1)"><i></i></div>
         <!-- 아래: 날짜가 확정된 일정 — 위에서 달력으로 옮겨 날짜를 정하면 여기로 내려와 '월/일'과 함께 모임(날짜 최신순) -->
         <div class="pln-sec bot">
           <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 미정·완료 일정 영역을 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div id="plnDoneList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
         <!-- 구분선 2 — 확정 일정 ↔ 완료 일정 높이를 조절(더블클릭=원래 비율, ↑↓ 키도 됨) -->
-        <div id="plnSplit2" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 확정·완료 일정 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event,2)" onkeydown="BTMPlanner.splitKey(event,2)" ondblclick="BTMPlanner.splitReset()"><i></i></div>
+        <div id="plnSplit2" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 확정·완료 일정 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event,2)" onkeydown="BTMPlanner.splitKey(event,2)" ondblclick="BTMPlanner.splitReset(2)"><i></i></div>
         <!-- 맨 아래: 완료 일정(v222) — 미정·확정 일정에서 체크(☑)한 일정이 여기로 옮겨짐(최근 완료한 순). 체크를 풀면 원래 목록(날짜 없으면 미정·있으면 확정)으로 돌아감 -->
         <div class="pln-sec fin">
           <div class="pln-th" onclick="BTMPlanner.panelClick(event,'fin')" title="미정·확정 일정에서 체크(☑)한 일정이 모입니다 — 체크를 풀면 원래 목록으로 돌아갑니다">✅ 완료 일정 <small>체크한 일정</small><span class="sp"></span><span id="plnFinCnt" class="pln-cnt" title="완료한 일정 수">0</span><button type="button" class="pln-pnb" data-k="fin" data-a="max" title="완료 일정 최대화 — 미정·확정 일정 영역을 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="fin" data-a="min" title="완료 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
@@ -11326,6 +11326,11 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v224 요청: "완료 일정을 최소화한 뒤 확정 일정을 최소화하면 완료 일정이 다시 펼쳐지는 오류 — 펼쳐지지 않게"
+     · 원인: 왼쪽 패널 상태가 ui.pm 한 칸('maxTop'|'minBot'…)이라 다른 구역의 [최소화]를 누르면 먼저 접어 둔 구역의 상태가 덮어써져 풀렸음. 이제 최대화·최소화를 따로 둠 —
+       ui.mx = 최대화한 구역('' | top | bot | fin, 한 번에 하나 — 풀면 접어 둔 상태가 그대로) · ui.mn = 접은 구역들(배열, 구역마다 따로 접고 펼침). 패널 속성도 data-mx · data-mn("top bot" 처럼 공백으로 이은 목록, CSS 는 [data-mn~="fin"]).
+     · 셋 다 접으면 제목 줄 셋만 위에 쌓이고 아래는 빈 칸(막지 않음). 접힌 제목 줄을 누르면 그 구역만 펼침. 구분선을 끌면 그 구분선에 맞닿은 두 구역의 접힘과 최대화만 풀리고 다른 구역의 접힘은 그대로(두 구역이 나눠 가진 길이 안에서 가중치를 나눔 — 접힌 구역이 있어도 비율이 어긋나지 않음).
+       구분선 더블클릭/Enter 는 두 비율을 기본값으로(맞닿은 두 구역과 최대화만 풀림, 인자 없이 부르면 전부 풀림). 옛 저장값 pm 은 load() 가 mx/mn 으로 옮김.
    v223 요청: "오늘의 말씀·나의 묵상 노트·감사와 간구·Footprints in Books 섹션에서 '텍스트 | 인포그래픽' 버튼(.vz-tg)을 삭제"  — (이전에 기술적 분석에서 한 것과 같은 방식, 2026-10-18 v66)
      · 네 섹션의 제목 옆 토글과 이중 본문 구조(#id__wrap 래퍼·인포그래픽 본문 #id__vz·오늘의 말씀의 .vz-grip)를 걷어내 예전 모양(글 편집기 하나)으로. BTMVz.IDS 에서 빼고 LEGACY 에 넣음 — 옛 저장본(vzBodies)에 이 섹션들의 인포그래픽이 있으면 restore 가 글 본문 뒤에 이어 붙여 잃지 않음(저장하면 글 본문에 들어감).
      · AI 팝업 '본문에 반영'·인포그래픽 붙여넣기는 #id__vz 가 없는 곳의 예전 방식(한 본문에 글+이미지)으로 동작. 오늘의 말씀 박스는 글이 hidden 두 개(qtContent·qtBibleHTML)에서 다시 그려져 DOM 만 바꾸면 저장·불러오기 때 사라지므로, 박스에 이어 붙인 내용(옛 인포그래픽·AI 반영)은 _qtCommitFromDisplay 가 [수정]→[완료]와 같이 hidden 에 적어 둠.
@@ -11505,7 +11510,7 @@ let busyP=null, again=false, timer=null, poll=null, opened=false, pendFull=false
 let editId='', editBase=null, dlgTodo=false, setOn=false, dlgColor='', clrOn=false, ccTry='', ccMsg='';
 let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자동 재시도 횟수·타이머 · 마지막 전체 동기화 시각 · 이 캘린더의 일정을 한 번이라도 가져왔는지(v214) */
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
-let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,pm:''}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
+let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[]}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null;
 const WKEY='BTMPlannerWork_v1', WK_TITLE='오늘 업무';                      /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 */
 let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''};
@@ -11575,7 +11580,14 @@ function load(){
   const gr=lsGet(GKEY);
   if(gr){ try{ const c=JSON.parse(gr); if(c&&typeof c==='object') gcfg=parseG(c); }catch(_){} }
   try{ const u=JSON.parse(lsGet(UIKEY)||'null'); if(u&&(u.view==='list'||u.view==='cal')) ui.view=u.view; if(u&&(u.sort==='asc'||u.sort==='desc')) ui.sort=u.sort; if(u&&typeof u.sf==='number'){ ui.sf=clampSf(u.sf); if(typeof u.sp==='number') ui.sp=clampSp(u.sp); } else if(u&&typeof u.sp==='number'&&Math.abs(u.sp-0.535)>0.001) ui.sp=clampSp(u.sp*(1-DEF_SF));   /* v222 이전 저장본(구역 둘): 기본 비율이면 새 기본값, 직접 조절한 비율이면 줄어든 공간 안에서 그 비율대로 */
-    if(u&&PM_OK.indexOf(u.pm)>=0) ui.pm=u.pm; }catch(_){}
+    if(u){   /* 최대화(mx 한 구역)·최소화(mn 여러 구역) — v224. 예전 저장본은 pm 한 칸('maxBot'·'minFin'…)이라 그것을 옮김 */
+      const OK=['top','bot','fin'];
+      if(u.mx!==undefined||u.mn!==undefined){ ui.mx=OK.indexOf(u.mx)>=0?u.mx:''; ui.mn=Array.isArray(u.mn)?OK.filter(k=>u.mn.indexOf(k)>=0):[]; }
+      else if(PM_OK.indexOf(u.pm)>0){ const kk={Top:'top',Bot:'bot',Fin:'fin'}[u.pm.slice(3)]; if(u.pm.indexOf('max')===0){ ui.mx=kk; ui.mn=[]; } else { ui.mx=''; ui.mn=[kk]; } }
+      else { ui.mx=''; ui.mn=[]; }
+      ui.mn=ui.mn.filter(k=>k!==ui.mx);
+    }
+  }catch(_){}
   wkLoad();                                                      /* 오늘 업무(v218) */
   calReady=!!gcfg.last;                                          /* 이 브라우저에서 캘린더 동기화를 한 번이라도 마쳤으면 준비됨(v214) */
   if(!gcfg.cid&&CID_DEFAULT) gcfg.cid=CID_DEFAULT;
@@ -12692,8 +12704,10 @@ async function syncWork(list){   /* 전체 동기화의 캘린더 단계에서: 
   wkSent={id:keep.id,desc:want,upd};
 }
 
-/* ── 왼쪽 위(일정 미정)·아래(확정 일정): 최대화·최소화·높이 조절(v210) ── */
-const PN={top:'미정 일정',bot:'확정 일정',fin:'완료 일정'}, SUF={top:'Top',bot:'Bot',fin:'Fin'};   /* 구역 이름 · ui.pm 접미(가운데=Bot — 기존 저장값과 호환, 아래=Fin) */
+/* ── 왼쪽 세 구역(미정·확정·완료): 최대화·최소화·높이 조절(v210·v222) ──
+   v224: 최소화는 구역마다 따로(ui.mn = 접은 구역들 — 한 구역을 접은 채 다른 구역을 접어도 먼저 접은 구역이 다시 펼쳐지지 않음), 최대화는 한 번에 하나(ui.mx — 풀면 접어 둔 상태가 그대로).
+   예전(v210~v223)엔 ui.pm 한 칸이라 다른 구역의 단추를 누르면 앞의 상태가 덮어써져 풀렸음 */
+const PN={top:'미정 일정',bot:'확정 일정',fin:'완료 일정'}, SUF={top:'Top',bot:'Bot',fin:'Fin'}, PK=['top','bot','fin'];   /* 구역 이름 · 툴팁 키 접미(가운데=Bot — 기존 저장값과 호환, 아래=Fin) · 위→아래 순서 */
 const PN_TIP={
   maxTop:['미정 일정 최대화 — 확정·완료 일정 영역을 아래로 덮고 크게 봅니다','원래 크기로(미정 일정 최대화 해제)'],
   minTop:['미정 일정 최소화 — 제목만 남기고 위로 접습니다','원래 크기로(미정 일정 최소화 해제)'],
@@ -12701,40 +12715,59 @@ const PN_TIP={
   minBot:['확정 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(확정 일정 최소화 해제)'],
   maxFin:['완료 일정 최대화 — 미정·확정 일정 영역을 덮고 크게 봅니다','원래 크기로(완료 일정 최대화 해제)'],
   minFin:['완료 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(완료 일정 최소화 해제)']};
+const isMin=k=>ui.mn.indexOf(k)>=0;   /* 그 구역이 접혀 있음(최대화 중인 구역은 접힘 표시를 안 하지만 저장값엔 그대로) */
 function applyPanel(){
   const box=document.querySelector('#plnModal .pln-todo'); if(!box) return;
   const [rt,rm,rf]=trio(ui.sp,ui.sf); box.style.setProperty('--spt',(rt*100).toFixed(3)); box.style.setProperty('--spb',(rm*100).toFixed(3)); box.style.setProperty('--spf',(rf*100).toFixed(3));   /* ×100: 한 구역을 접어도 나머지 둘의 flex-grow 합이 1 이상이라 남는 높이를 모두 채움 */
-  if(ui.pm) box.setAttribute('data-pm',ui.pm); else box.removeAttribute('data-pm');
-  box.querySelectorAll('.pln-pnb').forEach(b=>{ const key=b.getAttribute('data-a')+(SUF[b.getAttribute('data-k')]||'Bot'), on=ui.pm===key; b.classList.toggle('on',on); b.title=PN_TIP[key][on?1:0]; b.setAttribute('aria-pressed',on?'true':'false'); });
+  if(ui.mx&&PK.indexOf(ui.mx)<0) ui.mx='';
+  if(ui.mx) box.setAttribute('data-mx',ui.mx); else box.removeAttribute('data-mx');
+  const mn=PK.filter(k=>isMin(k)&&ui.mx!==k);                        /* 최대화한 구역은 접힌 것으로 안 침 */
+  if(mn.length) box.setAttribute('data-mn',mn.join(' ')); else box.removeAttribute('data-mn');
+  box.querySelectorAll('.pln-pnb').forEach(b=>{ const k=b.getAttribute('data-k'), a=b.getAttribute('data-a'), key=a+(SUF[k]||'Bot'), on=(a==='max')?ui.mx===k:mn.indexOf(k)>=0; b.classList.toggle('on',on); b.title=PN_TIP[key][on?1:0]; b.setAttribute('aria-pressed',on?'true':'false'); });
 }
-function panel(k,a){   /* k='top'|'bot'|'fin' 구역 · a='max'|'min' — 같은 단추를 다시 누르면 원래대로 */
-  load(); const want=a+(SUF[k]||'Bot'); ui.pm=(ui.pm===want)?'':want; saveUi(); applyPanel(); return ui.pm;
+function panel(k,a){   /* k='top'|'bot'|'fin' 구역 · a='max'|'min' — 같은 단추를 다시 누르면 원래대로. 최소화는 구역마다 따로 쌓이고, 최대화는 한 번에 하나(풀면 접어 둔 상태 그대로) */
+  load(); if(PK.indexOf(k)<0) return null;
+  if(a==='max'){ if(ui.mx===k) ui.mx=''; else{ ui.mx=k; ui.mn=ui.mn.filter(x=>x!==k); } }
+  else{
+    const shown=isMin(k)&&!ui.mx;                                    /* 지금 접혀 보이는 중인가 */
+    ui.mx='';                                                        /* (최대화 중이었다면 풀고) */
+    ui.mn=shown?ui.mn.filter(x=>x!==k):(isMin(k)?ui.mn:ui.mn.concat([k]));
+  }
+  saveUi(); applyPanel(); return {mx:ui.mx,mn:ui.mn.slice()};
 }
-function panelClick(ev,k){   /* 구역 머리 클릭: 최대화·최소화 단추 · 접힌 제목 줄을 누르면 원래대로 */
+function panelClick(ev,k){   /* 구역 머리 클릭: 최대화·최소화 단추 · 접힌 제목 줄을 누르면 그 구역만 펼침 */
   const t=ev&&ev.target; if(!t||!t.closest) return;
   const b=t.closest('button.pln-pnb'); if(b){ panel(b.getAttribute('data-k'),b.getAttribute('data-a')); return; }
   if(t.closest('button')) return;
-  if(ui.pm==='min'+(SUF[k]||'Bot')){ ui.pm=''; saveUi(); applyPanel(); }
+  if(isMin(k)&&!ui.mx){ ui.mn=ui.mn.filter(x=>x!==k); saveUi(); applyPanel(); }
 }
-function splitSave(){   /* 끝난 위치의 실제 비율을 저장(구역별 최소 크기에 걸렸으면 그 값으로) — 위·가운데·아래 세 구역 */
+function splitSave(){   /* 끝난 위치의 실제 비율을 저장(구역별 최소 크기에 걸렸으면 그 값으로) — 접히지 않은 구역들끼리만 나눠 가진 가중치 안에서(접힌 구역의 가중치·높이는 안 건드림, v224) */
   const box=document.querySelector('#plnModal .pln-todo'); if(!box) return;
   const vertical=getComputedStyle(box).flexDirection!=='row', sz=c=>{ const r=box.querySelector('.pln-sec.'+c).getBoundingClientRect(); return vertical?r.height:r.width; };
-  const a=sz('top'), m=sz('bot'), f=sz('fin'), all=a+m+f;
-  if(all>0){ const [t,,ff]=trio(a/all,f/all); ui.sp=t; ui.sf=ff; } saveUi(); applyPanel();
+  const w0=trio(ui.sp,ui.sf), ex=PK.filter(k=>!isMin(k)), sizes=ex.map(sz), all=sizes.reduce((s,x)=>s+x,0), W=ex.reduce((s,k)=>s+w0[PK.indexOf(k)],0);
+  if(all>0&&ex.length>=2){ const w=w0.slice(); ex.forEach((k,i)=>{ w[PK.indexOf(k)]=W*sizes[i]/all; }); ui.sp=w[0]; ui.sf=w[2]; }
+  saveUi(); applyPanel();
 }
-function splitDown(ev,n){   /* 구분선을 끌어 높이(좁은 창에서는 폭) 비율 조절 — n=1: 미정↔확정, n=2: 확정↔완료. 끌면 최대/최소 상태는 풀림 */
+const pairOf=n=>n===2?['bot','fin']:['top','bot'];   /* 구분선 n 이 맞닿은 두 구역 — 1: 미정↔확정, 2: 확정↔완료 */
+function splitDown(ev,n){   /* 구분선을 끌어 높이(좁은 창에서는 폭) 비율 조절 — n=1: 미정↔확정, n=2: 확정↔완료. 끌면 맞닿은 두 구역의 접힘과 최대화만 풀림(다른 구역의 접힘은 그대로, v224) */
   n=(n===2)?2:1;
   if(ev&&ev.button!==undefined&&ev.button!==0) return;
   const box=document.querySelector('#plnModal .pln-todo'), sp=$(n===2?'plnSplit2':'plnSplit'); if(!box||!sp) return;
   if(ev&&ev.preventDefault) ev.preventDefault();
-  load(); if(ui.pm){ ui.pm=''; applyPanel(); }
+  load(); const [ka,kb]=pairOf(n);
+  if(ui.mx||isMin(ka)||isMin(kb)){ ui.mx=''; ui.mn=ui.mn.filter(x=>x!==ka&&x!==kb); applyPanel(); }
   const vertical=getComputedStyle(box).flexDirection!=='row';
+  const A=box.querySelector('.pln-sec.'+ka), B=box.querySelector('.pln-sec.'+kb);
+  if(!A||!B) return;
+  const dim=r=>vertical?r.height:r.width, edge=r=>vertical?r.top:r.left, minOf=el=>parseFloat(getComputedStyle(el)[vertical?'minHeight':'minWidth'])||0;
+  const ra=A.getBoundingClientRect(), rb=B.getBoundingClientRect(), S=dim(ra)+dim(rb), a0=edge(ra), minA=minOf(A), minB=minOf(B), w0=trio(ui.sp,ui.sf);
+  const pairW=(n===1)?w0[0]+w0[1]:w0[1]+w0[2];                       /* 두 구역이 나눠 가진 가중치 — 이 안에서만 다시 나눔(다른 구역·접힌 구역의 몫은 그대로) */
   sp.classList.add('drag'); document.body.classList.add('pln-resizing');
   const move=e=>{
-    const rc=box.getBoundingClientRect(), total=vertical?rc.height:rc.width, th=vertical?sp.offsetHeight:sp.offsetWidth, flex=Math.max(1,total-2*th);
-    const at=(vertical?e.clientY-rc.top:e.clientX-rc.left);
-    if(n===1) ui.sp=clampSp((at-th/2)/flex);                 /* 위 구역의 크기 = 구분선 위 */
-    else ui.sf=clampSf((total-at-th/2)/flex);                /* 아래(완료) 구역의 크기 = 구분선 아래 */
+    const th=vertical?sp.offsetHeight:sp.offsetWidth, at=vertical?e.clientY:e.clientX;
+    const a=Math.max(minA,Math.min(S-minB,at-th/2-a0));              /* 앞 구역의 크기 = 구분선(가운데가 포인터) 앞, 각 구역의 최소 크기 지킴 */
+    const wa=pairW*a/S, wb=pairW-wa;
+    if(n===1) ui.sp=wa; else ui.sf=wb;                               /* 1: 위 구역 가중치 · 2: 아래(완료) 구역 가중치 — 가운데는 나머지 */
     applyPanel();
   };
   const up=()=>{ window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up); sp.classList.remove('drag'); document.body.classList.remove('pln-resizing'); splitSave(); };
@@ -12744,14 +12777,19 @@ function splitKey(e,n){   /* 구분선에 초점이 있을 때 ↑↓(←→) �
   n=(n===2)?2:1;
   const k=e.key; if(!/^(Arrow(Up|Down|Left|Right)|Home|End|Enter)$/.test(k)) return;
   e.preventDefault(); load();
-  if(k==='Enter'){ splitReset(); return; }
+  if(k==='Enter'){ splitReset(n); return; }
   const dir=(k==='ArrowUp'||k==='ArrowLeft')?-1:(k==='ArrowDown'||k==='ArrowRight')?1:0;
-  const [ct,,cf]=trio(ui.pm?DEF_SP:ui.sp,ui.pm?DEF_SF:ui.sf);
+  const [ka,kb]=pairOf(n); ui.mx=''; ui.mn=ui.mn.filter(x=>x!==ka&&x!==kb);       /* 맞닿은 두 구역의 접힘·최대화만 풀림 */
+  const [ct,,cf]=trio(ui.sp,ui.sf);
   if(n===1) ui.sp=(k==='Home')?MIN_F:(k==='End')?1:clampSp(ct+dir*0.04);            /* 구분선이 내려가면 위 구역이 커짐 */
   else ui.sf=(k==='Home')?1:(k==='End')?MIN_F:clampSf(cf-dir*0.04);                 /* 구분선이 내려가면 아래(완료) 구역이 작아짐 */
-  ui.pm=''; applyPanel(); splitSave();
+  applyPanel(); splitSave();
 }
-function splitReset(){ load(); ui.sp=DEF_SP; ui.sf=DEF_SF; ui.pm=''; saveUi(); applyPanel(); }
+function splitReset(n){   /* 두 비율을 기본값으로 — n(1·2)을 주면 그 구분선에 맞닿은 두 구역의 접힘·최대화만 풀고, 안 주면 전부 풀어 처음 모양으로 */
+  load(); ui.sp=DEF_SP; ui.sf=DEF_SF;
+  if(n===1||n===2){ const [ka,kb]=pairOf(n); ui.mx=''; ui.mn=ui.mn.filter(x=>x!==ka&&x!==kb); } else { ui.mx=''; ui.mn=[]; }
+  saveUi(); applyPanel();
+}
 
 /* ── 끌어다 놓기(HTML5 드래그) ── */
 function clearOver(){ document.querySelectorAll('#plnGrid .pln-cell.over').forEach(x=>x.classList.remove('over')); }
@@ -12908,7 +12946,7 @@ window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,di
   month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,timeInput,showDay,goDay,sortToggle,toggleDone,tkToggle,unassign,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get ttomb(){ return ttomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tst(){ return tst; }, get tok(){ return tok; }, set tok(v){ tok=v; },
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
-       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
+       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[]}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
        snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
 })();
