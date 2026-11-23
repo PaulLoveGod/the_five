@@ -5334,6 +5334,8 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-rw.p{opacity:.6}
 #plnModal .pln-tm{width:78px;flex:none;font-size:12px;font-weight:700;color:#0f766e;line-height:1.35}
 #plnModal .pln-tm small{display:block;font-weight:500;color:#94a3b8;font-size:10.5px}
+#plnModal .pln-tm .d1{display:flex;align-items:baseline;gap:4px;white-space:nowrap}   /* 날짜와 요일은 같은 줄 */
+#plnModal .pln-tm .d1 small{font-weight:600;color:#64748b}
 #plnModal .pln-mn{flex:1;min-width:0}
 #plnModal .pln-ti{font-size:13px;font-weight:600;color:#0f172a;word-break:break-word;line-height:1.4}
 #plnModal .pln-me{font-size:11.5px;color:#64748b;white-space:pre-wrap;word-break:break-word;margin-top:2px;line-height:1.45}
@@ -5402,7 +5404,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         <input id="plnCal" type="text" autocomplete="off" spellcheck="false" placeholder="(연결하면 자동으로 만들어집니다)" style="flex:1;min-width:200px" onkeydown="if(event.key==='Enter'){event.preventDefault();BTMPlanner.applyCal();}">
         <button class="pln-sb" onclick="BTMPlanner.applyCal()" title="이미 만들어 둔 'BTM 일정' 캘린더의 ID 를 붙여넣고 적용(다른 PC 에서 같은 캘린더를 쓸 때)">적용</button>
         <button class="pln-sb" onclick="BTMPlanner.copyCal()" title="캘린더 ID 복사 — 다른 PC 에서 같은 캘린더를 쓰려면 그쪽 설정에 붙여넣으세요">복사</button></div>
-      <div class="pln-r1"><label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#334155;cursor:pointer" title="끄면 앱의 To Do 는 이 브라우저와 구글 캘린더(날짜 정한 것)에만 남습니다"><input id="plnTkOn" type="checkbox" checked onchange="BTMPlanner.tkToggle(this.checked)" style="width:15px;height:15px;accent-color:#0f766e">To Do 를 Google Tasks(‘BTM To Do’ 체크 목록)에도 동기화</label>
+      <div class="pln-r1"><label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#334155;cursor:pointer" title="끄면 앱의 일정은 이 브라우저와 구글 캘린더(날짜 정한 것)에만 남습니다"><input id="plnTkOn" type="checkbox" checked onchange="BTMPlanner.tkToggle(this.checked)" style="width:15px;height:15px;accent-color:#0f766e">미정·확정 일정(달력에서 직접 입력한 일정 포함)을 모두 Google Tasks(‘BTM To Do’ 체크 목록)에도 동기화</label>
         <span id="plnTkInfo" class="pln-hint"></span></div>
       <div class="pln-r1">
         <button class="pln-pb" id="plnConnBtn" onclick="BTMPlanner.connect()">🔗 구글 연결(캘린더·Tasks)</button>
@@ -11265,6 +11267,12 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v215 요청: "일정 list(달력의 [목록] 보기)에 시간은 표시하지 않고, 시간이 표기되던 맨 앞에 날짜를 표기 · '종일'이라는 시간은 표기하지 않음" — rowHtml 첫 칸을 시간 표기 대신 날짜 `월/일 (요일)`(dateCell)로, 여러 날 일정은 그 아래 줄에 ~끝 날짜. 달력 칩·왼쪽 확정 일정 줄·수정 창의 시간 표기는 그대로.
+   v214 요청: "Google Calendar 는 즉시 연동되는데 Google Task 는 연동이 잘 안 되고 몇 개씩 누락 — 상태 확인·즉시 연동 · 미정에서 드래그해 달력에 옮긴 것·달력에서 직접 쓴 것 등 모든 미정/확정 일정이 연동"
+     · 원인(가짜 구글로 재현): ① 달력에서 직접 입력한 일정(td=0)은 Tasks 와 연결이 없었음(누락의 주된 원인) ② Tasks 쪽 일시적 오류(네트워크·5xx)가 나면 다음 변경·60초 점검 때까지 재시도가 없음 ③ 캘린더 단계가 실패한 동기화에서는 Tasks 단계가 같이 건너뛰어짐(날짜 접두 갱신 지연).
+     · 수정: ① norm — 폰·구글 캘린더에서 만든 일정(src 'g')만 빼고 모든 앱 항목이 td=1(= 미정·확정 목록에 보이는 항목 전부 Tasks 와 동기화). 이미 저장된 달력 일정도 불러올 때 td=1 이 되어 다음 동기화에서 Tasks 에 올라감.
+       ② scheduleRetry — 일시적 오류면 3·6·9초 뒤 자동 재시도(최대 3번, 새 변경·성공 시 처음부터), Tasks 만 실패했으면 Tasks 만 다시. ③ run — 캘린더 단계 오류를 잡아 두었다가 Tasks 단계까지 마친 뒤 보고.
+       빠르게: 디바운스 500→250ms · 창이 열려 있는 동안 15초마다 Tasks 만 확인(pollTick, 폰에서 적은 작업 가져오기) · 60초마다 전체 · 창 초점이 돌아오면 바로 확인. 상태: tkLine 에 '앱 항목 N개 중 M개 연결·반영 대기 K개'.
    v213 요청: "달력에 직접 일정을 입력해도 확정 일정에 추가될 수 있도록 · '일정 미정' 제목을 '미정 일정'으로"
      · 확정 일정 목록 조건 inDone = 날짜가 있고 (td(To Do 출신) 이거나 src==='app'(이 앱에서 만든 일정 — 달력 [＋ 일정]·날짜 칸을 눌러 입력한 것 포함)). 폰·구글 캘린더에서 만든 일정(src 'g')·반복 일정은 제외. td 는 그대로라 Tasks 동기화는 안 바뀜(달력에서 만든 일정은 Tasks 에 안 올라감).
        달력에서 만든 일정(td=0)도 줄의 완료 체크가 됨 — 이 앱에만 저장(norm 이 x 를 td 와 무관하게 보관, toggleDone 이 Tasks 호출 없이 저장).
@@ -11344,7 +11352,7 @@ const CAL_NAME='BTM 일정';
 const CID_DEFAULT='';                       /* 배포 파일에 클라이언트 ID 를 미리 넣어 두려면 여기에(비밀값 아님) — 비워 두면 일정 창 [연결 설정]에서 붙여넣음 */
 const WIN_BACK=90, WIN_FWD=730;             /* 동기화 창: 오늘−90일 ~ +730일 */
 const REC_BACK=7, REC_FWD=60;               /* 반복 일정의 날짜별 항목은 이 범위만 앱에 가져옴(매일 반복이 수백 줄이 되지 않게) */
-const POLL_MS=60000, CHIP_H=20;
+const POLL_MS=60000, TPOLL_MS=15000, CHIP_H=20;   /* 창이 열려 있는 동안: 전체 동기화 60초마다 · Tasks 만 15초마다 */
 const DEF_SP=0.535;                          /* 왼쪽 위(일정 미정) 구역의 기본 높이 비율 */
 const PM_OK=['','maxTop','maxBot','minTop','minBot'];
 const clampSp=r=>Math.min(0.88,Math.max(0.12,(+r)||DEF_SP));
@@ -11406,6 +11414,7 @@ let st={k:'off',msg:''};                    /* 캘린더 동기화 상태 */
 let tst={k:'off',msg:'',n:0,at:0};          /* Tasks 동기화 상태: off|ok|scope(권한 없음)|api(API 미사용)|err */
 let busyP=null, again=false, timer=null, poll=null, opened=false, pendFull=false, tkAsked=false;
 let editId='', editBase=null, dlgTodo=false, setOn=false, dlgColor='', clrOn=false, ccTry='', ccMsg='';
+let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자동 재시도 횟수·타이머 · 마지막 전체 동기화 시각 · 이 캘린더의 일정을 한 번이라도 가져왔는지(v214) */
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
 let ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null;
@@ -11435,7 +11444,7 @@ function normTb(b){   /* Tasks 기준 사본: s=제목(접두 뺀 것) p=작업 
 function norm(x){
   if(!x||typeof x!=='object') return null;
   const todo=!validYmd(x.d);                 /* 날짜가 없으면 To Do(날짜 미정) — 구글 캘린더와 연결하지 않음(Tasks 에는 올림) */
-  const td=(todo||x.td)?1:0;                 /* td = To Do 목록에서 시작한 항목(날짜가 정해져도 유지 — 왼쪽 아래 '확정 일정'에 모임 · 구글 Tasks 로 동기화되는 항목) */
+  const td=(todo||x.td||x.src!=='g')?1:0;    /* td = 구글 Tasks 와 동기화되는 앱 항목(미정·확정 목록에 보이는 항목 전부) — 날짜 미정·To Do 출신·이 앱에서 만든 일정(달력에서 직접 입력 포함)은 1, 폰·구글 캘린더에서 만든 일정(src 'g')만 0 (v214) */
   const it={ id:(typeof x.id==='string'&&x.id.length>=5&&x.id.length<=300)?x.id:newId(), d:todo?'':x.d, t:(!todo&&validHm(x.t))?x.t:'', d2:todo?'':(validYmd(x.d2)?x.d2:x.d), t2:(!todo&&validHm(x.t2))?x.t2:'',
     s:String(x.s==null?'':x.s).slice(0,300), m:String(x.m==null?'':x.m).slice(0,4000), r:(Number.isInteger(x.r)&&x.r>=-1&&x.r<=40320)?x.r:-1, c:validC(x.c),
     g:todo?'':String(x.g||''), gu:todo?'':String(x.gu||''), mod:+x.mod||0, rec:(!todo&&x.rec)?1:0, src:x.src==='g'?'g':'app', b:todo?null:normB(x.b), mr:(!todo&&typeof x.mr==='string')?x.mr.slice(0,8000):null,
@@ -11473,6 +11482,7 @@ function load(){
   const gr=lsGet(GKEY);
   if(gr){ try{ const c=JSON.parse(gr); if(c&&typeof c==='object') gcfg=parseG(c); }catch(_){} }
   try{ const u=JSON.parse(lsGet(UIKEY)||'null'); if(u&&(u.view==='list'||u.view==='cal')) ui.view=u.view; if(u&&(u.sort==='asc'||u.sort==='desc')) ui.sort=u.sort; if(u&&typeof u.sp==='number') ui.sp=clampSp(u.sp); if(u&&PM_OK.indexOf(u.pm)>=0) ui.pm=u.pm; }catch(_){}
+  calReady=!!gcfg.last;                                          /* 이 브라우저에서 캘린더 동기화를 한 번이라도 마쳤으면 준비됨(v214) */
   if(!gcfg.cid&&CID_DEFAULT) gcfg.cid=CID_DEFAULT;
   try{ const t=JSON.parse(sessionStorage.getItem(TKEY)||'null'); if(t&&t.t&&t.exp>Date.now()+30000) tok={t:t.t,exp:t.exp,tks:!!t.tks}; }catch(_){}   /* tks = 이 토큰에 Tasks 권한이 있는지(예전 토큰은 없음) */
   st=(!gcfg.cid||!gcfg.on)?{k:'off',msg:''}:{k:tokOK()?'ok':'auth',msg:''};
@@ -11488,7 +11498,7 @@ const dirtyGroups=it=>it.b?Object.keys(GRP).filter(k=>!gSame(it,it.b,k)):Object.
 const needsPush=it=>!!it.d&&(!it.g||dirtyGroups(it).length>0);          /* To Do(날짜 없음)는 구글에 올리지 않음 */
 const cmp=(a,b)=>a.d<b.d?-1:a.d>b.d?1:((a.t||'')<(b.t||'')?-1:(a.t||'')>(b.t||'')?1:(a.s<b.s?-1:a.s>b.s?1:0));
 const removeLocal=L=>{ if(L.k&&!ttomb.some(x=>x.k===L.k)) ttomb.push({k:L.k,at:Date.now()}); items=items.filter(x=>x!==L); };   /* 지운 항목에 Tasks 작업이 있으면 그 작업도 지우도록 장부에 */
-const resetLinks=()=>{ items.forEach(it=>{ it.g=''; it.gu=''; it.b=null; if(!/^[0-9a-v]{5,}$/.test(it.id)) it.id=newId(); }); tomb=[]; gcfg.ccs=''; };   /* 새 캘린더로는 캘린더 색도 다시 반영 */
+const resetLinks=()=>{ items.forEach(it=>{ it.g=''; it.gu=''; it.b=null; if(!/^[0-9a-v]{5,}$/.test(it.id)) it.id=newId(); }); tomb=[]; gcfg.ccs=''; calReady=false; };   /* 새 캘린더로는 캘린더 색도 다시 반영 */
 
 /* ── 구글 이벤트 ↔ 항목 변환 ── */
 function h2t(s){   /* 폰·웹에서 쓴 메모는 HTML 일 수 있음 → 글자만 */
@@ -11839,6 +11849,13 @@ function tReconcile(list,complete,res){
     if(!R||!R.id||R.deleted||have.has(R.id)||tk.has(R.id)) return;
     const i=orphan.findIndex(L=>{ const rs=tkSnap(R,L); return rs.s===L.s&&rs.m===L.m; });
     if(i>=0){ const L=orphan.splice(i,1)[0]; L.k=R.id; L.tb=null; tMerge(L,R,res); return; }   /* 올렸는데 응답을 못 받았던 항목 — 중복 없이 이어 붙임 */
+    const sn=tkSnap(R,null);
+    if(sn.p){
+      if(!calReady) return;                                             /* 캘린더 일정을 아직 가져오기 전(새 기기·캘린더 교체 직후)이면 날짜 작업은 다음 동기화로 미룸 — 안 그러면 이미 있는 일정과 겹쳐 두 개로 불어남(v214) */
+      /* 날짜가 적힌 작업이 이미 있는 캘린더 일정(같은 월/일·같은 제목, 아직 작업과 안 이어진 것)과 같으면 새 항목을 만들지 않고 이어 붙임 — 다른 기기·새 브라우저에서 연결할 때 한 일정이 두 개로 불어나지 않게(v214) */
+      const E=items.find(x=>!x.k&&!x.td&&x.d&&x.s===sn.s&&mdOf(x.d)===sn.p);
+      if(E){ E.td=1; E.k=R.id; E.tb=null; E.x=sn.x?1:0; tMerge(E,R,res); return; }
+    }
     const nt=fromRemoteTask(R); items.push(nt); res.add++; if(nt.d) res.dated=(res.dated||0)+1;
   });
 }
@@ -11891,11 +11908,12 @@ async function pushTasks(res){
     save();
   }
 }
+const transient=e=>!!e&&!e.needAuth&&(!!e.net||e.status>=500||e.status===429);   /* 잠시 뒤 다시 해 보면 될 오류 */
 function tstFromErr(e){
   const m=String((e&&e.message)||''), why=String((e&&e.reason)||'');
   if(e&&e.status===403&&/accessNotConfigured|SERVICE_DISABLED|has not been used|is disabled/i.test(m+why)) tst={k:'api',msg:'Google Cloud 프로젝트에서 Google Tasks API 가 ‘사용’으로 설정돼 있지 않습니다',n:tst.n,at:0};
   else if(e&&e.status===403&&/insufficient|SCOPE_INSUFFICIENT/i.test(m+why)) tst={k:'scope',msg:'',n:tst.n,at:0};
-  else tst={k:'err',msg:m||'동기화 중 오류가 났습니다',n:tst.n,at:0};
+  else tst={k:'err',msg:m||'동기화 중 오류가 났습니다',n:tst.n,at:0,retry:transient(e)};
   console.warn('[일정] Google Tasks 오류:',e);
 }
 async function tasksStage(res){   /* 캘린더 단계 뒤에 실행 — 로그인 만료(needAuth)만 위로 전달하고 나머지 오류는 Tasks 상태로만 표시(캘린더 결과에 영향 없음) */
@@ -11922,10 +11940,17 @@ async function tasksStage(res){   /* 캘린더 단계 뒤에 실행 — 로그�
 }
 
 /* ── 동기화 본체 ── */
+function scheduleRetry(r){   /* 일시적 오류(네트워크·구글 5xx·429)로 반영이 덜 됐으면 곧바로 다시 — 3·6·9초 뒤 최대 3번(새 변경이 생기거나 성공하면 처음부터). Tasks 만 실패했으면 Tasks 만 다시 */
+  const calBad=!!r&&r.ok===false&&transient(r.err), tkBad=!!r&&r.ok===true&&tst.k==='err'&&!!tst.retry;
+  if(!calBad&&!tkBad){ retryN=0; return; }
+  if(retryN>=3||!gcfg.on) return;
+  retryN++; clearTimeout(retryT);
+  retryT=setTimeout(()=>{ if(!busyP&&gcfg.on&&tokOK()) sync(calBad?{}:{tasksOnly:true}); },3000*retryN);
+}
 function sync(opts){
   if(busyP){ again=true; return busyP; }
   if(!(opts&&opts.tasksOnly)) pendFull=false;          /* 전체 동기화가 시작되면 '캘린더 변경 대기' 표시 해제 */
-  busyP=run(opts||{}).then(r=>r,e=>({ok:false,err:e})).then(r=>{ busyP=null; if(again){ again=false; setTimeout(()=>{ if(!busyP&&gcfg.on) sync({}); },60); } return r; });
+  busyP=run(opts||{}).then(r=>r,e=>({ok:false,err:e})).then(r=>{ busyP=null; if(again){ again=false; setTimeout(()=>{ if(!busyP&&gcfg.on) sync({}); },60); } else scheduleRetry(r); return r; });
   return busyP;
 }
 async function run(opts){
@@ -11937,19 +11962,23 @@ async function run(opts){
     catch(e){ if(opts.regrant&&tokOK()) tkAsked=true; else throw e; }   /* Tasks 권한 추가 로그인을 취소·거부했어도 기존 토큰이 유효하면 캘린더 동기화는 계속(Tasks 만 '권한 필요') */
     const full=!opts.tasksOnly||!gcfg.cal;                              /* To Do 만 바뀐 동기화(tasksOnly)는 캘린더를 부르지 않음 */
     let res={pull:0,add:0,del:0,ins:0,upd:0,back:0,verify:[]};
+    let calErr=null;
     if(full){
-      await ensureCalendar();
-      await syncCalColor();
-      await pushTombs();
-      const lr=await listRemote();
-      res=reconcile(lr.list,{a:lr.a,b:lr.b});
-      await verifyMissing(res);
-      save(); render(); updateBtn();
-      await pushAll(res);
+      try{
+        await ensureCalendar();
+        await syncCalColor();
+        await pushTombs();
+        const lr=await listRemote();
+        res=reconcile(lr.list,{a:lr.a,b:lr.b});
+        await verifyMissing(res);
+        save(); render(); updateBtn();
+        await pushAll(res);
+        lastFull=Date.now(); calReady=true;
+      }catch(e){ if(e&&e.needAuth) throw e; calErr=e; }               /* 캘린더 쪽 오류(구글 5xx·네트워크 등)가 나도 Tasks 는 계속 맞춘 뒤에 오류를 보고(v214) */
     }
-    gcfg.last=Date.now(); saveG(); save();
-    setStatus('ok'); render(); updateBtn();
+    if(!calErr){ gcfg.last=Date.now(); saveG(); save(); setStatus('ok'); render(); updateBtn(); }
     await tasksStage(res);                                              /* To Do ↔ 구글 Tasks */
+    if(calErr) throw calErr;
     if(tomb.length) await pushTombs();                                  /* 폰에서 작업을 지워서 생긴 캘린더 일정 삭제 */
     if(items.some(needsPush)) await pushAll(res);                       /* 폰의 작업에서 가져온 제목·메모를 캘린더 일정에도 */
     save(); paintChip(); render(); updateBtn();
@@ -11975,7 +12004,9 @@ function setStatus(k,msg){ st={k,msg:msg||''}; paintChip(); }
 function tkLine(){   /* Tasks 동기화 상태 한 줄(칩 설명·설정 창) */
   if(!gcfg.on||!gcfg.cid) return '';
   if(!gcfg.tk) return 'Google Tasks: 꺼짐';
-  return ({ok:'Google Tasks: 동기화됨 · ‘'+TL_NAME+'’ '+(tst.n||0)+'개'+(tst.at?' · '+hm(new Date(tst.at)):''), scope:'Google Tasks: 권한 필요 — [🔄]로 권한 추가', api:'Google Tasks: API 사용 설정 필요', err:'Google Tasks 오류: '+(tst.msg||''), off:'Google Tasks: 대기 중'})[tst.k]||'';
+  const tot=items.filter(x=>x.td).length, link=items.filter(x=>x.td&&x.k).length, pend=items.filter(needsTaskPush).length;
+  const cnt=' · 앱 항목 '+tot+'개 중 '+link+'개 연결'+(pend?' · 반영 대기 '+pend+'개':'');
+  return ({ok:'Google Tasks: 동기화됨 · ‘'+TL_NAME+'’'+cnt+(tst.at?' · '+hm(new Date(tst.at)):''), scope:'Google Tasks: 권한 필요 — [🔄]로 권한 추가', api:'Google Tasks: API 사용 설정 필요', err:'Google Tasks 오류: '+(tst.msg||'')+(pend?' (반영 대기 '+pend+'개'+(tst.retry?' — 곧 다시 시도':'')+')':''), off:'Google Tasks: 대기 중'})[tst.k]||'';
 }
 function paintChip(){
   const c=$('plnChip'), bar=$('plnBar'); if(!c) return;
@@ -12022,9 +12053,8 @@ function toast(msg){ const t=$('plnToast'); if(!t) return; t.textContent=msg; t.
 function relLabel(d,today){ const diff=dayDiff(d,today); return diff===0?'오늘':diff===1?'내일':diff===2?'모레':diff===-1?'어제':diff>0?diff+'일 후':(-diff)+'일 전'; }
 function dateLabel(d){ const p=parseYmd(d); return p.getFullYear()+'년 '+(p.getMonth()+1)+'월 '+p.getDate()+'일 ('+WD[p.getDay()]+')'; }
 function remLabel(r){ if(r<0) return '알림 없음'; if(r===0) return '정시'; if(r%1440===0) return (r/1440)+'일 전'; if(r%60===0) return (r/60)+'시간 전'; return r+'분 전'; }
-function timeLabel(it){
-  if(!it.t) return '종일'+(it.d2>it.d?'<small>~'+esc(it.d2.slice(5))+'</small>':'');
-  return esc(it.t)+(it.d2>it.d?'<small>~'+esc(it.d2.slice(5))+' '+esc(it.t2)+'</small>':(it.t2&&it.t2!==it.t?'<small>~'+esc(it.t2)+'</small>':''));
+function dateCell(it){   /* 목록 보기 줄 맨 앞: 날짜(월/일)+요일 — 시간·'종일'은 표시하지 않음. 여러 날 일정은 그 아래 줄에 ~끝 날짜(v215) */
+  return '<div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+WD[parseYmd(it.d).getDay()]+')</small></div>'+(it.d2>it.d?'<small>~'+mdOf(it.d2)+'</small>':'');
 }
 const mStart=d=>new Date(d.getFullYear(),d.getMonth(),1);
 function ensureVm(){ if(!vm) vm=mStart(new Date()); }
@@ -12034,7 +12064,7 @@ function rowHtml(it,today){
   const past=it.d2<today;
   const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'')+(it.r>=0?'<span class="pln-bd" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'')+(it.x?'<span class="pln-bd" title="완료한 할 일(구글 Tasks 체크)">✔</span>':'');
   const sy=gcfg.on?(needsPush(it)?'<span class="pln-sy w" title="구글 캘린더에 아직 반영되지 않음">⏳</span>':'<span class="pln-sy" title="구글 캘린더와 동기화됨">☁</span>'):'';
-  return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'"><div class="pln-tm">'+timeLabel(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'"><div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
 }
 function renderList(){
   const box=$('plnList'); if(!box) return; ensureVm();
@@ -12247,7 +12277,7 @@ function afterChange(needSync){   /* needSync===false = To Do 만 바뀜(캘린�
   if(!gcfg.on||!gcfg.cid) return;
   if(full) pendFull=true;                              /* 기다리는 동안 캘린더 변경이 한 번이라도 있었으면 전체 동기화 */
   if(busyP){ again=true; return; }
-  if(tokOK()){ clearTimeout(timer); timer=setTimeout(()=>{ const f=pendFull; pendFull=false; sync(f?{}:{tasksOnly:true}); },500); }
+  if(tokOK()){ retryN=0; clearTimeout(timer); timer=setTimeout(()=>{ const f=pendFull; pendFull=false; sync(f?{}:{tasksOnly:true}); },250); }
   else{ setStatus('auth'); if(!authDismissed){ const f=pendFull; pendFull=false; sync({interactive:true,tasksOnly:!f}); } }          /* 클릭 안이므로 로그인 창을 바로 열 수 있음(방금 닫은 적이 있으면 띄우지 않음 — 일정은 로컬에 저장돼 있고 [🔄]로 올림) */
 }
 function submit(){   /* 대화상자 [저장] */
@@ -12572,7 +12602,13 @@ function syncClick(){
 }
 
 /* ── 열기·닫기·자동 동기화 ── */
-function startPoll(){ stopPoll(); poll=setInterval(()=>{ if(!opened||document.hidden||!gcfg.on) return; if(!tokOK()){ if(st.k==='ok') setStatus('auth'); return; } sync({}); },POLL_MS); }
+function pollTick(){   /* 창이 열려 있는 동안: 15초마다 Tasks 만 확인(폰에서 적은·고친 작업 가져오기), 60초마다 캘린더까지 전체 동기화 */
+  if(!opened||document.hidden||!gcfg.on) return;
+  if(!tokOK()){ if(st.k==='ok') setStatus('auth'); return; }
+  const fullDue=!gcfg.tk||Date.now()-lastFull>=POLL_MS-2000;
+  sync(fullDue?{}:{tasksOnly:true});
+}
+function startPoll(){ stopPoll(); poll=setInterval(pollTick,TPOLL_MS); }
 function stopPoll(){ if(poll){ clearInterval(poll); poll=null; } }
 function open(){
   if(document.body.classList.contains('guest-mode')) return;
@@ -12589,6 +12625,7 @@ function onLogout(){ tok=null; try{ sessionStorage.removeItem(TKEY); }catch(_){}
 function init(){ try{ updateBtn(); }catch(_){} }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&opened&&gcfg.on&&tokOK()&&Date.now()-(gcfg.last||0)>20000) sync({}); });
+window.addEventListener('focus',()=>{ if(opened&&gcfg.on&&tokOK()&&Date.now()-(gcfg.last||0)>15000) sync({}); });   /* 다른 창에서 돌아오면 바로 확인(v214) */
 window.addEventListener('online',()=>{ if(opened&&gcfg.on&&tokOK()) sync({}); });
 /* 같은 브라우저의 다른 탭에서 일정·연결 설정을 바꾸면(storage 이벤트는 다른 탭에만 옴) 이 탭도 그 값으로 — 오래된 목록으로 덮어쓰지 않게. 동기화 중이면 건너뜀 */
 window.addEventListener('storage',e=>{
@@ -12604,9 +12641,9 @@ window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,di
   month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,timeInput,showDay,goDay,sortToggle,toggleDone,tkToggle,unassign,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get ttomb(){ return ttomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tst(){ return tst; }, get tok(){ return tok; }, set tok(v){ tok=v; },
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
-       reset(){ items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
+       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
+       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
 })();
 /* ══ /v206 ══ */
 
