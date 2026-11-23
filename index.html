@@ -5249,7 +5249,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm{flex:0 0 66px}
 #plnModal .pln-todo[data-pm="maxBot"] .pln-sec.top.arm>:not(.pln-th),#plnModal .pln-todo[data-pm="minTop"] .pln-sec.top.arm>:not(.pln-th){display:none}
 /* 날짜가 정해진 일정(달력 칩·확정 일정 줄)을 끌고 있을 때 — 위쪽 '일정 미정' 영역이 놓는 자리: 놓으면 날짜가 지워지고 일정 미정으로 돌아감 */
-#plnModal .pln-sec.top.arm::after{content:'↩ 여기에 놓으면 날짜가 지워지고\A ‘일정 미정’으로 돌아갑니다';white-space:pre;position:absolute;inset:4px;z-index:3;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.7;font-size:13px;font-weight:800;color:#0f766e;background:rgba(240,253,250,.9);border:2px dashed #5eead4;border-radius:10px;pointer-events:none}
+#plnModal .pln-sec.top.arm::after{content:'↩ 여기에 놓으면 날짜가 지워지고\A ‘미정 일정’으로 돌아갑니다';white-space:pre;position:absolute;inset:4px;z-index:3;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.7;font-size:13px;font-weight:800;color:#0f766e;background:rgba(240,253,250,.9);border:2px dashed #5eead4;border-radius:10px;pointer-events:none}
 #plnModal .pln-sec.top.arm.over::after{background:rgba(204,251,241,.95);border:2px solid #0f766e}
 #plnModal .pln-cf{background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 8px;display:flex;gap:8px;align-items:flex-start;cursor:pointer;user-select:none}
 #plnModal .pln-cf:hover{border-color:#0f766e;box-shadow:0 1px 6px rgba(15,118,110,.18)}
@@ -5258,6 +5258,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-cf .dt{flex:none;min-width:50px;line-height:1.25;color:#0f766e}
 #plnModal .pln-cf .dt b{display:block;font-size:13px;font-weight:800;letter-spacing:-.2px}
 #plnModal .pln-cf .dt small{display:block;font-size:10px;font-weight:600;color:#64748b}
+#plnModal .pln-cf .dt .d1{display:flex;align-items:baseline;gap:4px;white-space:nowrap}   /* 날짜와 요일은 무조건 같은 줄(줄바꿈 없음) */
 #plnModal .pln-cf .mn{flex:1;min-width:0}
 #plnModal .pln-cf .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.35}
 #plnModal .pln-cf .me{font-size:11px;color:#64748b;white-space:pre-wrap;word-break:break-word;margin-top:2px;line-height:1.4;max-height:3em;overflow:hidden}
@@ -5424,11 +5425,11 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       <div class="pln-todo">
         <!-- 위: 일정 미정(날짜가 정해지지 않은 To Do) — 적어 두었다가 오른쪽 달력의 날짜로 끌어다 놓음 -->
         <div class="pln-sec top">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'top')" title="달력이나 ‘확정 일정’의 항목을 여기로 끌어다 놓으면 날짜가 지워지고 다시 일정 미정으로 돌아옵니다">📝 일정 미정 <small>To Do</small><span class="sp"></span><span id="plnTodoCnt" class="pln-cnt" title="날짜가 정해지지 않은 항목 수">0</span><button type="button" class="pln-pnb" data-k="top" data-a="max" title="일정 미정 최대화 — 확정 일정 영역을 아래로 덮고 크게 봅니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="top" data-a="min" title="일정 미정 최소화 — 제목만 남기고 위로 접습니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'top')" title="달력이나 ‘확정 일정’의 항목을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정으로 돌아옵니다">📝 미정 일정 <small>To Do</small><span class="sp"></span><span id="plnTodoCnt" class="pln-cnt" title="날짜가 정해지지 않은 항목 수">0</span><button type="button" class="pln-pnb" data-k="top" data-a="max" title="미정 일정 최대화 — 확정 일정 영역을 아래로 덮고 크게 봅니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="top" data-a="min" title="미정 일정 최소화 — 제목만 남기고 위로 접습니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div class="pln-tf">
             <input id="plnTodoIn" type="text" maxlength="200" autocomplete="off" placeholder="일정 입력 후 Enter — 앞에 ‘11/25 ’처럼 날짜를 쓰면 바로 확정" title="날짜가 정해지지 않은 일정을 적으세요. 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면 그 날짜의 확정 일정(달력)으로 바로 등록됩니다" onkeydown="BTMPlanner.enter(event,'todo')">
             <textarea id="plnTodoMemo" rows="2" maxlength="4000" placeholder="메모 (선택)"></textarea>
-            <button class="pln-pb" onclick="BTMPlanner.addTodo()">＋ 일정 미정에 추가</button>
+            <button class="pln-pb" onclick="BTMPlanner.addTodo()">＋ 미정 일정에 추가</button>
           </div>
           <div id="plnTodoList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
@@ -5436,7 +5437,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         <div id="plnSplit" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 위·아래 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event)" onkeydown="BTMPlanner.splitKey(event)" ondblclick="BTMPlanner.splitReset()"><i></i></div>
         <!-- 아래: 날짜가 확정된 일정 — 위에서 달력으로 옮겨 날짜를 정하면 여기로 내려와 '월/일'과 함께 모임(날짜 최신순) -->
         <div class="pln-sec bot">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 일정 미정 영역을 위로 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 미정 일정 영역을 위로 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div id="plnDoneList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
       </div>
@@ -5468,7 +5469,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
             <input id="plnFD" type="date" title="날짜" onkeydown="if(event.key==='Enter'){event.preventDefault();BTMPlanner.submit();}">
             <input id="plnFT" type="time" title="시작 시간 — 비우면 종일 일정" oninput="BTMPlanner.timeInput()" onchange="BTMPlanner.timeInput()">
             <span class="pln-lb">~ 종료</span>
-            <input id="plnFD2" type="date" title="종료 날짜 — 비우면 시작과 같은 날(여러 날 일정일 때만)">
+            <input id="plnFD2" type="date" title="종료 날짜 — 비우면 시작과 같은 날(여러 날 일정일 때만) · 달력 버튼을 누르면 시작 날짜 다음 날이 기본으로 나옵니다">
             <input id="plnFT2" type="time" title="종료 시간 — 비우면 시작 1시간 뒤">
           </div>
           <div class="pln-r1"><span class="pln-lb">알림</span><select id="plnFR" title="알림(폰에 울립니다)"></select></div>
@@ -11264,6 +11265,14 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v213 요청: "달력에 직접 일정을 입력해도 확정 일정에 추가될 수 있도록 · '일정 미정' 제목을 '미정 일정'으로"
+     · 확정 일정 목록 조건 inDone = 날짜가 있고 (td(To Do 출신) 이거나 src==='app'(이 앱에서 만든 일정 — 달력 [＋ 일정]·날짜 칸을 눌러 입력한 것 포함)). 폰·구글 캘린더에서 만든 일정(src 'g')·반복 일정은 제외. td 는 그대로라 Tasks 동기화는 안 바뀜(달력에서 만든 일정은 Tasks 에 안 올라감).
+       달력에서 만든 일정(td=0)도 줄의 완료 체크가 됨 — 이 앱에만 저장(norm 이 x 를 td 와 무관하게 보관, toggleDone 이 Tasks 호출 없이 저장).
+     · 화면 이름 '일정 미정' → '미정 일정'(머리 제목·단추·안내문·토스트·툴팁·안내 막). 코드 주석과 옛 요청 인용문의 '일정 미정'은 그대로 둠.
+   v212 요청: "요일은 무조건 날짜와 동일한 행에 표시되게" — 왼쪽 아래 '확정 일정' 줄의 날짜(b) 옆에 요일(small.wd)을 같은 줄(.d1, nowrap)로. 여러 날 일정의 '~끝 날짜'와 시간은 그 아래 줄에 그대로.
+   v211 요청: "날짜를 기간으로 선택할 때, 앞쪽(시작) 날짜를 선택한 경우 뒷쪽(종료) 날짜 버튼을 클릭하면 시작 날짜 바로 다음 날이 기본으로 표출되도록"
+     · 수정 창의 종료 날짜 칸(#plnFD2)의 달력 아이콘(오른쪽 끝 28px)을 누르는 순간(pointerdown, 달력이 열리기 전) 칸이 비어 있고 시작 날짜(#plnFD)가 올바르면 시작+1일을 값으로 미리 넣음 → 달력이 그 날짜로 열림.
+       연·월·일 칸을 눌러 직접 입력할 때·Tab 이동·종료 날짜가 이미 있을 때·시작 날짜가 비었을 때는 건드리지 않음. 값은 미리 넣는 것이라 달력을 그냥 닫아도 남음(비우려면 달력의 지우기 또는 Backspace).
    v210 요청: "확정일정에 위로최대화 버튼 — 클릭하면 확정일정이 미확정일정 영역을 모두 덮고 확정일정만 크게 · 최소화 버튼 — 확정일정 제목만 남기고 아래로 최소화 · 미확정 일정에도 동일한 기능 · 확정과 미확정 사이 구분선에 높이 조절 버튼(손잡이)으로 매뉴얼 조정"
      · 왼쪽 패널(.pln-todo)의 상태 data-pm = '' | maxTop | maxBot | minTop | minBot (ui.pm, BTMPlannerUI_v1 에 저장) — 최대화(max)=그 구역이 패널 전체를 덮고 다른 구역·구분선은 숨김 · 최소화(min)=제목 줄만 남기고 다른 구역이 나머지를 채움.
        각 구역 머리의 [최대화][최소화] 단추(같은 단추를 다시 누르면 원래대로, 접힌 제목 줄을 눌러도 원래대로). 일정 미정: 최대화=아래로·최소화=위로 / 확정 일정: 최대화=위로·최소화=아래로.
@@ -11431,7 +11440,7 @@ function norm(x){
     s:String(x.s==null?'':x.s).slice(0,300), m:String(x.m==null?'':x.m).slice(0,4000), r:(Number.isInteger(x.r)&&x.r>=-1&&x.r<=40320)?x.r:-1, c:validC(x.c),
     g:todo?'':String(x.g||''), gu:todo?'':String(x.gu||''), mod:+x.mod||0, rec:(!todo&&x.rec)?1:0, src:x.src==='g'?'g':'app', b:todo?null:normB(x.b), mr:(!todo&&typeof x.mr==='string')?x.mr.slice(0,8000):null,
     td,
-    x:(td&&x.x)?1:0,                          /* 완료(체크) — Tasks 의 완료와 연동 */
+    x:x.x?1:0,                          /* 완료(체크) — Tasks 의 완료와 연동 */
     k:td?String(x.k||'').slice(0,300):'', ku:td?String(x.ku||''):'', tb:(td&&x.k)?normTb(x.tb):null };   /* Tasks 작업 id · 그 작업의 updated · 마지막으로 맞춘 작업 값 */
   return fix0(it);
 }
@@ -12087,7 +12096,7 @@ function fitCal(){   /* 칸 높이에 맞게 칩 수를 줄이고 나머지는 '
 }
 
 /* ── 화면: To Do 목록 ── */
-const ckHtml=it=>'<input type="checkbox" class="ck" data-a="done"'+(it.x?' checked':'')+' title="완료 표시 — 구글 Tasks 의 체크와 연동됩니다">';
+const ckHtml=it=>'<input type="checkbox" class="ck" data-a="done"'+(it.x?' checked':'')+' title="'+(it.td?'완료 표시 — 구글 Tasks 의 체크와 연동됩니다':'완료 표시 — 이 앱에만 저장됩니다(달력에서 직접 만든 일정은 구글 Tasks 에 올라가지 않아요)')+'">';
 const pendDot=it=>((gcfg.on&&needsPush(it))||(tkOn()&&needsTaskPush(it)))?'<i class="pln-dot" title="구글(캘린더·Tasks)에 아직 반영되지 않음"></i>':'';
 function todoHtml(it){
   const p=palOf(it.c);
@@ -12095,20 +12104,21 @@ function todoHtml(it){
 }
 function doneHtml(it,today){                                          /* 왼쪽 아래 '확정 일정'의 한 줄 */
   const past=it.d2<today, wd=WD[parseYmd(it.d).getDay()];
-  const sub='<small>('+wd+')'+(it.d2>it.d?' ~'+mdOf(it.d2):'')+'</small>'+(it.t?'<small>'+esc(it.t)+'</small>':'');
-  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+'"'+barStyle(colorOf(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘일정 미정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><b>'+mdOf(it.d)+'</b>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac"><button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  const sub=(it.d2>it.d?'<small>~'+mdOf(it.d2)+'</small>':'')+(it.t?'<small>'+esc(it.t)+'</small>':'');   /* 요일은 날짜와 같은 줄(.d1) — 여러 날 일정의 끝 날짜·시간은 그 아래 줄 */
+  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+'"'+barStyle(colorOf(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac"><button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
+const inDone=x=>!!x.d&&(!!x.td||x.src==='app');   /* 아래 '확정 일정' 목록 = To Do 에서 시작한 항목 + 이 앱에서 만든 일정(달력에서 직접 입력 포함) — 폰·구글 캘린더에서 만든 일정은 제외 */
 function renderTodo(){
   const box=$('plnTodoList'), dbox=$('plnDoneList'); if(!box) return;
   const todos=items.filter(x=>!x.d).sort((a,b)=>(a.x?1:0)-(b.x?1:0));   /* 위: 일정 미정 — 완료한 것은 아래로(입력 순서는 유지) */
   const c=$('plnTodoCnt'); if(c) c.textContent=todos.length;
-  box.innerHTML=todos.length?todos.map(todoHtml).join(''):'<div class="pln-em">날짜가 정해지지 않은 일정을 위에 적어 두세요.<br>적은 항목을 오른쪽 달력의 날짜로 끌어다 놓으면(또는 📅 로 날짜를 고르면) 그날의 일정이 되어 아래 ‘확정 일정’으로 내려갑니다.<br>반대로 달력의 일정이나 ‘확정 일정’ 줄을 여기로 끌어다 놓으면 날짜가 지워지고 다시 일정 미정이 됩니다.<br>또는 제목 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면 그 날짜의 확정 일정이 됩니다.</div>';
+  box.innerHTML=todos.length?todos.map(todoHtml).join(''):'<div class="pln-em">날짜가 정해지지 않은 일정을 위에 적어 두세요.<br>적은 항목을 오른쪽 달력의 날짜로 끌어다 놓으면(또는 📅 로 날짜를 고르면) 그날의 일정이 되어 아래 ‘확정 일정’으로 내려갑니다.<br>반대로 달력의 일정이나 ‘확정 일정’ 줄을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정이 됩니다.<br>또는 제목 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면 그 날짜의 확정 일정이 됩니다.</div>';
   if(!dbox) return;
-  const done=items.filter(x=>x.d&&x.td).sort(cmp); if(ui.sort!=='asc') done.reverse();   /* 아래: 날짜가 확정된 To Do 출신 항목 — 기본은 날짜 최신순 */
+  const done=items.filter(inDone).sort(cmp); if(ui.sort!=='asc') done.reverse();   /* 아래: 날짜가 확정된 항목(To Do 출신 + 이 앱에서 만든 일정) — 기본은 날짜 최신순 */
   const dc=$('plnDoneCnt'); if(dc) dc.textContent=done.length;
   const sl=$('plnSortLab'); if(sl) sl.textContent=ui.sort==='asc'?'빠른 날짜순':'날짜 최신순';
   const today=todayY();
-  dbox.innerHTML=done.length?done.map(it=>doneHtml(it,today)).join(''):'<div class="pln-em">아직 날짜를 정한 일정이 없습니다.<br>위 ‘일정 미정’ 항목을 달력의 날짜로 옮기면 ‘월/일’과 함께 여기에 모입니다.</div>';
+  dbox.innerHTML=done.length?done.map(it=>doneHtml(it,today)).join(''):'<div class="pln-em">아직 날짜를 정한 일정이 없습니다.<br>위 ‘미정 일정’ 항목을 달력의 날짜로 옮기거나 달력에 일정을 직접 입력하면 ‘월/일’과 함께 여기에 모입니다.</div>';
 }
 function sortToggle(){ ui.sort=ui.sort==='asc'?'desc':'asc'; saveUi(); renderTodo(); }
 
@@ -12200,7 +12210,7 @@ function readForm(fb){   /* fb = 수정을 시작할 때의 항목 값 — 시�
   if(!t) t2='';
   const timeSame=!!fb&&d===fb.d&&t===fb.t&&d2===fb.d2&&t2===fb.t2;
   if(!d&&dlgTodo){ if(!s) return {err:'내용을 입력해 주세요.'}; return {d:'',t:'',d2:'',t2:'',s,m,r:rr,c:dlgColor}; }   /* To Do — 날짜 없이 저장 */
-  if(!validYmd(d)) return {err:dlgTodo?'날짜 형식을 확인해 주세요.':'날짜를 선택해 주세요. (날짜를 없애려면 이 일정을 왼쪽 위 ‘일정 미정’ 영역으로 끌어다 놓으세요)'};
+  if(!validYmd(d)) return {err:dlgTodo?'날짜 형식을 확인해 주세요.':'날짜를 선택해 주세요. (날짜를 없애려면 이 일정을 왼쪽 위 ‘미정 일정’ 영역으로 끌어다 놓으세요)'};
   if(!s) return {err:'일정 내용을 입력해 주세요.'};
   if(!validYmd(d2)) d2=d;
   if(d2<d) return {err:'종료 날짜가 시작 날짜보다 빠릅니다.'};
@@ -12319,7 +12329,7 @@ function unassign(id){
   if([-1,900,2340,9540].indexOf(it.r)<0) it.r=900;         /* 알림은 종일 일정 기준 값만 남김('30분 전' 같은 시간 일정 값은 날짜를 다시 정해도 어울리지 않음) */
   it.mod=Date.now();
   afterChange(!!gid);                                      /* 구글 캘린더에서 지울 것이 있으면 전체 동기화, 아니면 Tasks 만(제목 접두 제거·새 작업) */
-  toast('↩ ‘'+label+'’ → 일정 미정으로 되돌렸습니다 ('+mdOf(was)+' 날짜 삭제'+(cut?' · 제목 앞 ‘'+cut+'’ 도 지움':'')+')'+((gid&&gcfg.on)?' — 구글 캘린더에서도 지우는 중…':''));
+  toast('↩ ‘'+label+'’ → 미정 일정으로 되돌렸습니다 ('+mdOf(was)+' 날짜 삭제'+(cut?' · 제목 앞 ‘'+cut+'’ 도 지움':'')+')'+((gid&&gcfg.on)?' — 구글 캘린더에서도 지우는 중…':''));
   flashTodo(id);
   return true;
 }
@@ -12338,9 +12348,11 @@ function listClick(ev){   /* 목록 보기의 ✏️·🗑 */
   const id=row.getAttribute('data-id'), a=b.getAttribute('data-a');
   if(a==='edit') openDlg({id}); else if(a==='del') del(id);
 }
-function toggleDone(id,val){   /* 완료 체크 — 구글 Tasks 의 체크와 연동(To Do 만 바뀌므로 캘린더는 건드리지 않음) */
-  load(); const it=items.find(x=>x.id===id); if(!it||!it.td) return;
-  it.x=(val===undefined?!it.x:!!val)?1:0; it.mod=Date.now();
+function toggleDone(id,val){   /* 완료 체크 — To Do 출신(td)이면 구글 Tasks 의 체크와 연동(캘린더는 건드리지 않음), 달력에서 직접 만든 일정은 이 앱에만 저장(v213) */
+  load(); const it=items.find(x=>x.id===id); if(!it) return;
+  it.x=(val===undefined?!it.x:!!val)?1:0;
+  if(!it.td){ save(); render(); updateBtn(); return; }
+  it.mod=Date.now();
   afterChange(false);
 }
 function todoClick(ev){   /* 왼쪽 목록: 체크박스 · 단추(📅·✏️·🗑) · 아래 '확정 일정' 줄을 누르면 달력의 그날로 */
@@ -12385,12 +12397,20 @@ function enter(e,kind){
 }
 document.addEventListener('compositionend',e=>{ const t=e.target; if(t&&t._pendEnter){ const k=t._pendEnter; t._pendEnter=''; setTimeout(()=>{ if(k==='todo') addTodo(); else submit(); },0); } },true);
 
+/* 종료 날짜 칸의 달력 버튼을 누르면: 비어 있고 시작 날짜가 정해져 있으면 시작 바로 다음 날을 기본값으로 미리 넣어, 달력이 그 날짜로 열리게(v211) */
+document.addEventListener('pointerdown',e=>{
+  const t=e.target; if(!t||t.id!=='plnFD2'||t.value) return;
+  const sd=($('plnFD')||{}).value; if(!validYmd(sd)) return;
+  const r=t.getBoundingClientRect(); if(e.clientX<r.right-28) return;           /* 달력 아이콘 자리(오른쪽 끝)를 눌렀을 때만 — 연·월·일 칸을 눌러 직접 입력할 때는 그대로 */
+  t.value=addDays(sd,1);
+},true);
+
 /* ── 왼쪽 위(일정 미정)·아래(확정 일정): 최대화·최소화·높이 조절(v210) ── */
-const PN={top:'일정 미정',bot:'확정 일정'};
+const PN={top:'미정 일정',bot:'확정 일정'};
 const PN_TIP={
-  maxTop:['일정 미정 최대화 — 확정 일정 영역을 아래로 덮고 크게 봅니다','원래 크기로(일정 미정 최대화 해제)'],
-  minTop:['일정 미정 최소화 — 제목만 남기고 위로 접습니다','원래 크기로(일정 미정 최소화 해제)'],
-  maxBot:['확정 일정 최대화 — 일정 미정 영역을 위로 덮고 크게 봅니다','원래 크기로(확정 일정 최대화 해제)'],
+  maxTop:['미정 일정 최대화 — 확정 일정 영역을 아래로 덮고 크게 봅니다','원래 크기로(미정 일정 최대화 해제)'],
+  minTop:['미정 일정 최소화 — 제목만 남기고 위로 접습니다','원래 크기로(미정 일정 최소화 해제)'],
+  maxBot:['확정 일정 최대화 — 미정 일정 영역을 위로 덮고 크게 봅니다','원래 크기로(확정 일정 최대화 해제)'],
   minBot:['확정 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(확정 일정 최소화 해제)']};
 function applyPanel(){
   const box=document.querySelector('#plnModal .pln-todo'); if(!box) return;
