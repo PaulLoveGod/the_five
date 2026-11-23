@@ -5314,6 +5314,36 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 @keyframes plnFlash{from{background:#fde68a}to{background:transparent}}
 #plnModal .pln-dn{flex:none;height:20px;display:flex;align-items:center;font-size:12px;font-weight:700;color:#334155}
 #plnModal .pln-cell.today .pln-dn span{background:#1e3a5f;color:#fff;border-radius:11px;padding:0 7px;line-height:20px}
+/* 오늘 업무(v218): 오늘 날짜 바로 오른쪽의 작은 아이콘 + 팝업 */
+#plnModal .pln-wkic{display:inline-flex!important;align-items:center;justify-content:center;width:18px;height:18px;margin-left:4px;padding:0;border:1.5px solid #0f766e;border-radius:50%;background:#fff;color:#0f766e;cursor:pointer;flex:none}
+#plnModal .pln-wkic.has{background:#0f766e;color:#fff}
+#plnModal .pln-wkic:hover{background:#0d5f58;border-color:#0d5f58;color:#fff}
+#plnModal .pln-wkic svg{width:11px;height:11px}
+#plnModal .pln-dlg.pln-wkc{width:min(780px,100%);height:min(660px,100%);max-height:100%;display:flex;flex-direction:column;overflow:hidden}
+#plnModal .pln-wkc>.pln-dh{flex:none}
+#plnModal .pln-wkb{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto}
+#plnModal .pln-wkt{flex:1.1 1 0;min-height:250px;display:flex;flex-direction:column;background:#fff}
+#plnModal .pln-wkp{flex:1 1 0;min-height:150px;display:flex;flex-direction:column;background:#f1f5f9;border-top:2px solid #cbd5e1}
+#plnModal .pln-wkh{flex:none;padding:10px 14px 6px;font-size:13px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px}
+#plnModal .pln-wkh small{font-size:10.5px;font-weight:600;color:#64748b}
+#plnModal .pln-wkf{flex:none;padding:0 14px 8px;display:flex;flex-direction:column;gap:5px}
+#plnModal .pln-wkf textarea{min-height:44px}
+#plnModal .pln-wkbtn{display:flex;gap:6px;justify-content:flex-end}
+#plnModal .pln-wkl{flex:1;min-height:0;overflow:auto;padding:2px 14px 10px;display:flex;flex-direction:column;gap:5px}
+#plnModal .pln-wi{display:flex;gap:8px;align-items:flex-start;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 8px}
+#plnModal .pln-wi .dt{flex:none;font-size:11px;font-weight:800;color:#0f766e;line-height:1.5;white-space:nowrap}
+#plnModal .pln-wi .dt small{font-size:10px;font-weight:600;color:#64748b;margin-left:2px}
+#plnModal .pln-wi .mn{flex:1;min-width:0}
+#plnModal .pln-wi .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.4;cursor:pointer}
+#plnModal .pln-wi .ti:hover{color:#0f766e}
+#plnModal .pln-wi .wd{display:none;margin-top:4px;padding:5px 8px;background:#f8fafc;border-radius:6px;font-size:11.5px;color:#475569;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+#plnModal .pln-wi.open .wd{display:block}
+#plnModal .pln-wi.dn .ti{text-decoration:line-through;color:#94a3b8}
+#plnModal .pln-wi.dn .dt{color:#94a3b8}
+#plnModal .pln-wi .ac{flex:none;display:flex;gap:2px}
+#plnModal .pln-wi .ac button{border:none;background:transparent;border-radius:5px;padding:2px 4px;font-size:12px;cursor:pointer;opacity:.75}
+#plnModal .pln-wi .ac button:hover{background:#e2e8f0;opacity:1}
+#plnModal .pln-wi.ed{border-color:#0f766e;box-shadow:0 0 0 2px rgba(15,118,110,.18)}
 #plnModal .pln-cl{display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden}
 #plnModal .pln-ch{flex:none;height:18px;line-height:18px;font-size:11px;padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;user-select:none}
 #plnModal .pln-ch.ad{background:#0f766e;color:#fff}
@@ -5342,6 +5372,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-ac button{border:none;background:#f1f5f9;border-radius:5px;padding:3px 7px;font-size:12px;cursor:pointer}
 #plnModal .pln-sy{font-size:11px;color:#16a34a;margin-right:2px}
 #plnModal .pln-sy.w{color:#d97706}
+#plnModal .pln-al{font-size:12px;line-height:1;cursor:default}
 /* 일정 입력/수정 대화상자(팝업 안에 겹쳐 뜸) */
 #plnModal .pln-dw{display:none;position:absolute;inset:0;background:rgba(15,23,42,.45);z-index:5;align-items:center;justify-content:center;padding:14px}
 #plnModal .pln-dw.on{display:flex}
@@ -5482,6 +5513,27 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
           <span id="plnFDelWrap" style="display:none"><button class="pln-sb r" onclick="BTMPlanner.dlgDelete()">🗑 삭제</button></span>
           <button class="pln-sb" onclick="BTMPlanner.closeDlg()">취소</button>
           <button class="pln-pb" id="plnFSave" onclick="BTMPlanner.submit()">💾 저장</button>
+        </div>
+      </div>
+    </div>
+    <!-- 오늘 업무 팝업(v218): 위=오늘 발생한 업무 입력·목록, 아래=직전 날까지의 업무(입력한 날짜 내림차순, 미처리가 위) -->
+    <div id="plnWk" class="pln-dw" onclick="if(event.target===this)BTMPlanner.wkClose()">
+      <div class="pln-dlg pln-wkc">
+        <div class="pln-dh"><b id="plnWkTitle">📋 오늘 업무</b><button class="pln-ib x mobile-keep" onclick="BTMPlanner.wkClose()" title="닫기">✕</button></div>
+        <div class="pln-wkb">
+          <div class="pln-wkt">
+            <div class="pln-wkh">📝 오늘 발생한 업무 <small>목록엔 제목만 · 제목을 누르면 상세 내용이 펼쳐집니다</small><span style="flex:1"></span><span id="plnWkTodayCnt" class="pln-cnt" title="오늘 업무 수">0</span></div>
+            <div class="pln-wkf">
+              <input id="plnWkS" type="text" maxlength="200" autocomplete="off" placeholder="업무 제목 입력 후 Enter" onkeydown="BTMPlanner.enter(event,'wk')">
+              <textarea id="plnWkM" rows="2" maxlength="4000" placeholder="상세 내용 (선택)"></textarea>
+              <div class="pln-wkbtn"><span id="plnWkCancelWrap" style="display:none"><button class="pln-sb" onclick="BTMPlanner.wkCancel()">수정 취소</button></span><button class="pln-pb" id="plnWkOk" onclick="BTMPlanner.wkSave()">＋ 업무 추가</button></div>
+            </div>
+            <div id="plnWkToday" class="pln-wkl" onclick="BTMPlanner.wkClick(event)"></div>
+          </div>
+          <div class="pln-wkp">
+            <div class="pln-wkh">🗂 이전 업무 <small>직전 날까지 · 입력한 날짜 내림차순 · 미처리가 위</small><span style="flex:1"></span><span id="plnWkPrevCnt" class="pln-cnt" title="이전 업무 수">0</span></div>
+            <div id="plnWkPrev" class="pln-wkl" onclick="BTMPlanner.wkClick(event)"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -6951,7 +7003,7 @@ const _LS_LABELS={
   'BTM_CUSTOM_TICKERS':'사용자 티커','btm_church_calendar':'교회력 말씀','BTMSectionTitleMgmt':'섹션 제목 관리',
   'BTMExRate_v1':'환율 기록','BTMPublished':'Publish 상태','BTMAutoCheck_v1':'Auto Check 업체 목록',
   'BTMPlanner_v1':'일정 목록','BTMPlannerG_v1':'일정 구글 연결 설정',
-  'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정','BTMPlannerUI_v1':'일정 화면 설정'
+  'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정','BTMPlannerUI_v1':'일정 화면 설정','BTMPlannerWork_v1':'오늘 업무'
 };
 function _lsLabel(k){ return _LS_LABELS[k]||k; }
 function _lsEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -11265,6 +11317,11 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v218 요청: "달력의 오늘 날짜 바로 우측에 '오늘의 업무' 작은 아이콘(오늘 날짜 옆에만 — 내일이 되면 내일 날짜에만) → 클릭하면 팝업: 위=오늘 발생한 업무 입력(제목·상세, 목록엔 제목만) / 아래=직전 날까지의 업무(입력한 날짜 내림차순) ·
+     업무마다 체크박스(완료=취소선·흐린 글자, 미처리가 항상 완료 위) · 구글 캘린더에는 하나의 '오늘 업무' 일정으로, 내일이 되면 내일 날짜로 옮기고 전날 것은 삭제"
+     · 업무 {id,d,s,m,x,c,u} 는 localStorage 'BTMPlannerWork_v1'(일정·To Do 와 별개). 팝업 #plnWk(위 .pln-wkt 입력+오늘 목록, 아래 .pln-wkp 이전 업무). 정렬 wkCmp = 미처리 먼저 → 날짜 내림차순 → 같은 날은 나중에 입력한 것이 위.
+     · 구글: syncWork(list) — 전체 동기화의 캘린더 단계에서 '오늘 업무' 종일 일정 하나를 오늘 날짜로 만들거나 설명만 고침(설명 = 오늘 업무 ☐/☑ + 이전 미처리 업무). 지난 날짜 것·중복·보일 업무가 없을 때는 삭제. 앱이 만든 표식 extendedProperties.private.btmWork='1' 로 구분하고 reconcile 이 앱 일정으로 가져오지 않음. 앱→폰 한 방향(폰에서 고친 설명은 다음 동기화에 덮어씀). 앱이 열려 있을 때만 날짜 이동(서버 없음).
+   v217 요청: "알람 아이콘(🔔)을 우측 수정 아이콘의 왼쪽에 일렬로 표시" — 목록 보기 줄에서 🔔 를 제목 옆 배지(bd)에서 빼 오른쪽 버튼 영역(.pln-ac)의 ☁(동기화 표시) 다음·✏️ 바로 왼쪽에 둠(.pln-al). 🔁·📱·✔ 배지는 제목 옆 그대로.
    v216 요청: "목록 보기의 날짜 머리 줄('2026년 11월 24일 (화) · 내일')은 표출되지 않게 없애줘" — 날짜별 머리 줄(.pln-gh)을 없애고 줄 맨 앞의 날짜만 남김. 줄에 data-day 를 달아 showDay(+N건 더보기·확정 줄 클릭)가 그 줄로 스크롤·강조(.hl). 오늘/내일 같은 상대 표기(relLabel)는 함께 없어짐.
    v215 요청: "일정 list(달력의 [목록] 보기)에 시간은 표시하지 않고, 시간이 표기되던 맨 앞에 날짜를 표기 · '종일'이라는 시간은 표기하지 않음" — rowHtml 첫 칸을 시간 표기 대신 날짜 `월/일 (요일)`(dateCell)로, 여러 날 일정은 그 아래 줄에 ~끝 날짜. 달력 칩·왼쪽 확정 일정 줄·수정 창의 시간 표기는 그대로.
    v214 요청: "Google Calendar 는 즉시 연동되는데 Google Task 는 연동이 잘 안 되고 몇 개씩 누락 — 상태 확인·즉시 연동 · 미정에서 드래그해 달력에 옮긴 것·달력에서 직접 쓴 것 등 모든 미정/확정 일정이 연동"
@@ -11417,6 +11474,9 @@ let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
 let ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null;
+const WKEY='BTMPlannerWork_v1', WK_TITLE='오늘 업무';                      /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 */
+let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''};
+const wkOpenIds=new Set();
 
 /* ── 저장 ── (localStorage 쓰기가 막히면 앱 공용 감시 래퍼가 _lsPending 에 보관하고 경고 배너를 띄움) */
 function lsGet(k){
@@ -11481,6 +11541,7 @@ function load(){
   const gr=lsGet(GKEY);
   if(gr){ try{ const c=JSON.parse(gr); if(c&&typeof c==='object') gcfg=parseG(c); }catch(_){} }
   try{ const u=JSON.parse(lsGet(UIKEY)||'null'); if(u&&(u.view==='list'||u.view==='cal')) ui.view=u.view; if(u&&(u.sort==='asc'||u.sort==='desc')) ui.sort=u.sort; if(u&&typeof u.sp==='number') ui.sp=clampSp(u.sp); if(u&&PM_OK.indexOf(u.pm)>=0) ui.pm=u.pm; }catch(_){}
+  wkLoad();                                                      /* 오늘 업무(v218) */
   calReady=!!gcfg.last;                                          /* 이 브라우저에서 캘린더 동기화를 한 번이라도 마쳤으면 준비됨(v214) */
   if(!gcfg.cid&&CID_DEFAULT) gcfg.cid=CID_DEFAULT;
   try{ const t=JSON.parse(sessionStorage.getItem(TKEY)||'null'); if(t&&t.t&&t.exp>Date.now()+30000) tok={t:t.t,exp:t.exp,tks:!!t.tks}; }catch(_){}   /* tks = 이 토큰에 Tasks 권한이 있는지(예전 토큰은 없음) */
@@ -11612,7 +11673,7 @@ const api=(method,path,body,qs)=>gapi(API,method,path,body,qs,false);           
 const tapi=(method,path,body,qs,once)=>gapi(TAPI,method,path,body,qs,!!once);         /* 구글 Tasks */
 const calPath=()=>'/calendars/'+encodeURIComponent(gcfg.cal);
 const evPath=id=>calPath()+'/events/'+encodeURIComponent(id);
-const EV_FIELDS='id,status,summary,description,start,end,updated,recurringEventId,reminders,colorId';
+const EV_FIELDS='id,status,summary,description,start,end,updated,recurringEventId,reminders,colorId,extendedProperties';
 
 async function ensureCalendar(){
   if(gcfg.cal) return;
@@ -11686,7 +11747,7 @@ function reconcile(list,win){
     if(inWin(L,win)) res.verify.push(L);                                   /* 창 안인데 구글 목록에 없음 → 정말 지워졌는지 확인 */
   });
   list.forEach(R=>{
-    if(!R||!R.id||R.status==='cancelled'||have.has(R.id)||tg.has(R.id)) return;
+    if(!R||!R.id||R.status==='cancelled'||have.has(R.id)||tg.has(R.id)||isWorkEv(R)) return;   /* '오늘 업무' 일정은 앱 일정으로 가져오지 않음(v218) */
     const L2=orphan.get(R.id);
     if(L2){ const sn2=remoteSnap(R,null); if(!sn2) return; L2.g=R.id; L2.b=null; L2.mr=null; mergeInto(L2,R,sn2,res); return; }   /* 올렸는데 응답을 못 받았던 일정 — 중복 없이 이어 붙임 */
     const sn=remoteSnap(R,null); if(!sn) return;
@@ -11973,6 +12034,7 @@ async function run(opts){
         save(); render(); updateBtn();
         await pushAll(res);
         lastFull=Date.now(); calReady=true;
+        await syncWork(lr.list);                                        /* 오늘 업무(v218): 구글 캘린더의 '오늘 업무' 일정을 오늘 날짜로 맞춤 */
       }catch(e){ if(e&&e.needAuth) throw e; calErr=e; }               /* 캘린더 쪽 오류(구글 5xx·네트워크 등)가 나도 Tasks 는 계속 맞춘 뒤에 오류를 보고(v214) */
     }
     if(!calErr){ gcfg.last=Date.now(); saveG(); save(); setStatus('ok'); render(); updateBtn(); }
@@ -12060,9 +12122,10 @@ function ensureVm(){ if(!vm) vm=mStart(new Date()); }
 /* ── 화면: 목록 보기의 한 줄 ── */
 function rowHtml(it,today,day){
   const past=it.d2<today;
-  const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'')+(it.r>=0?'<span class="pln-bd" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'')+(it.x?'<span class="pln-bd" title="완료한 할 일(구글 Tasks 체크)">✔</span>':'');
+  const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'')+(it.x?'<span class="pln-bd" title="완료한 할 일(구글 Tasks 체크)">✔</span>':'');
+  const al=it.r>=0?'<span class="pln-al" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'';   /* 알림 표시는 오른쪽 수정 버튼 바로 왼쪽(v217) */
   const sy=gcfg.on?(needsPush(it)?'<span class="pln-sy w" title="구글 캘린더에 아직 반영되지 않음">⏳</span>':'<span class="pln-sy" title="구글 캘린더와 동기화됨">☁</span>'):'';
-  return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'"><div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-rw'+(past?' p':'')+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'"><div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+al+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
 }
 function renderList(){
   const box=$('plnList'); if(!box) return; ensureVm();
@@ -12105,7 +12168,7 @@ function renderCal(){
   for(let i=0;i<weeks*7;i++){
     const dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i), day=ymd(dt), dow=dt.getDay(), out=dt.getMonth()!==m;
     const num=dt.getDate()===1?((dt.getMonth()+1)+'월 1일'):String(dt.getDate());
-    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span></div><div class="pln-cl">'+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
+    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span>'+(day===today?wkIcon():'')+'</div><div class="pln-cl">'+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
   }
   grid.style.gridTemplateRows='repeat('+weeks+',minmax(0,1fr))';
   grid.innerHTML=html; fitCal();
@@ -12165,7 +12228,7 @@ function renderMain(){
 function render(){
   if(!opened) return;                                  /* 창이 닫혀 있으면 열 때 그림 */
   if(dragId){ pendingRender=true; return; }            /* 끌고 있는 동안에는 미룸(끌던 항목이 사라져 취소되지 않게) */
-  load(); renderTodo(); renderMain();
+  load(); renderTodo(); renderMain(); if(wkIsOpen()) renderWork();
 }
 function updateBtn(){
   const b=$('plnMenuBtn'); if(!b) return; load();
@@ -12398,6 +12461,7 @@ function goDay(day){   /* 달력(또는 목록)에서 그날이 보이게 */
 }
 function calClick(ev){   /* 달력: 칩=수정 · '+N건 더보기'=그날 목록 · 빈 칸=그날 새 일정 */
   const t=ev.target; if(!t||!t.closest) return;
+  if(t.closest('.pln-wkic')){ wkOpen(); return; }                           /* 오늘 날짜 옆 '오늘 업무' 아이콘(v218) */
   const ch=t.closest('.pln-ch'); if(ch){ openDlg({id:ch.getAttribute('data-id')}); return; }
   const mo=t.closest('.pln-more'); if(mo){ showDay(mo.getAttribute('data-day')); return; }
   const cell=t.closest('.pln-cell'); if(cell) openNew(cell.getAttribute('data-day'));
@@ -12420,9 +12484,9 @@ function toggleSet(force){ setOn=(force===undefined)?!setOn:!!force; paintSet();
 function enter(e,kind){
   if(e.key!=='Enter'||e.shiftKey) return;
   if(e.isComposing||e.keyCode===229){ e.target._pendEnter=kind; return; }
-  e.preventDefault(); if(kind==='todo') addTodo(); else submit();
+  e.preventDefault(); if(kind==='todo') addTodo(); else if(kind==='wk') wkSave(); else submit();
 }
-document.addEventListener('compositionend',e=>{ const t=e.target; if(t&&t._pendEnter){ const k=t._pendEnter; t._pendEnter=''; setTimeout(()=>{ if(k==='todo') addTodo(); else submit(); },0); } },true);
+document.addEventListener('compositionend',e=>{ const t=e.target; if(t&&t._pendEnter){ const k=t._pendEnter; t._pendEnter=''; setTimeout(()=>{ if(k==='todo') addTodo(); else if(k==='wk') wkSave(); else submit(); },0); } },true);
 
 /* 종료 날짜 칸의 달력 버튼을 누르면: 비어 있고 시작 날짜가 정해져 있으면 시작 바로 다음 날을 기본값으로 미리 넣어, 달력이 그 날짜로 열리게(v211) */
 document.addEventListener('pointerdown',e=>{
@@ -12431,6 +12495,117 @@ document.addEventListener('pointerdown',e=>{
   const r=t.getBoundingClientRect(); if(e.clientX<r.right-28) return;           /* 달력 아이콘 자리(오른쪽 끝)를 눌렀을 때만 — 연·월·일 칸을 눌러 직접 입력할 때는 그대로 */
   t.value=addDays(sd,1);
 },true);
+
+/* ══ 오늘 업무(v218) ══ — 달력의 오늘 날짜 바로 오른쪽 아이콘 → 팝업(위: 오늘 발생한 업무 입력·목록 / 아래: 직전 날까지의 업무).
+   업무 {id,d(입력한 날짜),s(제목),m(상세),x(완료),c(만든 시각),u} 는 localStorage 'BTMPlannerWork_v1'. 목록엔 제목만 — 제목을 누르면 상세가 펼쳐짐.
+   구글 캘린더에는 '오늘 업무' 종일 일정 하나(설명 = 업무 목록)로 — 오늘 날짜 것만 두고 지난 날짜 것은 삭제(syncWork). */
+/* (상태 변수 WKEY·WK_TITLE·works·wkLoaded·wkEditId·wkSent·wkOpenIds 는 load() 가 먼저 불려도 안전하도록 위쪽 상태 변수 모음에 선언) */
+function wkNorm(x){
+  if(!x||typeof x!=='object') return null;
+  const s=String(x.s==null?'':x.s).trim().slice(0,200); if(!s) return null;
+  return {id:(typeof x.id==='string'&&x.id.length>=3&&x.id.length<=80)?x.id:('w'+newId()), d:validYmd(x.d)?x.d:todayY(), s, m:String(x.m==null?'':x.m).slice(0,4000), x:x.x?1:0, c:+x.c||0, u:+x.u||0};
+}
+function wkLoad(force){
+  if(wkLoaded&&!force) return; wkLoaded=true;
+  try{ const o=JSON.parse(lsGet(WKEY)||'null'); works=(o&&Array.isArray(o.works))?o.works.map(wkNorm).filter(Boolean):[]; }catch(_){ works=[]; }
+}
+const wkPersist=()=>lsSet(WKEY,JSON.stringify({v:1,works}));
+const wkCmp=(a,b)=>(a.x-b.x)||(a.d<b.d?1:a.d>b.d?-1:0)||((b.c||0)-(a.c||0));   /* 미처리가 위 → 날짜 내림차순 → 같은 날은 나중에 입력한 것이 위 */
+const wkToday=()=>{ const t=todayY(); return works.filter(w=>w.d>=t).sort(wkCmp); };
+const wkPrev=()=>{ const t=todayY(); return works.filter(w=>w.d<t).sort(wkCmp); };
+const wkPending=()=>works.filter(w=>!w.x).length;
+const wkIsOpen=()=>{ const w=$('plnWk'); return !!(w&&w.classList.contains('on')); };
+const WK_SVG='<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2.6" width="10" height="11.8" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 2.6h4v2.2H6z" fill="currentColor"/><path d="M5.6 9.2l1.8 1.8 3.2-3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function wkIcon(){   /* 오늘 날짜 칸에만 붙는 작은 아이콘 — 미처리 업무가 있으면 채운 모양 */
+  const p=wkPending();
+  return '<button type="button" class="pln-wkic'+(p?' has':'')+'" data-a="work" title="오늘 업무 — 미처리 '+p+'건 (눌러서 입력·확인)">'+WK_SVG+'</button>';
+}
+function wkFormFill(w){
+  const s=$('plnWkS'), m=$('plnWkM'), ok=$('plnWkOk'), cw=$('plnWkCancelWrap'); if(!s||!m) return;
+  s.value=w?w.s:''; m.value=w?w.m:''; if(ok) ok.textContent=w?'💾 저장':'＋ 업무 추가'; if(cw) cw.style.display=w?'':'none';
+}
+function wkOpen(){
+  load(); wkLoad(); wkEditId=''; wkFormFill(null);
+  const w=$('plnWk'); if(w) w.classList.add('on');
+  renderWork(); const s=$('plnWkS'); if(s) setTimeout(()=>{ try{ s.focus(); }catch(_){} },30);
+}
+function wkClose(){ const w=$('plnWk'); if(w) w.classList.remove('on'); wkEditId=''; }
+function wkRow(w,prev){
+  const wd=WD[parseYmd(w.d).getDay()];
+  return '<div class="pln-wi'+(w.x?' dn':'')+(wkOpenIds.has(w.id)?' open':'')+(wkEditId===w.id?' ed':'')+'" data-id="'+esc(w.id)+'"><input type="checkbox" class="ck" data-a="wkdone"'+(w.x?' checked':'')+' title="완료 표시">'
+    +(prev?'<div class="dt">'+mdOf(w.d)+'<small>('+wd+')</small></div>':'')
+    +'<div class="mn"><div class="ti" title="누르면 상세 내용이 펼쳐집니다">'+esc(w.s)+'</div><div class="wd">'+(w.m?esc(w.m):'(상세 내용 없음)')+'</div></div>'
+    +'<div class="ac"><button data-a="wkedit" title="수정">✏️</button><button data-a="wkdel" title="삭제">🗑</button></div></div>';
+}
+function renderWork(){
+  const top=$('plnWkToday'); if(!top) return; wkLoad();
+  const t=todayY(), td=wkToday(), pv=wkPrev();
+  const h=$('plnWkTitle'); if(h) h.textContent='📋 오늘 업무 — '+dateLabel(t);
+  const c1=$('plnWkTodayCnt'); if(c1) c1.textContent=td.length;
+  const c2=$('plnWkPrevCnt'); if(c2) c2.textContent=pv.length;
+  top.innerHTML=td.length?td.map(w=>wkRow(w,false)).join(''):'<div class="pln-em">오늘 발생한 업무를 위에 입력하세요.</div>';
+  const bot=$('plnWkPrev'); if(bot) bot.innerHTML=pv.length?pv.map(w=>wkRow(w,true)).join(''):'<div class="pln-em">직전 날까지 입력한 업무가 없습니다.</div>';
+}
+function wkChanged(){ wkPersist(); afterChange(true); }   /* 저장하고(afterChange 가 달력 아이콘·팝업을 다시 그림) 구글 캘린더의 '오늘 업무' 일정에도 반영 */
+function wkSave(){   /* 위쪽 입력 양식 [＋ 업무 추가]/[💾 저장] */
+  load(); wkLoad();
+  const s=(($('plnWkS')||{}).value||'').trim().slice(0,200), m=((($('plnWkM')||{}).value)||'').replace(/\r\n/g,'\n').trim().slice(0,4000);
+  if(!s){ toast('업무 제목을 입력해 주세요.'); try{ $('plnWkS').focus(); }catch(_){} return; }
+  const now=Date.now();
+  if(wkEditId){ const w=works.find(x=>x.id===wkEditId); if(w){ w.s=s; w.m=m; w.u=now; } wkEditId=''; }
+  else works.push({id:'w'+newId(),d:todayY(),s,m,x:0,c:now,u:now});
+  wkFormFill(null); wkChanged(); try{ $('plnWkS').focus(); }catch(_){}
+}
+function wkCancel(){ wkEditId=''; wkFormFill(null); renderWork(); }
+function wkToggle(id,val){ load(); wkLoad(); const w=works.find(x=>x.id===id); if(!w) return; w.x=val?1:0; w.u=Date.now(); wkChanged(); }
+function wkEdit(id){ const w=works.find(x=>x.id===id); if(!w) return; wkEditId=id; wkFormFill(w); renderWork(); const s=$('plnWkS'); if(s){ try{ s.scrollIntoView({block:'nearest'}); s.focus(); }catch(_){} } }
+function wkDel(id){
+  const w=works.find(x=>x.id===id); if(!w) return;
+  if(!confirm('이 업무를 삭제할까요?\n\n'+w.s)) return;
+  works=works.filter(x=>x!==w); wkOpenIds.delete(id); if(wkEditId===id){ wkEditId=''; wkFormFill(null); }
+  wkChanged();
+}
+function wkClick(ev){   /* 위·아래 목록 공통: 체크박스 · ✏️ · 🗑 · 제목(상세 펼치기) */
+  const t=ev.target; if(!t||!t.closest) return;
+  const row=t.closest('.pln-wi'); if(!row) return; const id=row.getAttribute('data-id');
+  const ck=t.closest('input[data-a="wkdone"]'); if(ck){ wkToggle(id,!!ck.checked); return; }
+  const b=t.closest('button[data-a]');
+  if(b){ const a=b.getAttribute('data-a'); if(a==='wkedit') wkEdit(id); else if(a==='wkdel') wkDel(id); return; }
+  if(t.closest('.ti')){ if(wkOpenIds.has(id)) wkOpenIds.delete(id); else wkOpenIds.add(id); row.classList.toggle('open',wkOpenIds.has(id)); }
+}
+/* 구글 캘린더의 '오늘 업무' 일정 — 설명: 오늘 업무(☐/☑) + 이전 미처리 업무(☐ + 입력한 날짜). 보일 업무가 없으면 null */
+const isWorkEv=R=>!!(R&&R.extendedProperties&&R.extendedProperties.private&&R.extendedProperties.private.btmWork==='1');
+function wkDesc(){
+  wkLoad();
+  const td=wkToday(), pv=wkPrev().filter(w=>!w.x);
+  if(!td.length&&!pv.length) return null;
+  const one=(w,d)=>(w.x?'☑ ':'☐ ')+(d?'('+mdOf(w.d)+') ':'')+w.s+(w.m?'\n'+w.m.slice(0,300).split('\n').map(t=>'    '+t).join('\n'):'');
+  let s=td.map(w=>one(w,false)).join('\n');
+  if(pv.length) s+=(s?'\n\n':'')+'── 이전 미처리 업무 ──\n'+pv.map(w=>one(w,true)).join('\n');
+  return s.slice(0,7500);
+}
+async function syncWork(list){   /* 전체 동기화의 캘린더 단계에서: 오늘 날짜의 '오늘 업무' 일정 하나만 남기고(없으면 만들고, 설명이 바뀌었으면 고침) 지난 날짜 것·중복은 삭제 */
+  if(!gcfg.cal) return;
+  const today=todayY(), want=wkDesc();
+  let keep=null;
+  for(const R of (list||[])){
+    if(!isWorkEv(R)||R.status==='cancelled') continue;
+    const day=(R.start&&R.start.date)||'';
+    if(want!==null&&day===today&&!keep){ keep=R; continue; }
+    try{ await api('DELETE',evPath(R.id)); }catch(e){ if(!(e.status===404||e.status===410)) throw e; }   /* 지난 날짜 것·중복·보일 업무가 없을 때 */
+  }
+  if(want===null){ wkSent={id:'',desc:'',upd:''}; return; }
+  if(!keep){
+    const R=await api('POST',calPath()+'/events',{summary:WK_TITLE,description:want,start:{date:today},end:{date:addDays(today,1)},reminders:{useDefault:false,overrides:[]},extendedProperties:{private:{btmWork:'1'}}},{});
+    wkSent={id:(R&&R.id)||'',desc:want,upd:(R&&R.updated)||''}; return;
+  }
+  /* 같은 설명이면 그대로 둠. 구글이 설명을 다듬어 돌려줘도(글자가 조금 달라도) 우리가 마지막에 쓴 뒤로 일정의 updated 가 그대로면(=폰에서 안 고침) 같은 내용을 되풀이해 보내지 않음 —
+     폰에서 설명·제목을 고치면 updated 가 바뀌므로 다음 동기화에 앱 내용으로 되돌림(앱 → 폰 한 방향) */
+  const same=String(keep.description||'')===want||(wkSent.id===keep.id&&wkSent.desc===want&&!!wkSent.upd&&wkSent.upd===(keep.updated||''));
+  let upd=keep.updated||'';
+  if(!same||keep.summary!==WK_TITLE){ const R=await api('PATCH',evPath(keep.id),{summary:WK_TITLE,description:want},{}); upd=(R&&R.updated)||upd; }
+  wkSent={id:keep.id,desc:want,upd};
+}
 
 /* ── 왼쪽 위(일정 미정)·아래(확정 일정): 최대화·최소화·높이 조절(v210) ── */
 const PN={top:'미정 일정',bot:'확정 일정'};
@@ -12617,7 +12792,7 @@ function open(){
   if(gcfg.cid) loadGsi().catch(()=>{});                        /* 로그인 창이 클릭 안에서 바로 열리도록 미리 불러 둠 */
   if(gcfg.on&&gcfg.cid){ startPoll(); sync({interactive:!authDismissed,regrant:!authDismissed&&!tkAsked&&tkLack()}); }   /* 일정 창을 여는 클릭 안이므로 Tasks 권한 추가 로그인도 바로 띄울 수 있음(한 번 물었는데 허용 안 했으면 다시 안 물음) */
 }
-function close(){ const m=$('plnModal'); if(m) m.style.display='none'; opened=false; closeDlg(); endDrag(); stopPoll(); updateBtn(); }
+function close(){ const m=$('plnModal'); if(m) m.style.display='none'; opened=false; closeDlg(); wkClose(); endDrag(); stopPoll(); updateBtn(); }
 function onLogout(){ tok=null; try{ sessionStorage.removeItem(TKEY); }catch(_){} stopPoll(); close(); }
 function init(){ try{ updateBtn(); }catch(_){} }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
@@ -12626,21 +12801,22 @@ window.addEventListener('focus',()=>{ if(opened&&gcfg.on&&tokOK()&&Date.now()-(g
 window.addEventListener('online',()=>{ if(opened&&gcfg.on&&tokOK()) sync({}); });
 /* 같은 브라우저의 다른 탭에서 일정·연결 설정을 바꾸면(storage 이벤트는 다른 탭에만 옴) 이 탭도 그 값으로 — 오래된 목록으로 덮어쓰지 않게. 동기화 중이면 건너뜀 */
 window.addEventListener('storage',e=>{
+  if(e.key===WKEY){ try{ wkLoad(true); if(loaded) render(); }catch(_){} return; }   /* 다른 탭에서 오늘 업무를 바꾸면(동기화 중이어도 목록만 다시 읽음 — 오래된 목록으로 덮어쓰지 않게, v218) */
   if(!loaded||busyP) return;
   try{
     if(e.key===KEY){ const o=JSON.parse(e.newValue||'null'); if(o&&Array.isArray(o.items)){ items=o.items.map(norm).filter(Boolean); tomb=Array.isArray(o.tomb)?o.tomb.filter(x=>x&&x.g).map(x=>({g:String(x.g),at:+x.at||0})):[]; ttomb=Array.isArray(o.ttomb)?o.ttomb.filter(x=>x&&x.k).map(x=>({k:String(x.k),at:+x.at||0})):[]; render(); updateBtn(); } }
     else if(e.key===GKEY){ const c=JSON.parse(e.newValue||'null'); if(c&&typeof c==='object'){ gcfg=parseG(c); paintChip(); paintSet(); render(); } }
   }catch(_){}
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const w=$('plnDlg'); if(w&&w.classList.contains('on')) closeDlg(); else close(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const w=$('plnDlg'); if(wkIsOpen()) wkClose(); else if(w&&w.classList.contains('on')) closeDlg(); else close(); } });
 
-window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,toggleClr,pickColor,panel,panelClick,splitDown,splitKey,splitReset,
+window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,toggleClr,pickColor,panel,panelClick,splitDown,splitKey,splitReset,wkOpen,wkClose,wkSave,wkCancel,wkClick,
   month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,timeInput,showDay,goDay,sortToggle,toggleDone,tkToggle,unassign,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get ttomb(){ return ttomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tst(){ return tst; }, get tok(){ return tok; }, set tok(v){ tok=v; },
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
-       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
-       reload(){ loaded=false; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
+       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
+       reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
+       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
 })();
 /* ══ /v206 ══ */
 
