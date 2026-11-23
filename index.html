@@ -5300,7 +5300,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-wk div{padding:5px 8px;font-size:11px;font-weight:700;color:#475569}
 #plnModal .pln-wk div:first-child{color:#dc2626}
 #plnModal .pln-wk div:last-child{color:#2563eb}
-#plnModal .pln-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+#plnModal .pln-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:relative;--bt:25px}   /* --bt = 칸 맨 위에서 첫 줄까지(칸 안쪽 여백 3 + 날짜 줄 20 + 간격 2) — 막대 위치(v221) */
 #plnModal .pln-cell{border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:3px 4px;min-height:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:2px;cursor:pointer}
 #plnModal .pln-cell:nth-child(7n){border-right:none}
 #plnModal .pln-cell:hover{background:#f8fffe}
@@ -5363,6 +5363,13 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-right:3px;vertical-align:middle}
 #plnModal .pln-more{flex:none;height:18px;line-height:18px;font-size:10.5px;font-weight:700;color:#475569;padding:0 4px;cursor:pointer}
 #plnModal .pln-more:hover{color:#0f766e;text-decoration:underline}
+/* 여러 날 일정 막대(v221): 칸 경계를 넘어 이어지는 한 줄 — #plnGrid 위에 겹친 격자(.pln-bars, 칸과 같은 열·행)에 놓음. 칸 안의 일반 칩은 .pln-sp(막대 줄 수만큼의 빈 칸) 아래에서 시작 */
+#plnModal .pln-bars{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));pointer-events:none;z-index:1}
+#plnModal .pln-mb{align-self:start;pointer-events:auto;min-width:0;margin-left:4px;margin-right:5px}
+#plnModal .pln-mb.cl{margin-left:0;border-top-left-radius:0;border-bottom-left-radius:0;border-left-width:0}
+#plnModal .pln-mb.cr{margin-right:0;border-top-right-radius:0;border-bottom-right-radius:0}
+#plnModal .pln-grid.dg .pln-mb{pointer-events:none}
+#plnModal .pln-sp{flex:none}
 /* 목록 보기 */
 #plnModal .pln-ls{display:none;flex:1;min-height:0;overflow:auto}
 #plnModal .pln-rw.hl{background:#fde68a}   /* 그날로 이동했을 때 잠깐 강조 */
@@ -11325,6 +11332,10 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v221 요청: "월세 보증금 준비처럼 11/23~24 연속으로 있는 일정이 두 날짜로 나뉘어 두 개로 보이지 않고, 구글 캘린더처럼 이어진 하나의 막대로 · 이어진 날짜로 표시되는 일정은 언제나 칸의 맨 위에"
+     · 달력(월간)에서 여러 날 일정(d2>d, 시간 일정 포함)은 칸마다 칩을 나누지 않고 주(週)마다 칸 경계를 넘어 이어진 막대 하나(.pln-mb)로 그림 — #plnGrid 위에 겹친 .pln-bars 격자(칸과 같은 7열×주 행)에 grid-column/span 으로 놓아 칸 사이 선도 가림. 제목은 막대 시작에 한 번(주가 바뀌면 그 주 첫 칸에서 다시), 앞·뒤 주에서 이어지면 그쪽 모서리를 네모로(.cl/.cr).
+     · 막대는 언제나 칸의 맨 위 줄들(weekBars: 시작이 이르고 긴 것부터 lane 0,1,…)이고 일반 칩은 그 아래(칸마다 .pln-sp 빈 칸으로 막대 줄 수만큼 비움). 칸이 낮아 줄이 모자라면 fitCal 이 아래 줄 막대부터 감추고 '+N건 더보기'에 포함(막대 줄은 최대 줄 수-1). dayMap 은 여러 날 일정을 빼고(칩 목록엔 하루짜리만).
+     · 막대도 .pln-ch 라서 누르면 수정 창·끌어서 다른 날짜로 옮기면 길이를 유지한 채 통째로 이동(assign). 끄는 동안(#plnGrid.dg)엔 막대가 마우스를 받지 않아 아래 칸이 놓는 자리가 됨.
    v220 요청: "오늘 업무 팝업의 '오늘 발생한 업무'와 '이전 업무'를 위아래가 아니라 좌/우 2단으로 · 팝업 크기는 '일정 / To Do List' 팝업과 같게"
      · #plnWk 오버레이가 일정 팝업 카드(.pln-card)를 통째로 덮음(패딩 0 · .pln-wkc 가 100%×100% · 모서리·그림자는 카드가 처리) → 일정 팝업과 크기·위치가 똑같음(min(1326px,98vw) × min(910px,95vh)). 왼쪽 .pln-wkt = '오늘 발생한 업무'(입력칸+오늘 목록), 오른쪽 .pln-wkp = '이전 업무'(목록) — 각 열이 따로 스크롤.
      · 760px 이하의 좁은 화면에서는 예전처럼 위·아래로 쌓음(@media). 바깥(어두운 곳)이 없어져 닫기는 ✕·Esc.
@@ -12161,10 +12172,11 @@ function renderList(){
 
 /* ── 화면: 월간 달력 ── */
 const evCmp=(a,b)=>{ const x=a.t?1:0, y=b.t?1:0; if(x!==y) return x-y; if(a.t!==b.t) return a.t<b.t?-1:1; if(a.d!==b.d) return a.d<b.d?-1:1; return a.s<b.s?-1:a.s>b.s?1:0; };   /* 종일 먼저 → 시간순 */
-function dayMap(a,b){   /* a~b(달력에 보이는 첫날~끝날)에 걸치는 일정을 날짜별로 — 여러 날 일정은 걸친 날마다 */
+const isMulti=it=>!!it.d&&it.d2>it.d;                                   /* 날짜가 둘 이상에 걸친 일정(시간 일정 포함) — 달력에서 칸마다 나누지 않고 이어진 막대로(v221) */
+function dayMap(a,b){   /* a~b(달력에 보이는 첫날~끝날)에 걸치는 하루짜리 일정을 날짜별로 — 여러 날 일정은 뺌(weekBars 의 막대로 따로 그림) */
   const map=new Map();
   items.forEach(it=>{
-    if(!it.d||it.d2<a||it.d>b) return;
+    if(!it.d||it.d2<a||it.d>b||isMulti(it)) return;
     let d=it.d<a?a:it.d; const end=it.d2>b?b:it.d2; let g=0;
     while(d<=end&&g++<400){ let arr=map.get(d); if(!arr){ arr=[]; map.set(d,arr); } arr.push(it); d=addDays(d,1); }
   });
@@ -12179,29 +12191,72 @@ function chipHtml(it,day){
   const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
   return '<div class="pln-ch '+(ad?'ad':'tm')+(cont?' ct':'')+(it.x?' dn':'')+'"'+(cst?' style="'+cst+'"':'')+' draggable="true" data-id="'+esc(it.id)+'" title="'+esc(tip)+'">'+dot+(cont?'↳ ':'')+((ad||cont)?'':'<b>'+esc(it.t)+'</b>')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
+/* ── 여러 날 일정 = 주마다 이어진 막대 하나, 언제나 칸의 맨 위(v221) ──
+   weekBars: 주마다 그 주에 걸친 구간을 막대 조각 {it,w,c0,c1,l,r,lane} 으로(c0·c1 = 그 주의 열 0~6, l/r = 앞·뒤 주에서 이어짐) — 시작이 이르고 긴 것부터 lane 0,1,… 순서로 쌓음.
+   k[주][열] = 그 칸에서 막대가 차지하는 줄 수(칸 안 일반 칩은 그 아래에서 시작) */
+function weekBars(a,weeks){
+  const segs=[], k=[];
+  for(let w=0;w<weeks;w++){
+    const ws=addDays(a,7*w), we=addDays(ws,6), L=[], kk=[0,0,0,0,0,0,0];
+    items.forEach(it=>{
+      if(!isMulti(it)||it.d2<ws||it.d>we) return;
+      const s=it.d<ws?ws:it.d, e=it.d2>we?we:it.d2;
+      L.push({it,w,c0:dayDiff(s,ws),c1:dayDiff(e,ws),l:it.d<ws,r:it.d2>we,lane:0});
+    });
+    L.sort((x,y)=>(x.c0-y.c0)||((y.c1-y.c0)-(x.c1-x.c0))||evCmp(x.it,y.it));
+    const ends=[];
+    L.forEach(sg=>{ let ln=0; while(ln<ends.length&&ends[ln]>=sg.c0) ln++; sg.lane=ln; ends[ln]=sg.c1; for(let c=sg.c0;c<=sg.c1;c++) kk[c]=Math.max(kk[c],ln+1); });
+    segs.push(L); k.push(kk);
+  }
+  return {segs,k};
+}
+function barHtml(sg){
+  const it=sg.it, ad=!it.t;
+  const mk=(it.rec?'🔁':'')+(it.src==='g'?'📱':'');
+  const dot=(gcfg.on&&needsPush(it))?'<i class="pln-dot" title="구글 캘린더에 아직 반영되지 않음"></i>':'';
+  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']'+(it.m?'\n'+it.m:'');
+  const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
+  return '<div class="pln-ch pln-mb '+(ad?'ad':'tm')+(it.x?' dn':'')+(sg.l?' cl':'')+(sg.r?' cr':'')+'" style="grid-column:'+(sg.c0+1)+'/span '+(sg.c1-sg.c0+1)+';grid-row:'+(sg.w+1)+';margin-top:calc(var(--bt) + '+(sg.lane*CHIP_H)+'px);'+cst+'" draggable="true" data-id="'+esc(it.id)+'" data-w="'+sg.w+'" data-c0="'+sg.c0+'" data-c1="'+sg.c1+'" data-lane="'+sg.lane+'" title="'+esc(tip)+'">'+dot+((!ad&&!sg.l)?'<b>'+esc(it.t)+'</b>':'')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
+}
 function renderCal(){
   const grid=$('plnGrid'); if(!grid) return; ensureVm();
   const y=vm.getFullYear(), m=vm.getMonth(), lead=new Date(y,m,1).getDay(), dim=new Date(y,m+1,0).getDate(), weeks=Math.ceil((lead+dim)/7);
   const start=new Date(y,m,1-lead), a=ymd(start), b=ymd(new Date(y,m,1-lead+weeks*7-1)), today=todayY();
-  const map=dayMap(a,b); let html='';
+  const map=dayMap(a,b), wb=weekBars(a,weeks); let html='', bars='';
   for(let i=0;i<weeks*7;i++){
     const dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i), day=ymd(dt), dow=dt.getDay(), out=dt.getMonth()!==m;
     const num=dt.getDate()===1?((dt.getMonth()+1)+'월 1일'):String(dt.getDate());
-    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span>'+(day===today?wkIcon():'')+'</div><div class="pln-cl">'+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
+    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span>'+(day===today?wkIcon():'')+'</div><div class="pln-cl">'+(wb.k[Math.floor(i/7)][dow]?'<div class="pln-sp" style="height:'+(wb.k[Math.floor(i/7)][dow]*CHIP_H-2)+'px"></div>':'')+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
   }
-  grid.style.gridTemplateRows='repeat('+weeks+',minmax(0,1fr))';
-  grid.innerHTML=html; fitCal();
+  wb.segs.forEach(L=>L.forEach(sg=>{ bars+=barHtml(sg); }));
+  const rows='repeat('+weeks+',minmax(0,1fr))';
+  grid.style.gridTemplateRows=rows;
+  grid.innerHTML=html+(bars?'<div class="pln-bars" style="grid-template-rows:'+rows+'">'+bars+'</div>':''); fitCal();
 }
-function fitCal(){   /* 칸 높이에 맞게 칩 수를 줄이고 나머지는 '+N건 더보기' — 칸이 보이지 않을 때(높이 0)는 건너뜀 */
+function addMore(cell,cl,n){ const more=document.createElement('div'); more.className='pln-more'; more.setAttribute('data-day',cell.getAttribute('data-day')); more.textContent='+'+n+'건 더보기'; cl.appendChild(more); }
+function fitCal(){   /* 칸 높이에 맞게 막대(여러 날 일정)·칩 수를 줄이고 나머지는 '+N건 더보기' — 칸이 보이지 않을 때(높이 0)는 건너뜀. 막대가 차지하는 줄은 빼고 셈(v221): 막대 줄은 최대 (줄 수-1), 넘치면 아래 줄 막대부터 감춤 */
   const grid=$('plnGrid'); if(!grid) return;
-  grid.querySelectorAll('.pln-cell').forEach(c=>{
-    const cl=c.querySelector('.pln-cl'), ch=cl?[...cl.children]:[]; if(!ch.length||!c.clientHeight) return;
-    const avail=c.clientHeight-c.querySelector('.pln-dn').offsetHeight-6, cap=Math.max(2,Math.floor(avail/CHIP_H));
-    if(ch.length>cap){
-      const keep=cap-1; ch.slice(keep).forEach(e=>e.remove());
-      const more=document.createElement('div'); more.className='pln-more'; more.setAttribute('data-day',c.getAttribute('data-day')); more.textContent='+'+(ch.length-keep)+'건 더보기'; cl.appendChild(more);
-    }
-  });
+  const cells=[...grid.querySelectorAll('.pln-cell')], weeks=Math.ceil(cells.length/7), bw=[];
+  for(let w=0;w<weeks;w++) bw.push([]);
+  grid.querySelectorAll('.pln-mb').forEach(b=>{ const w=+b.getAttribute('data-w'); if(bw[w]) bw[w].push(b); });
+  for(let w=0;w<weeks;w++){
+    const row=cells.slice(w*7,w*7+7), c0=row[0]; if(!c0||!c0.clientHeight) continue;
+    const lines=Math.max(2,Math.floor((c0.clientHeight-c0.querySelector('.pln-dn').offsetHeight-6)/CHIP_H)), maxLanes=lines-1;
+    const vis=[0,0,0,0,0,0,0], hid=[0,0,0,0,0,0,0];
+    bw[w].forEach(b=>{
+      const ln=+b.getAttribute('data-lane'), x0=+b.getAttribute('data-c0'), x1=+b.getAttribute('data-c1');
+      if(ln>=maxLanes){ for(let c=x0;c<=x1;c++) hid[c]++; b.remove(); }
+      else for(let c=x0;c<=x1;c++) vis[c]=Math.max(vis[c],ln+1);
+    });
+    row.forEach((cell,c)=>{
+      const cl=cell.querySelector('.pln-cl'); if(!cl) return;
+      let sp=cl.querySelector('.pln-sp');
+      if(vis[c]){ if(!sp){ sp=document.createElement('div'); sp.className='pln-sp'; cl.insertBefore(sp,cl.firstChild); } sp.style.height=(vis[c]*CHIP_H-2)+'px'; } else if(sp) sp.remove();
+      const chips=[...cl.children].filter(e=>!e.classList.contains('pln-sp')), n=chips.length, h=hid[c], cap=lines-vis[c];
+      if(n+(h?1:0)<=cap){ if(h) addMore(cell,cl,h); return; }
+      const keep=Math.max(0,cap-1); chips.slice(keep).forEach(e=>e.remove()); addMore(cell,cl,(n-keep)+h);
+    });
+  }
 }
 
 /* ── 화면: To Do 목록 ── */
@@ -12684,12 +12739,13 @@ function clearOver(){ document.querySelectorAll('#plnGrid .pln-cell.over').forEa
 const topSec=()=>document.querySelector('#plnModal .pln-sec.top');
 const dragDated=()=>{ const it=dragId?items.find(x=>x.id===dragId):null; return !!(it&&it.d); };   /* 끌고 있는 것이 날짜가 정해진 일정인가 — 그러면 위쪽 '일정 미정' 영역이 놓는 자리가 됨 */
 function armTop(on){ const s=topSec(); if(!s) return; s.classList.toggle('arm',!!on); if(!on) s.classList.remove('over'); }
-function endDrag(){ dragId=''; document.querySelectorAll('#plnModal .dragging').forEach(x=>x.classList.remove('dragging')); clearOver(); armTop(false); if(pendingRender){ pendingRender=false; render(); } }
+function endDrag(){ dragId=''; document.querySelectorAll('#plnModal .dragging').forEach(x=>x.classList.remove('dragging')); clearOver(); armTop(false); { const g=$('plnGrid'); if(g) g.classList.remove('dg'); } if(pendingRender){ pendingRender=false; render(); } }
 function readDragId(e){ let t=''; try{ t=e.dataTransfer.getData('text/plain')||''; }catch(_){} return t.indexOf('pln:')===0?t.slice(4):dragId; }
 document.addEventListener('dragstart',e=>{
   const el=e.target&&e.target.closest&&e.target.closest('#plnModal [draggable="true"][data-id]'); if(!el) return;
   dragId=el.getAttribute('data-id'); el.classList.add('dragging');
   try{ e.dataTransfer.setData('text/plain','pln:'+dragId); e.dataTransfer.effectAllowed='move'; }catch(_){}
+  { const id0=dragId; setTimeout(()=>{ if(dragId===id0){ const g=$('plnGrid'); if(g) g.classList.add('dg'); } },0); }   /* 달력의 막대(여러 날 일정)가 놓을 칸을 가리지 않게 — 끄는 동안 막대는 마우스를 받지 않음(v221) */
   if(dragDated()){ const id=dragId; setTimeout(()=>{ if(dragId===id) armTop(true); },0); }   /* 끌기 시작 직후에 화면을 바꾸면 일부 브라우저가 끌기를 취소하므로 한 박자 뒤에 */
 });
 document.addEventListener('dragend',()=>{ if(dragId) endDrag(); });
@@ -12835,7 +12891,7 @@ window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,di
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
        reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,pm:''}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
+       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
 })();
 /* ══ /v206 ══ */
 
