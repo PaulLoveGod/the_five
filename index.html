@@ -12252,7 +12252,8 @@ function renderList(){
 
 /* ── 화면: 월간 달력 ── */
 const evCmp=(a,b)=>{ const x=a.t?1:0, y=b.t?1:0; if(x!==y) return x-y; if(a.t!==b.t) return a.t<b.t?-1:1; if(a.d!==b.d) return a.d<b.d?-1:1; return a.s<b.s?-1:a.s>b.s?1:0; };   /* 종일 먼저 → 시간순 */
-const isMulti=it=>!!it.d&&it.d2>it.d;                                   /* 날짜가 둘 이상에 걸친 일정(시간 일정 포함) — 달력에서 칸마다 나누지 않고 이어진 막대로(v221) */
+const doneCmp=(a,b)=>((a.x?1:0)-(b.x?1:0))||evCmp(a,b);                  /* v231: 달력 칸 안 순서 = 미완료 먼저 → 완료한 일정은 맨 아래(각각 종일 먼저 → 시간순) */
+const isMulti=it=>!!it.d&&it.d2>it.d;                                 /* 날짜가 둘 이상에 걸친 일정(시간 일정 포함) — 달력에서 칸마다 나누지 않고 이어진 막대로(v221) */
 function dayMap(a,b){   /* a~b(달력에 보이는 첫날~끝날)에 걸치는 하루짜리 일정을 날짜별로 — 여러 날 일정은 뺌(weekBars 의 막대로 따로 그림) */
   const map=new Map();
   items.forEach(it=>{
@@ -12260,7 +12261,7 @@ function dayMap(a,b){   /* a~b(달력에 보이는 첫날~끝날)에 걸치는 �
     let d=it.d<a?a:it.d; const end=it.d2>b?b:it.d2; let g=0;
     while(d<=end&&g++<400){ let arr=map.get(d); if(!arr){ arr=[]; map.set(d,arr); } arr.push(it); d=addDays(d,1); }
   });
-  map.forEach(arr=>arr.sort(evCmp));
+  map.forEach(arr=>arr.sort(doneCmp));                                   /* 완료한 일정은 미완료 일정 아래로(v231) */
   return map;
 }
 function chipHtml(it,day){
@@ -12272,7 +12273,7 @@ function chipHtml(it,day){
   return '<div class="pln-ch '+(ad?'ad':'tm')+(cont?' ct':'')+(it.x?' dn':'')+'"'+(cst?' style="'+cst+'"':'')+' draggable="true" data-id="'+esc(it.id)+'" title="'+esc(tip)+'">'+dot+(cont?'↳ ':'')+((ad||cont)?'':'<b>'+esc(it.t)+'</b>')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
 /* ── 여러 날 일정 = 주마다 이어진 막대 하나, 언제나 칸의 맨 위(v221) ──
-   weekBars: 주마다 그 주에 걸친 구간을 막대 조각 {it,w,c0,c1,l,r,lane} 으로(c0·c1 = 그 주의 열 0~6, l/r = 앞·뒤 주에서 이어짐) — 시작이 이르고 긴 것부터 lane 0,1,… 순서로 쌓음.
+   weekBars: 주마다 그 주에 걸친 구간을 막대 조각 {it,w,c0,c1,l,r,lane} 으로(c0·c1 = 그 주의 열 0~6, l/r = 앞·뒤 주에서 이어짐) — 미완료 먼저, 그 안에서 시작이 이르고 긴 것부터 lane 0,1,… 순서로 쌓음(v231: 완료한 일정은 미완료 막대 아래 줄부터).
    k[주][열] = 그 칸에서 막대가 차지하는 줄 수(칸 안 일반 칩은 그 아래에서 시작) */
 function weekBars(a,weeks){
   const segs=[], k=[];
@@ -12283,7 +12284,7 @@ function weekBars(a,weeks){
       const s=it.d<ws?ws:it.d, e=it.d2>we?we:it.d2;
       L.push({it,w,c0:dayDiff(s,ws),c1:dayDiff(e,ws),l:it.d<ws,r:it.d2>we,lane:0});
     });
-    L.sort((x,y)=>(x.c0-y.c0)||((y.c1-y.c0)-(x.c1-x.c0))||evCmp(x.it,y.it));
+    L.sort((x,y)=>((x.it.x?1:0)-(y.it.x?1:0))||(x.c0-y.c0)||((y.c1-y.c0)-(x.c1-x.c0))||evCmp(x.it,y.it));   /* v231: 완료한 여러 날 일정은 미완료 막대 아래 줄부터(막대끼리의 순서 — 막대는 여전히 칸의 맨 위) */
     const ends=[];
     L.forEach(sg=>{ let ln=0; while(ln<ends.length&&ends[ln]>=sg.c0) ln++; sg.lane=ln; ends[ln]=sg.c1; for(let c=sg.c0;c<=sg.c1;c++) kk[c]=Math.max(kk[c],ln+1); });
     segs.push(L); k.push(kk);
@@ -12337,7 +12338,12 @@ function fitCal(){   /* 칸 높이에 맞게 '한 번에 보이는 줄 수'를 �
       const cl=cell.querySelector('.pln-cl'); if(!cl) return;
       let sp=cell.querySelector('.pln-sp');
       if(vis[c]){ if(!sp){ sp=document.createElement('div'); sp.className='pln-sp'; cell.insertBefore(sp,cl); } sp.style.height=(vis[c]*CHIP_H-2)+'px'; } else if(sp) sp.remove();
-      if(hid[c].length){ const day=cell.getAttribute('data-day'); cl.insertAdjacentHTML('afterbegin',hid[c].sort((p,q)=>p.ln-q.ln).map(h=>{ const it=items.find(x=>x.id===h.id); return it?chipHtml(it,day):''; }).join('')); }
+      if(hid[c].length){   /* 막대 줄이 모자라 칩이 된 여러 날 일정 — 미완료는 칸 목록 맨 앞에, 완료한 것은 완료한 칩들의 맨 앞에(완료한 일정은 미완료 아래, v231) */
+        const day=cell.getAttribute('data-day'), hs=hid[c].sort((p,q)=>p.ln-q.ln).map(h=>items.find(x=>x.id===h.id)).filter(Boolean);
+        const inc=hs.filter(it=>!it.x).map(it=>chipHtml(it,day)).join(''), dn=hs.filter(it=>it.x).map(it=>chipHtml(it,day)).join('');
+        if(inc) cl.insertAdjacentHTML('afterbegin',inc);
+        if(dn){ const f=cl.querySelector('.pln-ch.dn'); if(f) f.insertAdjacentHTML('beforebegin',dn); else cl.insertAdjacentHTML('beforeend',dn); }
+      }
       cl.style.maxHeight=(Math.max(1,cap-vis[c])*CHIP_H-2)+'px';
       cl.scrollTop=0;
     });
