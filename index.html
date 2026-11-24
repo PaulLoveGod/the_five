@@ -29192,7 +29192,8 @@ async function _h2cExport(el,opts){
       o.height=target;   /* html2canvas 는 onclone 이 끝난 뒤 옵션 height 를 읽어 캔버스를 만듦 */
     }
   };
-  const canvas=await html2canvas(el,o);
+  const hp=html2canvas(el,o); hp.catch(()=>{});   /* v238: 끝나지 않는 캡처를 상한(_EXP_CAP_MS)에서 끊고 오류로 알림 */
+  const canvas=await _expWithin(hp,_EXP_CAP_MS,'화면 캡처가 '+(_EXP_CAP_MS>=60000?Math.round(_EXP_CAP_MS/60000)+'분':Math.round(_EXP_CAP_MS/1000)+'초')+' 넘게 끝나지 않아요 — 다시 시도해 주세요');
   const wantH=Math.ceil(target*sc);
   if(canvas.height>wantH+1){   /* 안전망: 옵션 변경이 반영되지 않은 html2canvas 면 직접 잘라 냄 */
     const out=document.createElement('canvas'); out.width=canvas.width; out.height=wantH;
@@ -29204,6 +29205,53 @@ async function _h2cExport(el,opts){
 }
 /* ══ /v227 ══ */
 
+/* ══ v238 (2026-11-25) — PDF/이미지 저장이 '저장중…' 에서 멈추던 문제 ═══════════════════════════════════════════════
+   원인(재현 확인): 저장 함수 둘(_doExportPDF·_doExportImage)이 '화면 그리기 신호'(requestAnimationFrame)를 시작 직후부터 12번 기다리는데,
+      브라우저 창이 다른 창(예: Claude 창)에 가려지거나 최소화되거나 다른 탭에 있으면 브라우저가 이 신호를 보내지 않아 첫 기다림에서 한 걸음도 못 나가고 단추에 '저장중…' 만 남음(창이 다시 앞에 올 때까지).
+      그 밖에 ① 제한 시간 없이 기다리는 곳(폴더 접근 허용 창·화면 캡처) ② 단계 표시 없이 수십 초 동안 화면이 얼어붙는 계산(JPEG 용량 맞추기 = 큰 그림을 11번 인코딩) ③ 오류를 alert 로만 알려, alert 가 안 보이면 멈춘 것처럼 보임 — 이 겹쳐 '멈춘 것'과 '오래 걸리는 것'이 구분되지 않았음.
+   고침: ① _expFrame — 그리기 신호를 250ms 만 기다리고 넘어감(창이 숨겨져 있으면 아예 안 기다림) ② 폴더 허용 확인 20초 상한(응답 없으면 기본 다운로드 폴더로) ③ 화면 캡처 4분 상한
+      ④ 화면 아래 진행 막대 — 단계·경과 시간 표시, 20초 넘게 같은 단계면 원인 안내, JPEG 용량 맞추기 사이사이 화면 갱신 ⑤ 오류는 붉은 알림(alert 아님) ⑥ 한 파일을 저장하자마자 캔버스를 비움(메모리 최대치 ~450MB 줄임) ⑦ 일부 실패해도 '완료' 라고 하던 것을 구분 */
+let _EXP_CAP_MS=240000;     /* 화면 캡처 상한(ms) */
+let _EXP_PERM_MS=20000;     /* 폴더 접근 허용 응답 상한(ms) */
+const _expFrame=()=>new Promise(r=>{
+  if(document.visibilityState==='hidden'){ r(); return; }   /* 창이 숨겨져 있으면 그리기 신호가 안 옴 — 기다리지 않음 */
+  let d=false; const f=()=>{ if(!d){ d=true; r(); } };
+  try{ requestAnimationFrame(f); }catch(_){}
+  setTimeout(f,250);                                         /* 신호가 안 와도 250ms 뒤에는 진행 */
+});
+const _expTick=()=>document.visibilityState==='hidden'?Promise.resolve():new Promise(r=>setTimeout(r,0));   /* 무거운 계산 사이에 화면 갱신·클릭 처리 기회를 줌(창이 숨겨져 있으면 볼 사람이 없고 타이머가 1초씩 늦춰지므로 건너뜀) */
+function _expWithin(p,ms,msg){ let t; return Promise.race([p,new Promise((_,rej)=>{ t=setTimeout(()=>rej(new Error(msg)),ms); })]).finally(()=>clearTimeout(t)); }
+let _expDepth=0,_expT0=0,_expStepT0=0,_expMsg='',_expTimer=null;
+function _expRender(){
+  const e=document.getElementById('_expProgBar'); if(!e) return;
+  const now=Date.now(), st=Math.round((now-_expStepT0)/1000), all=Math.round((now-_expT0)/1000);
+  let hint='';
+  if(st>=20) hint=document.visibilityState==='hidden'
+    ? '브라우저 창이 다른 창에 가려져 있어요 — 앞으로 가져오면 더 빨리 끝나요'
+    : '같은 단계가 오래 걸리고 있어요(큰 그림은 압축에 1분 넘게 걸릴 수 있어요). 파일 선택·폴더 허용 창이 떠 있는지도 확인해 보세요';
+  e.textContent='';
+  const a=document.createElement('div'); a.textContent='⏳ '+_expMsg.replace(/^⏳\s*/,'')+'  ('+all+'초)'; e.appendChild(a);
+  if(hint){ const b=document.createElement('div'); b.style.cssText='font-weight:400;font-size:11.5px;color:#fcd34d;margin-top:2px'; b.textContent=hint; e.appendChild(b); }
+}
+function _expBegin(msg){
+  if(_expDepth++===0){
+    _expT0=Date.now();
+    let e=document.getElementById('_expProgBar');
+    if(!e){ e=document.createElement('div'); e.id='_expProgBar'; e.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:11001;max-width:min(92vw,720px);background:#0f172a;color:#fff;padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;line-height:1.5;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,.4);pointer-events:none'; document.body.appendChild(e); }
+    clearInterval(_expTimer); _expTimer=setInterval(_expRender,1000);
+  }
+  _expStep(msg||'준비 중…');
+}
+function _expStep(msg,btn){ _expMsg=String(msg||''); _expStepT0=Date.now(); if(btn) btn.textContent=msg; _expRender(); }
+function _expEnd(){
+  if(--_expDepth<=0){
+    _expDepth=0; clearInterval(_expTimer); _expTimer=null;
+    const e=document.getElementById('_expProgBar'); if(e&&e.parentNode) e.parentNode.removeChild(e);
+  }
+}
+function _expError(title,e){ try{ console.error('['+title+']',e); }catch(_){} _showMainToast('⚠ '+title+': '+((e&&e.message)||e),true); }
+/* ══ /v238 ══ */
+
 /* PDF canvas → 인코딩 → 저장 공통 헬퍼 */
 async function _savePdfCanvas(canvas, fileName, activeDir, fileHandle, scale){
   const MM=0.264583, MARGIN=8;
@@ -29214,14 +29262,18 @@ async function _savePdfCanvas(canvas, fileName, activeDir, fileHandle, scale){
   const targetBytes=_pdfTargetMB*1024*1024;
   let imgData,imgFormat,pdfCompress;
   if(_pdfTargetMB>=20){
+    _expStep('PDF 그림(PNG) 만드는 중 — 큰 그림은 1분 넘게 걸릴 수 있어요 · '+fileName); await _expTick();
     imgData=canvas.toDataURL('image/png'); imgFormat='PNG'; pdfCompress=false;
   } else {
     let lo=0.05,hi=1.0,q=0.5;
-    for(let i=0;i<10;i++){ const t=canvas.toDataURL('image/jpeg',q); const b=Math.ceil((t.length-22)*3/4); if(b>targetBytes)hi=q;else lo=q; q=(lo+hi)/2; }
+    for(let i=0;i<10;i++){ _expStep('PDF 용량 맞추는 중 ('+(i+1)+'/10) · '+fileName); await _expTick(); const t=canvas.toDataURL('image/jpeg',q); const b=Math.ceil((t.length-22)*3/4); if(b>targetBytes)hi=q;else lo=q; q=(lo+hi)/2; }
+    _expStep('PDF 그림 압축 마무리 중 · '+fileName); await _expTick();
     imgData=canvas.toDataURL('image/jpeg',q); imgFormat='JPEG'; pdfCompress=true;
   }
+  _expStep('PDF 파일 만드는 중 · '+fileName); await _expTick();
   const pdf=new JsPDF({orientation:(pageW>pageH?'landscape':'portrait'),unit:'mm',format:[pageW,pageH],compress:pdfCompress});   /* v227: 가로가 더 긴 결과에 'portrait' 를 주면 페이지 가로·세로가 맞바뀌어 오른쪽이 잘렸음 */
   pdf.addImage(imgData,imgFormat,MARGIN,MARGIN,imgW_mm,imgH_mm,'','NONE');
+  _expStep('PDF 파일 저장 중 · '+fileName); await _expTick();
   if(activeDir){
     const fh=await activeDir.getFileHandle(fileName,{create:true});
     const w=await fh.createWritable(); await w.write(pdf.output('arraybuffer')); await w.close();
@@ -29241,7 +29293,8 @@ async function _doExportPDF(){
   const _pfInc  = !!g('chkIncludePortfolio')?.checked;
   const _trInc  = !!g('chkIncludeTrade')?.checked;
   const el   = g('report-root');
-  if(!el){ alert('출력할 내용이 없습니다.'); return; }
+  if(!el){ alert('출력할 내용이 없습니다.'); return false; }
+  _expBegin('PDF 저장 준비 중…'); let _ok=true;   /* v238 */
 
   const _pdfName     = `TheFIVE_${dateStr}${_btmFileSuffix()}.pdf`;
   const _allDataName = `ALL_DATA_TheFIVE_${dateStr}${_btmFileSuffix()}.pdf`;
@@ -29250,20 +29303,22 @@ async function _doExportPDF(){
   let _activePdfDir = null;
   if(_dlPdfDirHandle){
     try{
-      let perm=await _dlPdfDirHandle.queryPermission({mode:'readwrite'});
-      if(perm!=='granted') perm=await _dlPdfDirHandle.requestPermission({mode:'readwrite'});
+      _expStep('PDF 저장 폴더 확인 중…');
+      let perm=await _expWithin(_dlPdfDirHandle.queryPermission({mode:'readwrite'}),8000,'폴더 권한 확인 응답 없음');
+      if(perm!=='granted'){ _expStep('PDF 저장 폴더 접근 허용 대기 중 — 브라우저의 허용 창을 확인해 주세요'); perm=await _expWithin(_dlPdfDirHandle.requestPermission({mode:'readwrite'}),_EXP_PERM_MS,'폴더 접근 허용 응답 없음'); }
       if(perm==='granted') _activePdfDir=_dlPdfDirHandle;
-    }catch(e){ _activePdfDir=null; }
+    }catch(e){ _activePdfDir=null; _showMainToast('PDF 저장 폴더를 쓰지 못해 기본 다운로드 폴더로 저장해요 — '+((e&&e.message)||e),true); }
   }
   let _pdfFileHandle = null;
   if(!_activePdfDir && _dlUsePicker && typeof window.showSaveFilePicker === 'function'){
+    _expStep('저장할 PDF 파일 위치를 골라 주세요 — 파일 선택 창이 브라우저 뒤에 있을 수 있어요');
     try{
       _pdfFileHandle = await window.showSaveFilePicker({
         suggestedName: _pdfName,
         types:[{description:'PDF 문서',accept:{'application/pdf':['.pdf']}}],
       });
     }catch(err){
-      if(err.name==='AbortError') return;
+      if(err.name==='AbortError'){ _expEnd(); return false; }
     }
   }
 
@@ -29286,20 +29341,20 @@ async function _doExportPDF(){
     const _ecoScroll = g('ecoScrollArea');
     const _ecoScrollPrev = _ecoScroll ? _ecoScroll.scrollTop : 0;
     if(_ecoScroll) _ecoScroll.scrollTop=0;
-    await new Promise(r=>requestAnimationFrame(r));
+    await _expFrame();
 
-    if(btn) btn.textContent='⏳ 히트맵 캡처 중...';
+    _expStep('⏳ 히트맵 캡처 중...',btn);
     _heatmapRestore = _paNeed('ix') ? await _captureHeatmapIframe(SCALE, btn) : null;   /* v203: 주요 지수가 어느 파일에도 안 실리면 히트맵 캡처를 건너뜀 */
-    await new Promise(r=>requestAnimationFrame(r));
+    await _expFrame();
 
     const elW = el.offsetWidth;
 
     /* ══ ① ALL_DATA: 마스킹·숨김 없이 전체 캡처 ══ */
-    if(btn) btn.textContent='⏳ ALL_DATA PDF 생성 중 (1/2)...';
+    _expStep('⏳ ALL_DATA PDF 생성 중 (1/2)...',btn);
     /* 도넛 그래프 종목명 강제 표시 */
     const _donutChk=g('chkDonutShowNames');
     const _donutWas=!!_donutChk?.checked;
-    if(_donutChk&&!_donutWas){ _donutChk.checked=true; renderPfDonut(); await new Promise(r=>requestAnimationFrame(r)); }
+    if(_donutChk&&!_donutWas){ _donutChk.checked=true; renderPfDonut(); await _expFrame(); }
     const canvasAll = await _h2cExport(el,{
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:_paHeight(el,_paKeys(true)),
@@ -29334,10 +29389,11 @@ async function _doExportPDF(){
       },
     });
     /* 도넛 종목명 원복 */
-    if(_donutChk&&!_donutWas){ _donutChk.checked=false; renderPfDonut(); await new Promise(r=>requestAnimationFrame(r)); }
-    if(btn) btn.textContent='⏳ ALL_DATA PDF 저장 중 (1/2)...';
+    if(_donutChk&&!_donutWas){ _donutChk.checked=false; renderPfDonut(); await _expFrame(); }
+    _expStep('⏳ ALL_DATA PDF 저장 중 (1/2)...',btn);
     /* ALL_DATA는 dir 있으면 dir에, 없으면 자동 다운로드 (피커 X — 정상 파일에만 적용) */
     await _savePdfCanvas(canvasAll, _allDataName, _activePdfDir, null, SCALE);
+    canvasAll.width=canvasAll.height=0;   /* v238: 저장했으니 즉시 비움(메모리 최대치 ~450MB 감소) */
 
     /* ══ ② 정상: 마스킹·숨김 적용 후 캡처 ══ */
     _maskSensitiveForPdf();
@@ -29351,7 +29407,7 @@ async function _doExportPDF(){
     _trCardEl=g('tradeCard');     _trHidden=!!_trCardEl&&!_trInc;
     if(_pfHidden) _pfCardEl.style.display='none';
     if(_trHidden) _trCardEl.style.display='none';
-    if(_pfHidden||_trHidden) await new Promise(r=>requestAnimationFrame(r));
+    if(_pfHidden||_trHidden) await _expFrame();
     /* 나의 삶 내용숨기기: 텍스트 노드를 span으로 래핑 → 텍스트배경색=글자색 → 캡처 후 언래핑 */
     if(g('myLifeHideChk')?.checked){
       const _mlEl=g('myLifeContent');
@@ -29369,11 +29425,11 @@ async function _doExportPDF(){
         };
         [..._mlEl.childNodes].forEach(_wrapPdf);
         try{ if(window.BTMVz) BTMVz.maskMyLife(true); }catch(_){}   /* 인포그래픽 보기면 인포그래픽 본문도 가림 */
-        await new Promise(r=>requestAnimationFrame(r));
+        await _expFrame();
       }
     }
 
-    if(btn) btn.textContent='⏳ 생성 중 (2/2)...';
+    _expStep('⏳ 생성 중 (2/2)...',btn);
     const canvasNormal = await _h2cExport(el,{
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:_paHeight(el,_paKeys(false)),
@@ -29425,8 +29481,9 @@ async function _doExportPDF(){
     if(_pfHidden){ _pfCardEl.style.display=''; _pfHidden=false; }
     if(_trHidden){ _trCardEl.style.display=''; _trHidden=false; }
 
-    if(btn) btn.textContent='⏳ PDF 저장 중 (2/2)...';
+    _expStep('⏳ PDF 저장 중 (2/2)...',btn);
     await _savePdfCanvas(canvasNormal, _pdfName, _activePdfDir, _pdfFileHandle, SCALE);
+    canvasNormal.width=canvasNormal.height=0;
 
   }catch(e){
     try{ _myLifeSavedBgsPdf.slice().reverse().forEach(sp=>{ const p=sp.parentNode; if(!p) return; while(sp.firstChild) p.insertBefore(sp.firstChild,sp); p.removeChild(sp); }); _myLifeSavedBgsPdf=[]; }catch(_){}
@@ -29437,11 +29494,13 @@ async function _doExportPDF(){
     try{ if(_heatmapRestore) _heatmapRestore(); }catch(_){}
     try{ if(_pfHidden&&_pfCardEl) _pfCardEl.style.display=''; }catch(_){}
     try{ if(_trHidden&&_trCardEl) _trCardEl.style.display=''; }catch(_){}
-    alert('PDF 생성 오류: '+e.message);
+    _expError('PDF 생성 오류',e); _ok=false;   /* v238: alert 대신 붉은 알림(alert 가 안 보이면 멈춘 것처럼 보였음) */
     console.error('exportPDF error:', e);
   }finally{
     if(btn){ btn.textContent=orig; btn.disabled=false; }
+    _expEnd();
   }
+  return _ok;
 }
 
 /* 이미지 canvas → 인코딩 → 저장 공통 헬퍼 */
@@ -29449,12 +29508,15 @@ async function _saveImgCanvas(canvas, fileName, activeDir, fileHandle){
   const targetBytes=_pdfTargetMB*1024*1024;
   let imgData,ext;
   if(_pdfTargetMB>=20){
+    _expStep('이미지(PNG) 만드는 중 — 큰 그림은 1분 넘게 걸릴 수 있어요 · '+fileName); await _expTick();
     imgData=canvas.toDataURL('image/png'); ext='png';
   } else {
     let lo=0.05,hi=1.0,q=0.5;
-    for(let i=0;i<10;i++){ const t=canvas.toDataURL('image/jpeg',q); const b=Math.ceil((t.length-22)*3/4); if(b>targetBytes)hi=q;else lo=q; q=(lo+hi)/2; }
+    for(let i=0;i<10;i++){ _expStep('이미지 용량 맞추는 중 ('+(i+1)+'/10) · '+fileName); await _expTick(); const t=canvas.toDataURL('image/jpeg',q); const b=Math.ceil((t.length-22)*3/4); if(b>targetBytes)hi=q;else lo=q; q=(lo+hi)/2; }
+    _expStep('이미지 압축 마무리 중 · '+fileName); await _expTick();
     imgData=canvas.toDataURL('image/jpeg',q); ext='jpg';
   }
+  _expStep('이미지 파일 저장 중 · '+fileName); await _expTick();
   if(activeDir){
     const fh=await activeDir.getFileHandle(fileName,{create:true});
     const w=await fh.createWritable(); await w.write(_dataURLtoBlob(imgData)); await w.close();
@@ -29475,7 +29537,8 @@ async function _doExportImage(){
   const _pfIncI = !!g('chkIncludePortfolio')?.checked;
   const _trIncI = !!g('chkIncludeTrade')?.checked;
   const el   = g('report-root');
-  if(!el){ alert('출력할 내용이 없습니다.'); return; }
+  if(!el){ alert('출력할 내용이 없습니다.'); return false; }
+  _expBegin('이미지 저장 준비 중…'); let _ok=true;   /* v238 */
 
   const _imgExt      = _pdfTargetMB >= 20 ? 'png' : 'jpg';
   const _imgMime     = _imgExt === 'png' ? 'image/png' : 'image/jpeg';
@@ -29486,20 +29549,22 @@ async function _doExportImage(){
   let _activeImgDir = null;
   if(_dlImgDirHandle){
     try{
-      let perm=await _dlImgDirHandle.queryPermission({mode:'readwrite'});
-      if(perm!=='granted') perm=await _dlImgDirHandle.requestPermission({mode:'readwrite'});
+      _expStep('이미지 저장 폴더 확인 중…');
+      let perm=await _expWithin(_dlImgDirHandle.queryPermission({mode:'readwrite'}),8000,'폴더 권한 확인 응답 없음');
+      if(perm!=='granted'){ _expStep('이미지 저장 폴더 접근 허용 대기 중 — 브라우저의 허용 창을 확인해 주세요'); perm=await _expWithin(_dlImgDirHandle.requestPermission({mode:'readwrite'}),_EXP_PERM_MS,'폴더 접근 허용 응답 없음'); }
       if(perm==='granted') _activeImgDir=_dlImgDirHandle;
-    }catch(e){ _activeImgDir=null; }
+    }catch(e){ _activeImgDir=null; _showMainToast('이미지 저장 폴더를 쓰지 못해 기본 다운로드 폴더로 저장해요 — '+((e&&e.message)||e),true); }
   }
   let _imgFileHandle = null;
   if(!_activeImgDir && _dlUsePicker && typeof window.showSaveFilePicker === 'function'){
+    _expStep('저장할 이미지 파일 위치를 골라 주세요 — 파일 선택 창이 브라우저 뒤에 있을 수 있어요');
     try{
       _imgFileHandle = await window.showSaveFilePicker({
         suggestedName: _imgName,
         types:[{description:'이미지',accept:{[_imgMime]:[`.${_imgExt}`]}}],
       });
     }catch(err){
-      if(err.name==='AbortError') return;
+      if(err.name==='AbortError'){ _expEnd(); return false; }
     }
   }
 
@@ -29521,19 +29586,19 @@ async function _doExportImage(){
     const _ecoScrollImg = g('ecoScrollArea');
     const _ecoScrollImgPrev = _ecoScrollImg ? _ecoScrollImg.scrollTop : 0;
     if(_ecoScrollImg) _ecoScrollImg.scrollTop=0;
-    await new Promise(r=>requestAnimationFrame(r));
+    await _expFrame();
 
     _heatmapRestoreImg = _paNeed('ix') ? await _captureHeatmapIframe(SCALE, btn) : null;   /* v203 */
-    await new Promise(r=>requestAnimationFrame(r));
+    await _expFrame();
 
     const elW = el.offsetWidth;
 
     /* ══ ① ALL_DATA: 마스킹·숨김 없이 전체 캡처 ══ */
-    if(btn) btn.textContent='⏳ ALL_DATA 이미지 생성 중 (1/2)...';
+    _expStep('⏳ ALL_DATA 이미지 생성 중 (1/2)...',btn);
     /* 도넛 그래프 종목명 강제 표시 */
     const _donutChkI=g('chkDonutShowNames');
     const _donutWasI=!!_donutChkI?.checked;
-    if(_donutChkI&&!_donutWasI){ _donutChkI.checked=true; renderPfDonut(); await new Promise(r=>requestAnimationFrame(r)); }
+    if(_donutChkI&&!_donutWasI){ _donutChkI.checked=true; renderPfDonut(); await _expFrame(); }
     const canvasAll = await _h2cExport(el,{
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:_paHeight(el,_paKeys(true)),
@@ -29568,9 +29633,10 @@ async function _doExportImage(){
       },
     });
     /* 도넛 종목명 원복 */
-    if(_donutChkI&&!_donutWasI){ _donutChkI.checked=false; renderPfDonut(); await new Promise(r=>requestAnimationFrame(r)); }
-    if(btn) btn.textContent='⏳ ALL_DATA 이미지 저장 중 (1/2)...';
+    if(_donutChkI&&!_donutWasI){ _donutChkI.checked=false; renderPfDonut(); await _expFrame(); }
+    _expStep('⏳ ALL_DATA 이미지 저장 중 (1/2)...',btn);
     await _saveImgCanvas(canvasAll, _allImgName, _activeImgDir, null);
+    canvasAll.width=canvasAll.height=0;   /* v238 */
 
     /* ══ ② 정상: 마스킹·숨김 적용 후 캡처 ══ */
     _maskSensitiveForPdf();
@@ -29584,7 +29650,7 @@ async function _doExportImage(){
     _trCardElI=g('tradeCard');     _trHiddenI=!!_trCardElI&&!_trIncI;
     if(_pfHiddenI) _pfCardElI.style.display='none';
     if(_trHiddenI) _trCardElI.style.display='none';
-    if(_pfHiddenI||_trHiddenI) await new Promise(r=>requestAnimationFrame(r));
+    if(_pfHiddenI||_trHiddenI) await _expFrame();
     /* 나의 삶 내용숨기기: 텍스트 노드를 span으로 래핑 → 텍스트배경색=글자색 → 캡처 후 언래핑 */
     if(g('myLifeHideChk')?.checked){
       const _mlElI=g('myLifeContent');
@@ -29602,11 +29668,11 @@ async function _doExportImage(){
         };
         [..._mlElI.childNodes].forEach(_wrapImg);
         try{ if(window.BTMVz) BTMVz.maskMyLife(true); }catch(_){}   /* 인포그래픽 보기면 인포그래픽 본문도 가림 */
-        await new Promise(r=>requestAnimationFrame(r));
+        await _expFrame();
       }
     }
 
-    if(btn) btn.textContent='⏳ 이미지 생성 중 (2/2)...';
+    _expStep('⏳ 이미지 생성 중 (2/2)...',btn);
     const canvasNormal = await _h2cExport(el,{
       scale:SCALE,useCORS:true,allowTaint:true,logging:false,
       scrollX:0,scrollY:0,windowWidth:elW,width:elW,height:_paHeight(el,_paKeys(false)),
@@ -29658,8 +29724,9 @@ async function _doExportImage(){
     if(_pfHiddenI){ _pfCardElI.style.display=''; _pfHiddenI=false; }
     if(_trHiddenI){ _trCardElI.style.display=''; _trHiddenI=false; }
 
-    if(btn) btn.textContent='⏳ 이미지 저장 중 (2/2)...';
+    _expStep('⏳ 이미지 저장 중 (2/2)...',btn);
     await _saveImgCanvas(canvasNormal, _imgName, _activeImgDir, _imgFileHandle);
+    canvasNormal.width=canvasNormal.height=0;
 
   }catch(e){
     try{ _unmaskSensitiveForPdf(); }catch(_){}
@@ -29670,11 +29737,13 @@ async function _doExportImage(){
     try{ if(_heatmapRestoreImg) _heatmapRestoreImg(); }catch(_){}
     try{ if(_pfHiddenI&&_pfCardElI) _pfCardElI.style.display=''; }catch(_){}
     try{ if(_trHiddenI&&_trCardElI) _trCardElI.style.display=''; }catch(_){}
-    alert('이미지 생성 오류: '+e.message);
+    _expError('이미지 생성 오류',e); _ok=false;   /* v238 */
     console.error('exportImage error:', e);
   }finally{
     if(btn){ btn.textContent=orig; btn.disabled=false; }
+    _expEnd();
   }
+  return _ok;
 }
 
 /* ─────────── INIT ─────────── */
@@ -33272,22 +33341,25 @@ async function _confirmPdfImgExport(){
   const origTxt=btn?btn.textContent:'PDF / 이미지';
   if(btn){ btn.textContent='PDF 저장중…'; btn.disabled=true; }
   const savedMB=_pdfTargetMB;
+  _expBegin('PDF 저장 시작…');   /* v238: 두 단계(PDF·이미지) 내내 진행 막대를 이어서 보임 */
   try{
     _exportMode='pdf'; _pdfTargetMB=_pdfComboMB;
-    await _doExportPDF();
+    const okP=await _doExportPDF();
     if(btn) btn.textContent='이미지 저장중…';
     _exportMode='image'; _pdfTargetMB=_imgComboMB;
-    await _doExportImage();
-    _showMainToast('✅ 작업이 완료되었습니다.');
-  }catch(e){}
+    const okI=await _doExportImage();
+    if(okP!==false&&okI!==false) _showMainToast('✅ 작업이 완료되었습니다.');
+    else _showMainToast('⚠ '+(okP===false&&okI===false?'PDF·이미지':okP===false?'PDF':'이미지')+' 저장이 끝나지 않았어요 — 위 알림을 확인해 주세요',true);
+  }catch(e){ _expError('저장 오류',e); }
   finally{
     _pdfTargetMB=savedMB;
     if(btn){ btn.textContent=origTxt; btn.disabled=false; }
+    _expEnd();
   }
 }
 
 /* ── 하단 토스트 알림 ── */
-function _showMainToast(msg){
+function _showMainToast(msg,bad){   /* bad=true: 붉은 오류 알림(길면 줄바꿈, 9초) — v238 */
   const TID='_mainBtnToast';
   let el=document.getElementById(TID);
   if(!el){
@@ -33295,18 +33367,20 @@ function _showMainToast(msg){
     el.id=TID;
     el.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);'
       +'background:#065f46;color:#fff;padding:11px 24px;border-radius:9px;'
-      +'font-size:13px;font-weight:700;z-index:11000;'
+      +'font-size:13px;font-weight:700;z-index:11002;'
       +'box-shadow:0 4px 18px rgba(0,0,0,.4);pointer-events:none;'
       +'opacity:1;transition:opacity .4s;white-space:nowrap;';
     document.body.appendChild(el);
   }
   el.textContent=msg;
+  el.style.background=bad?'#b91c1c':'#065f46';
+  el.style.whiteSpace=bad?'normal':'nowrap'; el.style.maxWidth=bad?'min(92vw,720px)':''; el.style.textAlign=bad?'center':'';
   el.style.opacity='1';
   clearTimeout(el._tt);
   el._tt=setTimeout(()=>{
     const _e=document.getElementById(TID);
     if(_e){ _e.style.opacity='0'; setTimeout(()=>{ const _e2=document.getElementById(TID); if(_e2&&_e2.parentNode)_e2.parentNode.removeChild(_e2); },420); }
-  },2500);
+  },bad?9000:2500);
 }
 
 /* ════════════════════════════════════════════════
