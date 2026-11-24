@@ -894,6 +894,16 @@ table.pf-table .chart-cell>div{width:100%;height:88px;overflow:hidden;}
   body[data-pa-off~="mk"] [data-pa="mk"],
   body[data-pa-off~="pf"] [data-pa="pf"]{display:none!important}
 }
+/* v226 — PDF/이미지 저장 때 '출력 허용' 설정으로 빠지는 섹션이 있으면 눈에 띄게 알림: 메인 [PDF / 이미지] 버튼의 주황 점 + 저장 창의 경고 카드(어느 섹션이 빠지는지·한 번에 되돌리기) */
+#pdfImgBtn.pa-warn{position:relative}
+#pdfImgBtn.pa-warn::after{content:'';position:absolute;top:3px;right:6px;width:9px;height:9px;border-radius:50%;background:#f59e0b;box-shadow:0 0 0 2px #1e3a5f}
+.pa-warncard{border:2px solid #f59e0b;background:#fffbeb;border-radius:10px;padding:10px 12px;text-align:left}
+.pa-warncard .t{font-size:12.5px;font-weight:800;color:#b45309;line-height:1.45}
+.pa-warncard .l{font-size:12px;font-weight:700;color:#1e293b;margin-top:4px;line-height:1.5}
+.pa-warncard .s{font-size:10.5px;color:#92400e;margin-top:3px;line-height:1.5}
+.pa-warncard .b{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.pa-warncard .b button{font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:7px;cursor:pointer;border:1.5px solid #b45309;background:#fff;color:#b45309;font-family:inherit}
+.pa-warncard .b button.p{background:#b45309;color:#fff}
 /* ── 메뉴 버튼 바 — 최상단 고정 (서식툴바 자리) ── */
 .main-btn-bar{
   position:fixed;top:0;left:0;right:0;z-index:8900;
@@ -5686,7 +5696,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 
 <!-- ═══════ PDF + 이미지 통합 품질 선택 모달 ═══════ -->
 <div id="pdfImgComboModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10002;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:14px;width:min(720px,96vw);box-shadow:0 8px 40px rgba(0,0,0,.35);overflow:hidden">
+  <div style="background:#fff;border-radius:14px;width:min(720px,96vw);max-height:94vh;box-shadow:0 8px 40px rgba(0,0,0,.35);overflow-x:hidden;overflow-y:auto">
     <div style="background:#0f766e;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
       <span style="font-weight:700;font-size:14px">📦 PDF + 이미지 저장</span>
       <button class="mx" onclick="g('pdfImgComboModal').style.display='none'" title="닫기">✕</button>
@@ -5710,7 +5720,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       </div>
     </div>
     <p style="font-size:10.5px;color:#94a3b8;margin:4px 18px 0;line-height:1.5">※ 실제 용량은 내용에 따라 차이가 날 수 있습니다.</p>
-    <p id="paNoticeCombo" style="display:none;font-size:11px;font-weight:700;color:#b45309;margin:6px 18px 0;line-height:1.5"></p>
+    <div id="paNoticeCombo" style="display:none;margin:8px 18px 0"></div>
     <div style="padding:10px 18px 18px;display:flex;gap:10px">
       <button onclick="g('pdfImgComboModal').style.display='none'" style="flex:1;padding:10px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#475569;font-weight:600">취소</button>
       <button onclick="_confirmPdfImgExport()" style="flex:3;padding:10px;background:#0f766e;border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#fff;font-weight:700">📦 PDF + 이미지 저장</button>
@@ -5737,7 +5747,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       <p style="font-size:10.5px;color:#94a3b8;margin-top:12px;margin-bottom:0;line-height:1.6">
         ※ 실제 용량은 내용에 따라 차이가 날 수 있습니다.
       </p>
-      <p id="paNoticeQ" style="display:none;font-size:11px;font-weight:700;color:#b45309;margin:8px 0 0;line-height:1.5"></p>
+      <div id="paNoticeQ" style="display:none;margin:10px 0 0"></div>
     </div>
     <div style="padding:0 20px 20px;display:flex;gap:10px">
       <button class="mobile-keep" onclick="closePdfQualityModal()" style="flex:1;padding:10px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer;font-size:13px;color:#475569;font-weight:600">취소</button>
@@ -28857,12 +28867,47 @@ function _paBlockEmpty(){
   if(s.all){ alert('관리 › 출력 허용 설정에서 4개 섹션이 모두 “불허”라 PDF / 이미지로 저장할 내용이 없습니다.\n허용할 섹션을 하나 이상 켜 주세요.'); return true; }
   return !confirm('관리 › 출력 허용 설정에서 4개 섹션이 모두 “불허”라, 일반 PDF·이미지에는 머리글만 저장되고 ALL_DATA 파일에만 전체가 저장됩니다.\n\n계속할까요?');
 }
-function _paNotice(){
-  const s=_paGet(), off=_PA_SECS.filter(x=>!s[x.k]).map(x=>x.name);
+const _paOffNames=()=>{ const s=_paGet(); return _PA_SECS.filter(x=>!s[x.k]).map(x=>x.name); };   /* 지금 '불허'인 섹션 이름들 */
+function _paNotice(){   /* 한 줄 요약(버튼 툴팁·완료 알림용) — 빠지는 섹션이 없으면 '' */
+  const s=_paGet(), off=_paOffNames();
   if(!off.length) return '';
   return '🚫 관리 설정으로 출력하지 않는 섹션: '+off.join(' · ')+(s.all?' (ALL_DATA 파일에서도 제외)':' — ALL_DATA 파일에는 전체가 저장됩니다');
 }
-function _paNoticeFill(){ ['paNoticeCombo','paNoticeQ'].forEach(id=>{ const e=g(id); if(!e) return; const t=_paNotice(); e.textContent=t; e.style.display=t?'block':'none'; }); }
+/* v226 — 저장 창의 경고 카드. 예전엔 11px 한 줄이라 못 보고 지나쳐서, '화면이 잘려서 저장된다'(실제로는 불허한 섹션이 통째로 빠진 것)로 보였음.
+   어느 섹션이 빠지고 무엇이 남는지 + [모두 허용으로 되돌리기] [출력 허용 설정 열기] 를 바로 보여줌 */
+function _paNoticeFill(){
+  const s=_paGet(), off=_paOffNames(), keep=_PA_SECS.filter(x=>s[x.k]).map(x=>x.name);
+  const html=!off.length?'':
+    '<div class="pa-warncard">'
+    +'<div class="t">⚠ 지금 설정으로는 화면 전체가 아니라 일부만 저장됩니다</div>'
+    +'<div class="l">빠지는 섹션: '+off.join(' · ')+'</div>'
+    +'<div class="l" style="font-weight:600;color:#475569">저장되는 부분: 머리글 · '+(keep.length?keep.join(' · '):'(없음)')+' · 맨 아래 푸터</div>'
+    +'<div class="s">관리 › 출력 허용에서 “불허”로 해 둔 섹션입니다'+(s.all?'(ALL_DATA 파일에서도 빠짐). ':' — ALL_DATA 파일에는 전체가 저장됩니다. ')+'화면에는 그대로 보이고 저장 파일에서만 빠집니다.</div>'
+    +'<div class="b"><button type="button" class="mobile-keep p" onclick="_paAllowAll()">✅ 모두 허용으로 되돌리기</button><button type="button" class="mobile-keep" onclick="_paOpenSettings()">⚙ 출력 허용 설정 열기</button></div>'
+    +'</div>';
+  ['paNoticeCombo','paNoticeQ'].forEach(id=>{ const e=g(id); if(!e) return; e.innerHTML=html; e.style.display=html?'block':'none'; });
+}
+/* 4개 섹션을 전부 '허용'으로(ALL_DATA 적용 여부 all 은 그대로 둠) */
+function _paAllowAll(){
+  const d=_paGet(); _PA_SECS.forEach(x=>{ d[x.k]=1; });
+  try{ localStorage.setItem(_PA_KEY,JSON.stringify(d)); }catch(e){ console.warn('[출력 허용] 저장 실패:',e); }
+  _paApply(); _paRender();
+  try{ _showMainToast('✅ 4개 섹션을 모두 허용으로 바꿨습니다 — 이제 화면 전체가 저장됩니다'); }catch(_){}
+}
+/* 저장 창을 닫고 관리 › 출력 허용 탭을 엶 */
+function _paOpenSettings(){
+  try{ const m=g('pdfImgComboModal'); if(m) m.style.display='none'; }catch(_){}
+  try{ closePdfQualityModal(); }catch(_){}
+  try{ openAdminPanel(); _adminTab('print'); }catch(_){}
+}
+/* 메인 [PDF / 이미지] 버튼 — 일부 섹션이 빠지는 설정이면 주황 점(+마우스를 올리면 설명) */
+function _paBadge(){
+  const b=g('pdfImgBtn'); if(!b) return;
+  const t=_paNotice();
+  b.classList.toggle('pa-warn',!!t);
+  if(b.dataset.paTitle===undefined) b.dataset.paTitle=b.title||'';
+  b.title=t||b.dataset.paTitle;
+}
 /* 포트폴리오가 불허면 카드 머리의 'PDF/이미지에 포함' 체크를 잠금(체크돼 있어도 어차피 빠짐) */
 function _paSyncChecks(){
   const ok=!!_paGet().pf;
@@ -28879,7 +28924,7 @@ function _paApply(){
   const s=_paGet();
   try{ _PA_SECS.forEach(x=>_paEls(x.k).forEach(e=>e.setAttribute('data-pa',x.k))); }catch(_){}
   try{ document.body.setAttribute('data-pa-off',_PA_SECS.filter(x=>!s[x.k]).map(x=>x.k).join(' ')); }catch(_){}
-  _paSyncChecks(); _paNoticeFill();
+  _paSyncChecks(); _paNoticeFill(); _paBadge();
 }
 /* 관리 › 출력 허용 탭 그리기 */
 function _paRender(){
@@ -33108,7 +33153,9 @@ async function _confirmPdfImgExport(){
     if(btn) btn.textContent='이미지 저장중…';
     _exportMode='image'; _pdfTargetMB=_imgComboMB;
     await _doExportImage();
-    _showMainToast('✅ 작업이 완료되었습니다.');
+    const _paOff=_paOffNames();   /* v226: 불허로 빠진 섹션이 있으면 '완료'만 띄우지 않고 그 사실을 같이 알림 */
+    if(_paOff.length) _showMainToast('⚠ 저장은 끝났지만 “출력 허용” 설정 때문에 빠진 섹션이 있습니다: '+_paOff.join(' · ')+' — 관리 › 출력 허용에서 바꿀 수 있어요',{bg:'#b45309',wrap:true,ms:8000});
+    else _showMainToast('✅ 작업이 완료되었습니다.');
   }catch(e){}
   finally{
     _pdfTargetMB=savedMB;
@@ -33117,7 +33164,7 @@ async function _confirmPdfImgExport(){
 }
 
 /* ── 하단 토스트 알림 ── */
-function _showMainToast(msg){
+function _showMainToast(msg,opt){   /* opt(선택): {bg:배경색, wrap:true=여러 줄, ms:표시 시간} — 없으면 예전과 똑같이 초록 한 줄 2.5초 */
   const TID='_mainBtnToast';
   let el=document.getElementById(TID);
   if(!el){
@@ -33131,12 +33178,17 @@ function _showMainToast(msg){
     document.body.appendChild(el);
   }
   el.textContent=msg;
+  el.style.background=(opt&&opt.bg)||'#065f46';
+  el.style.whiteSpace=(opt&&opt.wrap)?'normal':'nowrap';
+  el.style.maxWidth=(opt&&opt.wrap)?'min(720px,92vw)':'';
+  el.style.textAlign=(opt&&opt.wrap)?'center':'';
+  el.style.lineHeight=(opt&&opt.wrap)?'1.5':'';
   el.style.opacity='1';
   clearTimeout(el._tt);
   el._tt=setTimeout(()=>{
     const _e=document.getElementById(TID);
     if(_e){ _e.style.opacity='0'; setTimeout(()=>{ const _e2=document.getElementById(TID); if(_e2&&_e2.parentNode)_e2.parentNode.removeChild(_e2); },420); }
-  },2500);
+  },(opt&&opt.ms)||2500);
 }
 
 /* ════════════════════════════════════════════════
