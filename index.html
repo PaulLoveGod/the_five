@@ -323,6 +323,11 @@ select{
 #watchlistNote{min-height:38px;height:60px;}
 .iscore-add-hdr{width:15px;height:15px;padding:0;font-size:12px;line-height:1;border:1px dashed #cbd5e1;border-radius:3px;background:none;color:#94a3b8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .iscore-add-hdr:hover{border-color:#6366f1;color:#6366f1}
+/* v235 Investor Status 머리줄 오른쪽 [🤖 Update] — 전역 '.card-header button' 의 18px·9px 강제 규칙을 덮어 24px 알약(MindMap 편집 버튼과 같은 크기) */
+#investorStatusSection .card-header #isAiBtn{height:24px!important;min-height:0!important;line-height:24px!important;padding:0 12px!important;font-size:12px!important;font-weight:700;border:none;border-radius:5px;background:#6366f1;color:#fff;cursor:pointer;letter-spacing:.2px;font-family:inherit;white-space:nowrap}
+#investorStatusSection .card-header #isAiBtn:hover{background:#4f46e5}
+#investorStatusSection .card-header #isAiBtn:disabled{background:#94a3b8;cursor:progress}
+#report-root.published-mode #isAiBtn{display:none!important}   /* 게시(잠금) 화면에서는 편집 도구이므로 숨김 */
 .iscore-label-edit{font-size:9.5px;color:#64748b;white-space:nowrap;flex-shrink:0;outline:none;cursor:text;border-bottom:1px solid transparent}
 .iscore-label-edit:focus{border-bottom:1px solid #6366f1;color:#334155;white-space:normal;width:auto !important}
 .iscore-bar-wrap{flex:1;height:9px;background:#e2e8f0;border-radius:5px;cursor:ew-resize;position:relative;overflow:hidden;user-select:none;touch-action:none}
@@ -6254,6 +6259,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
     <div class="card" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-bottom:0;overflow:hidden">
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
         <span id="investorStatusTitle" contenteditable="true" spellcheck="false" style="outline:none;cursor:text;border-bottom:1px solid transparent" onfocus="this.style.borderBottom='1px solid #6366f1'" onblur="this.style.borderBottom='1px solid transparent';saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">■ Investor Status</span>
+        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button id="isAiBtn" type="button" onclick="BTMIsAI.run()" title="직전 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 분석해, 아래 항목의 점수와 메모를 자동으로 채웁니다 (직전 report = 이 report 날짜 바로 앞의 Archive)">🤖 Update</button></span>
       </div>
       <div class="card-body" style="padding:8px 10px;flex:1;overflow:hidden;display:flex;flex-direction:column">
         <!-- Charlie Status + Battery (2-col) -->
@@ -17644,7 +17650,7 @@ async function confirmNewReport(){
   _applyValignWrap(g('marketAnalysis'), 'center');
   /* 새 리포트의 시황 분석·시황 분석_Detail·테마 분석·테마 분석_Detail 박스는 각 박스의 [⇕ 높이 자동 조절]을 실행한 상태로 시작(2026-11-13, v198) — 이월된 높이가 아니라 새 본문(기본 본문)에 맞춘 높이.
      알림 없이 조용히, 삭제(숨김)해 둔 박스는 건너뜀. 저장(_skSave) 앞에서 해야 자동저장본에도 들어감 */
-  try{ if(window.BTMBoxTools&&BTMBoxTools.fitNew) await BTMBoxTools.fitNew(['marketAnalysis','marketAnalysisDetail','sectorAnalysis','sectorAnalysisDetail']); }catch(_){}
+  try{ if(window.BTMBoxTools&&BTMBoxTools.fitNew) await BTMBoxTools.fitNew(['marketAnalysis','marketAnalysisDetail','sectorAnalysis','sectorAnalysisDetail','investorStatusNote']); }catch(_){}   /* v235: Investor Status 메모도 — [🤖 Update] 로 커진 메모 칸이 새 리포트(빈 메모)에 큰 빈 상자로 남지 않게 */
   /* 수익률 그래프 종료일 → 신규 생성 날짜로 업데이트 */
   const _toEl=g('summaryChartTo'); if(_toEl) _toEl.value=selectedDate;
   renderSummaryChart();
@@ -33689,6 +33695,7 @@ const _BTM_AI_SECTIONS=[
   {id:'mindmapOutline',label:'MindMap — AI로 개요 만들기 (본문에 반영 → 개요 가져오기)'},
   {id:'btmLangGen',label:'🌐 다국어 생성 (번역)'},
   {id:'scriptMaker',label:'🎬 스크립트 만들기 (시황 분석 유튜브 영상 보고서·스크립트)'},
+  {id:'investorStatusAi',label:'🤖 Investor Status — [Update] AI 상태 평가 (직전 report 의 성장 Routine 분석 · Inbody 이미지 인식은 Claude·Gemini·ChatGPT 만)'},
 ];
 const _BTM_AI_PROVIDER_LABELS={claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)','chatgpt-flash':'🟢 ChatGPT(Flash)','chatgpt-pro':'🟢 ChatGPT(Pro)'};
 function _renderAiProviderSettings(){
@@ -69774,6 +69781,541 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 /* ═══ BTMHB-JS-END ═══ */
 </script>
 <!-- BTMHB-JS-END -->
+<!-- BTMISAI-JS-BEGIN -->
+<style>
+/* ── v235 Investor Status [🤖 Update] 결과 창 ── */
+.isai-ov{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+.isai-ov.on{display:flex}
+.isai-box{width:min(780px,96vw);max-height:92vh;display:flex;flex-direction:column;background:#fff;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;font-family:inherit;color:#1e293b}
+.isai-hd{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;background:#1f3a5f;color:#fff;font-size:14px;font-weight:800}
+.isai-hd button{flex:none;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0}
+.isai-hd button:hover{background:rgba(255,255,255,.35)}
+.isai-bd{flex:1 1 auto;min-height:0;overflow:auto;padding:14px 16px;font-size:12.5px;line-height:1.6}
+.isai-ft{flex:none;display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:10px 16px;border-top:1px solid #e2e8f0;background:#f8fafc}
+.isai-ft button{height:30px;padding:0 14px;border-radius:7px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.isai-ft button:hover{background:#f1f5f9}
+.isai-ft button.pri{background:#6366f1;border-color:#6366f1;color:#fff}
+.isai-ft button.pri:hover{background:#4f46e5}
+.isai-ft button[disabled]{opacity:.45;cursor:default}
+.isai-st{list-style:none;margin:0;padding:0}
+.isai-st li{padding:5px 0;color:#94a3b8;font-weight:600}
+.isai-st li.on{color:#1e293b}
+.isai-st li.ok{color:#16a34a}
+.isai-st li small{font-weight:400;color:#64748b}
+.isai-sp{display:inline-block;width:11px;height:11px;border:2px solid #c7d2fe;border-top-color:#6366f1;border-radius:50%;vertical-align:-1px;animation:isaiSp .8s linear infinite}
+@keyframes isaiSp{to{transform:rotate(360deg)}}
+.isai-hint{margin-top:10px;padding:9px 11px;background:#f1f5f9;border-radius:8px;color:#64748b;font-size:11.5px}
+.isai-err{padding:11px 13px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#b91c1c;font-weight:700}
+.isai-err small{display:block;margin-top:4px;color:#7f1d1d;font-weight:400}
+.isai-sum{padding:11px 13px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:9px;line-height:1.7}
+.isai-sum b{color:#3730a3}
+.isai-bd h4{margin:15px 0 6px;font-size:12px;font-weight:800;color:#475569;letter-spacing:.2px}
+.isai-idx{display:grid;grid-template-columns:96px 1fr 34px;gap:4px 8px;align-items:center}
+.isai-idx .n{font-weight:700;color:#334155}
+.isai-idx .w{grid-column:2/4;margin:-3px 0 3px;color:#64748b;font-size:11.5px}
+.isai-bar{height:9px;background:#e2e8f0;border-radius:5px;overflow:hidden}
+.isai-bar i{display:block;height:100%;border-radius:5px}
+.isai-idx .v{text-align:right;font-weight:800}
+.isai-tb{width:100%;border-collapse:collapse}
+.isai-tb td{padding:5px 6px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.isai-tb td.l{white-space:nowrap;font-weight:700}
+.isai-tb td.s{white-space:nowrap;text-align:right;font-weight:800}
+.isai-tb td.m{color:#64748b;font-size:11.5px}
+.isai-tb .up{color:#16a34a}.isai-tb .dn{color:#dc2626}.isai-tb .eq{color:#94a3b8}
+.isai-tag{display:inline-block;margin-left:4px;padding:0 5px;border-radius:4px;background:#f1f5f9;color:#64748b;font-size:10px;font-weight:700;vertical-align:1px}
+.isai-fx{margin:0;padding-left:17px;color:#475569;font-size:11.5px}
+.isai-fx li{margin:2px 0}
+.isai-meta{margin-top:12px;color:#94a3b8;font-size:11px}
+</style>
+<script>
+/* ═══ BTMISAI-JS-BEGIN ═══════════════════════════════════════════════════════════
+   Investor Status [🤖 Update] — 직전 report 의 성장 Routine 을 AI 가 분석해 점수·메모를 자동 반영 (v235, 2026-11-24)
+   요청: "Create New 뒤, 직전 report 의 성장 Routine 구성요소를 분석해서 Investor Status 제목 우측 update 버튼을 누르면 각 항목 점수를 네가 직접 평가해 자동 세팅하고
+         메모란에 평가·권고·격려·칭찬을 간결하게. 심도 있게 분석해 신앙·운동·건강·심리 등을 지수화해 반영. report 를 얼마나 성실히 쓰는지·최근 못 쓴 날짜도 성실도 요소.
+         Inbody → 체력·근력, Snowball → 운동·성실도, 묵상 노트·나의 삶 → 마인드·절제력·포용력·멘탈·신앙"
+   · 직전 report = 화면 report 날짜(#reportDate) 바로 앞 날짜의 Archive(confirmNewReport 의 _prevArc 와 같은 뜻). Create New 직후면 방금 저장해 둔 report.
+   · 보내는 것: 직전 report 의 말씀·묵상·감사와 간구·나의 삶·독서·Key-Word·VISION·Snowball·Inbody(글+이미지 최대 2장: 최신 + 이전 측정) + 앱이 Archive 에서 계산한 '성실도 사실'
+     (30일 작성/빠진 날짜·연속 기록·늦게 몰아 저장(archivedAt)·작성 충실도·Snowball 달성·연간 FIVE/독서 목표) + 점수를 매길 항목(key·이름·현재 점수) — 항목 이름은 사용자가 바꿀 수 있어 이름의 뜻으로 해석.
+   · AI: 관리 › 🧩 AI 공급자 의 'investorStatusAi' 설정(기본 Claude) — window._runMediaPrompt/_runTextPrompt 재사용. DeepSeek 는 이미지를 못 읽어 글만.
+   · 결과(JSON): 9개 지수(신앙·마음가짐·절제력·포용력·운동·체력근력·건강영양·독서학습·성실도)+항목별 점수(5점 단위·근거 없으면 prev 유지)+총평·칭찬·건의.
+   · 반영: _isItems 점수(우측 첫 항목은 앱 규칙대로 왼쪽 평균 자동) → _initInvestorStatus → #investorStatusNote 에 [data-isai] 블록(다시 누르면 그 블록만 교체, 사용자가 쓴 글은 보존)
+     → BTMBoxTools.fit 으로 메모 높이 맞춤·카드가 모자라면 섹션 높이를 같이 늘림. [↩ 되돌리기] = 점수·메모·높이 복원(결과 창·알림).
+   · 지수·항목별 근거·성실도 통계는 결과 창에만 보임(저장 안 함). 메모(#investorStatusNote)는 report 와 함께 저장·Archive 됨.
+   · 한국어 화면에서만 실행(번역 화면에서는 메모·항목 이름이 번역본이라). 게스트·PDF 출력에서는 버튼이 숨겨짐(pdf-export-hide·guest-mode).
+   수정 요령: 이 블록(BTMISAI-JS-BEGIN~END) + 머리글 #isAiBtn(Investor Status 카드 머리) + _BTM_AI_SECTIONS 의 investorStatusAi 한 줄.
+════════════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.BTMIsAI) return;
+const MAP_KEY='investorStatusAi';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const WD=['일','월','화','수','목','금','토'];
+const pad2=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const toD=s=>new Date(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10));
+const addDays=(s,n)=>{ const d=toD(s); d.setDate(d.getDate()+n); return ymd(d); };
+const dayDiff=(a,b)=>Math.round((toD(a)-toD(b))/86400000);
+const wdOf=s=>WD[toD(s).getDay()];
+const md=s=>s.slice(5,7)+'/'+s.slice(8,10);
+const mdw=s=>md(s)+'('+wdOf(s)+')';
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const normLabel=s=>String(s||'').replace(/[\s ]+/g,'').trim();
+const bare=t=>String(t||'').replace(/[\s ㆍ→·•\-]/g,'');
+const clip=(t,n)=>{ t=String(t||''); return t.length>n?t.slice(0,n)+' …(이하 생략)':t; };
+const userErr=(m,hint)=>Object.assign(new Error(m),{user:true,hint:hint||''});
+const localYmd=iso=>{ if(!iso) return ''; const d=new Date(iso); return isNaN(d)?'':ymd(d); };
+
+/* ── 9개 지수 ── */
+const IDX=[
+  {k:'faith',      n:'신앙',          s:'신앙', d:'말씀·묵상·기도·감사·암송의 깊이와 꾸준함, 믿음을 삶에 적용하려는 태도'},
+  {k:'mind',       n:'마음가짐·멘탈', s:'마음', d:'나의 삶·나의 생각과 묵상에 드러난 현재 마인드와 정서(평온·감사·불안·자기 연민·낙관 등)'},
+  {k:'selfControl',n:'절제력',        s:'절제', d:'식단·습관·감정·말의 절제 — Snowball(식단 등) 이행과 글에 드러난 자기 통제'},
+  {k:'tolerance',  n:'포용력',        s:'포용', d:'타인을 향한 시선·사랑·용서·배려의 표현'},
+  {k:'exercise',   n:'운동',          s:'운동', d:'Snowball 의 운동 목표(턱걸이·팔굽혀펴기 등) 달성 빈도와 연속성'},
+  {k:'strength',   n:'체력·근력',     s:'체력', d:'Inbody 이미지에서 읽히는 골격근량·체지방량·체성분 점수·근육 균형(이전 측정과 비교)'},
+  {k:'health',     n:'건강·영양',     s:'건강', d:'식단 이행(저혈당식단 등), Inbody 의 체지방률·내장지방·기초대사량, 수면·컨디션에 대한 언급'},
+  {k:'learning',   n:'독서·학습',     s:'독서', d:'Footprints in Books 의 일차·진행률·소감의 깊이, 독서 목표 달성'},
+  {k:'diligence',  n:'성실도',        s:'성실', d:'report 작성의 꾸준함(작성한 날 비율·연속 기록)·최근 빠진 날짜·늦게 몰아 저장·성장 Routine 작성 충실도·Snowball 기록·연간 목표 달성률'}
+];
+
+/* ── 글 뽑기 ── */
+function h2t(html){
+  if(!html) return '';
+  const s=String(html).replace(/data:[a-z]+\/[a-z0-9.+-]+;base64,[A-Za-z0-9+\/=]+/gi,'data:IMG');
+  let doc;
+  try{ doc=new DOMParser().parseFromString('<div id="r">'+s+'</div>','text/html'); }catch(_){ return s.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(); }
+  const root=doc.getElementById('r'); if(!root) return '';
+  root.querySelectorAll('img').forEach(i=>i.replaceWith(doc.createTextNode(' [이미지] ')));
+  root.querySelectorAll('br').forEach(b=>b.replaceWith(doc.createTextNode('\n')));
+  root.querySelectorAll('div,p,li,tr,h1,h2,h3,h4,h5,h6,blockquote').forEach(b=>b.appendChild(doc.createTextNode('\n')));
+  return root.textContent.replace(/ /g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n[ \t]+/g,'\n').replace(/\n{2,}/g,'\n').trim();
+}
+/* 새 report 의 기본 양식(관리 › 섹션 제목 관리 의 본문 기본값) 글자 수 — 양식만 있는 칸을 '작성 안 함'으로 보기 위한 기준 */
+function tmplLens(){
+  let d={}; try{ d=(typeof _sstGetManaged==='function')?_sstGetManaged():{}; }catch(_){}
+  const L=h=>bare(h2t(h||'')).length;
+  return {med:L(d.meditationBody), life:L(d.myLifeBody), pray:L(d.gratitudeBody), book:L(d.booksBody)};
+}
+function written(d,T){
+  d=d||{};
+  const n=(h,t)=>Math.max(0,bare(h2t(h)).length-t);
+  return {med:n(d.qtMemo,T.med), life:n(d.myLifeContent,T.life), pray:n(d.prayerContent,T.pray), book:n(d.footprintContent,T.book), kw:bare(h2t(d.keyWord)).length};
+}
+function fillScore(w){
+  const f=(v,full)=>Math.min(1,v/full);
+  return Math.round(100*(0.25*f(w.med,100)+0.25*f(w.life,120)+0.20*f(w.pray,50)+0.20*f(w.book,100)+0.10*f(w.kw,2)));
+}
+
+/* ── 성실도 사실(앱이 Archive 에서 직접 계산) ── */
+function buildFacts(arcsAll,past,curDate,T){
+  const P=past[0], first=past[past.length-1].date;
+  const have=new Set(arcsAll.map(r=>r.date));
+  const end=addDays(curDate,-1);
+  let start=addDays(end,-29); if(start<first) start=first;
+  const nDays=Math.max(1,dayDiff(end,start)+1);
+  const missed=[]; let wr=0;
+  for(let i=0;i<nDays;i++){ const d=addDays(start,i); if(have.has(d)) wr++; else missed.push(d); }
+  let streak=0; for(let d=end; d>=first; d=addDays(d,-1)){ if(have.has(d)) streak++; else break; }
+  const cnt=n=>{ let c=0,t=0; for(let i=0;i<n;i++){ const d=addDays(end,-i); if(d<first) break; t++; if(have.has(d)) c++; } return {c,t}; };
+  const c7=cnt(7), c14=cnt(14);
+  const gap=Math.max(0,dayDiff(curDate,P.date)-1);
+  const stat=r=>{
+    const d=r.data||{}, w=written(d,T), sb=d.snowball||{};
+    const lag=r.archivedAt?dayDiff(localYmd(r.archivedAt),r.date):0;
+    return {date:r.date,w,fill:fillScore(w),lag,st:(sb.statuses||[]).map(s=>s==='OK'?'O':'x').join(''),kw:h2t(d.keyWord)};
+  };
+  const recs30=past.filter(r=>r.date>=start), recs14=past.filter(r=>r.date>=addDays(end,-13)), recs7=past.filter(r=>r.date>=addDays(end,-6));
+  const S30=recs30.map(stat), S14=recs14.map(stat), S7=recs7.map(stat);
+  const avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x.fill,0)/a.length):null;
+  const late14=S14.filter(x=>x.lag>=2).length, late30=S30.filter(x=>x.lag>=2).length;
+  const empty14=S14.filter(x=>x.fill<15).length;
+  const sbAcc=recs=>{
+    const by=new Map(); let anyOk=0;
+    recs.forEach(r=>{ const sb=(r.data&&r.data.snowball)||{}, ti=sb.titles||[], st=sb.statuses||[]; let ok=false;
+      ti.forEach((t,i)=>{ const k=normLabel(t); if(!k) return; const o=by.get(k)||{n:0,ok:0,t:String(t).replace(/[\s ]+/g,' ').trim()}; o.n++; if(st[i]==='OK'){ o.ok++; ok=true; } by.set(k,o); });
+      if(ok) anyOk++; });
+    return {by,anyOk,n:recs.length};
+  };
+  const sb14=sbAcc(recs14), sb30=sbAcc(recs30);
+  const sum=P.summary||{}, pd=P.data||{};
+  const table=past.slice(0,8).reverse().map(r=>{ const s=stat(r); return md(r.date)+'('+wdOf(r.date)+') 저장 '+(s.lag>0?'+'+s.lag+'일':'당일')+' · 충실도 '+s.fill+' · 묵상 '+s.w.med+'/나의삶 '+s.w.life+'/감사 '+s.w.pray+'/독서 '+s.w.book+'자 · Snowball '+(s.st||'-')+(bare(s.kw).length?' · 키워드 '+clip(s.kw.replace(/\s+/g,' ').trim(),24):''); });
+  const sbLine=sb=>[...sb.by.values()].map(o=>o.t+' OK '+o.ok+'/'+o.n).join(', ')||'기록 없음';
+  const lines=[];
+  lines.push('기준: 새 report '+curDate+' 직전 '+nDays+'일('+md(start)+'~'+md(end)+') — 작성한 날 '+wr+'일 / 빠진 날 '+missed.length+'일'+(missed.length?' → 빠진 날짜: '+missed.slice(-10).map(md).join('·'):''));
+  lines.push('직전 7일 작성 '+c7.c+'/'+c7.t+'일 · 직전 14일 작성 '+c14.c+'/'+c14.t+'일 · 연속 기록 '+streak+'일 · 직전 report('+mdw(P.date)+') 이후 새 report 까지 공백 '+gap+'일');
+  lines.push('늦게 저장(report 날짜보다 2일 이상 뒤에 저장 = 몰아서 채움) 최근 14건 중 '+late14+'건 · 30일 중 '+late30+'건 (재저장으로 부풀 수 있는 약한 신호)');
+  lines.push('성장 Routine 작성 충실도(묵상·나의 삶·감사·독서·Key-Word 를 기본 양식 제외 글자 수로 환산, 100=모두 충분): 직전 report '+(S30.find(x=>x.date===P.date)||stat(P)).fill+' · 최근 7건 평균 '+(avg(S7)==null?'-':avg(S7))+' · 최근 14건 평균 '+(avg(S14)==null?'-':avg(S14))+' · 거의 비어 있는 날(충실도 15 미만) 최근 14건 중 '+empty14+'건');
+  lines.push('Snowball Effect 최근 14건: '+sbLine(sb14)+' (하루라도 OK 가 있던 날 '+sb14.anyOk+'/'+sb14.n+'일 — 전부 NOT OK 인 날은 미기록일 수도 있음) · 30일: '+sbLine(sb30));
+  const goal=[];
+  if(sum.fiveGoal) goal.push('The FIVE 발행 '+(sum.fiveAchieved!=null?sum.fiveAchieved:'-')+'회 / 목표 '+sum.fiveGoal+'회'+(sum.fiveRatePct!=null?' ('+sum.fiveRatePct+'%)':''));
+  if(sum.bookGoal) goal.push('독서 '+(sum.bookAchieved!=null?sum.bookAchieved:'-')+'권 / 목표 '+sum.bookGoal+'권'+(sum.bookRatePct!=null?' ('+sum.bookRatePct+'%)':''));
+  const bk=(pd.footprintBookTitle||sum.footprintBook||'');
+  if(bk) goal.push('현재 책 \''+bk+'\' '+(pd.footprintDays||sum.footprintDays||'-')+'일차'+(pd.footprintProgress?' · 진행 '+pd.footprintProgress+'%':''));
+  if(goal.length) lines.push('연간 목표: '+goal.join(' · '));
+  return {P:P.date,start,end,nDays,written:wr,missed,streak,c7,c14,gap,late14,late30,avg7:avg(S7),avg14:avg(S14),empty14,lines,table,pFill:(S30.find(x=>x.date===P.date)||stat(P)).fill};
+}
+
+/* ── 직전 report 의 성장 Routine 글 ── */
+function grText(d,T){
+  d=d||{}; const sec=[];
+  const w=written(d,T);
+  const add=(t,s,empty)=>{ s=String(s||'').trim(); sec.push('## '+t+'\n'+((empty||!s)?'(작성 안 함 — 기본 양식만 있거나 비어 있음)':s)); };
+  add('오늘의 말씀(읽은 본문)', clip(h2t(d.qtBibleHTML),700), !bare(h2t(d.qtBibleHTML)).length);
+  add('나의 묵상 노트', clip(h2t(d.qtMemo),2800), w.med<=0);
+  add('나의 삶, 나의 생각', clip(h2t(d.myLifeContent),2800), w.life<=0);
+  add('감사와 간구', clip(h2t(d.prayerContent),1800), w.pray<=0);
+  add('Footprints in Books(독서)', '책: '+(d.footprintBookTitle||d.currentBook||'-')+(d.footprintAuthor?' / '+d.footprintAuthor:'')+' · '+(d.footprintDays||'-')+'일차 · 진행 '+(d.footprintProgress||'-')+'%\n'+(w.book>0?clip(h2t(d.footprintContent),1800):'(소감 작성 안 함)'), false);
+  add('Key-Word', h2t(d.keyWord), w.kw<=0);
+  add('VISION', d.visionText, !bare(d.visionText).length);
+  const sb=d.snowball||{}, ti=sb.titles||[], st=sb.statuses||[];
+  const goals=ti.map((t,i)=>normLabel(t)?'- '+String(t).replace(/[\s ]+/g,' ').trim()+': '+(st[i]==='OK'?'OK(달성)':'NOT OK(미달성 또는 미기록)'):'').filter(Boolean);
+  const sbAbove=h2t(sb.above), sbBelow=h2t(sb.below);
+  add('Snowball Effect(매일 지키려는 목표 — 운동·식단·암송 등)', goals.join('\n')+(bare(sbAbove).length?'\n위 메모: '+clip(sbAbove,400):'')+(bare(sbBelow).length?'\n아래 메모: '+clip(sbBelow,400):''), !goals.length);
+  const dib=h2t(d.dibContent).replace(/\[이미지\]/g,'').trim();
+  if(dib) sec.push('## Daily Inbody Check — 글\n'+clip(dib,800));
+  ['selfDeclaration','echoOfGiants','churchVerse'].forEach(k=>{ const v=h2t(d[k]); if(bare(v).length>10) sec.push('## '+k+'\n'+clip(v,500)); });
+  return sec.join('\n\n');
+}
+function excerpts(past,T){
+  const out=[];
+  past.slice(1,7).forEach(r=>{
+    const d=r.data||{}, w=written(d,T), parts=[];
+    if(w.med>0) parts.push('묵상: '+clip(h2t(d.qtMemo).replace(/\n+/g,' '),140));
+    if(w.life>0) parts.push('나의 삶: '+clip(h2t(d.myLifeContent).replace(/\n+/g,' '),140));
+    if(parts.length) out.push(mdw(r.date)+' '+parts.join(' / '));
+  });
+  return out;
+}
+
+/* ── Inbody 이미지: 최신 측정 + 이전(다른) 측정 ── */
+function imgsOf(html){
+  const s=String(html||''); if(s.indexOf('<img')<0) return [];
+  const out=[];
+  try{
+    const doc=new DOMParser().parseFromString('<div id="r">'+s+'</div>','text/html');
+    doc.querySelectorAll('img').forEach(i=>{ const src=(i.getAttribute('src')||'').replace(/\s+/g,''); if(/^data:image\/[a-z0-9.+-]+;base64,/i.test(src)) out.push(src); });
+  }catch(_){}
+  return out;
+}
+/* 가장 최근의 서로 다른 Inbody 이미지 2장(현재 화면 → Archive 최신순) — Create New 가 Inbody 를 이어받으므로 같은 이미지가 여러 날 이어짐. 이미지마다 실린 날짜 범위(oldest~newest)를 같이 돌려줌 */
+function collectInbody(past,curDate,curHtml){
+  const seen=new Map(), list=[];
+  const keyOf=s=>s.length+':'+s.slice(-120);
+  const take=(src,date)=>{
+    const k=keyOf(src); let o=seen.get(k);
+    if(!o){ if(list.length>=2) return false; o={src,newest:date,oldest:date}; seen.set(k,o); list.push(o); }
+    else o.oldest=date;
+    return true;
+  };
+  imgsOf(curHtml).forEach(s=>take(s,curDate));
+  for(let i=0;i<past.length&&i<90;i++){
+    const r=past[i], ims=imgsOf(r.data&&r.data.dibContent);
+    let hit=false; ims.forEach(s=>{ if(take(s,r.date)) hit=true; });
+    if(list.length>=2&&ims.length&&!hit) break;   /* 두 이미지가 아닌 더 오래된 이미지가 나오면 범위가 끝난 것 */
+  }
+  return list;
+}
+async function reencode(src,maxEdge,q){
+  const img=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('이미지를 열지 못했어요')); i.src=src; });
+  const k=Math.min(1,maxEdge/Math.max(img.naturalWidth,img.naturalHeight,1));
+  const c=document.createElement('canvas'); c.width=Math.max(1,Math.round(img.naturalWidth*k)); c.height=Math.max(1,Math.round(img.naturalHeight*k));
+  const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height);
+  return {mt:'image/jpeg',b64:c.toDataURL('image/jpeg',q||0.88).split(',')[1]};
+}
+async function toBlock(src){
+  const m=/^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(src||''); if(!m) return null;
+  let mt=m[1].toLowerCase(); if(mt==='image/jpg') mt='image/jpeg';
+  const okType=/^image\/(png|jpeg|gif|webp)$/.test(mt);
+  if(okType && m[2].length<=3500000) return {mt,b64:m[2]};
+  try{
+    let r=await reencode(src,2000,0.88);
+    if(r.b64.length>4500000) r=await reencode(src,1400,0.8);
+    return r.b64.length<=5000000?r:null;
+  }catch(_){ return okType&&m[2].length<=5000000?{mt,b64:m[2]}:null; }
+}
+
+/* ── AI 에 줄 말 ── */
+const SYS=`당신은 투자자 '찰리'(이 앱의 사용자 본인)의 기록을 읽고 현재 상태를 점수로 평가해 주는, 따뜻하지만 솔직한 코치입니다. 존댓말로, 간결하게 씁니다.
+
+[입력]
+① 직전 report 의 [성장 Routine] 기록 — 오늘의 말씀, 나의 묵상 노트, 감사와 간구, 나의 삶·나의 생각, Footprints in Books(독서), Key-Word, VISION, Snowball Effect(매일 지키려는 목표와 OK/NOT OK), Daily Inbody Check(글·이미지)
+② 최근 기록 성실도 — 앱이 Archive 에서 계산한 '사실'(작성한 날·빠진 날짜·연속 기록·늦게 몰아 저장한 횟수·작성 충실도·Snowball 달성·연간 목표)과 최근 기록표·이전 기록 발췌
+③ 점수를 매길 Investor Status 항목 목록(key·이름·좌/우·prev 점수)
+④ 첨부 이미지가 있으면 Inbody 결과지(최신 측정, 있으면 그 이전 측정)
+
+[평가 방법]
+1단계 — 아래 9개 지수를 0~100 정수로 매기고, 지수마다 근거를 한 줄(25자 안팎)로 씁니다. 근거는 반드시 입력에 있는 기록(글·숫자·이미지·통계)에서 찾습니다.
+${IDX.map(d=>' - '+d.k+' ('+d.n+'): '+d.d).join('\n')}
+ · Inbody 이미지는 숫자를 직접 읽어 판단하되(체중·골격근량·체지방량·체지방률·Inbody 점수·내장지방 등), 이전 측정 이미지가 있으면 변화(늘었는지·줄었는지)를 반영합니다. 읽을 수 없거나 이미지가 없으면 strength 는 근거 부족으로 보고 입력의 prev 에서 크게 벗어나지 않게 합니다.
+ · diligence 는 통계(빠진 날짜·연속 기록·늦게 몰아 저장·작성 충실도·Snowball 기록·연간 목표)를 그대로 반영합니다. 최근 기록이 비었거나 공백이 길면 낮추고, 최근 다시 꾸준해졌다면 그 회복도 반영합니다. 쉬었을 수도 있는 날을 단정적으로 비난하지 마세요.
+2단계 — Investor Status 각 항목의 '이름의 뜻'에 맞는 지수들을 골라 종합해 5점 단위(0·5·…·100) 점수를 매깁니다. 항목 이름은 사용자가 바꿀 수 있으니 뜻을 스스로 해석하세요. 모든 항목은 '높을수록 좋은 상태'입니다(예: '스트레스'는 스트레스가 적고 잘 다스릴수록 높은 점수).
+   참고 예 — 집중력: learning·mind·diligence / 절제력: selfControl·health / 실행력: diligence·exercise / 지속력: diligence(연속 기록)·exercise / 포용력: tolerance·faith / 멘탈: mind / 체력: strength·exercise / 영양: health(식단·Inbody) / 수면: health(수면 근거가 없으면 유지) / 신앙: faith / 학습: learning / 운동: exercise·strength / 스트레스: mind·selfControl / 에너지·회복력: health·exercise·mind / 이모션: mind·tolerance / 판단력: mind·learning·diligence
+   'auto' 로 표시된 항목은 앱이 자동 계산하므로 items 에 넣지 마세요.
+3단계 — 근거가 거의 없는 항목은 억지로 점수를 만들지 말고 basis 를 "kept" 로 하고 score 에 prev 값을 그대로 적습니다. 근거가 있을 때만 "evidence" 로 prev 에서 바꿉니다. prev 는 사용자가 예전에 직접 매겨 둔 기준선일 뿐 정답이 아니니, 근거가 뚜렷하면 크게 바꿔도 됩니다.
+
+[점수 기준] 90+ 매우 탁월 / 80~89 우수·안정 / 60~79 양호 / 40~59 보통·점검 필요 / 20~39 부족 / 20 미만 위험. 후하게 70~80 으로 몰지 말고 근거에 따라 범위 전체를 쓰세요.
+
+[말투·안전] 칭찬은 구체적으로, 지적은 부드럽게, 건의는 이번 주에 실천할 수 있는 것 1~2개로. 의학적 진단·처방은 하지 말고 기록에서 보이는 '경향'으로만 말하세요. 심리적 위기 신호(자해·절망 등)가 글에서 보이면 advice 에 믿을 만한 사람이나 전문가와 상담하길 권하는 말을 넣으세요.
+
+[출력] 설명 없이 아래 JSON 하나만 출력합니다(코드블록 금지). 글자 수 제한을 지키세요.
+{"indices":{${IDX.map(d=>'"'+d.k+'":{"score":0,"why":"25자 안팎"}').join(',')}},
+ "items":[{"key":"입력의 key","score":0,"basis":"evidence 또는 kept","note":"40자 이내 근거"}],
+ "overall":"한 줄 총평 40자 이내",
+ "praise":"잘한 점·격려 50자 이내",
+ "advice":"건의·권고 70자 이내"}`;
+
+function buildUser(g){
+  const L=[];
+  L.push('[기준일] 새 report 날짜: '+mdw(g.curDate)+' ('+g.curDate+') · 직전 report: '+mdw(g.P.date)+' ('+g.P.date+')');
+  L.push('\n[Investor Status 항목] key | 이름 | 좌/우 | prev 점수 | 비고');
+  g.items.forEach(it=>L.push(it.key+' | '+it.label+' | '+(it.side==='L'?'좌(Charlie\'s Status)':'우(Charlie\'s Battery)')+' | '+it.prev+' | '+(it.auto?'auto — 앱이 왼쪽 항목 평균으로 자동 계산, 점수 매기지 않음':'')));
+  L.push('\n[성실도 통계 — 앱이 Archive 에서 계산한 사실]\n'+g.facts.lines.map(x=>'· '+x).join('\n'));
+  L.push('\n[최근 기록표 — 오래된 것부터]\n'+g.facts.table.join('\n'));
+  if(g.ex.length) L.push('\n[이전 기록 발췌 — 분위기 참고]\n'+g.ex.join('\n'));
+  L.push('\n[직전 report('+mdw(g.P.date)+')의 성장 Routine]\n'+g.text);
+  if(g.imgMeta.length) L.push('\n[첨부 이미지 — Inbody] '+g.imgMeta.map((m,i)=>(i+1)+'번째 이미지: '+m).join(' / '));
+  else L.push('\n[첨부 이미지] 없음'+(g.imgNote?' — '+g.imgNote:''));
+  L.push('\n위 기록을 근거로 평가해 JSON 으로만 답하세요.');
+  return L.join('\n');
+}
+
+/* ── 모으기 ── */
+async function gather(o,onStep){
+  o=o||{};
+  const arcs=o.arcs||await getAllArchives();
+  const curDate=o.curDate||((typeof gv==='function'?gv('reportDate'):'')||'')||todayStr();
+  const past=arcs.filter(r=>r&&r.date&&r.date<curDate&&r.data);
+  const P=past[0];
+  if(!P) throw userErr('직전 report 가 없어요','Archive 에 '+curDate+' 보다 앞선 날짜의 report 가 저장돼 있어야 해요 — 이전 report 를 💾 Save 한 뒤 Create New 를 해 주세요.');
+  if(onStep) onStep(1,'직전 report '+mdw(P.date)+' 를 찾았어요');
+  const items=_isItems.map(it=>({key:it.key,label:normLabel(it.label)||it.label,side:it.side,prev:it.score,auto:false}));
+  if(!items.length) throw userErr('점수를 매길 항목이 없어요','Investor Status 에 항목이 하나도 없어요.');
+  const fr=items.find(x=>x.side==='R'); if(fr) fr.auto=true;
+  const T=tmplLens();
+  const facts=buildFacts(arcs,past,curDate,T);
+  const text=grText(P.data,T);
+  const ex=excerpts(past,T);
+  const curHtml=(o.curDib!==undefined)?o.curDib:((typeof gv==='function')?gv('dibContent'):'');
+  const found=collectInbody(past,curDate,curHtml);
+  const imgs=[], imgMeta=[]; let imgNote='';
+  for(const f of found){
+    const b=await toBlock(f.src);
+    if(b){ imgs.push(b); imgMeta.push((imgs.length===1?'가장 최근 Inbody':'그 이전 측정 Inbody')+' — '+(f.oldest===curDate?'현재 화면 report('+md(curDate)+')에 새로 올린 이미지':md(f.oldest)+(f.newest!==f.oldest?'~'+md(f.newest):'')+' report 에 실린 이미지')); }
+    else imgNote='일부 Inbody 이미지는 형식·크기 문제로 제외했어요';
+  }
+  const g={P,curDate,items,facts,text,ex,imgs,imgMeta,imgNote,T};
+  g.user=buildUser(g);
+  return g;
+}
+
+/* ── 해석 ── */
+function parseAi(raw,items){
+  let t=String(raw||'').trim().replace(/^```[a-z]*\s*/i,'').replace(/```\s*$/,'');
+  const a=t.indexOf('{'), b=t.lastIndexOf('}');
+  if(a<0||b<=a) throw userErr('AI 응답에서 평가 결과를 찾지 못했어요','다시 눌러 주세요. 계속 안 되면 관리 메뉴 > 🧩 AI 공급자에서 다른 AI 로 바꿔 보세요.');
+  let o;
+  try{ o=JSON.parse(t.slice(a,b+1)); }
+  catch(e){ try{ o=JSON.parse(t.slice(a,b+1).replace(/,\s*([}\]])/g,'$1')); }catch(e2){ throw userErr('AI 응답의 형식이 깨져 있어요','다시 눌러 주세요.'); } }
+  const cut=(s,n)=>{ s=String(s==null?'':s).replace(/\s+/g,' ').trim(); return s.length>n?s.slice(0,n-1)+'…':s; };
+  const num=v=>{ v=Math.round(+v); return isFinite(v)?clamp(v,0,100):null; };
+  const indices={};
+  IDX.forEach(d=>{ const x=(o.indices&&o.indices[d.k])||{}; const sc=num(typeof x==='object'?x.score:x); indices[d.k]={score:sc==null?50:sc,why:cut(typeof x==='object'?x.why:'',60),miss:sc==null}; });
+  const arr=Array.isArray(o.items)?o.items:(o.items&&typeof o.items==='object'?Object.keys(o.items).map(k=>Object.assign({key:k},o.items[k])):[]);
+  const byKey={}, byLab={};
+  arr.forEach(x=>{ if(!x) return; if(x.key!=null) byKey[String(x.key)]=x; if(x.label!=null) byLab[normLabel(x.label)]=x; });
+  const res=[];
+  items.forEach(it=>{
+    if(it.auto){ res.push({key:it.key,label:it.label,side:it.side,prev:it.prev,score:it.prev,basis:'auto',note:'왼쪽 항목 평균으로 자동 계산'}); return; }
+    const x=byKey[it.key]||byLab[it.label];
+    let sc=x?num(x.score):null, basis=(x&&String(x.basis).toLowerCase()==='kept')?'kept':'evidence';
+    if(sc==null){ sc=it.prev; basis='kept'; }
+    sc=(basis==='kept')?it.prev:clamp(Math.round(sc/5)*5,0,100);   /* 근거 부족이면 이전 점수 그대로(5의 배수가 아니어도), 평가했으면 5점 단위 */
+    res.push({key:it.key,label:it.label,side:it.side,prev:it.prev,score:sc,basis,note:cut(x&&x.note,60)||(basis==='kept'?'근거 부족 — 점수 유지':'')});
+  });
+  return {indices,items:res,overall:cut(o.overall,60)||'(총평 없음)',praise:cut(o.praise,80),advice:cut(o.advice,110)};
+}
+
+/* ── 반영 ── */
+const leftAvg=()=>{ const L=_isItems.filter(it=>it.side==='L'); return L.length?Math.round(L.reduce((s,it)=>s+it.score,0)/L.length):0; };
+function setScores(map,keepFirstR){
+  _isItems.forEach(it=>{ if(Object.prototype.hasOwnProperty.call(map,it.key)) it.score=map[it.key]; });
+  const avg=leftAvg();
+  if(!keepFirstR){ const fr=_isItems.filter(it=>it.side==='R')[0]; if(fr) fr.score=avg; }   /* 우측 첫 항목 = 왼쪽 평균(앱 규칙 — _updateBattery) */
+  _lastStatusAvg=avg;                                                                       /* _initInvestorStatus 안의 _updateBattery 가 방금 정한 값을 덮어쓰지 않게 */
+  _initInvestorStatus();
+}
+function memoBlock(res,g,name){
+  const idx=IDX.map(d=>d.s+res.indices[d.k].score).join('·');
+  return '<div data-isai="1" style="font-size:12px;line-height:1.55"><b>🤖 '+esc(res.overall)+'</b><br>'
+    +(res.praise?'👍 '+esc(res.praise)+'<br>':'')+(res.advice?'💡 '+esc(res.advice)+'<br>':'')
+    +'<span style="color:#94a3b8;font-size:11px">지수 '+esc(idx)+' · '+esc(mdw(g.P.date))+' report 기준 · '+esc(name)+'</span></div>';
+}
+function writeMemo(html){
+  const el=$('investorStatusNote'); if(!el) return null;
+  const tmp=document.createElement('div'); tmp.innerHTML=el.innerHTML;
+  tmp.querySelectorAll('[data-isai]').forEach(n=>n.remove());
+  const rest=tmp.innerHTML.replace(/^(\s|<br\s*\/?>|&nbsp;)+|(\s|<br\s*\/?>|&nbsp;)+$/gi,'');
+  el.innerHTML=html+(rest?rest:'');
+  return el;
+}
+/* 메모 높이를 내용에 맞추고(BTMBoxTools.fit), 그만큼 커진 몫을 카드(섹션) 높이에 더함 — 안 그러면 점수 줄(.iscore-item 은 flex:1)이 눌려 3px 짜리 선처럼 찌그러짐(시험으로 확인).
+   오른쪽 맨 아래 MindMap 은 flex 로 밑변을 자동으로 맞춤. colsBefore = 메모를 쓰기 전 점수 줄 영역(.iscore-cols)의 높이 */
+async function fitMemo(colsBefore){
+  const sec=$('investorStatusSection'), cols=sec&&sec.querySelector('.iscore-cols'); let grew=0;
+  try{ if(window.BTMBoxTools&&BTMBoxTools.fit) await BTMBoxTools.fit('investorStatusNote',{quiet:true}); }catch(_){}
+  try{
+    if(sec&&cols&&colsBefore>0){
+      const lost=Math.ceil(colsBefore-cols.getBoundingClientRect().height);
+      if(lost>1&&typeof _setSecH==='function'){ _setSecH(sec,sec.offsetHeight+lost); if(typeof _saveSecH==='function') _saveSecH(sec); grew=lost; try{ if(window.MM&&MM.refresh) MM.refresh(); }catch(_){} }
+    }
+  }catch(_){}
+  return grew;
+}
+async function apply(res,g,name){
+  const el=$('investorStatusNote'), sec=$('investorStatusSection'), cols=sec&&sec.querySelector('.iscore-cols');
+  const colsBefore=cols?cols.getBoundingClientRect().height:0;
+  const snap={scores:_isItems.map(it=>({key:it.key,score:it.score})),noteHtml:el?el.innerHTML:'',noteH:el?el.style.height:'',secH:sec?sec.style.height:'',lsH:(()=>{ try{ return localStorage.getItem('BTMInvestorH2'); }catch(_){ return null; } })()};
+  const map={}; res.items.forEach(x=>{ if(x.basis!=='auto') map[x.key]=x.score; });
+  setScores(map,false);
+  res.items.forEach(x=>{ if(x.basis==='auto') x.score=leftAvg(); });   /* 결과 창에 보일 '자동' 항목의 새 값 = 왼쪽 평균 */
+  const html=memoBlock(res,g,name);
+  writeMemo(html);
+  const grew=await fitMemo(colsBefore);
+  try{ saveData(); }catch(_){}
+  snap.grew=grew;
+  return snap;
+}
+function undo(){
+  const L=BTMIsAI._last;
+  if(!L||L.undone){ say('되돌릴 평가가 없어요'); return false; }
+  const s=L.snap, map={}; s.scores.forEach(x=>{ map[x.key]=x.score; });
+  setScores(map,true);
+  const el=$('investorStatusNote'), sec=$('investorStatusSection');
+  if(el){ el.innerHTML=s.noteHtml; el.style.height=s.noteH; }
+  if(sec){ sec.style.height=s.secH; try{ if(s.lsH==null) localStorage.removeItem('BTMInvestorH2'); else localStorage.setItem('BTMInvestorH2',s.lsH); }catch(_){} try{ if(window.MM&&MM.refresh) MM.refresh(); }catch(_){} }
+  try{ saveData(); }catch(_){}
+  L.undone=true; say('Investor Status 를 AI 평가 이전 상태로 되돌렸어요'); render();
+  return true;
+}
+
+/* ── 호출 ── */
+async function callAi(g,signal,onRetry){
+  const r=(typeof window._resolveAiProvider==='function')?window._resolveAiProvider(MAP_KEY):{provider:'claude',key:localStorage.getItem('BTMClaudeApiKey'),name:'Claude'};
+  if(!r.key) throw userErr(r.name+' API Key 가 없어요','관리 메뉴 > 🧩 AI 공급자 에서 키를 넣고, 이 기능('+MAP_KEY+')에 쓸 AI 를 고르세요.');
+  const deep=String(r.provider).startsWith('deepseek');
+  let blocks=g.imgs.map(i=>({type:'image',source:{type:'base64',media_type:i.mt,data:i.b64}}));
+  let note='';
+  if(deep&&blocks.length){ blocks=[]; note='DeepSeek 는 이미지를 읽지 못해 Inbody 이미지는 빼고 평가했어요'; }
+  const o={signal,onRetry};
+  if(blocks.length&&typeof window._runMediaPrompt!=='function') throw userErr('AI 호출 함수를 찾지 못했어요','페이지를 새로고침해 주세요.');
+  const text=blocks.length?await window._runMediaPrompt(MAP_KEY,SYS,blocks,g.user,o):await window._runTextPrompt(MAP_KEY,SYS,g.user,o);
+  return {text,provider:r.provider,name:r.name,sent:blocks.length,note};
+}
+
+/* ── 창 ── */
+let busy=false, ctrl=null, timer=null, tick=null, state={mode:'idle'};
+function say(msg,btns){
+  try{ if(window.BTMSecDrag&&typeof BTMSecDrag.toast==='function'){ BTMSecDrag.toast(msg,false,btns||[]); return; } }catch(_){}
+  try{ alert(msg); }catch(_){}
+}
+function ensureModal(){
+  let m=$('isAiModal'); if(m) return m;
+  m=document.createElement('div'); m.id='isAiModal'; m.className='isai-ov';
+  m.innerHTML='<div class="isai-box" role="dialog" aria-modal="true" aria-labelledby="isAiTitle"><div class="isai-hd"><span id="isAiTitle">🤖 Investor Status — AI 상태 평가</span><button type="button" class="mobile-keep" id="isAiX" title="닫기">✕</button></div><div class="isai-bd" id="isAiBody"></div><div class="isai-ft" id="isAiFoot"></div></div>';
+  document.body.appendChild(m);
+  m.addEventListener('mousedown',e=>{ if(e.target===m) close(); });
+  m.querySelector('#isAiX').addEventListener('click',close);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&m.classList.contains('on')) close(); });
+  return m;
+}
+const open=()=>{ ensureModal().classList.add('on'); };
+function close(){ const m=$('isAiModal'); if(m) m.classList.remove('on'); }
+const isOpen=()=>{ const m=$('isAiModal'); return !!(m&&m.classList.contains('on')); };
+function foot(btns){
+  const f=$('isAiFoot'); if(!f) return; f.innerHTML='';
+  btns.forEach(b=>{ const x=document.createElement('button'); x.type='button'; x.className='mobile-keep'+(b.pri?' pri':''); x.textContent=b.t; if(b.dis) x.disabled=true; x.addEventListener('click',b.fn); f.appendChild(x); });
+}
+const STEPS=['직전 report·기록 모으기','성실도 계산·이미지 준비','AI 평가','점수·메모 반영'];
+function progress(i,msg){
+  state={mode:'run',i,msg};
+  const b=$('isAiBody'); if(!b) return;
+  b.innerHTML='<ol class="isai-st">'+STEPS.map((s,k)=>'<li class="'+(k<i?'ok':k===i?'on':'')+'">'+(k<i?'✓':k===i?'<i class="isai-sp"></i>':'○')+' '+esc(s)+(k===i&&msg?' <small>— '+esc(msg)+'</small>':'')+'</li>').join('')+'</ol>'
+    +'<div class="isai-hint">직전 report 의 성장 Routine 글과 Inbody 이미지가 <b>선택한 AI 공급자</b>로 전송됩니다. 글이 많거나 AI 가 깊이 생각하면 1~2분 걸릴 수 있어요. 끝나면 점수와 Investor Status 메모가 자동으로 채워지고, [↩ 되돌리기]로 원래대로 돌릴 수 있어요.</div>';
+  foot([{t:'중단',fn:()=>{ if(ctrl) ctrl.abort(); }}]);
+}
+function errView(e){
+  state={mode:'err'};
+  const b=$('isAiBody'); if(!b) return;
+  b.innerHTML='<div class="isai-err">⚠ '+esc(e&&e.message||'알 수 없는 오류')+(e&&e.hint?'<small>'+esc(e.hint)+'</small>':'')+'</div>';
+  foot([{t:'다시 시도',pri:true,fn:()=>run()},{t:'닫기',fn:close}]);
+}
+const colorOf=v=>(typeof _isColor==='function')?_isColor(v):'#6366f1';
+function render(){
+  const L=BTMIsAI._last; const b=$('isAiBody'); if(!L||!b) return;
+  state={mode:'done'};
+  const {res,g,name,secs,sent,note}=L;
+  const idxRows=IDX.map(d=>{ const x=res.indices[d.k]; return '<div class="n">'+esc(d.n)+'</div><div class="isai-bar"><i style="width:'+x.score+'%;background:'+colorOf(x.score)+'"></i></div><div class="v" style="color:'+colorOf(x.score)+'">'+x.score+'</div><div class="w">'+esc(x.why||'')+(x.miss?' (AI 가 점수를 안 줘 50 으로 둠)':'')+'</div>'; }).join('');
+  const itemRows=res.items.map(x=>{
+    const dlt=x.score-x.prev, cls=dlt>0?'up':dlt<0?'dn':'eq';
+    return '<tr><td class="l">'+esc(x.label)+'<span class="isai-tag">'+(x.side==='L'?'좌':'우')+'</span></td><td class="s">'+x.prev+' → <span style="color:'+colorOf(x.score)+'">'+x.score+'</span> <small class="'+cls+'">'+(x.basis==='auto'?'자동':dlt>0?'▲'+dlt:dlt<0?'▼'+(-dlt):'―')+'</small></td><td class="m">'+(x.basis==='kept'?'<span class="isai-tag">유지</span> ':'')+esc(x.note||'')+'</td></tr>';
+  }).join('');
+  b.innerHTML='<div class="isai-sum"><b>🤖 '+esc(res.overall)+'</b>'+(res.praise?'<br>👍 '+esc(res.praise):'')+(res.advice?'<br>💡 '+esc(res.advice):'')+'</div>'
+    +'<h4>지수 (직전 report '+esc(mdw(g.P.date))+' 기준)</h4><div class="isai-idx">'+idxRows+'</div>'
+    +'<h4>Investor Status 항목 점수 — 이전 → 새 점수</h4><table class="isai-tb">'+itemRows+'</table>'
+    +'<h4>근거가 된 성실도 통계 (앱이 Archive 에서 계산)</h4><ul class="isai-fx">'+g.facts.lines.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
+    +'<div class="isai-meta">AI: '+esc(name)+' · Inbody 이미지 '+sent+'장 전송'+(note?' · '+esc(note):'')+(g.imgNote?' · '+esc(g.imgNote):'')+' · '+secs+'초 · '+(L.undone?'<b style="color:#dc2626">되돌린 상태</b>':'점수와 메모는 이미 반영됨')+'</div>';
+  foot([{t:'↩ 되돌리기',dis:!!L.undone,fn:()=>undo()},{t:'다시 평가',fn:()=>run()},{t:'닫기',pri:true,fn:close}]);
+}
+function setBtn(on){ const b=$('isAiBtn'); if(!b) return; b.disabled=!!on; b.textContent=on?'⏳ 분석 중…':'🤖 Update'; }
+
+async function run(opt){
+  opt=opt||{};
+  if(busy){ open(); return; }
+  if(typeof _btmLang!=='undefined'&&_btmLang!=='ko'){ say('다국어 보기에서는 실행할 수 없어요 — 한국어 화면에서 눌러 주세요'); return; }
+  if(typeof _isItems==='undefined'||typeof getAllArchives!=='function'){ say('Investor Status 가 아직 준비되지 않았어요'); return; }
+  if(document.body.classList.contains('guest-mode')||document.querySelector('#report-root.published-mode')){ say('게스트·게시(잠금) 화면에서는 쓸 수 없어요'); return; }
+  busy=true; ctrl=new AbortController(); setBtn(true); open();
+  const t0=Date.now(); let stepMsg='';
+  const myCtrl=ctrl, tm=setTimeout(()=>{ myCtrl.__timeout=true; try{ myCtrl.abort(); }catch(_){} },opt.timeoutMs||300000);
+  try{
+    progress(0,'');
+    const g=await gather(opt.gather,progress);
+    progress(2,'AI 가 읽는 중… 0초');
+    tick=setInterval(()=>{ if(state.mode==='run'&&state.i===2) progress(2,(stepMsg||'AI 가 읽고 평가하는 중…')+' '+Math.round((Date.now()-t0)/1000)+'초'); },1000);
+    let out, res, g2=g;
+    for(let attempt=1;;attempt++){   /* 응답 형식(JSON)이 어긋나면 한 번만 더 요청 */
+      out=opt.fakeText!=null?{text:opt.fakeText,provider:'test',name:'시험',sent:g.imgs.length,note:''}:await callAi(g2,ctrl.signal,(a,m)=>{ stepMsg='AI 서버가 혼잡해요 — 다시 시도 중('+a+'/'+m+')'; });
+      try{ res=parseAi(out.text,g.items); break; }
+      catch(e){
+        if(attempt>=2||opt.fakeText!=null||!(e&&e.user)) throw e;
+        stepMsg='응답 형식이 어긋나 한 번 더 요청하는 중';
+        g2=Object.assign({},g,{user:g.user+'\n\n[주의] 직전 응답은 JSON 형식 오류였습니다. 설명·코드블록 없이 유효한 JSON 하나만 출력하세요.'});
+      }
+    }
+    clearInterval(tick); tick=null;
+    progress(3,'');
+    const snap=await apply(res,g,out.name);
+    BTMIsAI._last={res,g,name:out.name,snap,at:Date.now(),secs:Math.round((Date.now()-t0)/1000),sent:out.sent,note:out.note,undone:false};
+    if(isOpen()) render();
+    else say('🤖 Investor Status 를 '+mdw(g.P.date)+' report 기준으로 업데이트했어요',[['상세 보기',()=>{ open(); render(); }],['되돌리기',()=>undo()]]);
+  }catch(e){
+    if(e&&e.name==='AbortError') e=userErr(myCtrl.__timeout?'시간이 너무 오래 걸려 중단했어요':'중단했어요',myCtrl.__timeout?'AI 서버가 느리거나 응답이 길었어요. 다시 눌러 보세요.':'');
+    else if(!(e&&e.user)){ console.error('[BTMIsAI]',e); e=userErr('평가에 실패했어요: '+((e&&e.message)||e),'관리 메뉴 > 🧩 AI 공급자 설정(키·공급자)을 확인한 뒤 다시 눌러 보세요.'); }
+    if(isOpen()) errView(e); else say('⚠ '+e.message);
+  }finally{
+    clearTimeout(tm); if(tick){ clearInterval(tick); tick=null; }
+    busy=false; ctrl=null; setBtn(false);
+  }
+}
+
+window.BTMIsAI={run,undo,close,show:()=>{ if(BTMIsAI._last){ open(); render(); } },IDX,_last:null,
+  _t:{h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,
+      isBusy:()=>busy}};
+})();
+/* ═══ BTMISAI-JS-END ═══ */
+</script>
+<!-- BTMISAI-JS-END -->
 <!-- BTMIMGED-JS-BEGIN -->
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
