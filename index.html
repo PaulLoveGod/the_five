@@ -5304,7 +5304,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-cf .dt small{display:block;font-size:10px;font-weight:600;color:#64748b}
 #plnModal .pln-cf .dt .d1{display:flex;align-items:baseline;gap:4px;white-space:nowrap}   /* 날짜와 요일은 무조건 같은 줄(줄바꿈 없음) */
 #plnModal .pln-cf .mn{flex:1;min-width:0}
-#plnModal .pln-cf .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.35}
+#plnModal .pln-cf .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* v234: 확정·완료 줄도 미정 줄과 똑같이 제목은 한 줄만 — 길면 …(전체 제목은 줄 툴팁) */
 #plnModal .pln-cf .me{font-size:11px;color:#64748b;white-space:pre-wrap;word-break:break-word;margin-top:2px;line-height:1.4;max-height:3em;overflow:hidden}
 #plnModal .pln-cf .ac{flex:none;display:flex;gap:2px}
 #plnModal .pln-cf .ac button{border:none;background:transparent;border-radius:5px;padding:2px 4px;font-size:12px;cursor:pointer;opacity:.75}
@@ -5320,11 +5320,15 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 @keyframes plnFlashTd{from{background:#fde68a;border-color:#f59e0b}to{background:#fff;border-color:#cbd5e1}}
 #plnModal .pln-td .gr{color:#94a3b8;font-size:12px;line-height:1.3;letter-spacing:-2px;flex:none}
 #plnModal .pln-td .mn{flex:1;min-width:0}
-#plnModal .pln-td .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.35}
+#plnModal .pln-td .ti{font-size:12.5px;font-weight:700;color:#0f172a;word-break:break-word;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* v234: 미정 줄 제목은 한 줄만 — 길면 끝을 … 으로 줄임(전체 제목은 줄에 마우스를 올리면 툴팁) */
 #plnModal .pln-td .me{font-size:11px;color:#64748b;white-space:pre-wrap;word-break:break-word;margin-top:2px;line-height:1.4;max-height:3em;overflow:hidden}
 #plnModal .pln-td .ac{flex:none;display:flex;gap:2px}
 #plnModal .pln-td .ac button{border:none;background:transparent;border-radius:5px;padding:2px 4px;font-size:12px;cursor:pointer;opacity:.75}
 #plnModal .pln-td .ac button:hover{background:#e2e8f0;opacity:1}
+/* v234: 메모 아이콘은 왼쪽 목록(미정·확정·완료) 줄의 오른쪽 단추 줄 맨 앞(미정 줄에서는 예전 📅 자리) — 메모가 있는 일정에만. 위 '.ac button' 규칙(평평한 단추)보다 우선하도록 선택자를 한 단계 더 구체적으로 */
+#plnModal .pln-td .ac .pln-mi,#plnModal .pln-cf .ac .pln-mi{margin:0;width:24px;height:20px;opacity:1;vertical-align:baseline;border:1px solid #cbd5e1;border-radius:5px;background:#f8fafc;color:#94a3b8}
+#plnModal .pln-td .ac .pln-mi:hover,#plnModal .pln-cf .ac .pln-mi:hover{background:#e2e8f0;color:#475569}
+#plnModal .pln-td .ac .pln-mi.on,#plnModal .pln-cf .ac .pln-mi.on{background:#0f766e;border-color:#0f766e;color:#fff}
 /* 완료 체크(구글 Tasks 의 체크와 연동) */
 #plnModal .ck{flex:none;width:16px;height:16px;margin:1px 0 0;accent-color:#0f766e;cursor:pointer}
 #plnModal .pln-td.dn .ti,#plnModal .pln-cf.dn .ti{text-decoration:line-through;color:#94a3b8}
@@ -11484,7 +11488,7 @@ window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='n
    화면: 팝업 크기 = 메모장 #memoModal 과 같은 값(바깥 여백 10px · 가로 min(1326px,98vw) · 세로 min(910px,95vh)). 왼쪽 .pln-todo(To Do 입력·목록) | 오른쪽 .pln-cal(월 이동·[달력|목록] 전환).
      · 달력: 일요일 시작 7열 · 5~6주 · 날짜 칸마다 일정 칩(종일=초록, 시간 일정=파랑, 여러 날 일정은 이어서 ↳) · 칸이 좁으면 '+N건 더보기'(누르면 그날로 목록 보기 → v225 에서 칸 안 스크롤로 바뀜) · 빈 칸을 누르면 그날의 새 일정, 칩을 누르면 수정
      · 끌어다 놓기(HTML5 드래그): To Do → 날짜 칸 = 그날 종일 일정(왼쪽에서 사라짐) · 달력의 칩 → 다른 날짜 칸 = 그 일정의 날짜 이동(여러 날 일정은 길이 유지). 놓은 칸이 잠깐 노랗게 번쩍임
-     · To Do 줄의 📅 로 날짜를 골라도 같음(끌기 어려운 환경용). 드래그 중에는 동기화 결과로 화면을 다시 그리지 않고 끝난 뒤에 그림(끌던 항목이 사라져 취소되지 않게)
+     · (v234 에서 To Do 줄의 📅 단추는 없앰 — 끌기 어려운 환경에서는 ✏️ 수정 창의 날짜 칸으로 정함) 드래그 중에는 동기화 결과로 화면을 다시 그리지 않고 끝난 뒤에 그림(끌던 항목이 사라져 취소되지 않게)
      · 일정 입력/수정은 팝업 안의 대화상자(시작·종료 날짜/시간·알림·내용·메모) — To Do 를 고칠 때만 날짜를 비워 둘 수 있음(비우면 To Do 로 남음)
    데이터: To Do = 날짜가 없는 항목(d:'') — localStorage 'BTMPlanner_v1' 에만 저장되고 구글 캘린더에는 올리지 않음(날짜가 정해지는 순간 일반 일정이 되어 동기화 대상). 화면 설정 'BTMPlannerUI_v1'={view:'cal'|'list'}.
    (아래 엔진 설명은 v202 그대로)
@@ -12363,7 +12367,7 @@ function fitCal(){   /* 칸 높이에 맞게 '한 번에 보이는 줄 수'를 �
 /* ── 화면: To Do 목록 ── */
 const ckHtml=it=>'<input type="checkbox" class="ck" data-a="done"'+(it.x?' checked':'')+' title="'+(it.td?'완료 표시 — 구글 Tasks 의 체크와 연동됩니다':'완료 표시 — 폰·구글 캘린더에서 만든 일정이라 이 앱에만 저장됩니다')+'">';   /* v230: 앱에서 만든 일정은 모두 td(Tasks 연동) — 이 앱에만 저장되는 건 폰·구글 캘린더 일정뿐 */
 const pendDot=it=>((gcfg.on&&needsPush(it))||(tkOn()&&needsTaskPush(it)))?'<i class="pln-dot" title="구글(캘린더·Tasks)에 아직 반영되지 않음"></i>':'';
-/* ── 일정 메모 숨기기(v232): 목록에는 제목만 보이고, 메모가 있는 일정은 제목 옆에 메모 아이콘(눌러서 펼침·다시 눌러 접힘) ── */
+/* ── 일정 메모 숨기기(v232): 목록에는 제목만 보이고, 메모가 있는 일정은 메모 아이콘(눌러서 펼침·다시 눌러 접힘) — 아이콘 자리: 왼쪽 목록(미정·확정·완료)은 오른쪽 단추 줄 맨 앞(v234), 월간 목록 줄은 제목 바로 뒤 ── */
 const SVG_MEMO='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 2h6.5l2.5 2.5V14h-9z"/><path d="M10 2v2.5h2.5"/><path d="M5.5 7.5h5M5.5 10h5"/></svg>';
 const memoTip=on=>on?'메모 접기':'메모가 숨겨져 있어요 — 눌러서 보기';
 const memoBtn=it=>{ if(!it.m) return ''; const on=memoOpen.has(it.id); return '<button type="button" class="pln-mi'+(on?' on':'')+'" data-a="memo" aria-expanded="'+(on?'true':'false')+'" title="'+memoTip(on)+'">'+SVG_MEMO+'</button>'; };
@@ -12377,14 +12381,14 @@ function toggleMemo(id){   /* 메모 아이콘: 펼침 ↔ 접힘 — 같은 일
     const b=r.querySelector('button[data-a="memo"]'); if(b){ b.classList.toggle('on',on); b.setAttribute('aria-expanded',on?'true':'false'); b.title=memoTip(on); }
   });
 }
-function todoHtml(it){
+function todoHtml(it){   /* v234: 제목은 한 줄(길면 …, 전체 제목은 줄 툴팁) · 📅(날짜 고르기) 단추는 없애고 그 자리(오른쪽 단추 줄 맨 앞)에 메모 아이콘 — 메모가 있는 일정에만. 날짜는 ✏️ 수정 창 또는 달력으로 끌어다 놓아 정함 */
   const p=palOf(it.c);
-  return '<div class="pln-td'+(it.x?' dn':'')+moCls(it)+'"'+barStyle(p&&p[2])+' draggable="true" data-id="'+esc(it.id)+'" title="달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span>'+ckHtml(it)+'<div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+memoBtn(it)+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac"><button data-a="pick" title="날짜 고르기">📅</button><button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-td'+(it.x?' dn':'')+moCls(it)+'"'+barStyle(p&&p[2])+' draggable="true" data-id="'+esc(it.id)+'" title="'+(it.s?esc(it.s)+'\n':'')+'달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span>'+ckHtml(it)+'<div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
-function doneHtml(it,today){                                          /* 왼쪽 아래 '확정 일정'의 한 줄 */
+function doneHtml(it,today){                                          /* 왼쪽 아래 '확정 일정'의 한 줄 — v234: 미정 줄(todoHtml)과 똑같이 제목은 한 줄(길면 …, 전체 제목은 줄 툴팁)·메모 아이콘은 오른쪽 단추 줄 맨 앞(메모가 있는 일정에만) */
   const past=it.d2<today, wd=WD[parseYmd(it.d).getDay()];
   const sub=(it.d2>it.d?'<small>~'+mdOf(it.d2)+'</small>':'')+(it.t?'<small>'+esc(it.t)+'</small>':'');   /* 요일은 날짜와 같은 줄(.d1) — 여러 날 일정의 끝 날짜·시간은 그 아래 줄 */
-  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+'"'+barStyle(colorOf(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+memoBtn(it)+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac"><button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+'"'+barStyle(colorOf(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="'+(it.s?esc(it.s)+'\n':'')+'누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
 const inDone=x=>!!x.d&&(!!x.td||x.src==='app');   /* 아래 '확정 일정' 목록 = To Do 에서 시작한 항목 + 이 앱에서 만든 일정(달력에서 직접 입력 포함) — 폰·구글 캘린더에서 만든 일정은 제외 */
 function renderTodo(){
@@ -12392,7 +12396,7 @@ function renderTodo(){
   memoOpen.forEach(id=>{ if(!items.some(x=>x.id===id)) memoOpen.delete(id); });   /* 지워진 일정의 펼침 기록 정리(v232) */
   const todos=items.filter(x=>!x.d&&!x.x);   /* 위: 일정 미정 — 완료한 것은 맨 아래 '완료 일정'으로(v222, 입력 순서는 유지) */
   const c=$('plnTodoCnt'); if(c) c.textContent=todos.length;
-  box.innerHTML=todos.length?todos.map(todoHtml).join(''):'<div class="pln-em">날짜가 정해지지 않은 일정을 위에 적어 두세요.<br>적은 항목을 오른쪽 달력의 날짜로 끌어다 놓으면(또는 📅 로 날짜를 고르면) 그날의 일정이 되어 아래 ‘확정 일정’으로 내려갑니다.<br>반대로 달력의 일정이나 ‘확정 일정’ 줄을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정이 됩니다.<br>또는 제목 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면(‘11/25 (화) ’처럼 요일을 붙여도 됩니다) 그 날짜의 확정 일정이 됩니다.</div>';
+  box.innerHTML=todos.length?todos.map(todoHtml).join(''):'<div class="pln-em">날짜가 정해지지 않은 일정을 위에 적어 두세요.<br>적은 항목을 오른쪽 달력의 날짜로 끌어다 놓으면(또는 ✏️ 수정 창에서 날짜를 고르면) 그날의 일정이 되어 아래 ‘확정 일정’으로 내려갑니다.<br>반대로 달력의 일정이나 ‘확정 일정’ 줄을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정이 됩니다.<br>또는 제목 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면(‘11/25 (화) ’처럼 요일을 붙여도 됩니다) 그 날짜의 확정 일정이 됩니다.</div>';
   if(!dbox) return;
   const done=items.filter(x=>inDone(x)&&!x.x).sort(cmp); if(ui.sort!=='asc') done.reverse();   /* 아래: 날짜가 확정된 항목(To Do 출신 + 이 앱에서 만든 일정) — 기본은 날짜 최신순 */
   const dc=$('plnDoneCnt'); if(dc) dc.textContent=done.length;
@@ -12666,7 +12670,7 @@ function toggleDone(id,val){   /* 완료 체크 — v222: 체크하면 '완료 �
   it.mod=Date.now();
   afterChange(false);
 }
-function todoClick(ev){   /* 왼쪽 목록: 체크박스 · 단추(📅·✏️·🗑) · 아래 '확정 일정' 줄을 누르면 달력의 그날로 */
+function todoClick(ev){   /* 왼쪽 목록: 체크박스 · 단추(메모 아이콘·✏️·🗑 — 📅 '날짜 고르기' 단추는 v234 에서 없앰, pick 분기는 그대로 둠) · 아래 '확정 일정' 줄을 누르면 달력의 그날로 */
   const t=ev.target; if(!t||!t.closest) return;
   const row=t.closest('[data-id]'); if(!row) return;
   const id=row.getAttribute('data-id');
