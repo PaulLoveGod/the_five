@@ -5300,7 +5300,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-wk div:first-child{color:#dc2626}
 #plnModal .pln-wk div:last-child{color:#2563eb}
 #plnModal .pln-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:relative;--bt:25px}   /* --bt = 칸 맨 위에서 첫 줄까지(칸 안쪽 여백 3 + 날짜 줄 20 + 간격 2) — 막대 위치(v221) */
-#plnModal .pln-cell{border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:3px 4px;min-height:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+#plnModal .pln-cell{border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:3px 4px 0;min-height:0;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:2px;cursor:pointer}
 #plnModal .pln-cell:nth-child(7n){border-right:none}
 #plnModal .pln-cell:hover{background:#f8fffe}
 #plnModal .pln-cell.out{background:#fafafa}
@@ -5351,7 +5351,13 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-wi .ac button{border:none;background:transparent;border-radius:5px;padding:2px 4px;font-size:12px;cursor:pointer;opacity:.75}
 #plnModal .pln-wi .ac button:hover{background:#e2e8f0;opacity:1}
 #plnModal .pln-wi.ed{border-color:#0f766e;box-shadow:0 0 0 2px rgba(15,118,110,.18)}
-#plnModal .pln-cl{display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden}
+/* v225: 칸 안 칩 목록 = 스크롤 상자 — 일정(막대 줄+칩)이 4줄을 넘으면 오른쪽에 가는 스크롤바. 정확한 최대 높이는 fitCal 이 칸마다 정함(기본 4줄 = 4×20-2 = 78px) */
+#plnModal .pln-cl{display:flex;flex-direction:column;gap:2px;min-height:0;max-height:78px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+#plnModal .pln-cl::-webkit-scrollbar{width:7px}
+#plnModal .pln-cl::-webkit-scrollbar-track{background:#e8edf3;border-radius:4px}
+#plnModal .pln-cl::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
+#plnModal .pln-cl::-webkit-scrollbar-thumb:hover{background:#64748b}
+@supports not selector(::-webkit-scrollbar){ #plnModal .pln-cl{scrollbar-width:thin;scrollbar-color:#94a3b8 #e8edf3} }
 #plnModal .pln-ch{flex:none;height:18px;line-height:18px;font-size:11px;padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;user-select:none}
 #plnModal .pln-ch.ad{background:#0f766e;color:#fff}
 #plnModal .pln-ch.tm{background:#e0f2fe;color:#0c4a6e;border-left:3px solid #0284c7}
@@ -5360,8 +5366,6 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-ch b{font-weight:700;margin-right:3px}
 #plnModal .pln-ch .mk{font-size:10px}
 #plnModal .pln-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#f59e0b;margin-right:3px;vertical-align:middle}
-#plnModal .pln-more{flex:none;height:18px;line-height:18px;font-size:10.5px;font-weight:700;color:#475569;padding:0 4px;cursor:pointer}
-#plnModal .pln-more:hover{color:#0f766e;text-decoration:underline}
 /* 여러 날 일정 막대(v221): 칸 경계를 넘어 이어지는 한 줄 — #plnGrid 위에 겹친 격자(.pln-bars, 칸과 같은 열·행)에 놓음. 칸 안의 일반 칩은 .pln-sp(막대 줄 수만큼의 빈 칸) 아래에서 시작 */
 #plnModal .pln-bars{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));pointer-events:none;z-index:1}
 #plnModal .pln-mb{align-self:start;pointer-events:auto;min-width:0;margin-left:4px;margin-right:5px}
@@ -11326,6 +11330,12 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v225 요청: "월 달력에 일정이 많으면 하단에 '+2건 더보기' 로 나오는데 그렇게 하지 말고, 갯수가 4개를 초과하면 날짜 칸 우측에 스크롤바를 만들어 스크롤로 볼 수 있게 · 해당 창을 업데이트할 때마다 스크롤이 맨 위로 올라가 있게"
+     · '+N건 더보기'(.pln-more·addMore)와 fitCal 이 넘치는 칩을 지우던 동작을 없앰. 하루짜리 칩은 전부 DOM 에 두고, 칸 안 칩 목록(.pln-cl)이 스크롤 상자(overflow-y:auto, 가는 7px 스크롤바 — ::-webkit-scrollbar, 파이어폭스는 scrollbar-width:thin):
+       한 번에 보이는 줄 수 = min(CAL_VIS=4, 칸 높이에 들어가는 줄 수) — 칸의 일정(막대 줄 + 칩)이 그 줄 수를 넘을 때만 스크롤바가 생김(4개까지는 없음). 칩 목록의 max-height = (한 번에 보이는 줄 수 − 막대 줄 수, 최소 1줄) × 20 − 2 px (fitCal 이 칸마다 정함, 기본 CSS 는 4줄 78px).
+     · 여러 날 일정 막대(.pln-mb)는 v221 처럼 칸 맨 위에 고정(스크롤하지 않음) — 막대 줄 빈 칸 .pln-sp 를 스크롤 상자 밖(칸의 직계 자식, 날짜 줄 바로 아래)으로 옮겨 칩만 그 아래에서 스크롤. 칸이 낮아 막대 줄이 (들어가는 줄 수−1)을 넘으면 아래 줄 막대는 감추지 않고 걸친 칸마다 흐린 칩(↳)으로 바꿔 그 칸 스크롤 목록 맨 앞에 넣음. 칸 아래 안쪽 여백 3px 은 0 으로(들어가는 줄 수 계산이 칸 높이 소수점에 흔들려 4번째 줄이 모자라 보이지 않게).
+     · 맨 위로: renderCal 이 칸을 새로 만들 때마다(월 이동·보기 전환·[오늘]·일정 추가/수정/삭제·구글에서 내용이 바뀐 동기화·창 크기 변경) 스크롤은 맨 위. 단 render()(자동 동기화가 15초·60초마다 부름)는 renderMain(true)=quiet 로 달력 내용·크기 서명(grid._sig)이 그대로면 다시 그리지 않음 — 보던 스크롤이 튀지 않게. 창을 열 때·[🔄]는 내용이 같아도 calTop() 으로 모든 칸 목록을 맨 위로.
+     · 칸 안 목록의 스크롤바를 누르거나 끌어도 '새 일정' 창이 열리지 않게: calClick 이 스크롤바 자리 직접 클릭(onSb)과 스크롤바에서 시작한 누름 뒤의 click(sbDown, document mousedown/mouseup 캡처)을 걸러냄.
    v224 요청: "완료 일정을 최소화한 뒤 확정 일정을 최소화하면 완료 일정이 다시 펼쳐지는 오류 — 펼쳐지지 않게"
      · 원인: 왼쪽 패널 상태가 ui.pm 한 칸('maxTop'|'minBot'…)이라 다른 구역의 [최소화]를 누르면 먼저 접어 둔 구역의 상태가 덮어써져 풀렸음. 이제 최대화·최소화를 따로 둠 —
        ui.mx = 최대화한 구역('' | top | bot | fin, 한 번에 하나 — 풀면 접어 둔 상태가 그대로) · ui.mn = 접은 구역들(배열, 구역마다 따로 접고 펼침). 패널 속성도 data-mx · data-mn("top bot" 처럼 공백으로 이은 목록, CSS 는 [data-mn~="fin"]).
@@ -11341,7 +11351,7 @@ window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='n
      · 날짜가 정해진 일정을 끌어 위쪽 미정 영역에 놓으면 날짜가 지워지는 동작(arm)은 위가 가려진 상태(maxBot·maxFin·minTop)에서도 그대로.
    v221 요청: "월세 보증금 준비처럼 11/23~24 연속으로 있는 일정이 두 날짜로 나뉘어 두 개로 보이지 않고, 구글 캘린더처럼 이어진 하나의 막대로 · 이어진 날짜로 표시되는 일정은 언제나 칸의 맨 위에"
      · 달력(월간)에서 여러 날 일정(d2>d, 시간 일정 포함)은 칸마다 칩을 나누지 않고 주(週)마다 칸 경계를 넘어 이어진 막대 하나(.pln-mb)로 그림 — #plnGrid 위에 겹친 .pln-bars 격자(칸과 같은 7열×주 행)에 grid-column/span 으로 놓아 칸 사이 선도 가림. 제목은 막대 시작에 한 번(주가 바뀌면 그 주 첫 칸에서 다시), 앞·뒤 주에서 이어지면 그쪽 모서리를 네모로(.cl/.cr).
-     · 막대는 언제나 칸의 맨 위 줄들(weekBars: 시작이 이르고 긴 것부터 lane 0,1,…)이고 일반 칩은 그 아래(칸마다 .pln-sp 빈 칸으로 막대 줄 수만큼 비움). 칸이 낮아 줄이 모자라면 fitCal 이 아래 줄 막대부터 감추고 '+N건 더보기'에 포함(막대 줄은 최대 줄 수-1). dayMap 은 여러 날 일정을 빼고(칩 목록엔 하루짜리만).
+     · 막대는 언제나 칸의 맨 위 줄들(weekBars: 시작이 이르고 긴 것부터 lane 0,1,…)이고 일반 칩은 그 아래(칸마다 .pln-sp 빈 칸으로 막대 줄 수만큼 비움). 칸이 낮아 줄이 모자라면 fitCal 이 아래 줄 막대부터 감추고 '+N건 더보기'에 포함(막대 줄은 최대 줄 수-1) → v225: '+N건 더보기' 는 없어짐, 감춘 막대는 걸친 칸의 흐린 칩(↳)으로 그 칸의 스크롤 목록에. dayMap 은 여러 날 일정을 빼고(칩 목록엔 하루짜리만).
      · 막대도 .pln-ch 라서 누르면 수정 창·끌어서 다른 날짜로 옮기면 길이를 유지한 채 통째로 이동(assign). 끄는 동안(#plnGrid.dg)엔 막대가 마우스를 받지 않아 아래 칸이 놓는 자리가 됨.
    v220 요청: "오늘 업무 팝업의 '오늘 발생한 업무'와 '이전 업무'를 위아래가 아니라 좌/우 2단으로 · 팝업 크기는 '일정 / To Do List' 팝업과 같게"
      · #plnWk 오버레이가 일정 팝업 카드(.pln-card)를 통째로 덮음(패딩 0 · .pln-wkc 가 100%×100% · 모서리·그림자는 카드가 처리) → 일정 팝업과 크기·위치가 똑같음(min(1326px,98vw) × min(910px,95vh)). 왼쪽 .pln-wkt = '오늘 발생한 업무'(입력칸+오늘 목록), 오른쪽 .pln-wkp = '이전 업무'(목록) — 각 열이 따로 스크롤.
@@ -11412,7 +11422,7 @@ window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='n
    v204 요청: "일정을 누르면 메모 '크게 보기'와 같은 크기로 팝업 · 왼쪽엔 아직 날짜가 정해지지 않은 일정(To Do)을 입력, 오른쪽엔 월간 달력 · To Do 를 끌어서 달력 날짜에 놓으면 왼쪽에서는 지워지고 달력에 표기
          · 달력이 기본이지만 그 달의 일정을 목록으로도 볼 수 있게"
    화면: 팝업 크기 = 메모장 #memoModal 과 같은 값(바깥 여백 10px · 가로 min(1326px,98vw) · 세로 min(910px,95vh)). 왼쪽 .pln-todo(To Do 입력·목록) | 오른쪽 .pln-cal(월 이동·[달력|목록] 전환).
-     · 달력: 일요일 시작 7열 · 5~6주 · 날짜 칸마다 일정 칩(종일=초록, 시간 일정=파랑, 여러 날 일정은 이어서 ↳) · 칸이 좁으면 '+N건 더보기'(누르면 그날로 목록 보기) · 빈 칸을 누르면 그날의 새 일정, 칩을 누르면 수정
+     · 달력: 일요일 시작 7열 · 5~6주 · 날짜 칸마다 일정 칩(종일=초록, 시간 일정=파랑, 여러 날 일정은 이어서 ↳) · 칸이 좁으면 '+N건 더보기'(누르면 그날로 목록 보기 → v225 에서 칸 안 스크롤로 바뀜) · 빈 칸을 누르면 그날의 새 일정, 칩을 누르면 수정
      · 끌어다 놓기(HTML5 드래그): To Do → 날짜 칸 = 그날 종일 일정(왼쪽에서 사라짐) · 달력의 칩 → 다른 날짜 칸 = 그 일정의 날짜 이동(여러 날 일정은 길이 유지). 놓은 칸이 잠깐 노랗게 번쩍임
      · To Do 줄의 📅 로 날짜를 골라도 같음(끌기 어려운 환경용). 드래그 중에는 동기화 결과로 화면을 다시 그리지 않고 끝난 뒤에 그림(끌던 항목이 사라져 취소되지 않게)
      · 일정 입력/수정은 팝업 안의 대화상자(시작·종료 날짜/시간·알림·내용·메모) — To Do 를 고칠 때만 날짜를 비워 둘 수 있음(비우면 To Do 로 남음)
@@ -11441,7 +11451,7 @@ const CAL_NAME='BTM 일정';
 const CID_DEFAULT='';                       /* 배포 파일에 클라이언트 ID 를 미리 넣어 두려면 여기에(비밀값 아님) — 비워 두면 일정 창 [연결 설정]에서 붙여넣음 */
 const WIN_BACK=90, WIN_FWD=730;             /* 동기화 창: 오늘−90일 ~ +730일 */
 const REC_BACK=7, REC_FWD=60;               /* 반복 일정의 날짜별 항목은 이 범위만 앱에 가져옴(매일 반복이 수백 줄이 되지 않게) */
-const POLL_MS=60000, TPOLL_MS=15000, CHIP_H=20;   /* 창이 열려 있는 동안: 전체 동기화 60초마다 · Tasks 만 15초마다 */
+const POLL_MS=60000, TPOLL_MS=15000, CHIP_H=20, CAL_VIS=4;   /* 창이 열려 있는 동안: 전체 동기화 60초마다 · Tasks 만 15초마다 */
 const DEF_SP=0.42, DEF_SF=0.2;                          /* 왼쪽 위(일정 미정) 구역의 기본 높이 비율 */
 const PM_OK=['','maxTop','maxBot','maxFin','minTop','minBot','minFin'];
 const MIN_F=0.1;                              /* 왼쪽 패널 세 구역이 각각 차지하는 비율의 아래 한계(v222) */
@@ -11511,7 +11521,7 @@ let editId='', editBase=null, dlgTodo=false, setOn=false, dlgColor='', clrOn=fal
 let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자동 재시도 횟수·타이머 · 마지막 전체 동기화 시각 · 이 캘린더의 일정을 한 번이라도 가져왔는지(v214) */
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
 let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[]}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
-let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null;
+let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null, sbDown=false;
 const WKEY='BTMPlannerWork_v1', WK_TITLE='오늘 업무';                      /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 */
 let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''};
 const wkOpenIds=new Set();
@@ -12237,43 +12247,48 @@ function barHtml(sg){
   const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
   return '<div class="pln-ch pln-mb '+(ad?'ad':'tm')+(it.x?' dn':'')+(sg.l?' cl':'')+(sg.r?' cr':'')+'" style="grid-column:'+(sg.c0+1)+'/span '+(sg.c1-sg.c0+1)+';grid-row:'+(sg.w+1)+';margin-top:calc(var(--bt) + '+(sg.lane*CHIP_H)+'px);'+cst+'" draggable="true" data-id="'+esc(it.id)+'" data-w="'+sg.w+'" data-c0="'+sg.c0+'" data-c1="'+sg.c1+'" data-lane="'+sg.lane+'" title="'+esc(tip)+'">'+dot+((!ad&&!sg.l)?'<b>'+esc(it.t)+'</b>':'')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
-function renderCal(){
+function renderCal(quiet){
   const grid=$('plnGrid'); if(!grid) return; ensureVm();
   const y=vm.getFullYear(), m=vm.getMonth(), lead=new Date(y,m,1).getDay(), dim=new Date(y,m+1,0).getDate(), weeks=Math.ceil((lead+dim)/7);
   const start=new Date(y,m,1-lead), a=ymd(start), b=ymd(new Date(y,m,1-lead+weeks*7-1)), today=todayY();
   const map=dayMap(a,b), wb=weekBars(a,weeks); let html='', bars='';
   for(let i=0;i<weeks*7;i++){
     const dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i), day=ymd(dt), dow=dt.getDay(), out=dt.getMonth()!==m;
-    const num=dt.getDate()===1?((dt.getMonth()+1)+'월 1일'):String(dt.getDate());
-    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span>'+(day===today?wkIcon():'')+'</div><div class="pln-cl">'+(wb.k[Math.floor(i/7)][dow]?'<div class="pln-sp" style="height:'+(wb.k[Math.floor(i/7)][dow]*CHIP_H-2)+'px"></div>':'')+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
+    const num=dt.getDate()===1?((dt.getMonth()+1)+'월 1일'):String(dt.getDate()), kk=wb.k[Math.floor(i/7)][dow];
+    html+='<div class="pln-cell'+(out?' out':'')+(day===today?' today':'')+(dow===0?' sun':dow===6?' sat':'')+'" data-day="'+day+'"><div class="pln-dn"><span>'+num+'</span>'+(day===today?wkIcon():'')+'</div>'+(kk?'<div class="pln-sp" style="height:'+(kk*CHIP_H-2)+'px"></div>':'')+'<div class="pln-cl">'+(map.get(day)||[]).map(it=>chipHtml(it,day)).join('')+'</div></div>';
   }
   wb.segs.forEach(L=>L.forEach(sg=>{ bars+=barHtml(sg); }));
-  const rows='repeat('+weeks+',minmax(0,1fr))';
-  grid.style.gridTemplateRows=rows;
-  grid.innerHTML=html+(bars?'<div class="pln-bars" style="grid-template-rows:'+rows+'">'+bars+'</div>':''); fitCal();
+  const rows='repeat('+weeks+',minmax(0,1fr))', full=html+(bars?'<div class="pln-bars" style="grid-template-rows:'+rows+'">'+bars+'</div>':'');
+  const sig=grid.clientWidth+'x'+grid.clientHeight+'|'+rows+'|'+full;
+  if(quiet&&grid._sig===sig&&grid.firstElementChild&&grid.firstElementChild.classList.contains('pln-cell')) return;   /* v225: 내용·크기가 그대로면(15초마다 도는 자동 동기화) 다시 그리지 않음 — 칸 안에서 스크롤하던 자리가 튀지 않게. 바뀌면 칸을 새로 만들어 스크롤은 맨 위 */
+  grid._sig=sig; grid.style.gridTemplateRows=rows;
+  grid.innerHTML=full; fitCal();
 }
-function addMore(cell,cl,n){ const more=document.createElement('div'); more.className='pln-more'; more.setAttribute('data-day',cell.getAttribute('data-day')); more.textContent='+'+n+'건 더보기'; cl.appendChild(more); }
-function fitCal(){   /* 칸 높이에 맞게 막대(여러 날 일정)·칩 수를 줄이고 나머지는 '+N건 더보기' — 칸이 보이지 않을 때(높이 0)는 건너뜀. 막대가 차지하는 줄은 빼고 셈(v221): 막대 줄은 최대 (줄 수-1), 넘치면 아래 줄 막대부터 감춤 */
+function calTop(){ const g=$('plnGrid'); if(g) g.querySelectorAll('.pln-cl').forEach(e=>{ e.scrollTop=0; }); }   /* 달력 칸 안 목록의 스크롤을 전부 맨 위로(v225) */
+function onSb(ev,el){ if(!el||el.offsetWidth<=el.clientWidth) return false; const r=el.getBoundingClientRect(); return ev.clientX>=r.left+el.clientWidth-0.5; }   /* 칸 안 목록의 세로 스크롤바 자리를 눌렀나 */
+function fitCal(){   /* 칸 높이에 맞게 '한 번에 보이는 줄 수'를 정해 칸 안 칩 목록(.pln-cl)의 최대 높이를 맞춤(v225) — 넘치는 칩은 지우지 않고 목록 안 스크롤로. 한 번에 보이는 줄 수 = min(CAL_VIS, 칸에 들어가는 줄 수), 막대가 차지하는 줄(.pln-sp)은 그중에서 빼되 칩 목록은 최소 1줄(v221: 막대 줄은 최대 줄 수-1). 막대 줄이 너무 많으면 아래 줄 막대는 걸친 칸마다 흐린 칩으로 바꿔 그 칸 목록 맨 앞에. 칸이 보이지 않을 때(높이 0)는 건너뜀 */
   const grid=$('plnGrid'); if(!grid) return;
   const cells=[...grid.querySelectorAll('.pln-cell')], weeks=Math.ceil(cells.length/7), bw=[];
   for(let w=0;w<weeks;w++) bw.push([]);
   grid.querySelectorAll('.pln-mb').forEach(b=>{ const w=+b.getAttribute('data-w'); if(bw[w]) bw[w].push(b); });
   for(let w=0;w<weeks;w++){
-    const row=cells.slice(w*7,w*7+7), c0=row[0]; if(!c0||!c0.clientHeight) continue;
-    const lines=Math.max(2,Math.floor((c0.clientHeight-c0.querySelector('.pln-dn').offsetHeight-6)/CHIP_H)), maxLanes=lines-1;
-    const vis=[0,0,0,0,0,0,0], hid=[0,0,0,0,0,0,0];
+    const row=cells.slice(w*7,w*7+7), c0=row[0]; if(!c0) continue;
+    const H=c0.getBoundingClientRect().height; if(!H) continue;
+    const cs=getComputedStyle(c0), inner=H-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0)-(parseFloat(cs.borderTopWidth)||0)-(parseFloat(cs.borderBottomWidth)||0);
+    const fit=Math.max(2,Math.floor((inner-c0.querySelector('.pln-dn').offsetHeight)/CHIP_H+1e-6)), cap=Math.min(CAL_VIS,fit), maxLanes=fit-1;
+    const vis=[0,0,0,0,0,0,0], hid=[[],[],[],[],[],[],[]];
     bw[w].forEach(b=>{
       const ln=+b.getAttribute('data-lane'), x0=+b.getAttribute('data-c0'), x1=+b.getAttribute('data-c1');
-      if(ln>=maxLanes){ for(let c=x0;c<=x1;c++) hid[c]++; b.remove(); }
+      if(ln>=maxLanes){ for(let c=x0;c<=x1;c++) hid[c].push({id:b.getAttribute('data-id'),ln}); b.remove(); }
       else for(let c=x0;c<=x1;c++) vis[c]=Math.max(vis[c],ln+1);
     });
     row.forEach((cell,c)=>{
       const cl=cell.querySelector('.pln-cl'); if(!cl) return;
-      let sp=cl.querySelector('.pln-sp');
-      if(vis[c]){ if(!sp){ sp=document.createElement('div'); sp.className='pln-sp'; cl.insertBefore(sp,cl.firstChild); } sp.style.height=(vis[c]*CHIP_H-2)+'px'; } else if(sp) sp.remove();
-      const chips=[...cl.children].filter(e=>!e.classList.contains('pln-sp')), n=chips.length, h=hid[c], cap=lines-vis[c];
-      if(n+(h?1:0)<=cap){ if(h) addMore(cell,cl,h); return; }
-      const keep=Math.max(0,cap-1); chips.slice(keep).forEach(e=>e.remove()); addMore(cell,cl,(n-keep)+h);
+      let sp=cell.querySelector('.pln-sp');
+      if(vis[c]){ if(!sp){ sp=document.createElement('div'); sp.className='pln-sp'; cell.insertBefore(sp,cl); } sp.style.height=(vis[c]*CHIP_H-2)+'px'; } else if(sp) sp.remove();
+      if(hid[c].length){ const day=cell.getAttribute('data-day'); cl.insertAdjacentHTML('afterbegin',hid[c].sort((p,q)=>p.ln-q.ln).map(h=>{ const it=items.find(x=>x.id===h.id); return it?chipHtml(it,day):''; }).join('')); }
+      cl.style.maxHeight=(Math.max(1,cap-vis[c])*CHIP_H-2)+'px';
+      cl.scrollTop=0;
     });
   }
 }
@@ -12309,14 +12324,14 @@ function renderTodo(){
 function sortToggle(){ ui.sort=ui.sort==='asc'?'desc':'asc'; saveUi(); renderTodo(); }
 
 /* ── 화면: 전체 다시 그리기 ── */
-function renderMain(){
+function renderMain(quiet){   /* quiet=true(자동 동기화 등 render() 가 부름): 달력 내용·크기가 그대로면 다시 그리지 않음(v225) */
   ensureVm();
   const lab=$('plnMonth'); if(lab) lab.textContent=vm.getFullYear()+'년 '+(vm.getMonth()+1)+'월';
   const cal=ui.view!=='list', w=$('plnCalWrap'), l=$('plnList');
   if(w) w.style.display=cal?'flex':'none';
   if(l) l.style.display=cal?'none':'block';
   [['plnVCal',cal],['plnVList',!cal]].forEach(([id,on])=>{ const b=$(id); if(b) b.className=on?'on':''; });
-  if(cal) renderCal(); else renderList();
+  if(cal) renderCal(quiet); else renderList();
   const a=ymd(vm), b=ymd(new Date(vm.getFullYear(),vm.getMonth()+1,0));
   const n=items.filter(it=>it.d&&it.d2>=a&&it.d<=b).length, pend=gcfg.on?items.filter(it=>needsPush(it)||(tkOn()&&needsTaskPush(it))).length:0;
   const cn=$('plnCount'); if(cn) cn.textContent='이 달 일정 '+n+'건'+(pend?' · 구글 반영 대기 '+pend+'건':'');
@@ -12324,7 +12339,7 @@ function renderMain(){
 function render(){
   if(!opened) return;                                  /* 창이 닫혀 있으면 열 때 그림 */
   if(dragId){ pendingRender=true; return; }            /* 끌고 있는 동안에는 미룸(끌던 항목이 사라져 취소되지 않게) */
-  load(); renderTodo(); renderMain(); if(wkIsOpen()) renderWork();
+  load(); renderTodo(); renderMain(true); if(wkIsOpen()) renderWork();
 }
 function updateBtn(){
   const b=$('plnMenuBtn'); if(!b) return; load();
@@ -12556,11 +12571,12 @@ function goDay(day){   /* 달력(또는 목록)에서 그날이 보이게 */
   if(ui.view==='list'){ showDay(day); return; }
   vm=mStart(d); renderMain(); flash(day);
 }
-function calClick(ev){   /* 달력: 칩=수정 · '+N건 더보기'=그날 목록 · 빈 칸=그날 새 일정 */
+function calClick(ev){   /* 달력: 칩=수정 · 빈 칸=그날 새 일정 (v225: '+N건 더보기' 는 없어지고 칸 안 목록이 스크롤) */
   const t=ev.target; if(!t||!t.closest) return;
+  if(sbDown){ sbDown=false; return; }                                       /* 칸 안 목록의 스크롤바를 누르거나 끌다 놓은 뒤의 click — 새 일정 창을 열지 않음(v225) */
+  if(t.classList&&t.classList.contains('pln-cl')&&onSb(ev,t)) return;      /* 스크롤바 자리를 직접 누름 */
   if(t.closest('.pln-wkic')){ wkOpen(); return; }                           /* 오늘 날짜 옆 '오늘 업무' 아이콘(v218) */
   const ch=t.closest('.pln-ch'); if(ch){ openDlg({id:ch.getAttribute('data-id')}); return; }
-  const mo=t.closest('.pln-more'); if(mo){ showDay(mo.getAttribute('data-day')); return; }
   const cell=t.closest('.pln-cell'); if(cell) openNew(cell.getAttribute('data-day'));
 }
 function showDay(day){   /* 그날이 보이게 목록 보기로 */
@@ -12829,6 +12845,9 @@ document.addEventListener('drop',e=>{
   const s=tg.closest('#plnModal .pln-sec.top');
   if(s&&dragDated()){ e.preventDefault(); const id=readDragId(e); endDrag(); if(id) unassign(id); }   /* 날짜가 정해진 일정을 일정 미정 영역에 놓음 → 날짜 삭제 */
 });
+/* 칸 안 목록의 스크롤바를 누르거나 끌 때 '새 일정' 창이 열리지 않게(v225) — 스크롤바에서 시작한 누름은 뒤따르는 click 도 무시(click 은 mouseup 직후 같은 작업에서 오므로 setTimeout 0 으로 표시를 지움) */
+document.addEventListener('mousedown',e=>{ const t=e.target; sbDown=!!(opened&&t&&t.classList&&t.classList.contains('pln-cl')&&onSb(e,t)); },true);
+document.addEventListener('mouseup',()=>{ if(sbDown) setTimeout(()=>{ sbDown=false; },0); },true);
 window.addEventListener('resize',()=>{ if(!opened||ui.view==='list') return; clearTimeout(resizeT); resizeT=setTimeout(()=>{ if(opened&&!dragId) renderMain(); },150); });
 
 /* ── 연결 설정 ── */
@@ -12899,7 +12918,7 @@ function chipClick(){
   syncClick();
 }
 function syncClick(){
-  load();
+  calTop(); load();                                                    /* [🔄] = 창 업데이트 — 칸 안 목록을 맨 위로(v225) */
   if(!gcfg.cid||!gcfg.on){ toggleSet(true); setInfo('먼저 클라이언트 ID 를 저장하고 [🔗 구글 연결]을 눌러 주세요.','warn'); return; }
   authDismissed=false; tkAsked=false;
   return sync({interactive:true,regrant:tkLack()});                    /* Tasks 권한이 없는 토큰이면 권한을 추가로 받으려고 다시 로그인 */
@@ -12920,7 +12939,7 @@ function open(){
   load(); const m=$('plnModal'); if(!m) return;
   opened=true; closeDlg(); dragId=''; pendingRender=false; vm=mStart(new Date()); paintChip();
   setOn=!gcfg.cid; paintSet();                                 /* 처음엔(클라이언트 ID 가 없으면) 연결 안내를 펼쳐서 보여 줌 */
-  m.style.display='flex'; applyPanel(); render();                            /* 보이게 한 뒤에 그려야 달력 칸 높이를 잴 수 있음 */
+  m.style.display='flex'; applyPanel(); render(); calTop();                  /* 보이게 한 뒤에 그려야 달력 칸 높이를 잴 수 있음 · 내용이 그대로여도 칸 목록은 맨 위로(v225) */
   if(gcfg.cid) loadGsi().catch(()=>{});                        /* 로그인 창이 클릭 안에서 바로 열리도록 미리 불러 둠 */
   if(gcfg.on&&gcfg.cid){ startPoll(); sync({interactive:!authDismissed,regrant:!authDismissed&&!tkAsked&&tkLack()}); }   /* 일정 창을 여는 클릭 안이므로 Tasks 권한 추가 로그인도 바로 띄울 수 있음(한 번 물었는데 허용 안 했으면 다시 안 물음) */
 }
@@ -12948,7 +12967,7 @@ window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,di
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
        reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[]}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain } };
+       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop } };
 })();
 /* ══ /v206 ══ */
 
