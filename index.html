@@ -5274,8 +5274,8 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-pnb svg.dn{transform:scaleY(-1)}
 #plnModal .pln-th{white-space:nowrap}
 #plnModal .pln-th small{min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}   /* 좁은 패널에서도 머리가 한 줄로 — 부제가 먼저 줄어듦 */
-/* 최대화(data-mx = top·bot·fin 중 하나): 그 구역이 왼쪽 패널 전체를 덮음(다른 구역·구분선은 숨김) — 풀면 접어 둔 구역은 그대로(v224) */
-#plnModal .pln-todo[data-mx] .pln-sec,#plnModal .pln-todo[data-mx] .pln-split{display:none}
+/* 최대화(data-mx = top·bot·fin 중 하나): 그 구역이 왼쪽 패널의 남는 높이를 모두 차지 — 나머지 두 구역은 숨기지 않고 '제목 줄만' 남김(v229: 세 구역의 제목 줄(건수·최대화·최소화 단추)은 늘 보임).
+   제목 줄만 남기는 모양은 아래 최소화 규칙을 그대로 씀 — applyPanel 이 최대화 중엔 data-mn 에 최대화 아닌 구역 둘을 올려 줌(저장된 접힘 목록 ui.mn 은 그대로라 최대화를 풀면 접어 둔 구역은 원래대로, v224) */
 #plnModal .pln-todo[data-mx="top"] .pln-sec.top,#plnModal .pln-todo[data-mx="bot"] .pln-sec.bot,#plnModal .pln-todo[data-mx="fin"] .pln-sec.fin{display:flex;flex:1 1 auto;min-height:0}
 /* 최소화(data-mn 에 든 구역들 — 구역마다 따로 접힘, 공백으로 이은 목록): 제목 줄만 남기고 접히지 않은 구역들이 원래 비율대로 나머지를 채움 */
 #plnModal .pln-todo[data-mn~="top"] .pln-sec.top,#plnModal .pln-todo[data-mn~="bot"] .pln-sec.bot,#plnModal .pln-todo[data-mn~="fin"] .pln-sec.fin{flex:0 0 auto;min-height:0}
@@ -5514,7 +5514,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       <div class="pln-todo">
         <!-- 위: 일정 미정(날짜가 정해지지 않은 To Do) — 적어 두었다가 오른쪽 달력의 날짜로 끌어다 놓음 -->
         <div class="pln-sec top">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'top')" title="달력이나 ‘확정 일정’의 항목을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정으로 돌아옵니다">📝 미정 일정 <small>To Do</small><span class="sp"></span><span id="plnTodoCnt" class="pln-cnt" title="날짜가 정해지지 않은 항목 수">0</span><button type="button" class="pln-pnb" data-k="top" data-a="max" title="미정 일정 최대화 — 확정·완료 일정 영역을 아래로 덮고 크게 봅니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="top" data-a="min" title="미정 일정 최소화 — 제목만 남기고 위로 접습니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'top')" title="달력이나 ‘확정 일정’의 항목을 여기로 끌어다 놓으면 날짜가 지워지고 다시 미정 일정으로 돌아옵니다">📝 미정 일정 <small>To Do</small><span class="sp"></span><span id="plnTodoCnt" class="pln-cnt" title="날짜가 정해지지 않은 항목 수">0</span><button type="button" class="pln-pnb" data-k="top" data-a="max" title="미정 일정 최대화 — 확정·완료 일정은 제목 줄만 남기고 크게 봅니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="top" data-a="min" title="미정 일정 최소화 — 제목만 남기고 위로 접습니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div class="pln-tf">
             <input id="plnTodoIn" type="text" maxlength="200" autocomplete="off" placeholder="일정 입력 후 Enter — 앞에 ‘11/25 ’처럼 날짜를 쓰면 바로 확정" title="날짜가 정해지지 않은 일정을 적으세요. 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면 그 날짜의 확정 일정(달력)으로 바로 등록됩니다(‘11/25 (화) ’처럼 요일을 붙여도 됩니다)" onkeydown="BTMPlanner.enter(event,'todo')">
             <textarea id="plnTodoMemo" rows="2" maxlength="4000" placeholder="메모 (선택)"></textarea>
@@ -5526,14 +5526,14 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         <div id="plnSplit" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 위·아래 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event)" onkeydown="BTMPlanner.splitKey(event)" ondblclick="BTMPlanner.splitReset(1)"><i></i></div>
         <!-- 아래: 날짜가 확정된 일정 — 위에서 달력으로 옮겨 날짜를 정하면 여기로 내려와 '월/일'과 함께 모임(날짜 최신순) -->
         <div class="pln-sec bot">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 미정·완료 일정 영역을 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'bot')">📌 확정 일정 <small id="plnSortLab">날짜 최신순</small><span class="sp"></span><button class="pln-sortb" onclick="BTMPlanner.sortToggle()" title="정렬 순서 바꾸기(최신순 ↔ 빠른 날짜순)">⇅</button><span id="plnDoneCnt" class="pln-cnt" title="날짜가 확정된 항목 수">0</span><button type="button" class="pln-pnb" data-k="bot" data-a="max" title="확정 일정 최대화 — 미정·완료 일정은 제목 줄만 남기고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="bot" data-a="min" title="확정 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div id="plnDoneList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
         <!-- 구분선 2 — 확정 일정 ↔ 완료 일정 높이를 조절(더블클릭=원래 비율, ↑↓ 키도 됨) -->
         <div id="plnSplit2" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 확정·완료 일정 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event,2)" onkeydown="BTMPlanner.splitKey(event,2)" ondblclick="BTMPlanner.splitReset(2)"><i></i></div>
         <!-- 맨 아래: 완료 일정(v222) — 미정·확정 일정에서 체크(☑)한 일정이 여기로 옮겨짐(최근 완료한 순). 체크를 풀면 원래 목록(날짜 없으면 미정·있으면 확정)으로 돌아감 -->
         <div class="pln-sec fin">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'fin')" title="미정·확정 일정에서 체크(☑)한 일정이 모입니다 — 체크를 풀면 원래 목록으로 돌아갑니다">✅ 완료 일정 <small>체크한 일정</small><span class="sp"></span><span id="plnFinCnt" class="pln-cnt" title="완료한 일정 수">0</span><button type="button" class="pln-pnb" data-k="fin" data-a="max" title="완료 일정 최대화 — 미정·확정 일정 영역을 덮고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="fin" data-a="min" title="완료 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'fin')" title="미정·확정 일정에서 체크(☑)한 일정이 모입니다 — 체크를 풀면 원래 목록으로 돌아갑니다">✅ 완료 일정 <small>체크한 일정</small><span class="sp"></span><span id="plnFinCnt" class="pln-cnt" title="완료한 일정 수">0</span><button type="button" class="pln-pnb" data-k="fin" data-a="max" title="완료 일정 최대화 — 미정·확정 일정은 제목 줄만 남기고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="fin" data-a="min" title="완료 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div id="plnFinList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
       </div>
@@ -12762,14 +12762,16 @@ async function syncWork(list){   /* 전체 동기화의 캘린더 단계에서: 
 
 /* ── 왼쪽 세 구역(미정·확정·완료): 최대화·최소화·높이 조절(v210·v222) ──
    v224: 최소화는 구역마다 따로(ui.mn = 접은 구역들 — 한 구역을 접은 채 다른 구역을 접어도 먼저 접은 구역이 다시 펼쳐지지 않음), 최대화는 한 번에 하나(ui.mx — 풀면 접어 둔 상태가 그대로).
-   예전(v210~v223)엔 ui.pm 한 칸이라 다른 구역의 단추를 누르면 앞의 상태가 덮어써져 풀렸음 */
+   예전(v210~v223)엔 ui.pm 한 칸이라 다른 구역의 단추를 누르면 앞의 상태가 덮어써져 풀렸음
+   v229: 최대화해도 나머지 두 구역을 숨기지 않고 제목 줄만 남김(세 구역의 제목 줄·건수·단추는 늘 보임) — applyPanel 이 최대화 중엔 data-mn 에 나머지 둘을 올려 '최소화' 모양을 재사용.
+         그 제목 줄(또는 [최대화])을 누르면 최대화가 그 구역으로 옮겨가고, 그 구역의 [최소화](눌린 모양)를 누르면 최대화가 풀리며 펼쳐짐 */
 const PN={top:'미정 일정',bot:'확정 일정',fin:'완료 일정'}, SUF={top:'Top',bot:'Bot',fin:'Fin'}, PK=['top','bot','fin'];   /* 구역 이름 · 툴팁 키 접미(가운데=Bot — 기존 저장값과 호환, 아래=Fin) · 위→아래 순서 */
 const PN_TIP={
-  maxTop:['미정 일정 최대화 — 확정·완료 일정 영역을 아래로 덮고 크게 봅니다','원래 크기로(미정 일정 최대화 해제)'],
+  maxTop:['미정 일정 최대화 — 확정·완료 일정은 제목 줄만 남기고 크게 봅니다','원래 크기로(미정 일정 최대화 해제)'],
   minTop:['미정 일정 최소화 — 제목만 남기고 위로 접습니다','원래 크기로(미정 일정 최소화 해제)'],
-  maxBot:['확정 일정 최대화 — 미정·완료 일정 영역을 덮고 크게 봅니다','원래 크기로(확정 일정 최대화 해제)'],
+  maxBot:['확정 일정 최대화 — 미정·완료 일정은 제목 줄만 남기고 크게 봅니다','원래 크기로(확정 일정 최대화 해제)'],
   minBot:['확정 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(확정 일정 최소화 해제)'],
-  maxFin:['완료 일정 최대화 — 미정·확정 일정 영역을 덮고 크게 봅니다','원래 크기로(완료 일정 최대화 해제)'],
+  maxFin:['완료 일정 최대화 — 미정·확정 일정은 제목 줄만 남기고 크게 봅니다','원래 크기로(완료 일정 최대화 해제)'],
   minFin:['완료 일정 최소화 — 제목만 남기고 아래로 접습니다','원래 크기로(완료 일정 최소화 해제)']};
 const isMin=k=>ui.mn.indexOf(k)>=0;   /* 그 구역이 접혀 있음(최대화 중인 구역은 접힘 표시를 안 하지만 저장값엔 그대로) */
 function applyPanel(){
@@ -12777,15 +12779,16 @@ function applyPanel(){
   const [rt,rm,rf]=trio(ui.sp,ui.sf); box.style.setProperty('--spt',(rt*100).toFixed(3)); box.style.setProperty('--spb',(rm*100).toFixed(3)); box.style.setProperty('--spf',(rf*100).toFixed(3));   /* ×100: 한 구역을 접어도 나머지 둘의 flex-grow 합이 1 이상이라 남는 높이를 모두 채움 */
   if(ui.mx&&PK.indexOf(ui.mx)<0) ui.mx='';
   if(ui.mx) box.setAttribute('data-mx',ui.mx); else box.removeAttribute('data-mx');
-  const mn=PK.filter(k=>isMin(k)&&ui.mx!==k);                        /* 최대화한 구역은 접힌 것으로 안 침 */
-  if(mn.length) box.setAttribute('data-mn',mn.join(' ')); else box.removeAttribute('data-mn');
-  box.querySelectorAll('.pln-pnb').forEach(b=>{ const k=b.getAttribute('data-k'), a=b.getAttribute('data-a'), key=a+(SUF[k]||'Bot'), on=(a==='max')?ui.mx===k:mn.indexOf(k)>=0; b.classList.toggle('on',on); b.title=PN_TIP[key][on?1:0]; b.setAttribute('aria-pressed',on?'true':'false'); });
+  const mn=PK.filter(k=>isMin(k)&&ui.mx!==k);                        /* 접어 둔 구역(최대화한 구역은 접힌 것으로 안 침) */
+  const bare=ui.mx?PK.filter(k=>k!==ui.mx):mn;                       /* 지금 제목 줄만 남아 보이는 구역 — 최대화 중엔 나머지 둘, 아니면 접어 둔 구역들(v229: 최대화해도 세 구역의 제목 줄은 늘 보임. 접힘 목록 ui.mn 은 그대로라 최대화를 풀면 원래대로) */
+  if(bare.length) box.setAttribute('data-mn',bare.join(' ')); else box.removeAttribute('data-mn');
+  box.querySelectorAll('.pln-pnb').forEach(b=>{ const k=b.getAttribute('data-k'), a=b.getAttribute('data-a'), key=a+(SUF[k]||'Bot'), on=(a==='max')?ui.mx===k:bare.indexOf(k)>=0; b.classList.toggle('on',on); b.title=PN_TIP[key][on?1:0]; b.setAttribute('aria-pressed',on?'true':'false'); });   /* 최소화 단추는 '제목 줄만 남은 모양'과 같이 눌린 표시 */
 }
 function panel(k,a){   /* k='top'|'bot'|'fin' 구역 · a='max'|'min' — 같은 단추를 다시 누르면 원래대로. 최소화는 구역마다 따로 쌓이고, 최대화는 한 번에 하나(풀면 접어 둔 상태 그대로) */
   load(); if(PK.indexOf(k)<0) return null;
   if(a==='max'){ if(ui.mx===k) ui.mx=''; else{ ui.mx=k; ui.mn=ui.mn.filter(x=>x!==k); } }
   else{
-    const shown=isMin(k)&&!ui.mx;                                    /* 지금 접혀 보이는 중인가 */
+    const shown=ui.mx?ui.mx!==k:isMin(k);                            /* 지금 제목 줄만 남아 보이는 중인가(최대화 중엔 최대화 아닌 구역 — 그 단추를 누르면 최대화가 풀리고 그 구역이 펼쳐짐, v229) */
     ui.mx='';                                                        /* (최대화 중이었다면 풀고) */
     ui.mn=shown?ui.mn.filter(x=>x!==k):(isMin(k)?ui.mn:ui.mn.concat([k]));
   }
@@ -12795,7 +12798,8 @@ function panelClick(ev,k){   /* 구역 머리 클릭: 최대화·최소화 단�
   const t=ev&&ev.target; if(!t||!t.closest) return;
   const b=t.closest('button.pln-pnb'); if(b){ panel(b.getAttribute('data-k'),b.getAttribute('data-a')); return; }
   if(t.closest('button')) return;
-  if(isMin(k)&&!ui.mx){ ui.mn=ui.mn.filter(x=>x!==k); saveUi(); applyPanel(); }
+  if(ui.mx){ if(ui.mx!==k){ ui.mx=k; ui.mn=ui.mn.filter(x=>x!==k); saveUi(); applyPanel(); } return; }   /* v229: 최대화 중 제목 줄만 남은 다른 구역의 제목을 누르면 최대화가 그 구역으로 옮겨감(최대화한 구역의 제목은 그대로) */
+  if(isMin(k)){ ui.mn=ui.mn.filter(x=>x!==k); saveUi(); applyPanel(); }
 }
 function splitSave(){   /* 끝난 위치의 실제 비율을 저장(구역별 최소 크기에 걸렸으면 그 값으로) — 접히지 않은 구역들끼리만 나눠 가진 가중치 안에서(접힌 구역의 가중치·높이는 안 건드림, v224) */
   const box=document.querySelector('#plnModal .pln-todo'); if(!box) return;
