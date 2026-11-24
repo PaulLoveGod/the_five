@@ -3965,7 +3965,7 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
     <!-- 2패널 본문 -->
     <div style="display:flex;flex:1;overflow:hidden;min-height:0">
       <!-- 좌측 메뉴 -->
-      <div style="width:130px;flex-shrink:0;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:8px 0">
+      <div style="width:130px;flex-shrink:0;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:8px 0;overflow-y:auto">
         <button id="atab-pw"      onclick="_adminTab('pw')"      class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">🔑 비밀번호<br><span style="font-size:10px;font-weight:400">설정</span></button>
         <button id="atab-path"    onclick="_adminTab('path')"    class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">📁 경로<br><span style="font-size:10px;font-weight:400">설정</span></button>
         <button id="atab-webapi" onclick="_adminTab('webapi')" class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">🌐 웹 API<br><span style="font-size:10px;font-weight:400">Tavily·Finnhub</span></button>
@@ -3973,6 +3973,7 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
         <button id="atab-section" onclick="_adminTab('section')" class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">📋 섹션 제목<br><span style="font-size:10px;font-weight:400">관리</span></button>
         <button id="atab-vpn" onclick="_adminTab('vpn')" class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">🛡️ VPN<br><span style="font-size:10px;font-weight:400">실행여부 확인</span></button>
         <button id="atab-print" onclick="_adminTab('print')" class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">🖨️ 출력 허용<br><span style="font-size:10px;font-weight:400">PDF·이미지</span></button>
+        <button id="atab-brk" onclick="_adminTab('brk')" class="mobile-keep" style="text-align:left;padding:10px 14px;border:none;background:transparent;font-size:12px;font-weight:600;color:#475569;cursor:pointer;border-left:3px solid transparent;line-height:1.4">↵ 줄바꿈<br><span style="font-size:10px;font-weight:400">Shift+Enter</span></button>
       </div>
       <!-- 우측 컨텐츠 -->
       <div style="flex:1;overflow-y:auto;min-width:0">
@@ -4259,6 +4260,44 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
           <div id="adminPaList" style="display:flex;flex-direction:column;gap:8px"></div>
           <div id="adminPaStatus" style="font-size:10.5px;min-height:15px;line-height:1.5"></div>
           <div style="font-size:10px;color:#94a3b8;line-height:1.6">이 브라우저에만 저장되는 설정입니다(기기별) — 누르는 즉시 적용되며 저장 버튼은 없습니다. 처음에는 모두 “허용”입니다. 포트폴리오를 불허하면 포트폴리오·매매 일지 머리의 “PDF/이미지에 포함” 체크도 잠깁니다.</div>
+        </div>
+
+        <!-- ⑧ Shift+Enter 줄바꿈 간격 (v228) — 동작은 BTMHB-JS 블록(window.BTMHalfBreak) -->
+        <div id="apanel-brk" style="display:none;padding:20px;flex-direction:column;gap:12px">
+          <div style="font-size:12px;font-weight:700;color:#1e293b;margin-bottom:2px">↵ Shift+Enter 줄바꿈 간격</div>
+          <div style="font-size:10.5px;color:#64748b;line-height:1.6;background:#f0f9ff;padding:8px 10px;border-radius:6px;border:1px solid #bae6fd">
+            Report 의 모든 텍스트 박스에서 <b>Shift+Enter</b> 를 치면 줄이 바뀌면서, 새 줄 위에 <b>그 박스의 현재 줄간격 × 아래 %</b> 만큼 여백이 더 생깁니다(문단 사이를 ‘반 줄’만 띄우고 싶을 때).<br>
+            <b>Enter</b> 는 지금처럼 여백 없는 보통 줄바꿈입니다.
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:11px;color:#475569;font-weight:700;white-space:nowrap;margin-right:2px">줄바꿈 여백</span>
+            <button type="button" class="mobile-keep" onclick="BTMHalfBreak.step(-1)" title="5% 줄이기" style="width:30px;height:30px;font-size:16px;font-weight:700;line-height:1;border-radius:7px;cursor:pointer;background:#f8fafc;color:#475569;border:2px solid #e2e8f0">−</button>
+            <input id="hbPct" type="number" min="5" max="200" step="5" inputmode="numeric" aria-label="Shift+Enter 줄바꿈 여백(현재 줄간격의 %)"
+              oninput="BTMHalfBreak.inputChange(this,false)" onchange="BTMHalfBreak.inputChange(this,true)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+              style="width:64px;height:30px;box-sizing:border-box;padding:0 6px;border:2px solid #cbd5e1;border-radius:7px;font-size:14px;font-weight:700;text-align:center;color:#1e293b">
+            <span style="font-size:13px;font-weight:700;color:#1e293b">%</span>
+            <button type="button" class="mobile-keep" onclick="BTMHalfBreak.step(1)" title="5% 늘리기" style="width:30px;height:30px;font-size:16px;font-weight:700;line-height:1;border-radius:7px;cursor:pointer;background:#f8fafc;color:#475569;border:2px solid #e2e8f0">+</button>
+            <span style="font-size:10.5px;color:#94a3b8;margin-left:2px">현재 줄간격 기준 (5~200%)</span>
+          </div>
+          <div id="hbPresets" style="display:flex;gap:6px;flex-wrap:wrap">
+            <button type="button" class="mobile-keep hb-pre" data-p="30" onclick="BTMHalfBreak.preset(30)" style="padding:5px 11px;font-size:12px;font-weight:700;border-radius:7px;cursor:pointer;background:#f8fafc;color:#64748b;border:2px solid #e2e8f0">30%</button>
+            <button type="button" class="mobile-keep hb-pre" data-p="50" onclick="BTMHalfBreak.preset(50)" style="padding:5px 11px;font-size:12px;font-weight:700;border-radius:7px;cursor:pointer;background:#f8fafc;color:#64748b;border:2px solid #e2e8f0">50% (반 줄)</button>
+            <button type="button" class="mobile-keep hb-pre" data-p="70" onclick="BTMHalfBreak.preset(70)" style="padding:5px 11px;font-size:12px;font-weight:700;border-radius:7px;cursor:pointer;background:#f8fafc;color:#64748b;border:2px solid #e2e8f0">70%</button>
+            <button type="button" class="mobile-keep hb-pre" data-p="100" onclick="BTMHalfBreak.preset(100)" style="padding:5px 11px;font-size:12px;font-weight:700;border-radius:7px;cursor:pointer;background:#f8fafc;color:#64748b;border:2px solid #e2e8f0">100% (한 줄)</button>
+            <button type="button" class="mobile-keep" onclick="BTMHalfBreak.reset()" title="기본값(50%)으로 되돌리기" style="padding:5px 11px;font-size:12px;font-weight:700;border-radius:7px;cursor:pointer;background:#fff;color:#64748b;border:2px solid #e2e8f0">↺ 기본값</button>
+          </div>
+          <div id="hbPv" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1 1 150px;min-width:0"><div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:3px">Enter</div><div class="hb-pv"><div>첫째 줄입니다.</div><div>둘째 줄입니다.</div><div>셋째 줄입니다.</div></div></div>
+            <div style="flex:1 1 150px;min-width:0"><div style="font-size:10px;font-weight:700;color:#1e40af;margin-bottom:3px">Shift+Enter <span id="hbPvPct">(50%)</span></div><div class="hb-pv"><div>첫째 줄입니다.</div><div class="hb-gap">둘째 줄입니다.</div><div class="hb-gap">셋째 줄입니다.</div></div></div>
+          </div>
+          <div id="hbStatus" style="font-size:10.5px;color:#64748b;min-height:15px;line-height:1.5"></div>
+          <div style="height:1px;background:#e2e8f0;margin:2px 0"></div>
+          <div style="font-size:11px;font-weight:700;color:#1e293b">이미 쓴 글에도 적용</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <button id="hbApplyAll" type="button" class="mobile-keep" onclick="BTMHalfBreak.applyAllUi()" style="padding:7px 12px;font-size:12px;font-weight:700;border-radius:7px;cursor:pointer;background:#1e293b;color:#fff;border:2px solid #1e293b">지금 리포트의 Shift+Enter 여백을 모두 이 값으로</button>
+            <span id="hbCount" style="font-size:10.5px;color:#64748b"></span>
+          </div>
+          <div style="font-size:10px;color:#94a3b8;line-height:1.6">이 브라우저에만 저장되는 설정입니다(기기별) — 누르는 즉시 적용되며 저장 버튼은 없습니다. 값을 바꾸면 <b>앞으로 누르는</b> Shift+Enter 부터 적용되고, 이미 쓴 글의 여백은 위 버튼을 눌러야 바뀝니다. 여백은 글 본문에 저장되어 Create New·다시 열기·PDF/이미지에도 그대로 나옵니다. 연달아 누르면 그만큼 더 벌어지고, 줄 맨 앞에서 Backspace 를 치면 줄바꿈과 함께 여백이 지워집니다. 적용 대상: 오늘의 말씀·나의 묵상 노트·감사와 간구·Daily Inbody·Key-Word·Snowball 메모·나의 삶·Footprints·관심종목·Investor 메모·시황/테마(+_Detail)·Warren Kim·AI Radar·기술적 분석·매매 전략.</div>
         </div>
 
       </div><!-- /우측 -->
@@ -7016,7 +7055,8 @@ const _LS_LABELS={
   'BTM_CUSTOM_TICKERS':'사용자 티커','btm_church_calendar':'교회력 말씀','BTMSectionTitleMgmt':'섹션 제목 관리',
   'BTMExRate_v1':'환율 기록','BTMPublished':'Publish 상태','BTMAutoCheck_v1':'Auto Check 업체 목록',
   'BTMPlanner_v1':'일정 목록','BTMPlannerG_v1':'일정 구글 연결 설정',
-  'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정','BTMPlannerUI_v1':'일정 화면 설정','BTMPlannerWork_v1':'오늘 업무'
+  'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정','BTMPlannerUI_v1':'일정 화면 설정','BTMPlannerWork_v1':'오늘 업무',
+  'BTM_halfBreak_v1':'Shift+Enter 줄바꿈 간격 설정'
 };
 function _lsLabel(k){ return _LS_LABELS[k]||k; }
 function _lsEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -31372,7 +31412,7 @@ async function _autoBackupArchive(){
 /* ── 관리자 패널 탭 전환 ── */
 function _adminTab(id){
   if(id==='section'){ try{ if(window.BTMBoxTools) BTMBoxTools.renderAdmin(); }catch(_){} }   /* '삭제한 텍스트박스' 목록 새로 그림 */
-  ['pw','path','webapi','section','aiprovider','vpn','print'].forEach(t=>{
+  ['pw','path','webapi','section','aiprovider','vpn','print','brk'].forEach(t=>{
     const panel=g('apanel-'+t), btn=g('atab-'+t);
     if(!panel||!btn) return;
     const active=(t===id);
@@ -31381,6 +31421,7 @@ function _adminTab(id){
     btn.style.color=active?'#1e40af':'#475569';
     btn.style.borderLeftColor=active?'#3b82f6':'transparent';
   });
+  if(id==='brk'){ try{ if(window.BTMHalfBreak) BTMHalfBreak.render(); }catch(_){} }   /* v228: Shift+Enter 줄바꿈 탭 — 패널이 보인 뒤에 그려야 미리보기 높이(px)를 잼 */
 }
 
 /* ── 관리자 패널 ── */
@@ -31432,6 +31473,7 @@ function openAdminPanel(){
   if(typeof _renderAiProviderSettings==='function') _renderAiProviderSettings();
   _renderVpnSetting();   /* VPN 실행여부 적용/미적용 버튼 상태 */
   try{ _paRender(); }catch(_){}   /* v203: 출력 허용 탭 */
+  try{ if(window.BTMHalfBreak) BTMHalfBreak.render(); }catch(_){}   /* v228: Shift+Enter 줄바꿈 탭 */
   _adminTab('pw'); /* 첫 탭으로 초기화 */
 }
 function closeAdminPanel(){ g('adminModal').style.display='none'; }
@@ -69491,6 +69533,168 @@ window.BTMBoxTools={IDS,NAME:Object.fromEntries(IDS.map(id=>[id,DEF[id].n])),fit
 /* ═══ BTMBOXTOOLS-JS-END ═══ */
 </script>
 <!-- BTMBOXTOOLS-JS-END -->
+<!-- BTMHB-JS-BEGIN -->
+<style>
+/* ── v228 관리 › [↵ 줄바꿈] 탭 미리보기 — 실제 텍스트 박스(.rich-editor)와 같은 13px / 줄간격 1.7 ── */
+#apanel-brk .hb-pv{font-size:13px;line-height:1.7;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;color:#1e293b;min-width:0}
+#apanel-brk .hb-pv .hb-gap{margin-top:calc(var(--hbp,.5) * 1lh)}
+#apanel-brk input[type=number]:focus{outline:none;border-color:#3b82f6}
+</style>
+<script>
+/* ═══ BTMHB-JS-BEGIN ═══════════════════════════════════════════════════════════
+   Shift+Enter '반 줄' 줄바꿈 (v228, 2026-11-24)
+   요청: "모든 Report 의 텍스트 박스에서 Shift+Enter 를 치면 줄간격의 50% 수준으로 줄바꿈되게. 관리 메뉴에서 Shift+Enter 시 현재 줄간격의 몇 % 수준으로 줄바꿈할지 세팅"
+   · 동작: 대상 텍스트 박스(BTMBoxLH.IDS 와 같은 19곳)에서 Shift+Enter → 줄을 바꾸면서 새 줄 위에 [그 박스의 현재 줄간격 × N%] 만큼 여백. Enter 는 그대로(여백 없는 보통 줄바꿈).
+     ① execCommand('insertParagraph') 로 문단을 나눈 뒤(되돌리기/다시 실행 한 번에 처리됨) 캐럿이 있는 새 블록에 margin-top:(N/100)lh + data-hb="누른 횟수". lh 단위라 박스 행간(BTMBoxLH)을 나중에 바꿔도 비율이 유지됨.
+     ② Enter 로 문단을 나누면 브라우저가 블록 속성을 통째로 복제해 위 여백이 다음 줄들에 번지므로, input(insertParagraph) 에서 캐럿 블록의 data-hb·여백을 지움(여백은 항상 Shift+Enter 로 만든 줄의 것).
+     ③ Shift+Enter 로 만든 빈 줄에서 또 누르면 새 블록 대신 그 블록의 여백을 N% 더 키움 → 연달아 누르면 N%씩 더 벌어짐(되돌리기는 그 블록째로 됨).
+     ④ white-space:pre* 박스(AI 글·붙여넣은 글의 \n 줄바꿈)에서는 캐럿 바로 앞뒤의 \n 최대 2개를 이 줄바꿈이 갈음(안 그러면 \n 이 빈 줄로 남아 여백+빈 줄이 겹침).
+     · 한글 조합 중(isComposing/keyCode 229)·Ctrl/Alt/Meta 조합·표 칸 안·게스트(편집 불가)는 건드리지 않음.
+   · 저장: 설정 = localStorage 'BTM_halfBreak_v1' {v:1,p:%} (기기별·기본 50, 5~200). 여백은 글 본문(innerHTML)에 박혀 저장·불러오기·PDF/이미지에 그대로 나옴(보는 쪽 설정과 무관).
+   · 관리 › [↵ 줄바꿈] 탭(#apanel-brk): − [ % ] + · 빠른 선택 · 미리보기 · [지금 리포트의 Shift+Enter 여백을 모두 이 값으로](data-hb 횟수 × 새 %).
+   수정 요령: 이 블록(표식 BTMHB-JS-BEGIN~END)과 관리자 패널 #apanel-brk, _adminTab·openAdminPanel 의 'brk' 한 줄씩만 고치면 됨
+════════════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.BTMHalfBreak) return;
+const KEY='BTM_halfBreak_v1', DEF=50, MIN=5, MAX=200, STEP=5;
+const FALLBACK=['qtBibleDisplay','qtMemo','prayerContent','dibContent','keyWord','sb-above','sb-below','myLifeContent','footprintContent','watchlistNote','investorStatusNote','marketAnalysis','marketAnalysisDetail','sectorAnalysis','sectorAnalysisDetail','warrenKim','aiStockRadar','technicalAnalysis','tradingStrategy'];
+const $=id=>document.getElementById(id);
+const ids=()=>{ try{ if(window.BTMBoxLH&&Array.isArray(BTMBoxLH.IDS)&&BTMBoxLH.IDS.length) return BTMBoxLH.IDS; }catch(_){} return FALLBACK; };   /* 행간 알약과 같은 '리포트 텍스트 박스' 목록 */
+const boxSel=()=>ids().map(id=>'#'+id).join(',');
+const clampP=v=>{ v=Math.round(Number(v)); return isFinite(v)?Math.max(MIN,Math.min(MAX,v)):DEF; };
+
+/* ───────── 설정(기기별) ───────── */
+function rawPref(){
+  let r=null;
+  try{ if(typeof _lsPending!=='undefined'){ const p=_lsPending.get(KEY); if(p!==undefined) r=p; } }catch(_){}   /* 저장 공간 부족으로 아직 못 쓴 값이 있으면 그걸 우선 */
+  try{ if(r==null) r=localStorage.getItem(KEY); }catch(_){}
+  return r;
+}
+function get(){ try{ const o=JSON.parse(rawPref()||'null'); if(o&&typeof o==='object'){ const x=Number(o.p); if(isFinite(x)&&x>=1) return clampP(x); } }catch(_){} return DEF; }
+function set(p){
+  p=clampP(p);
+  try{ localStorage.setItem(KEY,JSON.stringify({v:1,p:p})); }catch(e){ console.warn('[Shift+Enter 줄바꿈] 설정 저장 실패:',e); }
+  render(); return p;
+}
+
+/* ───────── 블록·여백 도구 ───────── */
+const lhStr=pct=>String(+(pct/100).toFixed(3))+'lh';
+const gapPct=b=>{ const m=/^(-?[\d.]+)lh$/.exec(((b.style&&b.style.marginTop)||'').trim()); return m?Math.round(parseFloat(m[1])*100):0; };
+function putGap(b,n,total){ b.style.marginTop=lhStr(total); b.setAttribute('data-hb',String(n)); }
+function clearGap(b){ b.removeAttribute('data-hb'); b.style.removeProperty('margin-top'); if(!(b.getAttribute('style')||'').trim()) b.removeAttribute('style'); }
+const BLK=/^(block|flex|grid|list-item|flow-root)$/;
+function blockOf(node,root){   /* 캐럿을 품은 가장 가까운 블록 요소(박스 자신은 제외) */
+  let n=node; if(n&&n.nodeType===3) n=n.parentNode;
+  while(n&&n!==root){ if(n.nodeType===1&&BLK.test(getComputedStyle(n).display)) return n; n=n.parentNode; }
+  return null;
+}
+function inCell(node,root){ let n=node; if(n&&n.nodeType===3) n=n.parentNode; while(n&&n!==root){ if(n.nodeType===1&&/^(TD|TH|CAPTION)$/.test(n.tagName)) return true; n=n.parentNode; } return false; }
+const emptyBlk=b=>!(b.textContent||'').replace(/[​﻿\s]/g,'')&&!b.querySelector('img,table,video,canvas,svg,hr,iframe,input,select,textarea');
+function fire(ed){ try{ ed.dispatchEvent(new Event('input',{bubbles:true})); }catch(_){} }   /* oninput=saveData() — 여백을 단 뒤 최종 모양으로 한 번 더 저장 */
+
+/* pre-wrap 박스: 캐럿 바로 앞뒤의 \n(최대 2개)을 선택 범위로 잡아 insertParagraph 가 대신 지우게 함(한 번의 되돌리기 단위) */
+function spanNL(s,dir,max){
+  const ax=s.anchorNode, ao=s.anchorOffset; let n=0;
+  for(let i=0;i<max;i++){ s.modify('extend',dir,'character'); if(s.rangeCount&&s.getRangeAt(0).toString()==='\n'.repeat(i+1)) n++; else break; }   /* Range.toString 은 <br>·블록 경계를 글자로 안 쳐서 진짜 \n 만 셈 */
+  s.collapse(ax,ao); return n;
+}
+function absorb(s,ed){
+  try{
+    if(typeof s.modify!=='function'||!s.isCollapsed) return;
+    const b=blockOf(s.anchorNode,ed)||ed;
+    if(!/^(pre|break-spaces)/.test(getComputedStyle(b).whiteSpace)) return;
+    const ax=s.anchorNode, ao=s.anchorOffset;
+    const back=spanNL(s,'backward',2), fwd=back<2?spanNL(s,'forward',2-back):0;
+    if(!back&&!fwd) return;
+    let sn=ax,so=ao,en=ax,eo=ao;
+    if(back){ for(let i=0;i<back;i++) s.modify('extend','backward','character'); sn=s.focusNode; so=s.focusOffset; s.collapse(ax,ao); }
+    if(fwd){ for(let i=0;i<fwd;i++) s.modify('extend','forward','character'); en=s.focusNode; eo=s.focusOffset; s.collapse(ax,ao); }
+    s.setBaseAndExtent(sn,so,en,eo);
+  }catch(_){}
+}
+
+/* ───────── Shift+Enter ───────── */
+function onKey(e){
+  if(e.key!=='Enter'||!e.shiftKey||e.ctrlKey||e.altKey||e.metaKey||e.defaultPrevented) return;
+  if(e.isComposing||e.keyCode===229) return;   /* 한글 조합 중의 Enter 는 글자 확정용 — 그대로 둠 */
+  const t=e.target; if(!t||!t.closest) return;
+  let ed=null; try{ ed=t.closest(boxSel()); }catch(_){}
+  if(!ed||!ed.isContentEditable) return;
+  const s=window.getSelection(); if(!s||!s.rangeCount||!ed.contains(s.anchorNode)) return;
+  if(inCell(s.anchorNode,ed)) return;          /* 표 칸 안은 기본 동작 */
+  const pct=get();
+  e.preventDefault();
+  try{
+    if(s.isCollapsed){   /* ③ Shift+Enter 로 만든 빈 줄에서 또 누름 → 그 줄 위 여백을 N% 더 */
+      const b0=blockOf(s.anchorNode,ed);
+      if(b0&&b0.hasAttribute('data-hb')&&emptyBlk(b0)){ putGap(b0,(parseInt(b0.getAttribute('data-hb'),10)||1)+1,gapPct(b0)+pct); fire(ed); return; }
+    }
+    absorb(s,ed);                                                   /* ④ */
+    if(!document.execCommand('insertParagraph',false,null)){ document.execCommand('insertLineBreak',false,null); return; }
+    const s2=window.getSelection(), b=(s2&&s2.rangeCount)?blockOf(s2.getRangeAt(0).startContainer,ed):null;
+    if(b) putGap(b,1,pct);                                          /* ① 새 줄(캐럿이 있는 블록)에 여백 */
+    fire(ed);
+  }catch(err){ console.warn('[Shift+Enter 줄바꿈]',err); try{ document.execCommand('insertLineBreak',false,null); }catch(_){} }
+}
+function onInput(e){   /* ② Enter 로 나뉜 새 블록은 복제된 여백을 떼어냄(Shift+Enter 자신의 insertParagraph 도 여기를 지나지만 그 뒤에 새로 달므로 무관) */
+  if(e.inputType!=='insertParagraph') return;
+  const t=e.target; if(!t||!t.closest) return;
+  let ed=null; try{ ed=t.closest(boxSel()); }catch(_){}
+  if(!ed) return;
+  const s=window.getSelection(); if(!s||!s.rangeCount) return;
+  const b=blockOf(s.getRangeAt(0).startContainer,ed);
+  if(b&&b.hasAttribute('data-hb')) clearGap(b);
+}
+document.addEventListener('keydown',onKey,true);
+document.addEventListener('input',onInput,true);
+
+/* ───────── 이미 넣은 줄바꿈 ───────── */
+function count(){ let n=0; ids().forEach(id=>{ const el=$(id); if(el) n+=el.querySelectorAll('[data-hb]').length; }); return n; }
+function applyAll(){   /* 지금 화면 리포트의 모든 Shift+Enter 여백을 현재 설정으로(누른 횟수 × N%) */
+  const pct=get(); let n=0;
+  ids().forEach(id=>{ const el=$(id); if(!el) return; el.querySelectorAll('[data-hb]').forEach(b=>{ const c=Math.min(10,Math.max(1,parseInt(b.getAttribute('data-hb'),10)||1)); b.style.marginTop=lhStr(pct*c); n++; }); });   /* 횟수는 1~10 으로 제한 — 엉뚱한 값이 들어 있어도 여백이 폭주하지 않게 */
+  if(n){ try{ if(typeof saveData==='function') saveData(); }catch(_){} }
+  return n;
+}
+
+/* ───────── 관리 › 줄바꿈 탭 ───────── */
+let msg='', msgT=0;
+function render(){
+  const panel=$('apanel-brk'); if(!panel) return;
+  const p=get();
+  const inp=$('hbPct'); if(inp&&document.activeElement!==inp) inp.value=String(p);
+  panel.querySelectorAll('.hb-pre').forEach(b=>{ const on=Number(b.getAttribute('data-p'))===p; b.style.background=on?'#1e40af':'#f8fafc'; b.style.color=on?'#fff':'#64748b'; b.style.borderColor=on?'#1e40af':'#e2e8f0'; });
+  const pv=$('hbPv'); if(pv) pv.style.setProperty('--hbp',String(p/100));
+  const pp=$('hbPvPct'); if(pp) pp.textContent='('+p+'%)';
+  const st=$('hbStatus');
+  if(st){
+    let px=0; try{ const s=panel.querySelector('.hb-pv'); if(s&&s.offsetParent) px=parseFloat(getComputedStyle(s).lineHeight)||0; }catch(_){}
+    st.innerHTML='현재 설정: <b>줄간격의 '+p+'%</b>'+(px?' — 글자 13px·행간 1.7(줄 높이 '+Math.round(px)+'px)인 박스라면 여백 약 '+(px*p/100).toFixed(1)+'px':'');
+    st.style.color='#1e40af';
+  }
+  const n=count(), ct=$('hbCount'); if(ct) ct.textContent=msg||('지금 리포트에 Shift+Enter 로 넣은 줄바꿈: '+n+'곳');
+  const ab=$('hbApplyAll'); if(ab){ ab.disabled=!n; ab.style.opacity=n?'1':'.45'; ab.style.cursor=n?'pointer':'default'; }
+}
+function step(d){ const p=get(); set(d>0?(Math.floor(p/STEP)+1)*STEP:(Math.ceil(p/STEP)-1)*STEP); }
+function inputChange(el,final){
+  const v=Number(el.value);
+  if(final){ set((el.value===''||!isFinite(v))?get():v); el.value=String(get()); return; }
+  if(isFinite(v)&&v>=MIN&&v<=MAX&&Math.round(v)===v) set(v);   /* 치는 도중엔 올바른 값일 때만 저장(입력칸은 건드리지 않음) */
+}
+function applyAllUi(){
+  const n=applyAll();
+  msg=n?('✅ '+n+'곳의 여백을 '+get()+'%로 바꿨어요'):'바꿀 줄바꿈이 없어요';
+  render(); clearTimeout(msgT); msgT=setTimeout(()=>{ msg=''; render(); },4000);
+}
+
+window.BTMHalfBreak={DEF,MIN,MAX,get,set,step,preset:set,reset:()=>set(DEF),inputChange,applyAll,applyAllUi,count,render,
+  _dbg:{blockOf,absorb,putGap,clearGap,gapPct,emptyBlk,onKey,onInput,boxSel}};
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',render); else render();
+})();
+/* ═══ BTMHB-JS-END ═══ */
+</script>
+<!-- BTMHB-JS-END -->
 <!-- BTMIMGED-JS-BEGIN -->
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
