@@ -323,10 +323,9 @@ select{
 #watchlistNote{min-height:38px;height:60px;}
 .iscore-add-hdr{width:15px;height:15px;padding:0;font-size:12px;line-height:1;border:1px dashed #cbd5e1;border-radius:3px;background:none;color:#94a3b8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 .iscore-add-hdr:hover{border-color:#6366f1;color:#6366f1}
-/* v235 Investor Status 머리줄 오른쪽 [🤖 Update] — 전역 '.card-header button' 의 18px·9px 강제 규칙을 덮어 24px 알약(MindMap 편집 버튼과 같은 크기) */
-#investorStatusSection .card-header #isAiBtn{height:24px!important;min-height:0!important;line-height:24px!important;padding:0 12px!important;font-size:12px!important;font-weight:700;border:none;border-radius:5px;background:#6366f1;color:#fff;cursor:pointer;letter-spacing:.2px;font-family:inherit;white-space:nowrap}
-#investorStatusSection .card-header #isAiBtn:hover{background:#4f46e5}
-#investorStatusSection .card-header #isAiBtn:disabled{background:#94a3b8;cursor:progress}
+/* Investor Status 머리줄 오른쪽 [🤖 업데이트](#isAiBtn, v235·v237) — 크기·색은 관심 종목의 [📡 업데이트](#wlUpdateBtn)와 똑같이: 같은 class="btn sm" + 같은 인라인 스타일을 쓰고(높이·글자 크기는 전역 '.card-header button' 규칙이 18px·9px 로 맞춤)
+   여기서는 따로 크기·색을 정하지 않음 — 실행 중(disabled)일 때만 회색 */
+#investorStatusSection #isAiBtn:disabled{background:#94a3b8!important;cursor:progress}
 #report-root.published-mode #isAiBtn{display:none!important}   /* 게시(잠금) 화면에서는 편집 도구이므로 숨김 */
 .iscore-label-edit{font-size:9.5px;color:#64748b;white-space:nowrap;flex-shrink:0;outline:none;cursor:text;border-bottom:1px solid transparent}
 .iscore-label-edit:focus{border-bottom:1px solid #6366f1;color:#334155;white-space:normal;width:auto !important}
@@ -6259,7 +6258,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
     <div class="card" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-bottom:0;overflow:hidden">
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
         <span id="investorStatusTitle" contenteditable="true" spellcheck="false" style="outline:none;cursor:text;border-bottom:1px solid transparent" onfocus="this.style.borderBottom='1px solid #6366f1'" onblur="this.style.borderBottom='1px solid transparent';saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">■ Investor Status</span>
-        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button id="isAiBtn" type="button" onclick="BTMIsAI.run()" title="직전 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 분석해, 아래 항목의 점수와 메모를 자동으로 채웁니다 (직전 report = 이 report 날짜 바로 앞의 Archive)">🤖 Update</button></span>
+        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button class="btn sm" id="isAiBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.run()" title="직전 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 분석해, 아래 항목의 점수와 메모를 자동으로 채웁니다 (직전 report = 이 report 날짜 바로 앞의 Archive)">🤖 업데이트</button></span>
       </div>
       <div class="card-body" style="padding:8px 10px;flex:1;overflow:hidden;display:flex;flex-direction:column">
         <!-- Charlie Status + Battery (2-col) -->
@@ -17650,7 +17649,7 @@ async function confirmNewReport(){
   _applyValignWrap(g('marketAnalysis'), 'center');
   /* 새 리포트의 시황 분석·시황 분석_Detail·테마 분석·테마 분석_Detail 박스는 각 박스의 [⇕ 높이 자동 조절]을 실행한 상태로 시작(2026-11-13, v198) — 이월된 높이가 아니라 새 본문(기본 본문)에 맞춘 높이.
      알림 없이 조용히, 삭제(숨김)해 둔 박스는 건너뜀. 저장(_skSave) 앞에서 해야 자동저장본에도 들어감 */
-  try{ if(window.BTMBoxTools&&BTMBoxTools.fitNew) await BTMBoxTools.fitNew(['marketAnalysis','marketAnalysisDetail','sectorAnalysis','sectorAnalysisDetail','investorStatusNote']); }catch(_){}   /* v235: Investor Status 메모도 — [🤖 Update] 로 커진 메모 칸이 새 리포트(빈 메모)에 큰 빈 상자로 남지 않게 */
+  try{ if(window.BTMBoxTools&&BTMBoxTools.fitNew) await BTMBoxTools.fitNew(['marketAnalysis','marketAnalysisDetail','sectorAnalysis','sectorAnalysisDetail','investorStatusNote']); }catch(_){}   /* v235: Investor Status 메모도 — [🤖 업데이트] 로 커진 메모 칸이 새 리포트(빈 메모)에 큰 빈 상자로 남지 않게 */
   /* 수익률 그래프 종료일 → 신규 생성 날짜로 업데이트 */
   const _toEl=g('summaryChartTo'); if(_toEl) _toEl.value=selectedDate;
   renderSummaryChart();
@@ -33695,7 +33694,7 @@ const _BTM_AI_SECTIONS=[
   {id:'mindmapOutline',label:'MindMap — AI로 개요 만들기 (본문에 반영 → 개요 가져오기)'},
   {id:'btmLangGen',label:'🌐 다국어 생성 (번역)'},
   {id:'scriptMaker',label:'🎬 스크립트 만들기 (시황 분석 유튜브 영상 보고서·스크립트)'},
-  {id:'investorStatusAi',label:'🤖 Investor Status — [Update] AI 상태 평가 (직전 report 의 성장 Routine 분석 · Inbody 이미지 인식은 Claude·Gemini·ChatGPT 만)'},
+  {id:'investorStatusAi',label:'🤖 Investor Status — [업데이트] AI 상태 평가 (직전 report 의 성장 Routine 분석 · Inbody 이미지 인식은 Claude·Gemini·ChatGPT 만)'},
 ];
 const _BTM_AI_PROVIDER_LABELS={claude:'🤖 Claude','deepseek-flash':'🔷 DeepSeek(Flash)','deepseek-pro':'🔷 DeepSeek(Pro)','gemini-flash':'🔶 Gemini(Flash)','gemini-pro':'🔶 Gemini(Pro)','chatgpt-flash':'🟢 ChatGPT(Flash)','chatgpt-pro':'🟢 ChatGPT(Pro)'};
 function _renderAiProviderSettings(){
@@ -69783,7 +69782,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <!-- BTMHB-JS-END -->
 <!-- BTMISAI-JS-BEGIN -->
 <style>
-/* ── v235 Investor Status [🤖 Update] 결과 창 ── */
+/* ── v235 Investor Status [🤖 업데이트] 결과 창 ── */
 .isai-ov{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
 .isai-ov.on{display:flex}
 .isai-box{width:min(780px,96vw);max-height:92vh;display:flex;flex-direction:column;background:#fff;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;font-family:inherit;color:#1e293b}
@@ -69829,7 +69828,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </style>
 <script>
 /* ═══ BTMISAI-JS-BEGIN ═══════════════════════════════════════════════════════════
-   Investor Status [🤖 Update] — 직전 report 의 성장 Routine 을 AI 가 분석해 점수·메모를 자동 반영 (v235, 2026-11-24)
+   Investor Status [🤖 업데이트] — 직전 report 의 성장 Routine 을 AI 가 분석해 점수·메모를 자동 반영 (v235, 2026-11-24 · 단추 모양은 v237 에서 관심 종목 [📡 업데이트]와 같게)
    요청: "Create New 뒤, 직전 report 의 성장 Routine 구성요소를 분석해서 Investor Status 제목 우측 update 버튼을 누르면 각 항목 점수를 네가 직접 평가해 자동 세팅하고
          메모란에 평가·권고·격려·칭찬을 간결하게. 심도 있게 분석해 신앙·운동·건강·심리 등을 지수화해 반영. report 를 얼마나 성실히 쓰는지·최근 못 쓴 날짜도 성실도 요소.
          Inbody → 체력·근력, Snowball → 운동·성실도, 묵상 노트·나의 삶 → 마인드·절제력·포용력·멘탈·신앙"
@@ -69838,7 +69837,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
      (30일 작성/빠진 날짜·연속 기록·늦게 몰아 저장(archivedAt)·작성 충실도·Snowball 달성·연간 FIVE/독서 목표) + 점수를 매길 항목(key·이름·현재 점수) — 항목 이름은 사용자가 바꿀 수 있어 이름의 뜻으로 해석.
    · AI: 관리 › 🧩 AI 공급자 의 'investorStatusAi' 설정(기본 Claude) — window._runMediaPrompt/_runTextPrompt 재사용. DeepSeek 는 이미지를 못 읽어 글만.
    · 결과(JSON): 9개 지수(신앙·마음가짐·절제력·포용력·운동·체력근력·건강영양·독서학습·성실도)+항목별 점수(5점 단위·근거 없으면 prev 유지)+총평·칭찬·건의.
-   · 반영: _isItems 점수(우측 첫 항목은 앱 규칙대로 왼쪽 평균 자동) → _initInvestorStatus → #investorStatusNote 에 [data-isai] 블록(다시 누르면 그 블록만 교체, 사용자가 쓴 글은 보존)
+   · 반영: _isItems 점수(우측 첫 항목은 앱 규칙대로 왼쪽 평균 자동) → _initInvestorStatus → #investorStatusNote 에 [data-isai] 블록(총평·👍·💡 세 줄만 — 지수 점수 글씨는 v236 에서 뺌, 속성·툴팁으로만 보관; 다시 누르면 그 블록만 교체, 사용자가 쓴 글은 보존)
      → BTMBoxTools.fit 으로 메모 높이 맞춤·카드가 모자라면 섹션 높이를 같이 늘림. [↩ 되돌리기] = 점수·메모·높이 복원(결과 창·알림).
    · 지수·항목별 근거·성실도 통계는 결과 창에만 보임(저장 안 함). 메모(#investorStatusNote)는 report 와 함께 저장·Archive 됨.
    · 한국어 화면에서만 실행(번역 화면에서는 메모·항목 이름이 번역본이라). 게스트·PDF 출력에서는 버튼이 숨겨짐(pdf-export-hide·guest-mode).
@@ -70145,11 +70144,12 @@ function setScores(map,keepFirstR){
   _lastStatusAvg=avg;                                                                       /* _initInvestorStatus 안의 _updateBattery 가 방금 정한 값을 덮어쓰지 않게 */
   _initInvestorStatus();
 }
+/* 메모에는 총평·칭찬·건의 세 줄만 보임(v236 — 처음엔 아래에 회색 글씨로 지수·기준일·AI 이름 한 줄이 더 있었으나 사용자가 빼 달라고 함).
+   지수·기준 report·AI 이름은 보이지 않게 블록 속성(data-idx·data-basis·data-ai)과 마우스를 올렸을 때의 툴팁(title)로만 보관 — 결과 창엔 그대로 있음 */
 function memoBlock(res,g,name){
-  const idx=IDX.map(d=>d.s+res.indices[d.k].score).join('·');
-  return '<div data-isai="1" style="font-size:12px;line-height:1.55"><b>🤖 '+esc(res.overall)+'</b><br>'
-    +(res.praise?'👍 '+esc(res.praise)+'<br>':'')+(res.advice?'💡 '+esc(res.advice)+'<br>':'')
-    +'<span style="color:#94a3b8;font-size:11px">지수 '+esc(idx)+' · '+esc(mdw(g.P.date))+' report 기준 · '+esc(name)+'</span></div>';
+  const idx=IDX.map(d=>d.k+':'+res.indices[d.k].score).join(';');
+  const lines=['<b>🤖 '+esc(res.overall)+'</b>',res.praise?'👍 '+esc(res.praise):'',res.advice?'💡 '+esc(res.advice):''].filter(Boolean).join('<br>');
+  return '<div data-isai="1" data-basis="'+esc(g.P.date)+'" data-ai="'+esc(name)+'" data-idx="'+esc(idx)+'" title="'+esc('AI 상태 평가 — '+mdw(g.P.date)+' report 기준 · '+name)+'" style="font-size:12px;line-height:1.55">'+lines+'</div>';
 }
 function writeMemo(html){
   const el=$('investorStatusNote'); if(!el) return null;
@@ -70267,7 +70267,7 @@ function render(){
     +'<div class="isai-meta">AI: '+esc(name)+' · Inbody 이미지 '+sent+'장 전송'+(note?' · '+esc(note):'')+(g.imgNote?' · '+esc(g.imgNote):'')+' · '+secs+'초 · '+(L.undone?'<b style="color:#dc2626">되돌린 상태</b>':'점수와 메모는 이미 반영됨')+'</div>';
   foot([{t:'↩ 되돌리기',dis:!!L.undone,fn:()=>undo()},{t:'다시 평가',fn:()=>run()},{t:'닫기',pri:true,fn:close}]);
 }
-function setBtn(on){ const b=$('isAiBtn'); if(!b) return; b.disabled=!!on; b.textContent=on?'⏳ 분석 중…':'🤖 Update'; }
+function setBtn(on){ const b=$('isAiBtn'); if(!b) return; b.disabled=!!on; b.textContent=on?'⏳ 분석 중…':'🤖 업데이트'; }
 
 async function run(opt){
   opt=opt||{};
@@ -70309,8 +70309,24 @@ async function run(opt){
   }
 }
 
+/* v236: 처음 버전(v235)이 이미 써 둔 메모의 맨 아래 회색 '지수 …' 줄을 불러올 때(보고서 열기·Archive·되돌리기 등 메모가 채워질 때마다) 지움 — 그 줄(블록의 직계 작은 회색 span)과 앞의 줄바꿈만.
+   저장은 따로 부르지 않음(다음 저장·Archive Save 때 깨끗해진 메모가 들어감) */
+function stripLegacy(el){
+  let n=0; if(!el) return n;
+  el.querySelectorAll('[data-isai] > span').forEach(s=>{
+    if(s.style.fontSize==='11px'&&/^지수\s/.test((s.textContent||'').trim())){ const p=s.previousSibling; if(p&&p.nodeName==='BR') p.remove(); s.remove(); n++; }
+  });
+  return n;
+}
+function watchNote(){
+  const el=$('investorStatusNote'); if(!el) return;
+  stripLegacy(el);
+  try{ new MutationObserver(()=>{ stripLegacy(el); }).observe(el,{childList:true,subtree:true}); }catch(_){}
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',watchNote); else watchNote();
+
 window.BTMIsAI={run,undo,close,show:()=>{ if(BTMIsAI._last){ open(); render(); } },IDX,_last:null,
-  _t:{h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,
+  _t:{h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,stripLegacy,
       isBusy:()=>busy}};
 })();
 /* ═══ BTMISAI-JS-END ═══ */
