@@ -5239,6 +5239,15 @@ body.guest-mode #plnMenuBtn{display:none!important}
 #plnModal .pln-sw button.def{width:auto;height:20px;border-radius:11px;padding:0 9px;background:#fff;border:2px dashed #94a3b8;font-size:11px;font-weight:700;color:#64748b;line-height:14px}
 #plnModal .pln-sw button.def.on{border:2px solid #0f172a;color:#0f172a}
 #plnModal .pln-cd{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+/* 중요도 상·중·하(v242) — [없음 상 중 하] 고르기 · 색상 패널의 색 선택창 */
+#plnModal .pln-pri{display:inline-flex;gap:4px;flex-wrap:wrap;align-items:center}
+#plnModal .pln-pri button{display:inline-flex;align-items:center;gap:0;padding:2px 10px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#475569;font-size:11.5px;font-weight:700;cursor:pointer;line-height:1.4}
+#plnModal .pln-pri button:hover{background:#f1f5f9}
+#plnModal .pln-pri button.on{background:#0f172a;border-color:#0f172a;color:#fff}
+#plnModal .pln-pri button i{display:inline-block;width:9px;height:9px;border-radius:50%;box-shadow:0 0 0 1.5px #fff;margin-right:5px;vertical-align:middle}   /* 간격은 gap 이 아니라 margin — 좁은 화면에선 전역 규칙이 단추를 inline-block 으로 바꿔 gap 이 사라짐 */
+#plnModal .pln-tfp{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap}   /* 좁은 화면(모바일은 입력 칸 안쪽 폭이 100px 안팎)에서는 라벨이 윗줄로, 알약이 줄바꿈 */
+#plnModal .pln-tfp .pln-lb{flex:none}
+#plnModal .pln-sw input[type=color]{width:28px;height:22px;padding:0;border:1px solid #cbd5e1;border-radius:6px;background:#fff;cursor:pointer}
 #plnModal .pln-bar{display:none;flex-shrink:0;padding:6px 16px;font-size:11.5px;font-weight:600;line-height:1.4;border-bottom:1px solid #e2e8f0}
 #plnModal .pln-bar.on{display:block}
 #plnModal .pln-bar.err{background:#fef2f2;color:#b91c1c}
@@ -5442,6 +5451,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-sp{flex:none}
 /* 목록 보기 */
 #plnModal .pln-ls{display:none;flex:1;min-height:0;overflow:auto}
+#plnModal .pln-rw.nw{background:#f4fce3}   /* v242: 월간 목록에서 오늘 날짜의 일정만 아주 연한 연두색 배경(아래 .hl 보다 앞에 둬서 '그날로 이동' 강조가 이김) */
 #plnModal .pln-rw.hl{background:#fde68a}   /* 그날로 이동했을 때 잠깐 강조 */
 #plnModal .pln-rw{display:flex;gap:10px;padding:8px 16px;border-bottom:1px solid #f1f5f9;align-items:flex-start}
 #plnModal .pln-rw.p{opacity:.6}
@@ -5502,7 +5512,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       <button id="plnChip" onclick="BTMPlanner.chipClick()" title="">⚪ 폰 연동 안 됨</button>
       <button class="pln-ib" id="plnSyncBtn" onclick="BTMPlanner.syncClick()" title="지금 구글 캘린더와 동기화">🔄</button>
       <button class="pln-ib" id="plnGearBtn" onclick="BTMPlanner.toggleSet()" title="구글 캘린더 연결 설정">⚙ 연결 설정</button>
-      <button class="pln-ib" id="plnClrBtn" onclick="BTMPlanner.toggleClr()" title="색상 설정 — 캘린더 색 · 새 일정 기본 색 (일정마다의 색은 일정을 눌러 고릅니다)">🎨 색상</button>
+      <button class="pln-ib" id="plnClrBtn" onclick="BTMPlanner.toggleClr()" title="색상 설정 — 캘린더 색 · 새 일정 기본 색 · 중요도(상·중·하) 색 (일정마다의 색은 일정을 눌러 고릅니다)">🎨 색상</button>
       <button class="pln-ib x mobile-keep" onclick="BTMPlanner.close()" title="닫기">✕</button>
     </div>
     <div id="plnBar" class="pln-bar"></div>
@@ -5541,6 +5551,12 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
       <div class="pln-r1"><span class="pln-lb" style="min-width:150px">새 일정 기본 색</span><div id="plnDcSw" class="pln-sw" onclick="BTMPlanner.pickColor(event,'def')"></div></div>
       <div id="plnClrInfo" class="pln-hint" style="min-height:14px;margin-bottom:4px"></div>
       <div class="pln-hint">· 일정마다 다른 색은 일정을 눌러 나오는 수정 창의 ‘색상’에서 고릅니다(폰의 구글 캘린더에서 바꾼 색도 앱에 들어옵니다). · ‘기본’은 색을 지정하지 않아 캘린더 색을 따릅니다. · 새 일정 기본 색은 앞으로 만드는 일정에만 적용됩니다.</div>
+      <!-- 중요도 상·중·하 색(v242) — 이 앱 화면에만 쓰임(구글 캘린더에는 반영되지 않음) -->
+      <div style="font-size:12px;font-weight:700;color:#0c4a6e;margin:10px 0 6px;padding-top:8px;border-top:1px solid #bae6fd">🚩 중요도 색 — 상 · 중 · 하 <span style="font-weight:500;color:#64748b">(이 앱 화면에만 쓰이며 구글 캘린더에는 반영되지 않습니다)</span></div>
+      <div class="pln-r1"><span class="pln-lb" style="min-width:150px">상</span><div id="plnPcH" class="pln-sw" onclick="BTMPlanner.pickPrColor(event,'h')" onchange="BTMPlanner.pickPrColor(event,'h')"></div></div>
+      <div class="pln-r1"><span class="pln-lb" style="min-width:150px">중</span><div id="plnPcM" class="pln-sw" onclick="BTMPlanner.pickPrColor(event,'m')" onchange="BTMPlanner.pickPrColor(event,'m')"></div></div>
+      <div class="pln-r1"><span class="pln-lb" style="min-width:150px">하</span><div id="plnPcL" class="pln-sw" onclick="BTMPlanner.pickPrColor(event,'l')" onchange="BTMPlanner.pickPrColor(event,'l')"></div></div>
+      <div class="pln-hint">· 왼쪽 ‘미정·확정·완료 일정’ 줄의 <b>오른쪽 가장자리</b>에 고른 색이 얇게 표시됩니다(중요도를 정하지 않은 일정은 표시 없음). · 일정 입력 창과 왼쪽 입력 칸에서 중요도를 고릅니다. · 오른쪽 달력은 같은 칸 안에서 상 → 중 → 하 → (없음) 순으로 나옵니다(여러 날 이어진 일정은 늘 맨 위, 같은 단계는 기존 순서). · 직접 고르기는 색 선택창으로 아무 색이나 정할 수 있고, ‘기본’은 처음 색으로 되돌립니다.</div>
     </div>
     <!-- 본문: 왼쪽 To Do(날짜 미정) · 오른쪽 월간 달력 -->
     <div class="pln-body">
@@ -5551,6 +5567,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
           <div class="pln-tf">
             <input id="plnTodoIn" type="text" maxlength="200" autocomplete="off" placeholder="일정 입력 후 Enter — 앞에 ‘11/25 ’처럼 날짜를 쓰면 바로 확정" title="날짜가 정해지지 않은 일정을 적으세요. 맨 앞에 ‘11/25 ’처럼 월/일(두 자리)을 쓰고 한 칸 띄우면 그 날짜의 확정 일정(달력)으로 바로 등록됩니다(‘11/25 (화) ’처럼 요일을 붙여도 됩니다)" onkeydown="BTMPlanner.enter(event,'todo')">
             <textarea id="plnTodoMemo" rows="1" maxlength="4000" placeholder="메모 (선택)"></textarea>
+            <div class="pln-tfp"><span class="pln-lb">중요도</span><div id="plnTodoPr" class="pln-pri" onclick="BTMPlanner.pickPri(event,'todo')" title="정하지 않으면 중요도 없음"></div></div>
             <button class="pln-pb" onclick="BTMPlanner.addTodo()">＋ 미정 일정에 추가</button>
           </div>
           <div id="plnTodoList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
@@ -5603,6 +5620,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
           </div>
           <div class="pln-r1"><span class="pln-lb">알림</span><select id="plnFR" title="알림(폰에 울립니다)"></select></div>
           <div class="pln-r1"><span class="pln-lb">색상</span><div id="plnFC" class="pln-sw" onclick="BTMPlanner.pickColor(event,'dlg')"></div></div>
+          <div class="pln-r1"><span class="pln-lb">중요도</span><div id="plnFP" class="pln-pri" onclick="BTMPlanner.pickPri(event,'dlg')" title="정하지 않으면 중요도 없음 · 달력에서 같은 날 상 → 중 → 하 → 없음 순으로 나옵니다"></div></div>
           <div class="pln-r1"><input id="plnFS" type="text" maxlength="200" autocomplete="off" placeholder="일정 내용 (예: 병원 예약, 가족 모임)" style="flex:1;min-width:200px" onkeydown="BTMPlanner.enter(event,'dlg')"></div>
           <textarea id="plnFM" rows="3" placeholder="메모 (선택)" maxlength="4000"></textarea>
           <div id="plnFMsg" class="pln-hint" style="margin-top:4px;min-height:13px">시간을 비우면 종일 일정으로 들어갑니다.</div>
@@ -11548,6 +11566,17 @@ function lumOf(hex){ const n=parseInt(hex.slice(1),16); return (0.299*((n>>16)&2
 const fgOf=hex=>lumOf(hex)>0.62?'#1f2937':'#ffffff';
 function tintOf(hex,a){ const n=parseInt(hex.slice(1),16); return '#'+[(n>>16)&255,(n>>8)&255,n&255].map(v=>Math.round(v*a+255*(1-a)).toString(16).padStart(2,'0')).join(''); }
 const colorOf=it=>{ const p=palOf(it.c)||palOf(gcfg.cc); return p?p[2]:''; };     /* 이 일정의 색: 자기 색 → 없으면 캘린더 색 → 없으면 ''(앱 기본 모양) */
+/* ── 중요도 상·중·하 (v242) — 이 앱에만 저장(구글에 올리지 않음): it.pr = '' | 'h' | 'm' | 'l'. 병합 단위(GRP)·snap 에 넣지 않음 — 넣으면 구글 반영 대기가 영원히 남음 ──
+   · 입력 창·왼쪽 입력 칸에서 고름(안 고르면 '' = 중요도 없음) · 월간 달력 칸 안 순서 = 미완료 → 완료, 각각 상 → 중 → 하 → 없음, 같은 단계는 예전 순서(종일 먼저 → 시간순 → 제목 가나다) · 여러 날 막대는 늘 맨 위
+   · 색: 🎨 색상 패널에서 상·중·하 따로(ui.pc, BTMPlannerUI_v1) — 왼쪽 미정·확정·완료 줄의 오른쪽 가장자리에 얇게 */
+const PRI=[['h','상'],['m','중'],['l','하']];
+const PRC_DEF={h:'#d50000',m:'#f59e0b',l:'#33b679'};
+const PR_RANK={h:0,m:1,l:2};
+const validP=v=>(v==='h'||v==='m'||v==='l')?v:'';
+const prName=p=>{ const q=PRI.find(x=>x[0]===p); return q?q[1]:''; };
+const prRank=it=>(it&&PR_RANK[it.pr]!==undefined)?PR_RANK[it.pr]:3;
+const prColor=p=>{ p=validP(p); if(!p) return ''; const v=ui.pc&&ui.pc[p]; return (typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v))?v:PRC_DEF[p]; };
+const prHex=it=>it&&it.pr?prColor(it.pr):'';
 const WD=['일','월','화','수','목','금','토'];
 const REM_T=[[-1,'알림 없음'],[0,'정시'],[5,'5분 전'],[10,'10분 전'],[30,'30분 전'],[60,'1시간 전'],[120,'2시간 전'],[1440,'1일 전'],[2880,'2일 전'],[10080,'1주일 전']];
 const REM_A=[[-1,'알림 없음'],[900,'전날 오전 9시'],[2340,'2일 전 오전 9시'],[9540,'1주일 전 오전 9시']];   /* 종일 일정: 그날 00:00 기준 N분 전 */
@@ -11598,9 +11627,10 @@ let st={k:'off',msg:''};                    /* 캘린더 동기화 상태 */
 let tst={k:'off',msg:'',n:0,at:0};          /* Tasks 동기화 상태: off|ok|scope(권한 없음)|api(API 미사용)|err */
 let busyP=null, again=false, timer=null, poll=null, opened=false, pendFull=false, tkAsked=false;
 let editId='', editBase=null, dlgTodo=false, setOn=false, dlgColor='', clrOn=false, ccTry='', ccMsg='';
+let dlgPr='', editPr='', todoPr='';   /* v242 중요도: 일정 입력/수정 창에서 고른 값 · 수정을 시작할 때의 값 · 왼쪽 입력 칸에서 고른 값 ('' | 'h' 상 | 'm' 중 | 'l' 하) */
 let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자동 재시도 횟수·타이머 · 마지막 전체 동기화 시각 · 이 캘린더의 일정을 한 번이라도 가져왔는지(v214) */
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
-let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[]}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
+let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[],pc:{}}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null, sbDown=false;
 const WKEY='BTMPlannerWork_v1', WK_TITLE='오늘 업무';                      /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 */
 let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''};
@@ -11634,7 +11664,7 @@ function norm(x){
   const todo=!validYmd(x.d);                 /* 날짜가 없으면 To Do(날짜 미정) — 구글 캘린더와 연결하지 않음(Tasks 에는 올림) */
   const td=(todo||x.td||x.src!=='g')?1:0;    /* td = 구글 Tasks 와 동기화되는 앱 항목(미정·확정 목록에 보이는 항목 전부) — 날짜 미정·To Do 출신·이 앱에서 만든 일정(달력에서 직접 입력 포함)은 1, 폰·구글 캘린더에서 만든 일정(src 'g')만 0 (v214) */
   const it={ id:(typeof x.id==='string'&&x.id.length>=5&&x.id.length<=300)?x.id:newId(), d:todo?'':x.d, t:(!todo&&validHm(x.t))?x.t:'', d2:todo?'':(validYmd(x.d2)?x.d2:x.d), t2:(!todo&&validHm(x.t2))?x.t2:'',
-    s:String(x.s==null?'':x.s).slice(0,300), m:String(x.m==null?'':x.m).slice(0,4000), r:(Number.isInteger(x.r)&&x.r>=-1&&x.r<=40320)?x.r:-1, c:validC(x.c),
+    s:String(x.s==null?'':x.s).slice(0,300), m:String(x.m==null?'':x.m).slice(0,4000), r:(Number.isInteger(x.r)&&x.r>=-1&&x.r<=40320)?x.r:-1, c:validC(x.c), pr:validP(x.pr),
     g:todo?'':String(x.g||''), gu:todo?'':String(x.gu||''), mod:+x.mod||0, rec:(!todo&&x.rec)?1:0, src:x.src==='g'?'g':'app', b:todo?null:normB(x.b), mr:(!todo&&typeof x.mr==='string')?x.mr.slice(0,8000):null,
     td,
     x:x.x?1:0,                          /* 완료(체크) — Tasks 의 완료와 연동 */
@@ -11677,6 +11707,7 @@ function load(){
       else if(PM_OK.indexOf(u.pm)>0){ const kk={Top:'top',Bot:'bot',Fin:'fin'}[u.pm.slice(3)]; if(u.pm.indexOf('max')===0){ ui.mx=kk; ui.mn=[]; } else { ui.mx=''; ui.mn=[kk]; } }
       else { ui.mx=''; ui.mn=[]; }
       ui.mn=ui.mn.filter(k=>k!==ui.mx);
+      if(u.pc&&typeof u.pc==='object'){ ui.pc={}; ['h','m','l'].forEach(k=>{ const v=String(u.pc[k]||''); if(/^#[0-9a-f]{6}$/i.test(v)) ui.pc[k]=v.toLowerCase(); }); }   /* v242: 중요도 상·중·하 색(직접 고른 것만 — 없으면 기본 색) */
     }
   }catch(_){}
   wkLoad();                                                      /* 오늘 업무(v218) */
@@ -12265,7 +12296,7 @@ function rowHtml(it,today,day){
   const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'');   /* v230: 완료 표시는 줄 맨 앞 체크박스(+취소선)로 — 제목 옆 ✔ 배지는 겹쳐서 뺌 */
   const al=it.r>=0?'<span class="pln-al" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'';   /* 알림 표시는 오른쪽 수정 버튼 바로 왼쪽(v217) */
   const sy=gcfg.on?(needsPush(it)?'<span class="pln-sy w" title="구글 캘린더에 아직 반영되지 않음">⏳</span>':'<span class="pln-sy" title="구글 캘린더와 동기화됨">☁</span>'):'';
-  return '<div class="pln-rw'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'">'+ckHtml(it)+'<div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+memoBtn(it)+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+al+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-rw'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+((it.d<=today&&it.d2>=today)?' nw':'')+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'">'+ckHtml(it)+'<div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+memoBtn(it)+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+al+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
 }
 function renderList(){
   const box=$('plnList'); if(!box) return; ensureVm();
@@ -12282,7 +12313,7 @@ function renderList(){
 
 /* ── 화면: 월간 달력 ── */
 const evCmp=(a,b)=>{ const x=a.t?1:0, y=b.t?1:0; if(x!==y) return x-y; if(a.t!==b.t) return a.t<b.t?-1:1; if(a.d!==b.d) return a.d<b.d?-1:1; return a.s<b.s?-1:a.s>b.s?1:0; };   /* 종일 먼저 → 시간순 */
-const doneCmp=(a,b)=>((a.x?1:0)-(b.x?1:0))||evCmp(a,b);                  /* v231: 달력 칸 안 순서 = 미완료 먼저 → 완료한 일정은 맨 아래(각각 종일 먼저 → 시간순) */
+const doneCmp=(a,b)=>((a.x?1:0)-(b.x?1:0))||(prRank(a)-prRank(b))||evCmp(a,b);                  /* v231: 달력 칸 안 순서 = 미완료 먼저 → 완료한 일정은 맨 아래(각각 종일 먼저 → 시간순) */
 const isMulti=it=>!!it.d&&it.d2>it.d;                                 /* 날짜가 둘 이상에 걸친 일정(시간 일정 포함) — 달력에서 칸마다 나누지 않고 이어진 막대로(v221) */
 function dayMap(a,b){   /* a~b(달력에 보이는 첫날~끝날)에 걸치는 하루짜리 일정을 날짜별로 — 여러 날 일정은 뺌(weekBars 의 막대로 따로 그림) */
   const map=new Map();
@@ -12298,7 +12329,7 @@ function chipHtml(it,day){
   const ad=!it.t, cont=it.d<day;
   const mk=(it.rec?'🔁':'')+(it.src==='g'?'📱':'');
   const dot=(gcfg.on&&needsPush(it))?'<i class="pln-dot" title="구글 캘린더에 아직 반영되지 않음"></i>':'';
-  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+(it.d2>it.d?'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']':'')+(it.m?'\n'+it.m:'');
+  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+(it.d2>it.d?'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']':'')+(it.pr?'  · 중요도 '+prName(it.pr):'')+(it.m?'\n'+it.m:'');
   const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
   return '<div class="pln-ch '+(ad?'ad':'tm')+(cont?' ct':'')+(it.x?' dn':'')+'"'+(cst?' style="'+cst+'"':'')+' draggable="true" data-id="'+esc(it.id)+'" title="'+esc(tip)+'">'+dot+(cont?'↳ ':'')+((ad||cont)?'':'<b>'+esc(it.t)+'</b>')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
@@ -12314,7 +12345,7 @@ function weekBars(a,weeks){
       const s=it.d<ws?ws:it.d, e=it.d2>we?we:it.d2;
       L.push({it,w,c0:dayDiff(s,ws),c1:dayDiff(e,ws),l:it.d<ws,r:it.d2>we,lane:0});
     });
-    L.sort((x,y)=>((x.it.x?1:0)-(y.it.x?1:0))||(x.c0-y.c0)||((y.c1-y.c0)-(x.c1-x.c0))||evCmp(x.it,y.it));   /* v231: 완료한 여러 날 일정은 미완료 막대 아래 줄부터(막대끼리의 순서 — 막대는 여전히 칸의 맨 위) */
+    L.sort((x,y)=>((x.it.x?1:0)-(y.it.x?1:0))||(x.c0-y.c0)||((y.c1-y.c0)-(x.c1-x.c0))||(prRank(x.it)-prRank(y.it))||evCmp(x.it,y.it));   /* v231: 완료한 여러 날 일정은 미완료 막대 아래 줄부터(막대끼리의 순서 — 막대는 여전히 칸의 맨 위) */
     const ends=[];
     L.forEach(sg=>{ let ln=0; while(ln<ends.length&&ends[ln]>=sg.c0) ln++; sg.lane=ln; ends[ln]=sg.c1; for(let c=sg.c0;c<=sg.c1;c++) kk[c]=Math.max(kk[c],ln+1); });
     segs.push(L); k.push(kk);
@@ -12325,7 +12356,7 @@ function barHtml(sg){
   const it=sg.it, ad=!it.t;
   const mk=(it.rec?'🔁':'')+(it.src==='g'?'📱':'');
   const dot=(gcfg.on&&needsPush(it))?'<i class="pln-dot" title="구글 캘린더에 아직 반영되지 않음"></i>':'';
-  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']'+(it.m?'\n'+it.m:'');
+  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']'+(it.pr?'  · 중요도 '+prName(it.pr):'')+(it.m?'\n'+it.m:'');
   const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
   return '<div class="pln-ch pln-mb '+(ad?'ad':'tm')+(it.x?' dn':'')+(sg.l?' cl':'')+(sg.r?' cr':'')+'" style="grid-column:'+(sg.c0+1)+'/span '+(sg.c1-sg.c0+1)+';grid-row:'+(sg.w+1)+';margin-top:calc(var(--bt) + '+(sg.lane*CHIP_H)+'px);'+cst+'" draggable="true" data-id="'+esc(it.id)+'" data-w="'+sg.w+'" data-c0="'+sg.c0+'" data-c1="'+sg.c1+'" data-lane="'+sg.lane+'" title="'+esc(tip)+'">'+dot+((!ad&&!sg.l)?'<b>'+esc(it.t)+'</b>':'')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
@@ -12399,12 +12430,12 @@ function toggleMemo(id){   /* 메모 아이콘: 펼침 ↔ 접힘 — 같은 일
 }
 function todoHtml(it){   /* v234: 제목은 한 줄(길면 …, 전체 제목은 줄 툴팁) · 📅(날짜 고르기) 단추는 없애고 그 자리(오른쪽 단추 줄 맨 앞)에 메모 아이콘 — 메모가 있는 일정에만. 날짜는 ✏️ 수정 창 또는 달력으로 끌어다 놓아 정함 */
   const p=palOf(it.c);
-  return '<div class="pln-td'+(it.x?' dn':'')+moCls(it)+'"'+barStyle(p&&p[2])+' draggable="true" data-id="'+esc(it.id)+'" title="'+(it.s?esc(it.s)+'\n':'')+'달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span>'+ckHtml(it)+'<div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-td'+(it.x?' dn':'')+moCls(it)+'"'+barStyle(p&&p[2],prHex(it))+' draggable="true" data-id="'+esc(it.id)+'" title="'+(it.s?esc(it.s)+'\n':'')+'달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span>'+ckHtml(it)+'<div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
 function doneHtml(it,today){                                          /* 왼쪽 아래 '확정 일정'의 한 줄 — v234: 미정 줄(todoHtml)과 똑같이 제목은 한 줄(길면 …, 전체 제목은 줄 툴팁)·메모 아이콘은 오른쪽 단추 줄 맨 앞(메모가 있는 일정에만) */
   const past=it.d2<today, wd=WD[parseYmd(it.d).getDay()];
   const sub=(it.d2>it.d?'<small>~'+mdOf(it.d2)+'</small>':'')+(it.t?'<small>'+esc(it.t)+'</small>':'');   /* 요일은 날짜와 같은 줄(.d1) — 여러 날 일정의 끝 날짜·시간은 그 아래 줄 */
-  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+'"'+barStyle(colorOf(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="'+(it.s?esc(it.s)+'\n':'')+'누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+'"'+barStyle(colorOf(it),prHex(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="'+(it.s?esc(it.s)+'\n':'')+'누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
 const inDone=x=>!!x.d&&(!!x.td||x.src==='app');   /* 아래 '확정 일정' 목록 = To Do 에서 시작한 항목 + 이 앱에서 만든 일정(달력에서 직접 입력 포함) — 폰·구글 캘린더에서 만든 일정은 제외 */
 function renderTodo(){
@@ -12465,11 +12496,42 @@ function fillRem(r){
 }
 /* ── 색상(v209) ── 일정마다(수정 창) · 새 일정 기본 색 · ‘BTM 일정’ 캘린더 색(구글 캘린더에 그대로 반영) */
 const cdot=it=>{ const p=palOf(it.c)||palOf(gcfg.cc); return p?'<i class="pln-cd" style="background:'+p[2]+'" title="색: '+esc(p[1])+'"></i>':''; };
-const barStyle=hex=>hex?' style="border-left:4px solid '+hex+'"':'';
+const barStyle=(hex,rhex)=>{ const t=(hex?'border-left:4px solid '+hex+';':'')+(rhex?'border-right:4px solid '+rhex+';':''); return t?' style="'+t+'"':''; };   /* 왼쪽 = 일정 색(v209), 오른쪽 = 중요도 색(v242) — 같은 두께·같은 모양 */
 function swHtml(cur,defTip){   /* 색 고르기 단추들 — ‘기본’(색 지정 안 함) + 11색 */
   return '<button type="button" class="def'+(!cur?' on':'')+'" data-c="" title="'+esc(defTip)+'">기본</button>'+PAL.map(p=>'<button type="button" class="'+(cur===p[0]?'on':'')+'" data-c="'+p[0]+'" style="background:'+p[2]+'" title="'+esc(p[1])+'"></button>').join('');
 }
 function paintDlgColor(){ const b=$('plnFC'); if(b) b.innerHTML=swHtml(dlgColor,'기본 — 캘린더 색을 따름'+(palOf(gcfg.cc)?'('+palOf(gcfg.cc)[1]+')':'')); }
+/* ── 중요도(v242): 입력 창·왼쪽 입력 칸의 [없음 상 중 하] 고르기 · 🎨 색상 패널의 상·중·하 색 ── */
+function priHtml(cur){
+  return [['','없음']].concat(PRI).map(q=>'<button type="button" data-p="'+q[0]+'" class="'+(cur===q[0]?'on':'')+'" title="'+(q[0]?'중요도 '+q[1]:'중요도를 정하지 않음')+'">'+(q[0]?'<i style="background:'+prColor(q[0])+'"></i>':'')+q[1]+'</button>').join('');
+}
+function paintPri(){ const a=$('plnFP'); if(a) a.innerHTML=priHtml(dlgPr); const b=$('plnTodoPr'); if(b) b.innerHTML=priHtml(todoPr); }
+function pickPri(ev,kind){
+  const b=ev&&ev.target&&ev.target.closest&&ev.target.closest('button[data-p]'); if(!b) return;
+  const p=validP(b.getAttribute('data-p'));
+  if(kind==='dlg') dlgPr=p; else todoPr=p;
+  paintPri();
+}
+function prSwHtml(p){   /* 상·중·하 색 고르기 — 11색 + 직접 고르기(색 선택창) + 기본 */
+  const cur=prColor(p).toLowerCase(), custom=!!(ui.pc&&ui.pc[p]);
+  return PAL.map(c=>'<button type="button" class="'+(custom&&cur===c[2].toLowerCase()?'on':'')+'" data-hex="'+c[2]+'" style="background:'+c[2]+'" title="'+esc(c[1])+'"></button>').join('')
+    +'<input type="color" value="'+cur+'" title="직접 고르기">'
+    +'<button type="button" class="def'+(custom?'':' on')+'" data-hex="" title="기본 색으로('+PRC_DEF[p]+')">기본</button>';
+}
+function setPrColor(p,hex){
+  load(); p=validP(p); if(!p) return;
+  hex=String(hex||'').toLowerCase();
+  if(!ui.pc||typeof ui.pc!=='object') ui.pc={};
+  if(/^#[0-9a-f]{6}$/.test(hex)&&hex!==PRC_DEF[p]) ui.pc[p]=hex; else delete ui.pc[p];   /* 기본 색과 같으면 '기본' */
+  saveUi(); paintClr(); paintPri(); render();
+  toast('🚩 중요도 ‘'+prName(p)+'’ 색: '+(ui.pc[p]?ui.pc[p]:'기본 색('+PRC_DEF[p]+')'));
+}
+function pickPrColor(ev,p){
+  p=validP(p); const t=ev&&ev.target; if(!p||!t) return;
+  if(t.matches&&t.matches('input[type=color]')){ if(ev.type==='change') setPrColor(p,t.value); return; }   /* 색 선택창은 값이 정해졌을 때(change)만 */
+  const b=t.closest&&t.closest('button[data-hex]'); if(!b) return;
+  setPrColor(p,b.getAttribute('data-hex'));
+}
 function pickColor(ev,kind){
   const b=ev&&ev.target&&ev.target.closest&&ev.target.closest('button[data-c]'); if(!b) return;
   const c=validC(b.getAttribute('data-c'));
@@ -12496,6 +12558,7 @@ function paintClr(){
   const a=$('plnCcSw'); if(a) a.innerHTML=swHtml(gcfg.cc,'지정 안 함 — 구글이 정한 색 그대로');
   const d=$('plnDcSw'); if(d) d.innerHTML=swHtml(gcfg.dc,'지정 안 함 — 캘린더 색을 따름');
   const i=$('plnClrInfo'); if(i) i.textContent=clrInfo();
+  PRI.forEach(q=>{ const c=$('plnPc'+q[0].toUpperCase()); if(c) c.innerHTML=prSwHtml(q[0]); });   /* v242: 중요도 상·중·하 색 */
 }
 function toggleClr(force){ clrOn=(force===undefined)?!clrOn:!!force; if(clrOn&&setOn) toggleSet(false); paintClr(); }
 function fillForm(it,day){
@@ -12503,6 +12566,7 @@ function fillForm(it,day){
   $('plnFS').value=it?it.s:''; $('plnFM').value=it?it.m:'';
   $('plnFR').value=''; fillRem(it?it.r:null);
   const t=$('plnFTitle'); if(t) t.textContent=it?(it.d?(it.rec?'일정 수정(이 날짜만)':'일정 수정'):'To Do 수정'):(day?'새 일정 — '+dateLabel(day):(dlgTodo?'새 To Do':'새 일정'));
+  dlgPr=it?validP(it.pr):''; editPr=dlgPr; paintPri();                  /* v242: 새 일정은 중요도 없음 */
   dlgColor=it?it.c:(gcfg.dc||''); paintDlgColor();                      /* 새 일정은 ‘새 일정 기본 색’이 미리 골라져 있음 */
   const dw=$('plnFDelWrap'); if(dw) dw.style.display=it?'':'none';
   const dn=$('plnFDoneWrap'); if(dn) dn.style.display=it?'':'none';     /* 머리의 [✅ 완료] — 새 일정에는 없음(좁은 화면 전역 규칙이 단추를 강제로 보이게 해서 단추가 아니라 감싼 span 을 숨김) */
@@ -12519,7 +12583,7 @@ function readForm(fb){   /* fb = 수정을 시작할 때의 항목 값 — 시�
   let d2=$('plnFD2').value||d, t2=$('plnFT2').value; const r=+$('plnFR').value, rr=Number.isInteger(r)?r:-1;
   if(!t) t2='';
   const timeSame=!!fb&&d===fb.d&&t===fb.t&&d2===fb.d2&&t2===fb.t2;
-  if(!d&&dlgTodo){ if(!s) return {err:'내용을 입력해 주세요.'}; return {d:'',t:'',d2:'',t2:'',s,m,r:rr,c:dlgColor}; }   /* To Do — 날짜 없이 저장 */
+  if(!d&&dlgTodo){ if(!s) return {err:'내용을 입력해 주세요.'}; return {d:'',t:'',d2:'',t2:'',s,m,r:rr,c:dlgColor,pr:dlgPr}; }   /* To Do — 날짜 없이 저장 */
   if(!validYmd(d)) return {err:dlgTodo?'날짜 형식을 확인해 주세요.':'날짜를 선택해 주세요. (날짜를 없애려면 이 일정을 왼쪽 위 ‘미정 일정’ 영역으로 끌어다 놓으세요)'};
   if(!s) return {err:'일정 내용을 입력해 주세요.'};
   if(!validYmd(d2)) d2=d;
@@ -12531,7 +12595,7 @@ function readForm(fb){   /* fb = 수정을 시작할 때의 항목 값 — 시�
       if(!timeSame&&toDate(d2,t2)<=toDate(d,t)) return {err:'종료 시간이 시작 시간보다 빠르거나 같습니다.'};
     }else{ const en=new Date(toDate(d,t).getTime()+3600000); d2=ymd(en); t2=hm(en); }   /* 종료를 비우면 1시간 */
   }
-  return {d,t,d2,t2,s,m,r:rr,c:dlgColor};
+  return {d,t,d2,t2,s,m,r:rr,c:dlgColor,pr:dlgPr};
 }
 function openDlg(o){
   load(); o=o||{};
@@ -12564,17 +12628,18 @@ function submit(opt){   /* 대화상자 [저장] — opt={done:true|false} 가 �
   load();
   const f=readForm(editId?editBase:null); if(f.err){ setFormMsg(f.err,'err'); return; }
   const dn=(opt&&typeof opt==='object'&&opt.done!==undefined)?!!opt.done:undefined;     /* undefined = 완료 상태는 그대로 */
-  let it=editId?items.find(x=>x.id===editId):null, lost=false, needSync, edited=false;
+  let it=editId?items.find(x=>x.id===editId):null, lost=false, needSync, edited=false, pch=false, onlyPr=false;
   if(it){
     /* 양식을 연 뒤 폰에서 바뀐 값이 있을 수 있으므로, 내가 실제로 고친 병합 단위(시간·제목·메모·알림)만 덮어씀 */
     const base=editBase||snap(it); let ch=false;
     Object.keys(GRP).forEach(k=>{ if(GRP[k].some(ff=>f[ff]!==base[ff])){ GRP[k].forEach(ff=>{ it[ff]=f[ff]; }); ch=true; } });
     if(ch){ it.mod=Date.now(); fix0(it); }
-    edited=ch;
+    if(validP(f.pr)!==validP(editPr)){ it.pr=validP(f.pr); pch=true; }   /* v242: 중요도는 이 앱에만 — mod 는 건드리지 않음(구글로 다시 올리지 않게) */
+    edited=ch||pch; onlyPr=pch&&!ch;
     needSync=!!it.d;
   }else{
     lost=!!editId;                                         /* 수정하던 일정이 그 사이 구글(폰)에서 지워졌으면 새 일정으로 저장 */
-    it=norm({id:newId(),d:f.d,t:f.t,d2:f.d2,t2:f.t2,s:f.s,m:f.m,r:f.r,c:f.c,mod:Date.now(),src:'app',td:dlgTodo?1:0});   /* To Do 대화상자에서 만들면 날짜를 바로 정해도 '확정 일정' 목록에 들어감 */
+    it=norm({id:newId(),d:f.d,t:f.t,d2:f.d2,t2:f.t2,s:f.s,m:f.m,r:f.r,c:f.c,pr:f.pr,mod:Date.now(),src:'app',td:dlgTodo?1:0});   /* To Do 대화상자에서 만들면 날짜를 바로 정해도 '확정 일정' 목록에 들어감 */
     if(it) items.push(it);
     needSync=!!(it&&it.d);
   }
@@ -12582,7 +12647,9 @@ function submit(opt){   /* 대화상자 [저장] — opt={done:true|false} 가 �
   if(doneMsg){ it.x=dn?1:0; it.xt=dn?Date.now():0; if(it.td) it.mod=Date.now(); }   /* v230: 완료 상태도 함께 저장 — To Do 출신·앱 일정(td)은 구글 Tasks 의 체크와 연동되므로 mod 도 갱신(toggleDone 과 같음), 폰·구글 캘린더 일정은 이 앱에만 */
   const auto=!!(it&&!it.d&&autoDate(it));                  /* 일정 미정 To Do 의 제목 맨 앞에 'MM/DD ' 를 쓰고 저장하면 그 날짜의 확정 일정으로(v208) */
   if(auto) needSync=true;
-  closeDlg(); afterChange(needSync);
+  closeDlg();
+  if(onlyPr&&!doneMsg&&!auto){ save(); render(); updateBtn(); }   /* v242: 중요도만 바꿨으면 구글과 무관(이 앱에만 저장) — 동기화도 로그인 창도 부르지 않음 */
+  else afterChange(needSync);
   if(auto){ toast(autoMsg(it)); flash(it.d); return; }
   if(doneMsg){ const lb=it.s||'(제목 없음)'; toast((dn?'✅ ‘'+lb+'’ — 완료 일정으로 처리했습니다':'↩ ‘'+lb+'’ — 완료를 취소했습니다')+(edited?' (고친 내용도 저장)':'')); return; }
   toast((lost?'수정하던 일정이 그 사이 지워져 새 일정으로 저장했습니다. ':'✅ 저장했습니다')+(it&&it.d?(gcfg.on?' — 구글 캘린더에 반영 중…':' (구글 캘린더에 연결하면 폰에도 표시됩니다)'):''));
@@ -12606,7 +12673,7 @@ function dlgDone(){   /* 일정 창 머리의 [✅ 완료] / [↩ 완료 취소]
   const want=!it.x;
   const f=readForm(editBase); if(f.err){ setFormMsg(f.err,'err'); return; }
   const base=editBase||snap(it);
-  if(Object.keys(GRP).some(k=>GRP[k].some(ff=>f[ff]!==base[ff]))){ submit({done:want}); return; }   /* 고친 내용이 있음 → 저장하면서 완료 */
+  if(Object.keys(GRP).some(k=>GRP[k].some(ff=>f[ff]!==base[ff]))||validP(f.pr)!==validP(editPr)){ submit({done:want}); return; }   /* 고친 내용이 있음 → 저장하면서 완료 */
   const id=it.id, lb=it.s||'(제목 없음)';
   closeDlg(); toggleDone(id,want);                                       /* 고친 게 없음 → 체크박스와 똑같이 */
   toast(want?'✅ ‘'+lb+'’ — 완료 일정으로 처리했습니다':'↩ ‘'+lb+'’ — 완료를 취소했습니다');
@@ -12616,7 +12683,8 @@ function addTodo(){
   const inp=$('plnTodoIn'), memo=$('plnTodoMemo'); if(!inp) return;
   const s=(inp.value||'').trim().slice(0,300), m=((memo&&memo.value)||'').replace(/\r\n/g,'\n').trim().slice(0,4000);
   if(!s){ toast('To Do 내용을 입력해 주세요.'); try{ inp.focus(); }catch(_){} return; }
-  const it=norm({id:newId(),d:'',s,m,r:900,c:gcfg.dc,mod:Date.now(),src:'app'}); items.push(it);      /* 알림 기본값은 종일 일정과 같음(날짜가 정해질 때 그대로 씀) */
+  const it=norm({id:newId(),d:'',s,m,r:900,c:gcfg.dc,pr:todoPr,mod:Date.now(),src:'app'}); items.push(it);      /* 알림 기본값은 종일 일정과 같음(날짜가 정해질 때 그대로 씀) */
+  todoPr=''; paintPri();                                    /* v242: 중요도를 안 고르고 입력하면 중요도 없음 — 한 번 쓰면 다시 '없음' */
   const auto=autoDate(it);                                  /* 제목 맨 앞에 'MM/DD ' 를 쓰면 바로 그 날짜의 확정 일정으로(v208) */
   inp.value=''; if(memo){ memo.value=''; memo.style.height=''; }   /* 메모 칸을 끌어 키웠어도 비우면 제목 칸과 같은 기본 높이로(v232) */
   afterChange(auto);                                       /* 날짜가 정해졌으면 캘린더에도 올림 */
@@ -13072,7 +13140,7 @@ function open(){
   load(); const m=$('plnModal'); if(!m) return;
   opened=true; closeDlg(); dragId=''; pendingRender=false; vm=mStart(new Date()); paintChip();
   setOn=!gcfg.cid; paintSet();                                 /* 처음엔(클라이언트 ID 가 없으면) 연결 안내를 펼쳐서 보여 줌 */
-  m.style.display='flex'; applyPanel(); render(); calTop();                  /* 보이게 한 뒤에 그려야 달력 칸 높이를 잴 수 있음 · 내용이 그대로여도 칸 목록은 맨 위로(v225) */
+  m.style.display='flex'; applyPanel(); paintPri(); render(); calTop();                  /* 보이게 한 뒤에 그려야 달력 칸 높이를 잴 수 있음 · 내용이 그대로여도 칸 목록은 맨 위로(v225) */
   if(gcfg.cid) loadGsi().catch(()=>{});                        /* 로그인 창이 클릭 안에서 바로 열리도록 미리 불러 둠 */
   if(gcfg.on&&gcfg.cid){ startPoll(); sync({interactive:!authDismissed,regrant:!authDismissed&&!tkAsked&&tkLack()}); }   /* 일정 창을 여는 클릭 안이므로 Tasks 권한 추가 로그인도 바로 띄울 수 있음(한 번 물었는데 허용 안 했으면 다시 안 물음) */
 }
@@ -13094,13 +13162,13 @@ window.addEventListener('storage',e=>{
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const w=$('plnDlg'); if(wkIsOpen()) wkClose(); else if(w&&w.classList.contains('on')) closeDlg(); else close(); } });
 
-window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,toggleClr,pickColor,panel,panelClick,splitDown,splitKey,splitReset,wkOpen,wkClose,wkSave,wkCancel,wkClick,
+window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,toggleClr,pickColor,pickPri,pickPrColor,setPrColor,panel,panelClick,splitDown,splitKey,splitReset,wkOpen,wkClose,wkSave,wkCancel,wkClick,
   month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,dlgDone,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,toggleMemo,timeInput,showDay,goDay,sortToggle,toggleDone,tkToggle,unassign,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get ttomb(){ return ttomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tst(){ return tst; }, get tok(){ return tok; }, set tok(v){ tok=v; },
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
-       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[]}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
+       reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[],pc:{}}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop } };
+       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop, prColor, prRank, validP, prName, PRC_DEF, doneCmp, evCmp, priHtml, paintPri } };
 })();
 /* ══ /v206 ══ */
 
