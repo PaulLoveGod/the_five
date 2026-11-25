@@ -70891,6 +70891,8 @@ body.guest-mode #bmGrip,#report-root.published-mode #bmGrip{display:none!importa
 .bm-btg{display:inline-flex;align-items:center;gap:3px;margin-left:auto}
 .bm-bt{height:20px;padding:0 6px;border-radius:5px;border:1px solid #bcd0ea;background:#fff;color:#1e3a8a;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1;white-space:nowrap}
 .bm-bt:hover{background:#e8f0fc}
+.bm-bt:disabled{opacity:.4;cursor:default}   /* v247: ⏮ — 맨 처음 구절이라 이전 구절이 없을 때 */
+.bm-bt:disabled:hover{background:#fff}
 .bm-bt.bm-due{background:#fff7ed;border-color:#fdba74;color:#c2410c}
 .bm-tp{margin-top:3px;font-size:10.5px;line-height:1.5;color:#64748b;font-weight:400}
 .bm-tx{margin-top:2px;font-size:13px;line-height:inherit;color:#0f172a;font-weight:400;word-break:keep-all;overflow-wrap:break-word}
@@ -70899,7 +70901,7 @@ body.guest-mode #bmGrip,#report-root.published-mode #bmGrip{display:none!importa
 .bm-nx{margin-top:3px;font-size:11px;line-height:1.5;color:#166534;font-weight:400}
 .bm-lk{color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;font:inherit}
 .bm-nodata{font-size:11.5px;color:#64748b;font-weight:400}
-#report-root.published-mode #bmSection button.bm-bt{pointer-events:auto;opacity:1}
+#report-root.published-mode #bmSection button.bm-bt:not(:disabled){pointer-events:auto;opacity:1}
 @media print{.bm-btg{display:none!important}}
 
 /* ── 팝업 ── */
@@ -74026,6 +74028,8 @@ html.bm-lock{overflow:hidden}
      applyData() 끝의 BTMBible.apply(d) · confirmNewReport 의 fresh.bibleMem=undefined · _LS_LABELS 한 줄.
    · v246(2026-11-25): 왼쪽 파란 줄 없앰 · 본문 행간 알약(BTMBoxLH 'bmWidget' — .bm-w 가 line-height 를 가짐) · 우하단 높이 손잡이 #bmGrip(_initTextBotResize → #bmSection 의 inline height,
      _BOX_HEIGHT_IDS 'bmSection' 으로 저장·복원) · 알약 ⇕ = BTMBoxTools.fit('bmWidget') 이 그 지정 높이를 풂 · 본문이 비면(접힘·배정 없음) render() 가 #bmSection.bm-fold 를 달아 지정 높이 무시.
+   · v247(2026-11-26): 제목 줄 ⏮(이전 순서의 구절로 돌아가기) — ⏭ 의 반대. prevKey(k) = 지금 순서(고른 주제에 k 가 있으면 그 목록, 아니면 과정)에서 k 바로 앞 구절, prevToday() = 오늘의 구절을 그 구절로
+     (미뤘던 구절이면 G.skip 해제, 이미 외운 구절이면 N+1회차 도전). 맨 처음 구절이면 단추 비활성. ⏭(skipToday)도 이미 외운 구절에서 동작하도록 고침(미루기 표시 없이 nextKey 로) — ⏮ 로 돌아온 뒤 ⏭ 로 되돌아갈 수 있게.
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
@@ -74237,6 +74241,12 @@ function nextKey(skipKeys){   /* 다음에 학습할 구절: 직접 정한 구�
   const L=courseList().map(i=>U[i].k);
   return pickFrom(L,ex)||leastCount(L,ex);
 }
+function prevKey(k){   /* v247: 지금 순서에서 k 바로 앞 구절 — 직접 고른 주제에 k 가 있으면 그 목록(고른 순서)에서, 아니면 과정(주제별/성경 순서)에서. 없으면 '' (nextKey 가 '앞으로' 가는 순서의 반대 방향) */
+  if(!k||!G) return '';
+  const fk=focusKeys(), L=(fk&&fk.indexOf(k)>=0)?fk:courseList().map(i=>U[i].k);
+  const i=L.indexOf(k);
+  return i>0?L[i-1]:'';
+}
 function progressInfo(){   /* 과정 전체에서 외운 구절 수 / 전체 */
   const L=courseList(); let n=0; L.forEach(i=>{ if(isMem(U[i].k)) n++; });
   return {done:n,total:L.length};
@@ -74419,7 +74429,7 @@ function render(){
   const hd=$('bmHdr'), host=$('bmWidget'); if(!host) return;
   if(!RAW||!G){ if(hd) hd.innerHTML=''; host.innerHTML=''; markFold(true); return; }
   const cfg=G.cfg, v=viewState(), open=!!cfg.open;
-  const B=(a,t,ti,cls)=>'<button type="button" class="bm-bt'+(cls?' '+cls:'')+mobileOk+'" data-a="'+a+'" title="'+esc(ti)+'">'+t+'</button>';
+  const B=(a,t,ti,cls,at)=>'<button type="button" class="bm-bt'+(cls?' '+cls:'')+mobileOk+'" data-a="'+a+'" title="'+esc(ti)+'"'+(at?' '+at:'')+'>'+t+'</button>';
   /* ── 제목 줄(섹션 제목 오른쪽): 구절 · 암송 완료 체크 · 암송 횟수 · 도구 단추 ── */
   let h='';
   if(v.k){
@@ -74437,7 +74447,11 @@ function render(){
   if(v.k){
     h+=B('say','🔊','소리 내어 듣기(다시 누르면 멈춤)');
     h+=B('vw','👁','지금: '+VW_NAME[cfg.vw]+' — 눌러서 바꾸기(본문 → 첫 글자만 → 가리기)');
-    if(!v.guest&&!v.ok&&v.D>=today()) h+=B('skip','⏭','이 구절은 나중으로 미루고 다른 구절로 바꾸기');
+    if(!v.guest&&!v.ok&&v.D>=today()){   /* v247: ⏮ 이전 순서의 구절로 돌아가기 · ⏭ 다음 순서로 넘어가기(안 외운 구절이면 나중으로 미루기) */
+      const pk=prevKey(v.k);
+      h+=B('prev','⏮',pk?'이전 순서의 구절로 돌아가기 — '+UK[pk].ref+(G.skip[pk]&&!isMem(pk)?' (미뤘던 구절이라 미룸이 풀려요)':''):'지금이 맨 처음 구절이라 이전 구절이 없어요','',pk?'':'disabled');
+      h+=B('skip','⏭',isMem(v.k)?'다음 순서의 구절로 넘어가기':'이 구절은 나중으로 미루고 다른 구절로 바꾸기');
+    }
   }
   if(!v.guest) h+=B('otopic','📚 주제','주제별로 암송하기 — 주제를 직접 골라 그 주제부터 암송');
   h+=B('open','📚 학습·테스트','성경암송 창 열기 — 학습 · 테스트(기간별·말씀별) · 구절 목록 · 진도');
@@ -74493,12 +74507,20 @@ function toggleToday(on){
   removeDone(v.k,v.D); afterChange();
 }
 function skipToday(){
-  const D=reportDate(), k=G.days[D]; if(!k||isMem(k)||isGuest()||D<today()) return;   /* 지난 보고서의 배정 기록은 바꾸지 않음 */
-  G.skip[k]=1; if(G.cur===k) G.cur='';
+  const D=reportDate(), k=G.days[D]; if(!k||isGuest()||D<today()||doneOn(k,D)) return;   /* 지난 보고서의 배정 기록은 바꾸지 않음 · 이 날 암송 완료로 체크한 구절도 그대로 */
+  const mem=isMem(k);   /* v247: 이미 외운 구절(⏮ 로 돌아온 구절·다음 바퀴)은 '미루기' 표시 없이 다음 순서로만 넘어감 — 예전엔 조용히 아무 일도 안 했음 */
+  if(!mem){ G.skip[k]=1; if(G.cur===k) G.cur=''; }
   const nk=nextKey();
-  if(!nk||nk===k){ delete G.skip[k]; touch(); return toast('바꿀 다른 구절이 없어요'); }
+  if(!nk||nk===k){ if(!mem) delete G.skip[k]; touch(); return toast('바꿀 다른 구절이 없어요'); }
   G.days[D]=nk; touch(); afterChange();
-  toast('⏭ '+UK[k].ref+' 은(는) 나중으로 미뤘어요 — 오늘은 '+UK[nk].ref);
+  toast(mem?'⏭ 다음 순서로 넘어왔어요 — 오늘은 '+UK[nk].ref:'⏭ '+UK[k].ref+' 은(는) 나중으로 미뤘어요 — 오늘은 '+UK[nk].ref);
+}
+function prevToday(){   /* v247: ⏮ — 오늘의 구절을 순서상 바로 앞 구절로 되돌림(⏭ 의 반대). 미뤘던 구절이면 미룸을 풀고, 이미 외운 구절이면 다시 외우는 회차로. 오늘 이후 보고서만·이 날 암송 완료로 체크한 구절은 그대로 */
+  const D=reportDate(), k=G.days[D]; if(!k||isGuest()||D<today()||doneOn(k,D)) return;
+  const pk=prevKey(k); if(!pk) return toast('지금이 맨 처음 구절이라 이전 구절이 없어요');
+  const wasSkip=!!G.skip[pk]&&!isMem(pk); delete G.skip[pk];
+  G.days[D]=pk; touch(); afterChange();
+  toast('⏮ 이전 순서로 돌아왔어요 — 오늘은 '+UK[pk].ref+(wasSkip?' (미룸을 풀었어요)':(isMem(pk)?' (이미 '+doneCount(pk)+'회 암송한 구절이에요)':'')));
 }
 function applyToday(){   /* 오늘 이후 보고서의 '오늘의 구절'을 지금 규칙(고른 주제·순서)대로 다시 정함 — 오늘 이미 암송 완료한 구절이면 그대로 */
   if(isGuest()) return false;
@@ -74528,6 +74550,7 @@ function onWidgetClick(e){
   if(a==='fold'){ G.cfg.open=G.cfg.open?0:1; touch(); return render(); }
   if(a==='otopic') return open('topic');
   if(a==='skip') return skipToday();
+  if(a==='prev') return prevToday();
   if(a==='adv') return advanceNow();
   if(a==='due') return open('test',{quick:'due'});
 }
@@ -75340,7 +75363,7 @@ window.BTMBible={
   open,close,render,apply,snapshot,refresh,
   state:()=>G, data:()=>({U,UK,COLL,RAW}),
   _t:{TN,TROOT,kidsOf,nodeProg,focusKeys,focusNodes,focusSummary,startFocus,clearFocus,addDone,removeDone,clearMem,doneCount,doneList,doneOn,lastDone,completeVerse,applyToday,beginFocus,topicTree,searchNodes,crumbText,crumbParts,entryFor,leastCount,pickFrom,histTitle,dayNo,totalDone,topicFocusNode,fixMem,lcsMark,scoreText,diffHtml,hintText,hintWord,clozePick,chunkWords,hideOrder,courseList,nextKey,setMem,grade,assignFor,maxDay,dayNo,dueKeys,weakKeys,progressInfo,topicOf,
-      poolKeys,buildQuestions,startRun,answerQ,gradeCurrent,nextQ,finishRun,viewState,toggleToday,skipToday,advanceNow,studyNow,fixCfg,loadG,saveG,invalidateCourse,normVerse,nrm,words,
+      poolKeys,buildQuestions,startRun,answerQ,gradeCurrent,nextQ,finishRun,viewState,toggleToday,skipToday,prevToday,prevKey,advanceNow,studyNow,fixCfg,loadG,saveG,invalidateCourse,normVerse,nrm,words,
       setToday:d=>{ _todayOverride=d; }, P, get OV(){ return OV; }, reload:()=>{ G=null; loadG(); invalidateCourse(); }, exportData, importData, recoverFromArchives}
 };
 
