@@ -11632,7 +11632,7 @@ let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
 let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[],pc:{}}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null, sbDown=false;
-const WKEY='BTMPlannerWork_v1', WK_TITLE='오늘 업무';                      /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 */
+const WKEY='BTMPlannerWork_v1', WK_TITLE='★오늘 업무';                    /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 · WK_TITLE = 구글 캘린더(폰)에 올리는 일정 제목(v243: 앞에 ★ — 폰에서 눈에 띄게; 앱 안 팝업·아이콘 글자는 그대로 '오늘 업무'). 일정 구분은 제목이 아니라 표식(btmWork)이라 옛 제목 '오늘 업무' 일정도 다음 동기화에 이 제목으로 바뀜 */
 let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''};
 const wkOpenIds=new Set();
 const memoOpen=new Set();                                                    /* 메모를 펼쳐 둔 일정 id(v232) — 목록은 자주 다시 그려지므로(자동 동기화 등) 펼침 상태를 여기에 기억. 평소(처음·새로 만든 일정)는 모두 접힘 */
