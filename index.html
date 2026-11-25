@@ -327,6 +327,11 @@ select{
    여기서는 따로 크기·색을 정하지 않음 — 실행 중(disabled)일 때만 회색 */
 #investorStatusSection #isAiBtn:disabled{background:#94a3b8!important;cursor:progress}
 #report-root.published-mode #isAiBtn{display:none!important}   /* 게시(잠금) 화면에서는 편집 도구이므로 숨김 */
+/* Investor Status 머리줄 [📋 평가 상세](#isDetBtn, v241) — 방금(또는 이 report 에 저장된) AI 평가 결과 창을 다시 엶. 크기·모양은 [🤖 업데이트]와 같고 색만 인디고. 이 report 에 결과가 없으면 흐리게(눌러도 안내만 뜸) */
+#investorStatusSection #isDetBtn:hover{filter:brightness(1.12)}
+#investorStatusSection #isDetBtn.is-none{opacity:.55}
+#report-root.published-mode #isDetBtn{pointer-events:auto;opacity:1}   /* 게시(잠금) 화면에서도 평가 상세는 볼 수 있게(보기 전용) */
+#report-root.published-mode #isDetBtn.is-none{opacity:.55}
 .iscore-label-edit{font-size:9.5px;color:#64748b;white-space:nowrap;flex-shrink:0;outline:none;cursor:text;border-bottom:1px solid transparent}
 .iscore-label-edit:focus{border-bottom:1px solid #6366f1;color:#334155;white-space:normal;width:auto !important}
 .iscore-bar-wrap{flex:1;height:9px;background:#e2e8f0;border-radius:5px;cursor:ew-resize;position:relative;overflow:hidden;user-select:none;touch-action:none}
@@ -6263,7 +6268,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
     <div class="card" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-bottom:0;overflow:hidden">
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
         <span id="investorStatusTitle" contenteditable="true" spellcheck="false" style="outline:none;cursor:text;border-bottom:1px solid transparent" onfocus="this.style.borderBottom='1px solid #6366f1'" onblur="this.style.borderBottom='1px solid transparent';saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">■ Investor Status</span>
-        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button class="btn sm" id="isAiBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.run()" title="직전 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 분석해, 아래 항목의 점수와 메모를 자동으로 채웁니다 (직전 report = 이 report 날짜 바로 앞의 Archive)">🤖 업데이트</button></span>
+        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button class="btn sm" id="isDetBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4f46e5;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.showDetail()" title="AI 평가 상세 보기">📋 평가 상세</button><button class="btn sm" id="isAiBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.run()" title="직전 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 분석해, 아래 항목의 점수와 메모를 자동으로 채웁니다 (직전 report = 이 report 날짜 바로 앞의 Archive)">🤖 업데이트</button></span>
       </div>
       <div class="card-body" style="padding:8px 10px;flex:1;overflow:hidden;display:flex;flex-direction:column">
         <!-- Charlie Status + Battery (2-col) -->
@@ -16165,6 +16170,7 @@ function collectData(opt){   /* opt.mmSaved: 마인드맵은 화면의 수정본
     boxHeights:Object.fromEntries(_BOX_HEIGHT_IDS.map(id=>{const el=g(id);return[id,el?.style?.height||''];})),
     boxFlex:Object.fromEntries(_BOX_FLEX_IDS.map(id=>{const el=g(id);return[id,{flex:el?.style?.flex||'',width:el?.style?.width||''}];})),
     boxDeleted:(window.BTMBoxTools?BTMBoxTools.snapshot():undefined),   /* 삭제(숨김)한 텍스트박스 — 리포트와 함께 저장, Create New 로 만든 새 리포트도 그대로 이어받음(prepareNew). {v:1,list:[{id,h}]} */
+    isAiResult:(window.BTMIsAI&&BTMIsAI.snapshot)?BTMIsAI.snapshot():undefined,   /* v241 — 이 보고서의 AI 평가 결과(Investor Status [📋 평가 상세]) 가벼운 사본 */
     bibleMem:(window.BTMBible&&BTMBible.snapshot)?BTMBible.snapshot():undefined,   /* 성경암송(v239) — 이 보고서(날짜)의 오늘의 구절·암송 여부 스냅샷 */
     lineHeights:(window.BTMBoxLH?BTMBoxLH.snapshot():undefined),   /* 텍스트박스별 행간격(바꾼 박스만) — 게스트 화면·다른 기기에서도 같게. 멤버 화면은 사용자 설정(BTMBoxLineH)이 우선 */
     secLayout:(window.BTMSecDrag&&BTMSecDrag.snapshot)?BTMSecDrag.snapshot():undefined,   /* 섹션 끌어 옮기기 배치(게스트 화면에서 같은 배치로 보이게) */
@@ -17466,6 +17472,7 @@ function applyData(d){
   try{ if(window.BTMSecDrag){ BTMSecDrag.mirrorDib(); if(BTMSecDrag.rebase) BTMSecDrag.rebase(); } }catch(_){}   /* Daily Inbody 칸 너비 반영 · (v182) 방금 복원한 박스 높이를 '직접 조절'로 오해하지 않게 열 밑변 싱크의 기준 높이를 다시 잡음 */
   try{ if(window.BTMSecDrag&&d.secLayout&&document.body.classList.contains('guest-mode')) BTMSecDrag.applyForViewer(d.secLayout); }catch(_){}   /* 게스트: 작성자가 옮겨 둔 섹션 배치 그대로 */
   try{ if(window.BTMBoxTools) BTMBoxTools.apply(d); }catch(_){}   /* 삭제(숨김)한 텍스트박스 — 박스 높이는 위에서 이미 복원됨(받은 높이 포함), 여기서는 숨기기/보이기만. 데이터에 없으면 모두 보임 */
+  try{ if(window.BTMIsAI&&BTMIsAI.restore) BTMIsAI.restore(d.isAiResult); }catch(_){}   /* v241 — 불러온 report 의 AI 평가 결과로 [📋 평가 상세] 를 바꿈(없으면 비움) */
   try{ if(window.BTMBible) BTMBible.apply(d); }catch(_){}   /* 성경암송(v239) — 불러온 보고서의 오늘의 구절 위젯(새 날짜면 구절 새로 배정) */
   try{ if(window.BTMBoxLH) BTMBoxLH.apply(d.lineHeights); }catch(_){}   /* 텍스트박스별 행간격 — 멤버는 사용자 설정(로그인 때 최신 Archive 기록이 덮어써도 유지), 게스트는 기록의 값 */
   /* ── 업데이트마다 해제되는 체크박스 ── */
@@ -17595,6 +17602,7 @@ async function confirmNewReport(){
   const _dibCarry = (!allArcs.length || (cur.reportDate||'') >= allArcs[0].date) ? (cur.dibContent||'') : (_latestArcData.dibContent||'');
   const fresh = {
     ...cur,
+    isAiResult: undefined,   /* v241 — 새 report 는 AI 평가 결과 없이 시작(이전 report 의 결과를 이어받지 않음) */
     mindmap: _mmCarry,
     bibleMem: undefined,   /* 성경암송(v239) — 새 보고서는 새 날짜의 구절을 새로 배정(이전 보고서의 스냅샷을 이어받지 않음) */
     translations:{}, displayLang:'ko', /* 새 리포트에는 이전 리포트의 번역이 섞이지 않도록 초기화 */
@@ -70285,14 +70293,14 @@ async function apply(res,g,name){
 }
 function undo(){
   const L=BTMIsAI._last;
-  if(!L||L.undone){ say('되돌릴 평가가 없어요'); return false; }
+  if(!L||L.undone||!L.snap){ say('되돌릴 평가가 없어요'); return false; }
   const s=L.snap, map={}; s.scores.forEach(x=>{ map[x.key]=x.score; });
   setScores(map,true);
   const el=$('investorStatusNote'), sec=$('investorStatusSection');
   if(el){ el.innerHTML=s.noteHtml; el.style.height=s.noteH; }
   if(sec){ sec.style.height=s.secH; try{ if(s.lsH==null) localStorage.removeItem('BTMInvestorH2'); else localStorage.setItem('BTMInvestorH2',s.lsH); }catch(_){} try{ if(window.MM&&MM.refresh) MM.refresh(); }catch(_){} }
   try{ saveData(); }catch(_){}
-  L.undone=true; say('Investor Status 를 AI 평가 이전 상태로 되돌렸어요'); render();
+  L.undone=true; L.sl=null; refreshDetBtn(); say('Investor Status 를 AI 평가 이전 상태로 되돌렸어요'); render();
   return true;
 }
 
@@ -70358,11 +70366,12 @@ function render(){
     return '<tr><td class="l">'+esc(x.label)+'<span class="isai-tag">'+(x.side==='L'?'좌':'우')+'</span></td><td class="s">'+x.prev+' → <span style="color:'+colorOf(x.score)+'">'+x.score+'</span> <small class="'+cls+'">'+(x.basis==='auto'?'자동':dlt>0?'▲'+dlt:dlt<0?'▼'+(-dlt):'―')+'</small></td><td class="m">'+(x.basis==='kept'?'<span class="isai-tag">유지</span> ':'')+esc(x.note||'')+'</td></tr>';
   }).join('');
   b.innerHTML='<div class="isai-sum"><b>🤖 '+esc(res.overall)+'</b>'+(res.praise?'<br>👍 '+esc(res.praise):'')+(res.advice?'<br>💡 '+esc(res.advice):'')+'</div>'
-    +'<h4>지수 (직전 report '+esc(mdw(g.P.date))+' 기준)</h4><div class="isai-idx">'+idxRows+'</div>'
+    +'<h4>지수 ('+(g.P.date?'직전 report '+esc(mdw(g.P.date))+' 기준':'직전 report 기준')+')</h4><div class="isai-idx">'+idxRows+'</div>'
     +'<h4>Investor Status 항목 점수 — 이전 → 새 점수</h4><table class="isai-tb">'+itemRows+'</table>'
     +'<h4>근거가 된 성실도 통계 (앱이 Archive 에서 계산)</h4><ul class="isai-fx">'+g.facts.lines.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
-    +'<div class="isai-meta">AI: '+esc(name)+' · Inbody 이미지 '+sent+'장 전송'+(note?' · '+esc(note):'')+(g.imgNote?' · '+esc(g.imgNote):'')+' · '+secs+'초 · '+(L.undone?'<b style="color:#dc2626">되돌린 상태</b>':'점수와 메모는 이미 반영됨')+'</div>';
-  foot([{t:'↩ 되돌리기',dis:!!L.undone,fn:()=>undo()},{t:'다시 평가',fn:()=>run()},{t:'닫기',pri:true,fn:close}]);
+    +'<div class="isai-meta">AI: '+esc(name)+' · Inbody 이미지 '+sent+'장 전송'+(note?' · '+esc(note):'')+(g.imgNote?' · '+esc(g.imgNote):'')+' · '+secs+'초'+(L.at?' · '+whenOf(L.at)+' 평가':'')+' · '+(L.undone?'<b style="color:#dc2626">되돌린 상태</b>':'점수와 메모는 이미 반영됨')+(canEdit()?'':' · <span style="color:#64748b">보기 전용(되돌리기·다시 평가는 한국어 화면·잠금 해제 상태에서만)</span>')+'</div>';
+  const can=canEdit();
+  foot([{t:'↩ 되돌리기',dis:!!L.undone||!can||!L.snap,fn:()=>undo()},{t:'다시 평가',dis:!can,fn:()=>run()},{t:'닫기',pri:true,fn:close}]);
 }
 function setBtn(on){ const b=$('isAiBtn'); if(!b) return; b.disabled=!!on; b.textContent=on?'⏳ 분석 중…':'🤖 업데이트'; }
 
@@ -70394,6 +70403,7 @@ async function run(opt){
     progress(3,'');
     const snap=await apply(res,g,out.name);
     BTMIsAI._last={res,g,name:out.name,snap,at:Date.now(),secs:Math.round((Date.now()-t0)/1000),sent:out.sent,note:out.note,undone:false};
+    refreshDetBtn(); try{ saveData(); }catch(_){}   /* v241: 결과를 이 report 에 함께 저장(snapshot) — 나중에 [📋 평가 상세]로 다시 볼 수 있게 */
     if(isOpen()) render();
     else say('🤖 Investor Status 를 '+mdw(g.P.date)+' report 기준으로 업데이트했어요',[['상세 보기',()=>{ open(); render(); }],['되돌리기',()=>undo()]]);
   }catch(e){
@@ -70422,8 +70432,53 @@ function watchNote(){
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',watchNote); else watchNote();
 
-window.BTMIsAI={run,undo,close,show:()=>{ if(BTMIsAI._last){ open(); render(); } },IDX,_last:null,
-  _t:{h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,stripLegacy,
+/* ── v241 [📋 평가 상세] — 평가 결과 창을 다시 열기 + 결과를 report 에 저장·복원 ──
+   · 결과(_last)는 그 report(날짜)의 것: collectData().isAiResult 로 보고서(자동저장·Archive·JSON 백업)에 함께 저장되고, applyData() 가 불러올 때 복원(없으면 비움) — report 를 바꿔도 다른 report 의 결과가 보이지 않음.
+   · 저장하는 것은 결과 창에 필요한 가벼운 사본(지수·항목별 점수·근거·성실도 통계 줄·AI 이름·시간·되돌리기용 이전 점수/메모)뿐 — 보낸 글·Inbody 이미지·프롬프트는 저장하지 않음.
+   · 한국어 화면·잠금 해제 상태에서만 [↩ 되돌리기]·[다시 평가](번역 화면에서 되돌리면 한국어 메모가 번역 화면을 덮어쓸 수 있고, 잠금 화면은 수정 불가). 그 밖엔 보기 전용. */
+const canEdit=()=>!((typeof _btmLang!=='undefined'&&_btmLang!=='ko')||document.body.classList.contains('guest-mode')||document.querySelector('#report-root.published-mode'));
+function whenOf(ms){ const d=new Date(ms); if(isNaN(d)) return ''; return (d.getMonth()+1)+'/'+d.getDate()+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function slimOf(L){   /* 결과 창에 필요한 가벼운 사본(캐시: 되돌린 상태가 바뀌면 다시 만듦) */
+  if(!L) return undefined;
+  if(L.sl&&L.slU===!!L.undone) return L.sl;
+  const r=L.res||{}, g=L.g||{}, sn=L.snap;
+  const sl={v:1,at:L.at||0,name:L.name||'',secs:L.secs||0,sent:L.sent||0,note:L.note||'',imgNote:g.imgNote||'',undone:!!L.undone,
+    pdate:(g.P&&g.P.date)||'',lines:(g.facts&&Array.isArray(g.facts.lines))?g.facts.lines.slice():[],
+    res:{overall:r.overall||'',praise:r.praise||'',advice:r.advice||'',indices:r.indices||{},
+         items:(r.items||[]).map(x=>({key:x.key,label:x.label,side:x.side,score:x.score,prev:x.prev,basis:x.basis,note:x.note||''}))},
+    snap:sn?{scores:sn.scores,noteHtml:sn.noteHtml,noteH:sn.noteH,secH:sn.secH,lsH:sn.lsH,grew:sn.grew}:null};
+  L.sl=sl; L.slU=!!L.undone; return sl;
+}
+function inflate(sl){   /* 저장된 사본 → render()·undo() 가 쓰는 모양. 깨졌으면 null */
+  try{
+    if(!sl||typeof sl!=='object'||!sl.res||typeof sl.res.indices!=='object'||!Array.isArray(sl.res.items)) return null;
+    if(!IDX.every(d=>sl.res.indices[d.k]&&isFinite(+sl.res.indices[d.k].score))) return null;
+    return {res:sl.res,g:{P:{date:sl.pdate||''},facts:{lines:Array.isArray(sl.lines)?sl.lines:[]},imgNote:sl.imgNote||''},name:sl.name||'AI',snap:sl.snap&&Array.isArray(sl.snap.scores)?sl.snap:null,
+            at:sl.at||0,secs:sl.secs||0,sent:sl.sent||0,note:sl.note||'',undone:!!sl.undone,restored:true};
+  }catch(_){ return null; }
+}
+function snapshot(){ try{ return slimOf(BTMIsAI._last); }catch(_){ return undefined; } }   /* collectData() 가 report 에 같이 저장 */
+function refreshDetBtn(){   /* [📋 평가 상세] 모양·설명 — 이 report 에 결과가 없으면 흐리게 */
+  const b=$('isDetBtn'); if(!b) return;
+  const L=BTMIsAI._last;
+  b.classList.toggle('is-none',!L);
+  b.title=L?('AI 평가 상세 보기 — '+(L.g&&L.g.P&&L.g.P.date?mdw(L.g.P.date)+' report 기준 · ':'')+(L.at?whenOf(L.at)+' 평가':'')+(L.undone?' (되돌린 상태)':'')):'이 report 에는 아직 AI 평가 결과가 없어요 — [🤖 업데이트]로 평가하면 여기서 상세를 볼 수 있어요';
+}
+function restore(sl){   /* applyData() 가 부름 — 불러온 report 의 평가 결과로 바꿈(없으면 비움) */
+  if(busy) return;   /* 평가가 진행 중이면 그대로 둠 */
+  BTMIsAI._last=inflate(sl);
+  refreshDetBtn();
+  if(isOpen()&&state.mode==='done'){ if(BTMIsAI._last) render(); else close(); }
+}
+function showDetail(){   /* [📋 평가 상세] — 진행 중이면 진행 창, 결과가 있으면 결과 창, 없으면 안내 */
+  if(busy){ open(); return; }
+  if(!BTMIsAI._last){ say('이 report 에는 아직 AI 평가 결과가 없어요 — [🤖 업데이트]로 평가하면 여기서 상세를 볼 수 있어요',[['지금 업데이트',()=>run()]]); return; }
+  open(); render();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refreshDetBtn); else refreshDetBtn();
+
+window.BTMIsAI={run,undo,close,show:()=>showDetail(),showDetail,snapshot,restore,IDX,_last:null,
+  _t:{slimOf,inflate,refreshDetBtn,canEdit,whenOf,h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,stripLegacy,
       isBusy:()=>busy}};
 })();
 /* ═══ BTMISAI-JS-END ═══ */
