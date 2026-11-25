@@ -1554,6 +1554,7 @@ body.sd-block-drag .sd-rowfold{max-height:56px;overflow:hidden}
 #aiVidBox .avb-sub{font-size:10px;color:#64748b;line-height:1.45;word-break:break-all}
 #aiVidBox .avb-hint{color:#4f46e5;font-weight:600}
 #aiVidBox .avb-file{color:#334155}
+#aiVidBox .avb-hint2{color:#94a3b8}
 #aiVidBox .avb-list{display:flex;flex-direction:column;gap:3px;max-height:240px;overflow-y:auto;padding-right:2px}
 #aiVidBox .avb-row{display:flex;flex-wrap:wrap;align-items:center;gap:2px 7px;padding:4px 7px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;background:#fff;transition:background .1s,border-color .1s}
 #aiVidBox .avb-row:hover{background:#f5f7ff}
@@ -4077,6 +4078,19 @@ body.guest-mode .bd-pills,#report-root.published-mode .bd-pills{display:none!imp
                 style="padding:5px 8px;font-size:11px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;flex-shrink:0">✕</button>
             </div>
             <div style="font-size:10px;color:#94a3b8;margin-top:4px">경로 지정 시 Create New 클릭할 때 CSV·JSON 전체백업 자동 저장</div>
+          </div>
+          <!-- 동영상·음성 받기 폴더(v245) — 위 세 개와 달리 이 PC 의 자막 서버(파이썬)가 저장하므로 폴더 핸들이 아니라 '전체 경로 글자' -->
+          <div style="border-top:1px dashed #e2e8f0;padding-top:12px">
+            <div style="font-size:11px;color:#475569;font-weight:600;margin-bottom:5px">🎞 동영상·음성 받기 폴더 <span style="font-weight:400;color:#94a3b8">— AI 팝업 URL 탭 [영상받기]</span></div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <input id="adminVidPath" placeholder="미지정 (기본: 다운로드\YouTube영상)" spellcheck="false" autocomplete="off" onchange="saveVideoFolder()"
+                style="flex:1;font-size:11px;padding:5px 8px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;color:#374151;min-width:0"/>
+              <button onclick="pickVideoFolder()" class="mobile-keep" title="이 PC 에 폴더 선택 창을 열어요(자막 서버가 켜져 있어야 해요)"
+                style="padding:5px 10px;font-size:11px;background:#0f766e;color:#fff;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;font-weight:600;flex-shrink:0">📂 선택</button>
+              <button onclick="clearVideoFolder()" class="mobile-keep" title="지정 해제 — 기본 폴더(다운로드\YouTube영상)에 저장"
+                style="padding:5px 8px;font-size:11px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;flex-shrink:0">✕</button>
+            </div>
+            <div id="adminVidPathStatus" style="font-size:10px;color:#94a3b8;margin-top:4px;line-height:1.6"></div>
           </div>
           <!-- 저장 팝업 체크박스 -->
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;color:#64748b">
@@ -7147,7 +7161,8 @@ const _LS_LABELS={
   'BTMPlanner_v1':'일정 목록','BTMPlannerG_v1':'일정 구글 연결 설정',
   'BTM_printAllow_v1':'PDF/이미지 출력 허용 설정','BTMPlannerUI_v1':'일정 화면 설정','BTMPlannerWork_v1':'오늘 업무',
   'BTM_halfBreak_v1':'Shift+Enter 줄바꿈 간격 설정',
-  'BTMBibleMem_v1':'성경암송 기록(암송 완료·복습 일정)'
+  'BTMBibleMem_v1':'성경암송 기록(암송 완료·복습 일정)',
+  'BTMVideoDir':'동영상·음성 받기 폴더 설정','BTMVideoQuality':'영상받기 화질 기억'
 };
 function _lsLabel(k){ return _LS_LABELS[k]||k; }
 function _lsEsc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -31624,6 +31639,54 @@ async function clearDlFolder(type){
   }
 }
 
+/* ── 동영상·음성 받기 폴더 (v245) ───────────────────────────────────────────────────────────────────────────
+   AI 팝업 URL 탭 [영상받기]가 저장하는 폴더. 저장은 이 PC 의 자막 서버(파이썬)가 하므로, 브라우저 폴더 핸들(폴더 '이름'만 알 수 있음)이 아니라 '전체 경로 글자'가 필요 —
+   localStorage 'BTMVideoDir' 에 글자로 저장하고 받을 때마다 서버에 보냄(서버가 전체 경로·로컬 드라이브인지 확인, 없는 폴더는 받기를 시작할 때 만듦, 비우면 기본 = 다운로드\YouTube영상).
+   · [📂 선택] = 서버가 이 PC 에 폴더 선택 창을 띄워 고른 경로를 돌려줌(자막 서버 필요) · 직접 적고 Enter(또는 다른 곳 클릭)도 됨 · [✕] = 지정 해제 */
+const _VIDDIR_KEY='BTMVideoDir';
+const _VIDDIR_HINT='AI 팝업 URL 탭의 [영상받기]가 저장할 폴더예요. 비워 두면 기본(다운로드\\YouTube영상)에 저장해요. 저장은 이 PC 의 자막 서버가 하므로 전체 경로(예: D:\\Videos\\YouTube)가 필요하고, [📂 선택]은 서버가 폴더 선택 창을 띄워요.';
+function _vidDirGet(){ try{ return (localStorage.getItem(_VIDDIR_KEY)||'').trim(); }catch(e){ return ''; } }
+function _vidDirMsg(msg,kind){ const el=g('adminVidPathStatus'); if(!el) return; el.textContent=msg||''; el.style.color=kind==='err'?'#dc2626':kind==='ok'?'#059669':kind==='warn'?'#b45309':'#94a3b8'; }
+function _vdBytes(n){ n=+n||0; return n>=1073741824?(n/1073741824).toFixed(n>=10737418240?0:1)+' GB':n>=1048576?Math.round(n/1048576)+' MB':Math.max(1,Math.round(n/1024))+' KB'; }
+function _vidDirApply(path,free,exists){   /* 확인된 폴더를 저장하고 화면에 반영 */
+  try{ localStorage.setItem(_VIDDIR_KEY,path); }catch(e){}
+  const el=g('adminVidPath'); if(el) el.value=path;
+  _vidDirMsg('✅ 저장했어요 — '+(exists===false?'아직 없는 폴더라서 받을 때 만들어요 · ':'')+'이 드라이브의 남은 공간 '+_vdBytes(free),'ok');
+}
+async function saveVideoFolder(){   /* 직접 적은 경로 — 서버가 확인한 뒤 저장(서버가 꺼져 있으면 확인 없이 저장하고 받을 때 확인) */
+  const el=g('adminVidPath'); if(!el) return;
+  const v=(el.value||'').trim().replace(/^"+|"+$/g,'');
+  if(!v){ clearVideoFolder(); return; }
+  _vidDirMsg('⌛ 폴더를 확인하는 중…');
+  try{
+    const c=new AbortController(), t=setTimeout(()=>c.abort(),6000);
+    const r=await fetch(_openaiServer()+'/video-dir-check?dir='+encodeURIComponent(v),{signal:c.signal}); clearTimeout(t);
+    const j=await r.json().catch(()=>({}));
+    if(r.status===404){ try{ localStorage.setItem(_VIDDIR_KEY,v); }catch(e){} _vidDirMsg('⚠️ 저장했어요 — 서버가 폴더 확인을 모르는 옛 버전이에요. 서버를 다시 시작하면 적용돼요','warn'); return; }
+    if(!r.ok||!j.ok){ _vidDirMsg('❌ '+(j.error||'이 폴더는 쓸 수 없어요')+' — 저장하지 않았어요','err'); return; }
+    _vidDirApply(j.path,j.free,j.exists);
+  }catch(e){
+    try{ localStorage.setItem(_VIDDIR_KEY,v); }catch(_){}
+    _vidDirMsg('⚠️ 저장했어요 — 자막 서버가 꺼져 있어 폴더를 확인하지 못했어요(받을 때 확인해요)','warn');
+  }
+}
+async function pickVideoFolder(){   /* 서버가 이 PC 에 폴더 선택 창을 띄움 — 창이 열려 있는 동안 응답을 기다림 */
+  _vidDirMsg('📂 이 PC 에 폴더 선택 창이 열렸어요 — 보이지 않으면 작업 표시줄을 확인하세요. 창을 닫으면 취소돼요','warn');
+  try{
+    const r=await fetch(_openaiServer()+'/video-pick-folder',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({start:_vidDirGet()})});
+    const j=await r.json().catch(()=>({}));
+    if(r.status===404){ _vidDirMsg('❌ 서버가 폴더 선택 창을 모르는 옛 버전이에요 — 서버를 다시 시작해 주세요','err'); return; }
+    if(j.cancelled){ _vidDirMsg(_VIDDIR_HINT); return; }
+    if(!r.ok||!j.path){ _vidDirMsg('❌ '+(j.error||'폴더를 고르지 못했어요'),'err'); return; }
+    _vidDirApply(j.path,j.free,j.exists);
+  }catch(e){ _vidDirMsg('❌ 자막 서버에 연결하지 못했어요 — start_transcript_server.bat 을 실행하거나 경로를 직접 적어 주세요','err'); }
+}
+function clearVideoFolder(){
+  try{ localStorage.removeItem(_VIDDIR_KEY); }catch(e){}
+  const el=g('adminVidPath'); if(el) el.value='';
+  _vidDirMsg('지정을 해제했어요 — 기본 폴더(다운로드\\YouTube영상)에 저장해요','ok');
+}
+
 /* ── Create New 시 Archive 전체 백업 (JSON — 이미지·종목·거래내역 포함) ── */
 async function _autoBackupArchiveJSON(){
   if(!_dlArcDirHandle) return;
@@ -31704,6 +31767,7 @@ function openAdminPanel(){
   const pdfEl=g('adminPdfPath'); if(pdfEl) pdfEl.value=_dlPdfDirHandle?_dlPdfDirHandle.name:'';
   const imgEl=g('adminImgPath'); if(imgEl) imgEl.value=_dlImgDirHandle?_dlImgDirHandle.name:'';
   const arcEl=g('adminArcPath'); if(arcEl) arcEl.value=_dlArcDirHandle?_dlArcDirHandle.name:'';
+  const vdEl=g('adminVidPath'); if(vdEl) vdEl.value=_vidDirGet(); _vidDirMsg(_VIDDIR_HINT);   /* v245: 동영상·음성 받기 폴더 */
   /* Claude API 키 표시 */
   const k=localStorage.getItem('BTMClaudeApiKey')||'';
   const kEl=g('adminClaudeKey');
@@ -35156,6 +35220,7 @@ Rules:
   let _vid={step:'',vid:'',info:null,pick:'',job:'',timer:0,fail:0,busy:false,ctrl:null};
   const _vE=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const _vSrv=()=>String(localStorage.getItem('BTMOpenAILocalServer')||'http://localhost:15050').replace(/\/+$/,'');
+  const _vDir=()=>{ try{ return (localStorage.getItem('BTMVideoDir')||'').trim(); }catch(e){ return ''; } };   /* v245: 관리자 설정 › 경로 › 동영상·음성 받기 폴더(비었으면 서버의 기본 폴더) */
   function _vBytes(n){
     n=+n||0;
     if(n>=1073741824) return (n/1073741824).toFixed(n>=10737418240?1:2)+' GB';
@@ -35208,8 +35273,9 @@ Rules:
       if(bail()) return;
       if(!ping){ _vErr('자막 서버가 실행되지 않았어요 — start_transcript_server.bat 을 실행한 뒤 [다시 시도]를 눌러 주세요'); return; }
       if(!ping.video){ _vErr('서버가 영상받기를 모르는 옛 버전이에요 — 서버를 종료했다가 다시 시작한 뒤 [다시 시도]를 눌러 주세요'); return; }
+      if(_vDir()&&!ping.video.setdir){ _vErr('서버가 저장 폴더 지정을 모르는 옛 버전이에요 — 서버를 종료했다가 다시 시작한 뒤 [다시 시도]를 눌러 주세요 (지정한 폴더 대신 기본 폴더에 저장되는 일을 막기 위해 받지 않았어요)'); return; }
       if(!ping.video.ok){ _vErr('영상 받기 엔진(yt-dlp)이 설치돼 있지 않아요 — start_transcript_server.bat 으로 서버를 다시 켜면 자동 설치돼요 (직접 설치: pip install yt-dlp)'); return; }
-      const r=await fetch(_vSrv()+'/video-info?v='+encodeURIComponent(vid),{signal:ctrl.signal});
+      const r=await fetch(_vSrv()+'/video-info?v='+encodeURIComponent(vid)+'&dir='+encodeURIComponent(_vDir()),{signal:ctrl.signal});
       const j=await r.json().catch(()=>({}));
       if(bail()) return;
       if(!r.ok){ _vErr(j.error||('영상 정보를 읽지 못했어요 (HTTP '+r.status+')')); return; }
@@ -35243,7 +35309,7 @@ Rules:
       +'<div class="avb-sub">'+(info.channel?_vE(info.channel)+' · ':'')+_vDur(info.duration)+' · 남은 저장 공간 <b>'+_vBytes(free)+'</b></div>'
       +'<div class="avb-sub avb-hint">저장 용량(화질)을 고르세요 — 용량은 YouTube 가 알려 준 값이에요</div>'
       +'<div class="avb-list">'+rows+'</div>'
-      +'<div class="avb-sub" title="'+_vE(info.dir)+'">저장 위치: '+_vE(info.dir)+'</div>'
+      +'<div class="avb-sub" title="'+_vE(info.dir)+'">저장 위치: '+_vE(info.dir)+' <span class="avb-hint2">· 바꾸기: 관리자 설정 › 경로</span></div>'
       +'<div class="avb-act"><button class="ai-url-btn mobile-keep" id="aiVidGo" onclick="_vidGo()">⬇ 받기</button><button class="ai-url-btn mobile-keep avb-gray" onclick="_vidClose()">닫기</button></div>');
     _vGoLabel();
   }
@@ -35267,7 +35333,7 @@ Rules:
     try{ localStorage.setItem(_VID_Q,o.key); }catch(e){}
     const b=g('aiVidGo'); if(b){ b.disabled=true; b.textContent='⌛ 시작하는 중…'; }
     try{
-      const r=await fetch(_vSrv()+'/video-download',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({v:_vid.vid,q:o.key,vf:o.vf,af:o.af,mf:o.mf})});
+      const r=await fetch(_vSrv()+'/video-download',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({v:_vid.vid,q:o.key,vf:o.vf,af:o.af,mf:o.mf,dir:_vDir()})});
       const j=await r.json().catch(()=>({}));
       if(r.status===409&&j.job){ _vFollow(j); return; }   /* 이미 받는 중인 영상이 있음 — 그 진행을 보여 줌 */
       if(!r.ok){ _vErr(j.error||('받기를 시작하지 못했어요 (HTTP '+r.status+')')); return; }
