@@ -5706,7 +5706,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
     <!-- 오늘 업무 팝업(v218·v220): 일정 팝업과 같은 크기 · 왼쪽=오늘 발생한 업무 입력·목록 / 오른쪽=직전 날까지의 이전 업무(입력한 날짜 내림차순, 미처리가 위) — 좁은 화면(≤760px)은 위아래 -->
     <div id="plnWk" class="pln-dw" onclick="if(event.target===this)BTMPlanner.wkClose()">
       <div class="pln-dlg pln-wkc">
-        <div class="pln-dh"><b id="plnWkTitle">📋 <span class="pln-wkn" data-v="오늘 업무"><input id="plnWkName" class="pln-wkni" type="text" maxlength="40" value="오늘 업무" placeholder="오늘 업무" autocomplete="off" spellcheck="false" aria-label="오늘 업무 이름 — 구글 캘린더 일정 제목" title="눌러서 이름을 고칠 수 있어요 — 구글 캘린더 일정 제목은 ‘★오늘 업무’ 로 올라갑니다(앞의 ★ 는 자동)" oninput="BTMPlanner.wkNameEv(event)" onkeydown="BTMPlanner.wkNameEv(event)" onchange="BTMPlanner.wkNameEv(event)"></span><span id="plnWkDate"></span></b><button class="pln-ib x mobile-keep" onclick="BTMPlanner.wkClose()" title="닫기">✕</button></div>
+        <div class="pln-dh"><b id="plnWkTitle">📋 <span class="pln-wkn" data-v="오늘 업무"><input id="plnWkName" class="pln-wkni" type="text" maxlength="40" value="오늘 업무" placeholder="오늘 업무" autocomplete="off" spellcheck="false" aria-label="오늘 업무 이름 — 구글 캘린더 일정 제목" title="눌러서 이름을 고칠 수 있어요 — 입력한 그대로 구글 캘린더 일정 제목(‘오늘 업무’)이 됩니다" oninput="BTMPlanner.wkNameEv(event)" onkeydown="BTMPlanner.wkNameEv(event)" onchange="BTMPlanner.wkNameEv(event)"></span><span id="plnWkDate"></span></b><button class="pln-ib x mobile-keep" onclick="BTMPlanner.wkClose()" title="닫기">✕</button></div>
         <div class="pln-wkb">
           <div class="pln-wkt">
             <div class="pln-wkh"><span class="tt">📝 오늘 발생한 업무</span><small>목록엔 제목만 · 제목을 누르면 상세 내용이 펼쳐집니다</small><span style="flex:1"></span><span id="plnWkTodayCnt" class="pln-cnt" title="오늘 업무 수">0</span></div>
@@ -11502,6 +11502,9 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v256 요청: "오늘업무의 '★'은 제거"
+     · 구글 캘린더 '오늘 업무' 일정 제목에서 앞의 ★(v243)를 뺌 → wkTitle() = 이름 그대로(기본 '오늘 업무'). 이미 올라가 있는 '★오늘 업무' 일정은 다음 동기화에 syncWork 의 keep.summary!==wkTitle() 로 PATCH 되어 '오늘 업무' 로 바뀜(일정 구분은 표식 btmWork 라서).
+       이름 입력 앞의 ★ 를 떼던 규칙(wkNameClean)도 없앰 — 사용자가 ★ 를 직접 쓰면 입력한 그대로 올라감. (v255 의 WK_STAR 상수 제거 — 아래 v255 설명 중 '★ 자동' 은 옛 동작)
    v255 요청: "구글 캘린더에 보내는 제목이 ‘★오늘 업무’ 인데, 앞으로는 [오늘 업무 팝업 머리]의 ‘오늘 업무’ 부분만 내가 직접 고칠 수 있게 하고, 거기에 입력한 대로 구글 캘린더로 보내는 제목이 되게"
      · 팝업 머리 '📋 오늘 업무 — 2026년 11월 26일 (목)' 의 '오늘 업무' 가 입력칸(#plnWkName, 점선 밑줄 — 눌러서 고침 · Enter/포커스가 나가면 저장 · Esc 는 되돌림(창은 안 닫힘, 한 번 더 누르면 닫힘) · 한글 조합 중 Enter 는 조합만 끝냄). 비우거나 ★ 만 쓰면 기본 '오늘 업무' 로 되돌림, 최대 WK_NAME_MAX(40)자, 줄바꿈 없음.
      · 구글 캘린더 일정 제목 = '★' + 이름(wkTitle()) — ★ 는 v243 요청이라 그대로 자동으로 붙임(입력 앞에 ★ 를 써도 떼고 하나만). 이름은 업무 저장소 'BTMPlannerWork_v1' 의 name 칸(wkName — 업무와 같은 곳이라 다른 탭 변경도 storage 이벤트로 반영).
@@ -11749,7 +11752,7 @@ let retryN=0, retryT=null, lastFull=0, calReady=false;   /* 일시적 오류 자
 let authDismissed=false;                    /* 로그인 창을 닫거나 거부한 뒤에는 [🔄]·[연결]을 직접 누르기 전까지 자동으로 다시 띄우지 않음 */
 let ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[],pc:{}}, vm=null;   /* 화면 설정(보기·확정 일정 정렬) · 지금 보는 달(그 달 1일) */
 let dragId='', pendingRender=false, pickId='', toastT=null, resizeT=null, sbDown=false;
-const WKEY='BTMPlannerWork_v1', WK_STAR='★', WK_NAME0='오늘 업무', WK_NAME_MAX=40;                    /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 · 구글 캘린더(폰)에 올리는 일정 제목 = wkTitle() = WK_STAR('★' — v243, 폰에서 눈에 띄게)+이름(wkName — v255: 팝업 머리의 이름 칸에서 직접 고침, 비우면 기본 WK_NAME0 '오늘 업무'). 일정 구분은 제목이 아니라 표식(btmWork)이라 이름을 바꾸면 다음 동기화에 그 일정 제목이 PATCH 로 바뀜 */
+const WKEY='BTMPlannerWork_v1', WK_NAME0='오늘 업무', WK_NAME_MAX=40;                    /* 오늘 업무(v218) — 아래 '══ 오늘 업무(v218) ══' 블록에서 사용 · 구글 캘린더(폰)에 올리는 일정 제목 = wkTitle() = 이름(wkName — v255: 팝업 머리의 이름 칸에서 직접 고침, 비우면 기본 WK_NAME0 '오늘 업무'; v243 의 앞 ★ 는 v256 에서 제거). 일정 구분은 제목이 아니라 표식(btmWork)이라 이름을 바꾸면(옛 '★오늘 업무' 일정 포함) 다음 동기화에 그 일정 제목이 PATCH 로 바뀜 */
 let works=[], wkLoaded=false, wkEditId='', wkSent={id:'',desc:'',upd:''}, wkName='';   /* wkName = 구글 일정 제목의 이름 부분('' = 기본 '오늘 업무', v255) */
 const wkOpenIds=new Set();
 const memoOpen=new Set();                                                    /* 메모를 펼쳐 둔 일정 id(v232) — 목록은 자주 다시 그려지므로(자동 동기화 등) 펼침 상태를 여기에 기억. 평소(처음·새로 만든 일정)는 모두 접힘 */
@@ -12966,18 +12969,19 @@ document.addEventListener('pointerdown',e=>{
 /* ══ 오늘 업무(v218) ══ — 달력의 오늘 날짜 바로 오른쪽 아이콘 → 팝업(위: 오늘 발생한 업무 입력·목록 / 아래: 직전 날까지의 업무).
    업무 {id,d(입력한 날짜),s(제목),m(상세),x(완료),c(만든 시각),u} 는 localStorage 'BTMPlannerWork_v1'. 목록엔 제목만 — 제목을 누르면 상세가 펼쳐짐.
    구글 캘린더에는 '오늘 업무' 종일 일정 하나(설명 = 업무 목록)로 — 오늘 날짜 것만 두고 지난 날짜 것은 삭제(syncWork). */
-/* (상태 변수 WKEY·WK_STAR·WK_NAME0·works·wkName·wkLoaded·wkEditId·wkSent·wkOpenIds 는 load() 가 먼저 불려도 안전하도록 위쪽 상태 변수 모음에 선언) */
+/* (상태 변수 WKEY·WK_NAME0·WK_NAME_MAX·works·wkName·wkLoaded·wkEditId·wkSent·wkOpenIds 는 load() 가 먼저 불려도 안전하도록 위쪽 상태 변수 모음에 선언) */
 function wkNorm(x){
   if(!x||typeof x!=='object') return null;
   const s=String(x.s==null?'':x.s).trim().slice(0,200); if(!s) return null;
   return {id:(typeof x.id==='string'&&x.id.length>=3&&x.id.length<=80)?x.id:('w'+newId()), d:validYmd(x.d)?x.d:todayY(), s, m:String(x.m==null?'':x.m).slice(0,4000), x:x.x?1:0, c:+x.c||0, u:+x.u||0};
 }
-/* ── v255: 구글 캘린더에 올리는 '오늘 업무' 일정 제목 = ★ + 이름 — 이름은 팝업 머리의 입력칸에서 직접 고침(wkName, 비우면 기본 '오늘 업무') ──
-   저장은 'BTMPlannerWork_v1' 의 name 칸(업무와 같은 곳) · 앞의 ★ 는 자동으로 붙으므로 입력에서는 뗌 · 최대 WK_NAME_MAX 자.
+/* ── v255: 구글 캘린더에 올리는 '오늘 업무' 일정 제목 = 이름 — 이름은 팝업 머리의 입력칸에서 직접 고침(wkName, 비우면 기본 '오늘 업무') ──
+   v256: 앞에 붙이던 ★(v243)는 요청으로 제거 — 입력한 그대로 구글 제목이 됨(사용자가 ★ 를 직접 쓰면 그대로 올라감).
+   저장은 'BTMPlannerWork_v1' 의 name 칸(업무와 같은 곳) · 앞 공백은 뗌 · 최대 WK_NAME_MAX 자.
    (load() 가 먼저 불려도 안전하도록 const 화살표가 아니라 함수 선언 — 위쪽 상수 WK_* 만 씀) */
-function wkNameClean(s){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f]+/g,' ').replace(/^[\s★☆]+/,'').replace(/\s+/g,' ').trim().slice(0,WK_NAME_MAX).trim(); }
+function wkNameClean(s){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f]+/g,' ').replace(/^\s+/,'').replace(/\s+/g,' ').trim().slice(0,WK_NAME_MAX).trim(); }
 function wkNameShow(){ return wkName||WK_NAME0; }
-function wkTitle(){ return WK_STAR+wkNameShow(); }
+function wkTitle(){ return wkNameShow(); }   /* v256: 앞의 ★ 제거 — 이름 그대로가 구글 제목 */
 function wkLoad(force){
   if(wkLoaded&&!force) return; wkLoaded=true;
   try{ const o=JSON.parse(lsGet(WKEY)||'null'); works=(o&&Array.isArray(o.works))?o.works.map(wkNorm).filter(Boolean):[]; wkName=(o&&typeof o.name==='string')?wkNameClean(o.name):''; }catch(_){ works=[]; wkName=''; }
@@ -13025,7 +13029,7 @@ function wkNameFill(force){   /* 머리의 이름 칸을 저장된 이름(없으
   const el=$('plnWkName'); if(!el) return;
   if(!force&&document.activeElement===el) return;
   el.value=wkNameShow(); const b=el.parentNode; if(b&&b.setAttribute) b.setAttribute('data-v',el.value);   /* data-v = 칸 너비를 글자에 맞추는 보이지 않는 거울(CSS ::after) */
-  el.title='눌러서 이름을 고칠 수 있어요 — 구글 캘린더 일정 제목은 ‘'+wkTitle()+'’ 로 올라갑니다(앞의 ★ 는 자동)';
+  el.title='눌러서 이름을 고칠 수 있어요 — 입력한 그대로 구글 캘린더 일정 제목(‘'+wkTitle()+'’)이 됩니다';
 }
 function wkNameSave(el){   /* 이름 칸 확정(Enter·포커스가 나감) — 저장하고 구글 캘린더 일정 제목에도 반영(곧바로 동기화). 같은 이름·비움·★ 만 쓴 경우는 기본/기존 이름으로 */
   load(); wkLoad();
