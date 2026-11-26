@@ -5272,12 +5272,16 @@ body.guest-mode #plnMenuBtn{display:none!important}
 #plnModal .pln-ib{background:rgba(255,255,255,.14);border:none;color:#fff;border-radius:6px;padding:4px 9px;font-size:12px;line-height:1.2;cursor:pointer;white-space:nowrap}
 #plnModal .pln-ib.x{background:none;font-size:18px;padding:0 4px}
 #plnModal .pln-ib.act{background:rgba(255,255,255,.38)}
-/* 일정 입력/수정 창 머리의 [✅ 완료]·[↩ 완료 취소] (v230) — ✕ 바로 왼쪽 */
+/* 일정 입력/수정 창 머리의 [✅ 완료]·[↩ 완료 해제](v230 — 이름은 v251 에서 '완료 취소' → '완료 해제')·[🚫 취소]·[↩ 취소 해제](v251) — ✕ 바로 왼쪽 */
 #plnModal .pln-dhr{display:flex;align-items:center;gap:8px;flex:none}
 #plnModal .pln-ib.ok{background:#fff;color:#0f766e;font-weight:800}
 #plnModal .pln-ib.ok:hover{background:#ecfdf5}
 #plnModal .pln-ib.ok.on{background:rgba(255,255,255,.22);color:#fff;font-weight:700}
 #plnModal .pln-ib.ok.on:hover{background:rgba(255,255,255,.34)}
+#plnModal .pln-ib.cx{background:#fff;color:#b91c1c;font-weight:800}
+#plnModal .pln-ib.cx:hover{background:#fef2f2}
+#plnModal .pln-ib.cx.on{background:rgba(255,255,255,.22);color:#fff;font-weight:700}
+#plnModal .pln-ib.cx.on:hover{background:rgba(255,255,255,.34)}
 /* 색 고르기(v209) */
 #plnModal .pln-sw{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 #plnModal .pln-sw button{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;flex:none}
@@ -5396,7 +5400,9 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-td .ac .pln-mi.on,#plnModal .pln-cf .ac .pln-mi.on{background:#0f766e;border-color:#0f766e;color:#fff}
 /* 완료 체크(구글 Tasks 의 체크와 연동) */
 #plnModal .ck{flex:none;width:16px;height:16px;margin:1px 0 0;accent-color:#0f766e;cursor:pointer}
-#plnModal .pln-td.dn .ti,#plnModal .pln-cf.dn .ti{text-decoration:line-through;color:#94a3b8}
+#plnModal .pln-td.dn .ti,#plnModal .pln-cf.dn .ti{color:#94a3b8}   /* v251: 완료 = 취소선 없이 회색(비활성) 글자만 */
+#plnModal .pln-td.cx .ti,#plnModal .pln-cf.cx .ti{text-decoration:line-through}   /* v251: 취소 = 취소선 + 비활성 색(위 .dn 의 회색) */
+#plnModal .pln-cxt{display:inline-block;margin-right:3px;font-size:10.5px;font-weight:800;line-height:1.2;color:#dc2626;text-decoration:none;vertical-align:baseline}   /* v251: 날짜(요일) 오른쪽·제목 앞의 [취소] — inline-block 이라 제목의 취소선이 번지지 않음 */
 #plnModal .pln-td.dn .me,#plnModal .pln-cf.dn .me{opacity:.55}
 /* v232: 일정 메모는 평소 숨기고(제목만 보임) 제목 옆 메모 아이콘을 누르면 펼침·다시 누르면 접힘 — 미정·확정·완료 목록과 월간 목록 공통(펼친 줄에는 .mo) */
 #plnModal .pln-td .me,#plnModal .pln-cf .me,#plnModal .pln-rw .pln-me{display:none}
@@ -5406,7 +5412,9 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-mi:hover{background:#e2e8f0;color:#475569}
 #plnModal .pln-mi.on{background:#0f766e;border-color:#0f766e;color:#fff}
 #plnModal .pln-mi svg{width:12px;height:12px;display:block;pointer-events:none}
-#plnModal .pln-ch.dn{text-decoration:line-through;opacity:.6}
+/* v251: 월간 달력 — 완료한 일정 = 비활성(회색) 글자 + 그보다 더 옅은 회색 배경(취소선 없음 · 색을 지정한 일정의 인라인 색도 덮음) · 취소한 일정 = 같은 회색에 취소선 */
+#plnModal .pln-ch.dn{background:#e9edf2!important;color:#94a3b8!important;border-left-color:#cfd6df!important;opacity:1;text-decoration:none}
+#plnModal .pln-ch.dn.cx{text-decoration:line-through}
 #plnModal .pln-em{padding:26px 14px;text-align:center;font-size:12px;line-height:1.7;color:#94a3b8}
 #plnModal .pln-cal{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
 #plnModal .pln-tb{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #e2e8f0;background:#fff;flex-wrap:wrap}
@@ -5502,9 +5510,10 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-rw.hl{background:#fde68a}   /* 그날로 이동했을 때 잠깐 강조 */
 #plnModal .pln-rw{display:flex;gap:10px;padding:8px 16px;border-bottom:1px solid #f1f5f9;align-items:flex-start}
 #plnModal .pln-rw.p{opacity:.6}
-/* 목록 줄 맨 앞의 완료 체크박스(v230) — 체크하면 완료 일정으로 처리, 줄은 취소선·흐리게 */
+/* 목록 줄 맨 앞의 완료 체크박스(v230) — 체크하면 완료 일정으로 처리: 제목은 회색(취소선 없음), 취소한 일정(.cx)은 취소선+회색(v251) */
 #plnModal .pln-rw .ck{margin:2px 0 0}
-#plnModal .pln-rw.dn .pln-ti{text-decoration:line-through;color:#94a3b8}
+#plnModal .pln-rw.dn .pln-ti{color:#94a3b8}
+#plnModal .pln-rw.cx .pln-ti{text-decoration:line-through}
 #plnModal .pln-rw.dn .pln-me{opacity:.55}
 #plnModal .pln-rw.dn .pln-tm{opacity:.6}
 #plnModal .pln-tm{width:78px;flex:none;font-size:12px;font-weight:700;color:#0f766e;line-height:1.35}
@@ -5549,6 +5558,12 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
   #plnModal .pln-sec.top,#plnModal .pln-sec.bot,#plnModal .pln-sec.fin{min-width:96px}   /* 폰 폭에서도 세 구역이 나란히 들어가게(v222) */
   #plnModal .pln-tm{width:62px}
   #plnModal .pln-tb b{min-width:90px;font-size:15px}
+}
+@media(max-width:640px){
+  /* v251: 좁은 창(왼쪽 미정·확정·완료 목록이 좌우로 나란히 놓임)에서는 🚫 취소 단추가 늘어 단추 묶음(메모·✏️·🚫·🗑)이 한 줄 안에 다 안 들어감 —
+     묶음을 제목 아래 줄 오른쪽으로 내리고, 그래도 모자라면 다시 줄바꿈(제목이 0 폭으로 눌리고 단추가 줄 밖으로 밀려나던 것도 함께 해소) */
+  #plnModal .pln-td,#plnModal .pln-cf{flex-wrap:wrap}
+  #plnModal .pln-td .ac,#plnModal .pln-cf .ac{flex:0 0 100%;flex-wrap:wrap;justify-content:flex-end}
 }
 </style>
 <div id="plnModal">
@@ -5630,7 +5645,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         <div id="plnSplit2" class="pln-split" role="separator" aria-orientation="horizontal" tabindex="0" title="끌어서 확정·완료 일정 높이 조절 · 더블클릭하면 원래 비율" onpointerdown="BTMPlanner.splitDown(event,2)" onkeydown="BTMPlanner.splitKey(event,2)" ondblclick="BTMPlanner.splitReset(2)"><i></i></div>
         <!-- 맨 아래: 완료 일정(v222) — 미정·확정 일정에서 체크(☑)한 일정이 여기로 옮겨짐(최근 완료한 순). 체크를 풀면 원래 목록(날짜 없으면 미정·있으면 확정)으로 돌아감 -->
         <div class="pln-sec fin">
-          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'fin')" title="미정·확정 일정에서 체크(☑)한 일정이 모입니다 — 체크를 풀면 원래 목록으로 돌아갑니다">✅ 완료 일정 <small>체크한 일정</small><span class="sp"></span><span id="plnFinCnt" class="pln-cnt" title="완료한 일정 수">0</span><button type="button" class="pln-pnb" data-k="fin" data-a="max" title="완료 일정 최대화 — 미정·확정 일정은 제목 줄만 남기고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="fin" data-a="min" title="완료 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+          <div class="pln-th" onclick="BTMPlanner.panelClick(event,'fin')" title="미정·확정 일정에서 체크(☑)하거나 취소(🚫)한 일정이 모입니다 — 체크·취소를 풀면 원래 목록으로 돌아갑니다">✅ 완료 일정 <small>체크·취소한 일정</small><span class="sp"></span><span id="plnFinCnt" class="pln-cnt" title="완료·취소한 일정 수">0</span><button type="button" class="pln-pnb" data-k="fin" data-a="max" title="완료 일정 최대화 — 미정·확정 일정은 제목 줄만 남기고 크게 봅니다"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="pln-pnb" data-k="fin" data-a="min" title="완료 일정 최소화 — 제목만 남기고 아래로 접습니다"><svg class="dn" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1.5h8M6 10.5V4.2M2.8 6.6 6 3.4l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           <div id="plnFinList" class="pln-tl" onclick="BTMPlanner.todoClick(event)"></div>
         </div>
       </div>
@@ -5655,7 +5670,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
     <!-- 일정 입력/수정 대화상자 -->
     <div id="plnDlg" class="pln-dw" onclick="if(event.target===this)BTMPlanner.closeDlg()">
       <div class="pln-dlg">
-        <div class="pln-dh"><b id="plnFTitle">새 일정</b><span class="pln-dhr"><span id="plnFDoneWrap" style="display:none"><button id="plnFDone" class="pln-ib ok mobile-keep" onclick="BTMPlanner.dlgDone()" title="이 일정을 완료로 처리합니다 — 고친 내용이 있으면 함께 저장돼요">✅ 완료</button></span><button class="pln-ib x mobile-keep" onclick="BTMPlanner.closeDlg()" title="닫기">✕</button></span></div>
+        <div class="pln-dh"><b id="plnFTitle">새 일정</b><span class="pln-dhr"><span id="plnFDoneWrap" style="display:none"><button id="plnFDone" class="pln-ib ok mobile-keep" onclick="BTMPlanner.dlgDone()" title="이 일정을 완료로 처리합니다 — 고친 내용이 있으면 함께 저장돼요">✅ 완료</button></span><span id="plnFCancelWrap" style="display:none"><button id="plnFCancel" class="pln-ib cx mobile-keep" onclick="BTMPlanner.dlgCancel()" title="이 일정을 취소 처리합니다 — 완료 일정으로 옮겨지고 ‘[취소]’ 로 표시돼요. 고친 내용이 있으면 함께 저장돼요">🚫 취소</button></span><button class="pln-ib x mobile-keep" onclick="BTMPlanner.closeDlg()" title="닫기">✕</button></span></div>
         <div class="pln-db">
           <div class="pln-r1">
             <span class="pln-lb">시작</span>
@@ -5674,7 +5689,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         </div>
         <div class="pln-df">
           <span id="plnFDelWrap" style="display:none"><button class="pln-sb r" onclick="BTMPlanner.dlgDelete()">🗑 삭제</button></span>
-          <button class="pln-sb" onclick="BTMPlanner.closeDlg()">취소</button>
+          <button class="pln-sb" onclick="BTMPlanner.closeDlg()">닫기</button>
           <button class="pln-pb" id="plnFSave" onclick="BTMPlanner.submit()">💾 저장</button>
         </div>
       </div>
@@ -11478,6 +11493,11 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v251 요청: "일정 팝업(왼쪽 미정·확정·완료 일정·월간 목록·일정 수정 창)에 수정·삭제 옆에 '취소' 아이콘 — 일정 처리 때 '취소'도 고르게. 취소해도 '완료 일정'에 포함, '날짜 MM/DD (요일) 오른쪽 [취소] 일정 제목' 형식 · 완료는 취소선 없이 회색 글자만, 취소는 취소선+비활성 색 · 완료한 일정은 월간 달력에서 비활성 글자색보다 더 옅은 회색 배경"
+     · 취소 = 완료(x=1)의 한 종류 — 항목 필드 cx=1(앱 전용, 구글에 안 올림 — pr 과 같은 방식, norm 은 x 가 있을 때만 보존). 그래서 완료 일정 구역(최근 처리순 xt)·달력 정렬(완료 아래)·구글 Tasks 의 완료 연동(td 이면 x 가 바뀔 때만 동기화)은 그대로 쓰고, 표시만 다름: 줄에 .cx · '[취소]'(.pln-cxt, 날짜 오른쪽·제목 앞 · inline-block 이라 제목 취소선이 번지지 않음) · 취소선.
+     · 단추: 왼쪽 줄 [메모][✏️][🚫][🗑] (취소한 줄은 🚫 자리가 ↩️ = 취소 해제 — data-a="tcancel"), 월간 목록 줄 data-a="cancel", 일정 창 머리 [✅ 완료][🚫 취소](취소한 일정이면 [↩ 취소 해제]) — toggleCancel(id,val)·dlgCancel()(고친 내용이 있으면 submit({cancel}) 로 함께 저장). 취소 해제 = 원래 목록으로(x=0).
+       toggleDone 은 cx 를 항상 0 으로(체크는 완료·체크 해제는 취소도 해제), 취소한 일정에서 [✅ 완료] = 완료로 바꿈. tMerge: 폰에서 완료를 풀어 x=0 이면 cx 도 0. 헷갈림 방지로 옛 [↩ 완료 취소] 이름은 [↩ 완료 해제] 로, 일정 창 맨 아래 닫기 단추 [취소] 는 [닫기] 로 바꿈.
+     · 모양: 완료(.dn) = 취소선 없이 회색(#94a3b8) 글자 · 취소(.dn.cx) = 취소선 + 같은 회색 · 월간 달력 칩·막대(.pln-ch.dn) = 회색 글자 + 더 옅은 회색 배경 #e9edf2(색 지정한 일정의 인라인 색은 !important 로 덮음) — 취소한 칩도 같은 회색에 취소선.
    v225 요청: "월 달력에 일정이 많으면 하단에 '+2건 더보기' 로 나오는데 그렇게 하지 말고, 갯수가 4개를 초과하면 날짜 칸 우측에 스크롤바를 만들어 스크롤로 볼 수 있게 · 해당 창을 업데이트할 때마다 스크롤이 맨 위로 올라가 있게"
      · '+N건 더보기'(.pln-more·addMore)와 fitCal 이 넘치는 칩을 지우던 동작을 없앰. 하루짜리 칩은 전부 DOM 에 두고, 칸 안 칩 목록(.pln-cl)이 스크롤 상자(overflow-y:auto, 가는 7px 스크롤바 — ::-webkit-scrollbar, 파이어폭스는 scrollbar-width:thin):
        한 번에 보이는 줄 수 = min(CAL_VIS=4, 칸 높이에 들어가는 줄 수) — 칸의 일정(막대 줄 + 칩)이 그 줄 수를 넘을 때만 스크롤바가 생김(4개까지는 없음). 칩 목록의 max-height = (한 번에 보이는 줄 수 − 막대 줄 수, 최소 1줄) × 20 − 2 px (fitCal 이 칸마다 정함, 기본 CSS 는 4줄 78px).
@@ -11718,6 +11738,7 @@ function norm(x){
     g:todo?'':String(x.g||''), gu:todo?'':String(x.gu||''), mod:+x.mod||0, rec:(!todo&&x.rec)?1:0, src:x.src==='g'?'g':'app', b:todo?null:normB(x.b), mr:(!todo&&typeof x.mr==='string')?x.mr.slice(0,8000):null,
     td,
     x:x.x?1:0,                          /* 완료(체크) — Tasks 의 완료와 연동 */
+    cx:(x.x&&x.cx)?1:0,                 /* 취소한 일정(v251) — 완료(x)의 한 종류: 완료 일정 구역에 모이되 '[취소]' 표시·취소선. 앱에만 저장(구글에 올리지 않음 — pr 과 같은 방식) */
     xt:(x.x&&+x.xt>0)?+x.xt:0,          /* 완료한 시각 — '완료 일정' 목록의 최근 완료순(v222). 앱에만 저장(구글에 올리지 않음) */
     k:td?String(x.k||'').slice(0,300):'', ku:td?String(x.ku||''):'', tb:(td&&x.k)?normTb(x.tb):null };   /* Tasks 작업 id · 그 작업의 updated · 마지막으로 맞춘 작업 값 */
   return fix0(it);
@@ -12089,6 +12110,7 @@ function tMerge(L,R,res){   /* 작업 R 과 앱 항목 L 을 3자 병합 — 기
     else useRemote=ru>(L.mod||0);                /* 양쪽이 다르게 고침 → 나중에 고친 쪽 */
     if(useRemote){ if(f==='x'){ L.x=rv?1:0; L.xt=L.x?(ru||Date.now()):0; } else L[f]=rv; pulled=true; }
   });
+  if(!L.x) L.cx=0;   /* v251: 폰에서 완료를 풀었으면 취소 표시도 같이 풀림(취소 ⇒ 완료) */
   /* P: 폰에서 제목 맨 앞에 'MM/DD ' 를 새로 쓰거나 바꾸면 그 날짜로 — 일정 미정이면 확정 일정(달력)으로, 이미 날짜가 있으면 그 날짜로 이동(시간·길이 유지).
      앱에서 날짜를 바꾼 것이 나중이면 앱 값을 작업에 올림(tDirty). 폰에서 날짜를 지우기만 한 경우(rp 가 빔)는 앱의 날짜가 우선 — 다음 동기화에 다시 붙임 */
   const lp=L.d?mdOf(L.d):'', rp=rs.p, bp=b.p;
@@ -12340,13 +12362,16 @@ function dateCell(it){   /* 목록 보기 줄 맨 앞: 날짜(월/일)+요일 �
 const mStart=d=>new Date(d.getFullYear(),d.getMonth(),1);
 function ensureVm(){ if(!vm) vm=mStart(new Date()); }
 
+/* v251 취소 표시·단추 — 날짜(요일) 오른쪽·제목 앞의 [취소] / 🚫(일정 취소)·↩️(취소 해제) 단추(a = data-a 값: 월간 목록 'cancel' · 왼쪽 목록 'tcancel') */
+function cxTag(it){ return it.cx?'<span class="pln-cxt" title="취소한 일정">[취소]</span> ':''; }
+function cxBtn(it,a){ return it.cx?'<button data-a="'+a+'" title="취소 해제 — 원래 목록으로 되돌립니다">↩️</button>':'<button data-a="'+a+'" title="일정 취소 — 완료 일정으로 옮겨지고 ‘[취소]’ 로 표시됩니다">🚫</button>'; }
 /* ── 화면: 목록 보기의 한 줄 ── */
 function rowHtml(it,today,day){
   const past=it.d2<today;
   const bd=(it.rec?'<span class="pln-bd" title="반복 일정의 한 날짜 — 수정·삭제는 이 날짜에만 적용됩니다">🔁</span>':'')+(it.src==='g'?'<span class="pln-bd" title="폰·구글 캘린더에서 만든 일정">📱</span>':'');   /* v230: 완료 표시는 줄 맨 앞 체크박스(+취소선)로 — 제목 옆 ✔ 배지는 겹쳐서 뺌 */
   const al=it.r>=0?'<span class="pln-al" title="알림: '+esc(remLabel(it.r))+'">🔔</span>':'';   /* 알림 표시는 오른쪽 수정 버튼 바로 왼쪽(v217) */
   const sy=gcfg.on?(needsPush(it)?'<span class="pln-sy w" title="구글 캘린더에 아직 반영되지 않음">⏳</span>':'<span class="pln-sy" title="구글 캘린더와 동기화됨">☁</span>'):'';
-  return '<div class="pln-rw'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+((it.d<=today&&it.d2>=today)?' nw':'')+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'">'+ckHtml(it)+'<div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+memoBtn(it)+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+al+'<button data-a="edit" title="수정">✏️</button><button data-a="del" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-rw'+(past?' p':'')+(it.x?' dn':'')+(it.cx?' cx':'')+moCls(it)+((it.d<=today&&it.d2>=today)?' nw':'')+'" data-id="'+esc(it.id)+'" data-day="'+(day||it.d)+'">'+ckHtml(it)+'<div class="pln-tm">'+dateCell(it)+'</div><div class="pln-mn"><div class="pln-ti">'+cxTag(it)+cdot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+memoBtn(it)+bd+'</div>'+(it.m?'<div class="pln-me">'+esc(it.m)+'</div>':'')+'</div><div class="pln-ac">'+sy+al+'<button data-a="edit" title="수정">✏️</button>'+cxBtn(it,'cancel')+'<button data-a="del" title="삭제">🗑</button></div></div>';
 }
 function renderList(){
   const box=$('plnList'); if(!box) return; ensureVm();
@@ -12379,9 +12404,9 @@ function chipHtml(it,day){
   const ad=!it.t, cont=it.d<day;
   const mk=(it.rec?'🔁':'')+(it.src==='g'?'📱':'');
   const dot=(gcfg.on&&needsPush(it))?'<i class="pln-dot" title="구글 캘린더에 아직 반영되지 않음"></i>':'';
-  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+(it.d2>it.d?'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']':'')+(it.pr?'  · 중요도 '+prName(it.pr):'')+(it.m?'\n'+it.m:'');
+  const tip=(it.cx?'[취소] ':'')+(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+(it.d2>it.d?'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']':'')+(it.pr?'  · 중요도 '+prName(it.pr):'')+(it.m?'\n'+it.m:'');
   const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
-  return '<div class="pln-ch '+(ad?'ad':'tm')+(cont?' ct':'')+(it.x?' dn':'')+'"'+(cst?' style="'+cst+'"':'')+' draggable="true" data-id="'+esc(it.id)+'" title="'+esc(tip)+'">'+dot+(cont?'↳ ':'')+((ad||cont)?'':'<b>'+esc(it.t)+'</b>')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
+  return '<div class="pln-ch '+(ad?'ad':'tm')+(cont?' ct':'')+(it.x?' dn':'')+(it.cx?' cx':'')+'"'+(cst?' style="'+cst+'"':'')+' draggable="true" data-id="'+esc(it.id)+'" title="'+esc(tip)+'">'+dot+(cont?'↳ ':'')+((ad||cont)?'':'<b>'+esc(it.t)+'</b>')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
 /* ── 여러 날 일정 = 주마다 이어진 막대 하나, 언제나 칸의 맨 위(v221) ──
    weekBars: 주마다 그 주에 걸친 구간을 막대 조각 {it,w,c0,c1,l,r,lane} 으로(c0·c1 = 그 주의 열 0~6, l/r = 앞·뒤 주에서 이어짐) — 미완료 먼저, 그 안에서 시작이 이르고 긴 것부터 lane 0,1,… 순서로 쌓음(v231: 완료한 일정은 미완료 막대 아래 줄부터).
@@ -12406,9 +12431,9 @@ function barHtml(sg){
   const it=sg.it, ad=!it.t;
   const mk=(it.rec?'🔁':'')+(it.src==='g'?'📱':'');
   const dot=(gcfg.on&&needsPush(it))?'<i class="pln-dot" title="구글 캘린더에 아직 반영되지 않음"></i>':'';
-  const tip=(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']'+(it.pr?'  · 중요도 '+prName(it.pr):'')+(it.m?'\n'+it.m:'');
+  const tip=(it.cx?'[취소] ':'')+(it.t?it.t+(it.t2&&it.t2!==it.t?'~'+it.t2:'')+' ':'')+(it.s||'(제목 없음)')+'  ['+it.d.slice(5)+' ~ '+it.d2.slice(5)+']'+(it.pr?'  · 중요도 '+prName(it.pr):'')+(it.m?'\n'+it.m:'');
   const col=colorOf(it), cst=col?(ad?'background:'+col+';color:'+fgOf(col):'background:'+tintOf(col,0.2)+';border-left-color:'+col+';color:#1f2937'):'';
-  return '<div class="pln-ch pln-mb '+(ad?'ad':'tm')+(it.x?' dn':'')+(sg.l?' cl':'')+(sg.r?' cr':'')+'" style="grid-column:'+(sg.c0+1)+'/span '+(sg.c1-sg.c0+1)+';grid-row:'+(sg.w+1)+';margin-top:calc(var(--bt) + '+(sg.lane*CHIP_H)+'px);'+cst+'" draggable="true" data-id="'+esc(it.id)+'" data-w="'+sg.w+'" data-c0="'+sg.c0+'" data-c1="'+sg.c1+'" data-lane="'+sg.lane+'" title="'+esc(tip)+'">'+dot+((!ad&&!sg.l)?'<b>'+esc(it.t)+'</b>':'')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
+  return '<div class="pln-ch pln-mb '+(ad?'ad':'tm')+(it.x?' dn':'')+(it.cx?' cx':'')+(sg.l?' cl':'')+(sg.r?' cr':'')+'" style="grid-column:'+(sg.c0+1)+'/span '+(sg.c1-sg.c0+1)+';grid-row:'+(sg.w+1)+';margin-top:calc(var(--bt) + '+(sg.lane*CHIP_H)+'px);'+cst+'" draggable="true" data-id="'+esc(it.id)+'" data-w="'+sg.w+'" data-c0="'+sg.c0+'" data-c1="'+sg.c1+'" data-lane="'+sg.lane+'" title="'+esc(tip)+'">'+dot+((!ad&&!sg.l)?'<b>'+esc(it.t)+'</b>':'')+esc(it.s||'(제목 없음)')+(mk?' <span class="mk">'+mk+'</span>':'')+'</div>';
 }
 function renderCal(quiet){
   const grid=$('plnGrid'); if(!grid) return; ensureVm();
@@ -12462,7 +12487,7 @@ function fitCal(){   /* 칸 높이에 맞게 '한 번에 보이는 줄 수'를 �
 }
 
 /* ── 화면: To Do 목록 ── */
-const ckHtml=it=>'<input type="checkbox" class="ck" data-a="done"'+(it.x?' checked':'')+' title="'+(it.td?'완료 표시 — 구글 Tasks 의 체크와 연동됩니다':'완료 표시 — 폰·구글 캘린더에서 만든 일정이라 이 앱에만 저장됩니다')+'">';   /* v230: 앱에서 만든 일정은 모두 td(Tasks 연동) — 이 앱에만 저장되는 건 폰·구글 캘린더 일정뿐 */
+const ckHtml=it=>'<input type="checkbox" class="ck" data-a="done"'+(it.x?' checked':'')+' title="'+(it.cx?'취소한 일정 — 체크를 풀면 원래 목록으로 돌아갑니다':it.td?'완료 표시 — 구글 Tasks 의 체크와 연동됩니다':'완료 표시 — 폰·구글 캘린더에서 만든 일정이라 이 앱에만 저장됩니다')+'">';   /* v230: 앱에서 만든 일정은 모두 td(Tasks 연동) — 이 앱에만 저장되는 건 폰·구글 캘린더 일정뿐 */
 const pendDot=it=>((gcfg.on&&needsPush(it))||(tkOn()&&needsTaskPush(it)))?'<i class="pln-dot" title="구글(캘린더·Tasks)에 아직 반영되지 않음"></i>':'';
 /* ── 일정 메모 숨기기(v232): 목록에는 제목만 보이고, 메모가 있는 일정은 메모 아이콘(눌러서 펼침·다시 눌러 접힘) — 아이콘 자리: 왼쪽 목록(미정·확정·완료)은 오른쪽 단추 줄 맨 앞(v234), 월간 목록 줄은 제목 바로 뒤 ── */
 const SVG_MEMO='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 2h6.5l2.5 2.5V14h-9z"/><path d="M10 2v2.5h2.5"/><path d="M5.5 7.5h5M5.5 10h5"/></svg>';
@@ -12480,12 +12505,12 @@ function toggleMemo(id){   /* 메모 아이콘: 펼침 ↔ 접힘 — 같은 일
 }
 function todoHtml(it){   /* v234: 제목은 한 줄(길면 …, 전체 제목은 줄 툴팁) · 📅(날짜 고르기) 단추는 없애고 그 자리(오른쪽 단추 줄 맨 앞)에 메모 아이콘 — 메모가 있는 일정에만. 날짜는 ✏️ 수정 창 또는 달력으로 끌어다 놓아 정함 */
   const p=palOf(it.c);
-  return '<div class="pln-td'+(it.x?' dn':'')+moCls(it)+'"'+barStyle(p&&p[2],prHex(it))+' draggable="true" data-id="'+esc(it.id)+'" title="'+(it.s?esc(it.s)+'\n':'')+'달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span>'+ckHtml(it)+'<div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-td'+(it.x?' dn':'')+(it.cx?' cx':'')+moCls(it)+'"'+barStyle(p&&p[2],prHex(it))+' draggable="true" data-id="'+esc(it.id)+'" title="'+(it.s?esc(it.s)+'\n':'')+'달력의 날짜로 끌어다 놓으세요"><span class="gr">⋮⋮</span>'+ckHtml(it)+'<div class="mn"><div class="ti">'+cxTag(it)+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button>'+cxBtn(it,'tcancel')+'<button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
 function doneHtml(it,today){                                          /* 왼쪽 아래 '확정 일정'의 한 줄 — v234: 미정 줄(todoHtml)과 똑같이 제목은 한 줄(길면 …, 전체 제목은 줄 툴팁)·메모 아이콘은 오른쪽 단추 줄 맨 앞(메모가 있는 일정에만) */
   const past=it.d2<today, wd=WD[parseYmd(it.d).getDay()];
   const sub=(it.d2>it.d?'<small>~'+mdOf(it.d2)+'</small>':'')+(it.t?'<small>'+esc(it.t)+'</small>':'');   /* 요일은 날짜와 같은 줄(.d1) — 여러 날 일정의 끝 날짜·시간은 그 아래 줄 */
-  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+moCls(it)+'"'+barStyle(colorOf(it),prHex(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="'+(it.s?esc(it.s)+'\n':'')+'누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button><button data-a="tdel" title="삭제">🗑</button></div></div>';
+  return '<div class="pln-cf'+(past?' p':'')+(it.x?' dn':'')+(it.cx?' cx':'')+moCls(it)+'"'+barStyle(colorOf(it),prHex(it))+' draggable="true" data-id="'+esc(it.id)+'" data-day="'+it.d+'" title="'+(it.s?esc(it.s)+'\n':'')+'누르면 달력의 그날로 이동 · 끌어서 다른 날짜로 옮기거나, 위쪽 ‘미정 일정’에 놓으면 날짜가 지워집니다">'+ckHtml(it)+'<div class="dt"><div class="d1"><b>'+mdOf(it.d)+'</b><small class="wd">('+wd+')</small></div>'+sub+'</div><div class="mn"><div class="ti">'+cxTag(it)+pendDot(it)+(it.s?esc(it.s):'<span style="color:#94a3b8">(제목 없음)</span>')+'</div>'+(it.m?'<div class="me">'+esc(it.m)+'</div>':'')+'</div><div class="ac">'+memoBtn(it)+'<button data-a="tedit" title="수정">✏️</button>'+cxBtn(it,'tcancel')+'<button data-a="tdel" title="삭제">🗑</button></div></div>';
 }
 const inDone=x=>!!x.d&&(!!x.td||x.src==='app');   /* 아래 '확정 일정' 목록 = To Do 에서 시작한 항목 + 이 앱에서 만든 일정(달력에서 직접 입력 포함) — 폰·구글 캘린더에서 만든 일정은 제외 */
 function renderTodo(){
@@ -12502,7 +12527,7 @@ function renderTodo(){
   dbox.innerHTML=done.length?done.map(it=>doneHtml(it,today)).join(''):'<div class="pln-em">아직 날짜를 정한 일정이 없습니다.<br>위 ‘미정 일정’ 항목을 달력의 날짜로 옮기거나 달력에 일정을 직접 입력하면 ‘월/일’과 함께 여기에 모입니다.</div>';
   const fin=items.filter(x=>x.x).sort(   /* v230: 월간 목록의 체크·일정 창의 [완료]로 폰·구글 캘린더 일정도 완료할 수 있으므로 완료한 것은 모두 여기(그런 일정은 체크 전엔 어느 왼쪽 목록에도 없음) */(a,b)=>(xtOf(b)-xtOf(a))||(a.d<b.d?1:a.d>b.d?-1:0)||(a.s<b.s?-1:a.s>b.s?1:0));   /* 맨 아래: 완료 일정 — 미정·확정 일정에서 체크한 것, 최근 완료한 순(v222) */
   const fc=$('plnFinCnt'); if(fc) fc.textContent=fin.length;
-  if(fbox) fbox.innerHTML=fin.length?fin.map(it=>it.d?doneHtml(it,today):todoHtml(it)).join(''):'<div class="pln-em">아직 완료한 일정이 없습니다.<br>‘미정 일정’·‘확정 일정’·월간 목록의 체크박스(☑)나 일정 창의 [✅ 완료]를 누르면 그 일정이 여기로 옮겨집니다.<br>체크를 풀면 원래 목록으로 돌아갑니다.</div>';
+  if(fbox) fbox.innerHTML=fin.length?fin.map(it=>it.d?doneHtml(it,today):todoHtml(it)).join(''):'<div class="pln-em">아직 완료하거나 취소한 일정이 없습니다.<br>‘미정 일정’·‘확정 일정’·월간 목록의 체크박스(☑)·🚫 취소 단추나 일정 창의 [✅ 완료]·[🚫 취소]를 누르면 그 일정이 여기로 옮겨집니다(취소한 일정은 ‘[취소]’ 로 표시).<br>체크·취소를 풀면 원래 목록으로 돌아갑니다.</div>';
 }
 function sortToggle(){ ui.sort=ui.sort==='asc'?'desc':'asc'; saveUi(); renderTodo(); }
 
@@ -12619,14 +12644,21 @@ function fillForm(it,day){
   dlgPr=it?validP(it.pr):''; editPr=dlgPr; paintPri();                  /* v242: 새 일정은 중요도 없음 */
   dlgColor=it?it.c:(gcfg.dc||''); paintDlgColor();                      /* 새 일정은 ‘새 일정 기본 색’이 미리 골라져 있음 */
   const dw=$('plnFDelWrap'); if(dw) dw.style.display=it?'':'none';
+  const cw=$('plnFCancelWrap'); if(cw) cw.style.display=it?'':'none';   /* v251: 머리의 [🚫 취소] — 새 일정에는 없음([✅ 완료]와 같은 방식) */
   const dn=$('plnFDoneWrap'); if(dn) dn.style.display=it?'':'none';     /* 머리의 [✅ 완료] — 새 일정에는 없음(좁은 화면 전역 규칙이 단추를 강제로 보이게 해서 단추가 아니라 감싼 span 을 숨김) */
   paintDone(it);
   setFormMsg(dlgTodo?'날짜를 정하면 달력으로 옮겨져 구글 캘린더(폰)에도 표시됩니다. 비워 두면 To Do 로 남습니다.':(it?'고친 뒤 [저장]을 누르세요.':'시간을 비우면 종일 일정으로 들어갑니다.'));
 }
-function paintDone(it){   /* 일정 창 머리의 [✅ 완료] / 이미 완료한 일정이면 [↩ 완료 취소] (v230) */
-  const b=$('plnFDone'); if(!b) return; const on=!!(it&&it.x);
-  b.textContent=on?'↩ 완료 취소':'✅ 완료'; b.classList.toggle('on',on);
-  b.title=on?'완료를 취소하고 원래 목록으로 되돌립니다':'이 일정을 완료로 처리합니다 — 고친 내용이 있으면 함께 저장돼요';
+function paintDone(it){   /* 일정 창 머리의 [✅ 완료] / 이미 완료한 일정이면 [↩ 완료 해제](v230 — 이름은 v251 에서 '완료 취소' → '완료 해제', 새로 생긴 '일정 취소'와 헷갈리지 않게). 취소한 일정이면 [✅ 완료] = 완료로 바꿈 */
+  const b=$('plnFDone'); if(!b) return; const on=!!(it&&it.x&&!it.cx);
+  b.textContent=on?'↩ 완료 해제':'✅ 완료'; b.classList.toggle('on',on);
+  b.title=on?'완료를 해제하고 원래 목록으로 되돌립니다':(it&&it.cx?'취소한 일정을 완료로 바꿉니다':'이 일정을 완료로 처리합니다 — 고친 내용이 있으면 함께 저장돼요');
+  paintCancel(it);
+}
+function paintCancel(it){   /* 일정 창 머리의 [🚫 취소] / 이미 취소한 일정이면 [↩ 취소 해제] (v251) */
+  const b=$('plnFCancel'); if(!b) return; const on=!!(it&&it.cx);
+  b.textContent=on?'↩ 취소 해제':'🚫 취소'; b.classList.toggle('on',on);
+  b.title=on?'취소를 해제하고 원래 목록으로 되돌립니다':'이 일정을 취소 처리합니다 — 완료 일정으로 옮겨지고 ‘[취소]’ 로 표시돼요. 고친 내용이 있으면 함께 저장돼요';
 }
 function readForm(fb){   /* fb = 수정을 시작할 때의 항목 값 — 시간 칸을 안 건드렸으면 끝>시작 검사를 건너뜀(폰에서 만든 0분짜리 일정도 제목은 고칠 수 있게) */
   const d=$('plnFD').value, t=$('plnFT').value, s=$('plnFS').value.trim().slice(0,300), m=$('plnFM').value.replace(/\r\n/g,'\n').trim().slice(0,4000);
@@ -12674,10 +12706,11 @@ function afterChange(needSync){   /* needSync===false = To Do 만 바뀜(캘린�
   if(tokOK()){ retryN=0; clearTimeout(timer); timer=setTimeout(()=>{ const f=pendFull; pendFull=false; sync(f?{}:{tasksOnly:true}); },250); }
   else{ setStatus('auth'); if(!authDismissed){ const f=pendFull; pendFull=false; sync({interactive:true,tasksOnly:!f}); } }          /* 클릭 안이므로 로그인 창을 바로 열 수 있음(방금 닫은 적이 있으면 띄우지 않음 — 일정은 로컬에 저장돼 있고 [🔄]로 올림) */
 }
-function submit(opt){   /* 대화상자 [저장] — opt={done:true|false} 가 있으면 저장하면서 완료 처리·취소까지(머리의 [✅ 완료]·[↩ 완료 취소] 가 고친 내용이 있을 때 부름, v230) */
+function submit(opt){   /* 대화상자 [저장] — opt={done:true|false} 가 있으면 저장하면서 완료 처리·해제까지(머리의 [✅ 완료]·[↩ 완료 해제] 가 고친 내용이 있을 때 부름, v230), opt={cancel:true|false} 가 있으면 저장하면서 일정 취소·취소 해제까지(머리의 [🚫 취소]·[↩ 취소 해제], v251) */
   load();
   const f=readForm(editId?editBase:null); if(f.err){ setFormMsg(f.err,'err'); return; }
   const dn=(opt&&typeof opt==='object'&&opt.done!==undefined)?!!opt.done:undefined;     /* undefined = 완료 상태는 그대로 */
+  const cq=(opt&&typeof opt==='object'&&opt.cancel!==undefined)?!!opt.cancel:undefined;   /* v251: 저장하면서 취소 처리·해제(머리의 [🚫 취소]·[↩ 취소 해제] 가 고친 내용이 있을 때 부름) */
   let it=editId?items.find(x=>x.id===editId):null, lost=false, needSync, edited=false, pch=false, onlyPr=false;
   if(it){
     /* 양식을 연 뒤 폰에서 바뀐 값이 있을 수 있으므로, 내가 실제로 고친 병합 단위(시간·제목·메모·알림)만 덮어씀 */
@@ -12693,15 +12726,17 @@ function submit(opt){   /* 대화상자 [저장] — opt={done:true|false} 가 �
     if(it) items.push(it);
     needSync=!!(it&&it.d);
   }
-  const doneMsg=(dn!==undefined&&it&&!lost);
-  if(doneMsg){ it.x=dn?1:0; it.xt=dn?Date.now():0; if(it.td) it.mod=Date.now(); }   /* v230: 완료 상태도 함께 저장 — To Do 출신·앱 일정(td)은 구글 Tasks 의 체크와 연동되므로 mod 도 갱신(toggleDone 과 같음), 폰·구글 캘린더 일정은 이 앱에만 */
+  const doneMsg=(dn!==undefined&&it&&!lost), cqMsg=(cq!==undefined&&it&&!lost);
+  if(doneMsg){ it.x=dn?1:0; it.xt=dn?Date.now():0; it.cx=0; if(it.td) it.mod=Date.now(); }   /* v230: 완료 상태도 함께 저장 — To Do 출신·앱 일정(td)은 구글 Tasks 의 체크와 연동되므로 mod 도 갱신(toggleDone 과 같음), 폰·구글 캘린더 일정은 이 앱에만 · v251: 완료는 취소가 아님 — 취소한 일정에서 완료로 바꾸면 cx 도 0 */
+  else if(cqMsg){ const wx=it.x?1:0; it.x=cq?1:0; it.cx=cq?1:0; it.xt=cq?Date.now():0; if(it.td&&wx!==it.x) it.mod=Date.now(); }   /* v251: 취소 = 완료의 한 종류(x=1)+cx=1, 해제하면 x=0 — mod 는 Tasks 의 완료와 연동되는 x 가 실제로 바뀔 때만 */
   const auto=!!(it&&!it.d&&autoDate(it));                  /* 일정 미정 To Do 의 제목 맨 앞에 'MM/DD ' 를 쓰고 저장하면 그 날짜의 확정 일정으로(v208) */
   if(auto) needSync=true;
   closeDlg();
-  if(onlyPr&&!doneMsg&&!auto){ save(); render(); updateBtn(); }   /* v242: 중요도만 바꿨으면 구글과 무관(이 앱에만 저장) — 동기화도 로그인 창도 부르지 않음 */
+  if(onlyPr&&!doneMsg&&!cqMsg&&!auto){ save(); render(); updateBtn(); }   /* v242: 중요도만 바꿨으면 구글과 무관(이 앱에만 저장) — 동기화도 로그인 창도 부르지 않음 */
   else afterChange(needSync);
   if(auto){ toast(autoMsg(it)); flash(it.d); return; }
-  if(doneMsg){ const lb=it.s||'(제목 없음)'; toast((dn?'✅ ‘'+lb+'’ — 완료 일정으로 처리했습니다':'↩ ‘'+lb+'’ — 완료를 취소했습니다')+(edited?' (고친 내용도 저장)':'')); return; }
+  if(doneMsg){ const lb=it.s||'(제목 없음)'; toast((dn?'✅ ‘'+lb+'’ — 완료 일정으로 처리했습니다':'↩ ‘'+lb+'’ — 완료를 해제했습니다')+(edited?' (고친 내용도 저장)':'')); return; }
+  if(cqMsg){ const lb=it.s||'(제목 없음)'; toast((cq?'🚫 ‘'+lb+'’ — 취소 일정으로 처리했습니다 (완료 일정에 모여요)':'↩ ‘'+lb+'’ — 취소를 해제했습니다')+(edited?' (고친 내용도 저장)':'')); return; }
   toast((lost?'수정하던 일정이 그 사이 지워져 새 일정으로 저장했습니다. ':'✅ 저장했습니다')+(it&&it.d?(gcfg.on?' — 구글 캘린더에 반영 중…':' (구글 캘린더에 연결하면 폰에도 표시됩니다)'):''));
 }
 function del(id){
@@ -12716,17 +12751,28 @@ function del(id){
   afterChange(!!it.d);
 }
 function dlgDelete(){ if(editId) del(editId); }
-function dlgDone(){   /* 일정 창 머리의 [✅ 완료] / [↩ 완료 취소](v230) — 이 일정을 완료로 처리(이미 완료면 취소) = 왼쪽 목록·월간 목록의 체크와 같은 처리. 고친 내용이 있으면 함께 저장(양식 검사에 걸리면 저장·완료 모두 하지 않고 안내) */
+function dlgDone(){   /* 일정 창 머리의 [✅ 완료] / [↩ 완료 해제](v230·v251) — 이 일정을 완료로 처리(이미 완료면 취소) = 왼쪽 목록·월간 목록의 체크와 같은 처리. 고친 내용이 있으면 함께 저장(양식 검사에 걸리면 저장·완료 모두 하지 않고 안내) */
   if(!editId) return;
   load(); const it=items.find(x=>x.id===editId);
   if(!it){ closeDlg(); toast('이미 지워진 일정입니다.'); return; }
-  const want=!it.x;
+  const want=it.cx?true:!it.x;                                           /* v251: 취소한 일정에서 [✅ 완료] = 완료로 바꿈 */
   const f=readForm(editBase); if(f.err){ setFormMsg(f.err,'err'); return; }
   const base=editBase||snap(it);
   if(Object.keys(GRP).some(k=>GRP[k].some(ff=>f[ff]!==base[ff]))||validP(f.pr)!==validP(editPr)){ submit({done:want}); return; }   /* 고친 내용이 있음 → 저장하면서 완료 */
   const id=it.id, lb=it.s||'(제목 없음)';
   closeDlg(); toggleDone(id,want);                                       /* 고친 게 없음 → 체크박스와 똑같이 */
-  toast(want?'✅ ‘'+lb+'’ — 완료 일정으로 처리했습니다':'↩ ‘'+lb+'’ — 완료를 취소했습니다');
+  toast(want?'✅ ‘'+lb+'’ — 완료 일정으로 처리했습니다':'↩ ‘'+lb+'’ — 완료를 해제했습니다');
+}
+function dlgCancel(){   /* 일정 창 머리의 [🚫 취소] / [↩ 취소 해제](v251) — 이 일정을 취소 처리(이미 취소면 해제) = 왼쪽 목록·월간 목록의 🚫 와 같은 처리. 고친 내용이 있으면 함께 저장(양식 검사에 걸리면 저장·취소 모두 하지 않고 안내) */
+  if(!editId) return;
+  load(); const it=items.find(x=>x.id===editId);
+  if(!it){ closeDlg(); toast('이미 지워진 일정입니다.'); return; }
+  const want=!it.cx;
+  const f=readForm(editBase); if(f.err){ setFormMsg(f.err,'err'); return; }
+  const base=editBase||snap(it);
+  if(Object.keys(GRP).some(k=>GRP[k].some(ff=>f[ff]!==base[ff]))||validP(f.pr)!==validP(editPr)){ submit({cancel:want}); return; }   /* 고친 내용이 있음 → 저장하면서 취소 처리 */
+  const id=it.id;
+  closeDlg(); toggleCancel(id,want);                                     /* 고친 게 없음 → 목록의 🚫 단추와 똑같이 */
 }
 function addTodo(){
   load();
@@ -12794,15 +12840,22 @@ function listClick(ev){   /* 목록 보기의 완료 체크박스(v230)·✏️�
   const ck=t.closest('input[data-a="done"]'); if(ck){ toggleDone(id,!!ck.checked); return; }   /* 줄 맨 앞 체크 = 왼쪽 목록의 체크와 같은 완료 처리 */
   const b=t.closest('button[data-a]'); if(!b) return;
   const a=b.getAttribute('data-a');
-  if(a==='edit') openDlg({id}); else if(a==='del') del(id); else if(a==='memo') toggleMemo(id);   /* v232: 제목 옆 메모 아이콘 = 펼침·접힘 */
+  if(a==='edit') openDlg({id}); else if(a==='cancel') toggleCancel(id); else if(a==='del') del(id); else if(a==='memo') toggleMemo(id);   /* v232: 제목 옆 메모 아이콘 = 펼침·접힘 */
 }
 const xtOf=it=>it.xt||it.mod||0;   /* 완료한 시각(없으면 마지막 고친 시각) — 완료 일정 목록 정렬(v222) */
 function toggleDone(id,val){   /* 완료 체크 — v222: 체크하면 '완료 일정' 구역으로, 풀면 원래 목록으로(렌더가 x 로 나눔); — To Do 출신(td)이면 구글 Tasks 의 체크와 연동(캘린더는 건드리지 않음), 달력에서 직접 만든 일정은 이 앱에만 저장(v213) */
   load(); const it=items.find(x=>x.id===id); if(!it) return;
-  it.x=(val===undefined?!it.x:!!val)?1:0; it.xt=it.x?Date.now():0;
+  it.x=(val===undefined?!it.x:!!val)?1:0; it.xt=it.x?Date.now():0; it.cx=0;   /* v251: 체크(완료)는 취소가 아님 — 취소한 일정의 체크를 풀면 취소도 함께 풀림 */
   if(!it.td){ save(); render(); updateBtn(); return; }
   it.mod=Date.now();
   afterChange(false);
+}
+function toggleCancel(id,val){   /* v251 일정 취소 — 완료의 한 종류: x=1(완료 일정 구역으로)+cx=1('[취소]' 표시·취소선). 풀면(val=false) 원래 목록으로(x=0). 취소 표시는 이 앱에만(구글에 안 올림) — To Do 출신(td)이면 구글 Tasks 의 완료와 연동되는 x 가 바뀔 때만 동기화 */
+  load(); const it=items.find(x=>x.id===id); if(!it) return;
+  const on=(val===undefined?!it.cx:!!val), wx=it.x?1:0, lb=it.s||'(제목 없음)';
+  it.x=on?1:0; it.cx=on?1:0; it.xt=on?Date.now():0;
+  if(it.td&&wx!==it.x){ it.mod=Date.now(); afterChange(false); } else { save(); render(); updateBtn(); }
+  toast(on?'🚫 ‘'+lb+'’ — 취소 일정으로 처리했습니다 (완료 일정에 모여요)':'↩ ‘'+lb+'’ — 취소를 해제했습니다');
 }
 function todoClick(ev){   /* 왼쪽 목록: 체크박스 · 단추(메모 아이콘·✏️·🗑 — 📅 '날짜 고르기' 단추는 v234 에서 없앰, pick 분기는 그대로 둠) · 아래 '확정 일정' 줄을 누르면 달력의 그날로 */
   const t=ev.target; if(!t||!t.closest) return;
@@ -12810,7 +12863,7 @@ function todoClick(ev){   /* 왼쪽 목록: 체크박스 · 단추(메모 아이
   const id=row.getAttribute('data-id');
   const ck=t.closest('input[data-a="done"]'); if(ck){ toggleDone(id,!!ck.checked); return; }
   const b=t.closest('button[data-a]');
-  if(b){ const a=b.getAttribute('data-a'); if(a==='pick') pickDate(id); else if(a==='tedit') openDlg({id}); else if(a==='tdel') del(id); else if(a==='memo') toggleMemo(id); return; }
+  if(b){ const a=b.getAttribute('data-a'); if(a==='pick') pickDate(id); else if(a==='tedit') openDlg({id}); else if(a==='tcancel') toggleCancel(id); else if(a==='tdel') del(id); else if(a==='memo') toggleMemo(id); return; }
   if(row.classList.contains('pln-cf')) goDay(row.getAttribute('data-day'));
 }
 function goDay(day){   /* 달력(또는 목록)에서 그날이 보이게 */
@@ -13213,12 +13266,12 @@ window.addEventListener('storage',e=>{
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const w=$('plnDlg'); if(wkIsOpen()) wkClose(); else if(w&&w.classList.contains('on')) closeDlg(); else close(); } });
 
 window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,toggleClr,pickColor,pickPri,pickPrColor,setPrColor,panel,panelClick,splitDown,splitKey,splitReset,wkOpen,wkClose,wkSave,wkCancel,wkClick,
-  month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,dlgDone,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,toggleMemo,timeInput,showDay,goDay,sortToggle,toggleDone,tkToggle,unassign,onLogout,
+  month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,dlgDone,dlgCancel,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,toggleMemo,timeInput,showDay,goDay,sortToggle,toggleDone,toggleCancel,tkToggle,unassign,onLogout,
   _t:{ get busy(){ return !!busyP; }, get items(){ return items; }, set items(v){ items=v; }, get tomb(){ return tomb; }, get ttomb(){ return ttomb; }, get gcfg(){ return gcfg; }, get st(){ return st; }, get tst(){ return tst; }, get tok(){ return tok; }, set tok(v){ tok=v; },
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
        reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[],pc:{}}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop, prColor, prRank, validP, prName, PRC_DEF, doneCmp, evCmp, priHtml, paintPri } };
+       tMerge, cxTag, cxBtn, snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop, prColor, prRank, validP, prName, PRC_DEF, doneCmp, evCmp, priHtml, paintPri } };
 })();
 /* ══ /v206 ══ */
 
