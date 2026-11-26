@@ -5489,7 +5489,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-cl::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:4px}
 #plnModal .pln-cl::-webkit-scrollbar-thumb:hover{background:#64748b}
 @supports not selector(::-webkit-scrollbar){ #plnModal .pln-cl{scrollbar-width:thin;scrollbar-color:#94a3b8 #e8edf3} }
-#plnModal .pln-ch{flex:none;height:18px;line-height:18px;font-size:11px;padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;user-select:none}
+#plnModal .pln-ch{flex:none;height:18px;line-height:18px;font-size:11px;font-weight:700;padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;user-select:none}   /* v254: 월간 달력의 일정(확정 일정) 제목은 모두 굵게 */
 #plnModal .pln-ch.ad{background:#0f766e;color:#fff}
 #plnModal .pln-ch.tm{background:#e0f2fe;color:#0c4a6e;border-left:3px solid #0284c7}
 #plnModal .pln-ch.ct{opacity:.7}
@@ -11493,6 +11493,8 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v254 요청: "월간 달력의 확정일정의 제목은 모두 bold 처리"
+     · 월간 달력의 칩·여러 날 막대(.pln-ch) 글자를 font-weight:700 으로(전엔 보통 굵기, 시간 표시 <b> 만 700). 달력의 일정은 모두 날짜가 정해진 확정 일정 — 종일·시간·여러 날·완료·취소 모두 굵게. 왼쪽 확정 목록 제목(.pln-cf .ti)은 원래 700, 월간 목록은 그대로.
    v253 요청: "'완료' 또는 '취소' 시 배경색을 [일정 창 색상 줄의 흑연 — 선택한 색]으로 해주고, 글자색은 흰색으로"
      · 월간 달력의 완료·취소 칩·막대(.pln-ch.dn)는 배경 #616161(흑연)+글자 흰색(색 지정·시간 일정의 인라인 색도 !important 로 덮음 — 이미 완료돼 있던 옛 일정도 앱에서는 똑같이 보임). 취소는 같은 모양에 취소선. v251 의 옅은 회색 배경(#e9edf2)은 이걸로 바뀜 — 구글 캘린더에서 보이는 흑연(v252)과 같은 색으로 맞춤.
      · 목록 줄(왼쪽 3목록·월간 목록)은 흰 바탕이라 글자를 흰색으로 할 수 없어 그대로(회색 글자, 줄 왼쪽 막대·점 색만 흑연).
