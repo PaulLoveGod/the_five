@@ -5485,7 +5485,8 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-wi .ti:hover{color:#0f766e}
 #plnModal .pln-wi .wd{display:none;margin-top:4px;padding:5px 8px;background:#f8fafc;border-radius:6px;font-size:11.5px;color:#475569;white-space:pre-wrap;word-break:break-word;line-height:1.5}
 #plnModal .pln-wi.open .wd{display:block}
-#plnModal .pln-wi.dn .ti{text-decoration:line-through;color:#94a3b8}
+#plnModal .pln-wi.dn .ti{color:#94a3b8}   /* v257: 완료 = 취소선 없이 비활성 회색 글자만 */
+#plnModal .pln-wi.cx .ti{text-decoration:line-through}   /* v257: 취소 = 취소선 + 비활성 회색 */
 #plnModal .pln-wi.dn .dt{color:#94a3b8}
 #plnModal .pln-wi .ac{flex:none;display:flex;gap:2px}
 #plnModal .pln-wi .ac button{border:none;background:transparent;border-radius:5px;padding:2px 4px;font-size:12px;cursor:pointer;opacity:.75}
@@ -11502,6 +11503,11 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v257 요청: "오늘 업무 팝업창의 왼쪽·오른쪽 업무 리스트에 '취소' 아이콘 추가 · 체크하면 취소선 없이 비활성 회색 글자만 · '취소' 클릭 시 취소선+회색 글씨와 함께 제목 앞에 [취소] 가 제목 텍스트로" + "체크하면 제목 앞에 '[완료]' 텍스트도"
+     · 업무(works) 한 줄(wkRow — 왼쪽 '오늘 발생한 업무'·오른쪽 '이전 업무' 공통)의 단추가 [✏️][🚫][🗑] (취소한 줄은 🚫 자리가 ↩️ = 취소 해제). 새 필드 cx(취소 — 완료 x 의 한 종류, cx ⇒ x): 완료처럼 목록 아래로 내려가고 '이전 미처리 업무'에서 빠짐.
+     · 체크(x=1) → 제목 앞에 '[완료] ' + 회색 글자(취소선 없음) · 🚫 취소(x=1,cx=1) → 제목 앞에 '[취소] ' + 취소선+회색 · 풀면(체크 해제·↩️) 미처리(x=0)로 돌아가며 표시를 뗌 · 완료한 업무를 취소하면 [완료] → [취소] 로 바뀜.
+     · 표시는 화면용이 아니라 실제 제목(w.s) 텍스트 — 구글 캘린더 '오늘 업무' 일정 설명에도 그대로('☑ [완료] 제목'·'☑ [취소] 제목'). wkMark(w)가 상태(cx·x)에 맞게 제목 앞 표시를 맞추고(함수 선언), 상태를 바꾸는 wkToggle·wkCx 와 '완료·취소한 업무를 수정 저장할 때(표시를 지웠으면 다시 붙임)'에만 부름 — 미처리 업무의 제목은 건드리지 않음. 이미 완료돼 있던 업무는 일괄 변경하지 않음(체크를 풀었다 다시 하면 붙음).
+     · CSS: .pln-wi.dn .ti = 회색만(취소선 제거) · .pln-wi.cx .ti = 취소선. (일정/To Do 팝업의 완료·취소는 별개 — v251~v253)
    v256 요청: "오늘업무의 '★'은 제거"
      · 구글 캘린더 '오늘 업무' 일정 제목에서 앞의 ★(v243)를 뺌 → wkTitle() = 이름 그대로(기본 '오늘 업무'). 이미 올라가 있는 '★오늘 업무' 일정은 다음 동기화에 syncWork 의 keep.summary!==wkTitle() 로 PATCH 되어 '오늘 업무' 로 바뀜(일정 구분은 표식 btmWork 라서).
        이름 입력 앞의 ★ 를 떼던 규칙(wkNameClean)도 없앰 — 사용자가 ★ 를 직접 쓰면 입력한 그대로 올라감. (v255 의 WK_STAR 상수 제거 — 아래 v255 설명 중 '★ 자동' 은 옛 동작)
@@ -12973,7 +12979,7 @@ document.addEventListener('pointerdown',e=>{
 function wkNorm(x){
   if(!x||typeof x!=='object') return null;
   const s=String(x.s==null?'':x.s).trim().slice(0,200); if(!s) return null;
-  return {id:(typeof x.id==='string'&&x.id.length>=3&&x.id.length<=80)?x.id:('w'+newId()), d:validYmd(x.d)?x.d:todayY(), s, m:String(x.m==null?'':x.m).slice(0,4000), x:x.x?1:0, c:+x.c||0, u:+x.u||0};
+  return {id:(typeof x.id==='string'&&x.id.length>=3&&x.id.length<=80)?x.id:('w'+newId()), d:validYmd(x.d)?x.d:todayY(), s, m:String(x.m==null?'':x.m).slice(0,4000), x:x.x?1:0, cx:(x.x&&x.cx)?1:0, c:+x.c||0, u:+x.u||0};
 }
 /* ── v255: 구글 캘린더에 올리는 '오늘 업무' 일정 제목 = 이름 — 이름은 팝업 머리의 입력칸에서 직접 고침(wkName, 비우면 기본 '오늘 업무') ──
    v256: 앞에 붙이던 ★(v243)는 요청으로 제거 — 입력한 그대로 구글 제목이 됨(사용자가 ★ 를 직접 쓰면 그대로 올라감).
@@ -13007,12 +13013,23 @@ function wkOpen(){
   renderWork(); const s=$('plnWkS'); if(s) setTimeout(()=>{ try{ s.focus(); }catch(_){} },30);
 }
 function wkClose(){ const w=$('plnWk'); if(w) w.classList.remove('on'); wkEditId=''; }
+/* ── v257: 오늘 업무 — 체크(완료)·취소와 제목 앞 표시 ──
+   체크(x=1) → '[완료] ' · 취소(x=1,cx=1) → '[취소] ' — 실제 제목 텍스트(구글 캘린더 설명에도 그대로) · 풀면 미처리(x=0)로 돌아가며 표시를 뗌.
+   wkMark(w) = 상태(cx·x)에 맞게 제목 앞 표시를 맞춤(앞의 [취소]/[완료] 하나만 바꿈) — 바뀌면 true. 함수 선언(load() 가 먼저 불려도 안전). 제목이 빈 글자가 되면 건드리지 않음 */
+function wkMark(w){
+  const s=String(w.s==null?'':w.s), base=s.replace(/^\[(?:취소|완료)\]\s*/,'');
+  const ns=((w.cx?'[취소] ':(w.x?'[완료] ':''))+base).replace(/\s+$/,'').slice(0,200);
+  if(!ns||ns===s) return false; w.s=ns; return true;
+}
+function wkCxBtn(w){   /* 취소 단추 — 취소한 업무는 ↩️(취소 해제) */
+  return w.cx?'<button data-a="wkcx" title="취소 해제 — 미처리로 되돌립니다(제목 앞 ‘[취소]’ 는 떨어짐)">↩️</button>':'<button data-a="wkcx" title="업무 취소 — 취소선·회색으로 표시되고 제목 앞에 ‘[취소]’ 가 붙습니다">🚫</button>';
+}
 function wkRow(w,prev){
   const wd=WD[parseYmd(w.d).getDay()];
-  return '<div class="pln-wi'+(w.x?' dn':'')+(wkOpenIds.has(w.id)?' open':'')+(wkEditId===w.id?' ed':'')+'" data-id="'+esc(w.id)+'"><input type="checkbox" class="ck" data-a="wkdone"'+(w.x?' checked':'')+' title="완료 표시">'
+  return '<div class="pln-wi'+(w.x?' dn':'')+(w.cx?' cx':'')+(wkOpenIds.has(w.id)?' open':'')+(wkEditId===w.id?' ed':'')+'" data-id="'+esc(w.id)+'"><input type="checkbox" class="ck" data-a="wkdone"'+(w.x?' checked':'')+' title="'+(w.cx?'취소한 업무 — 체크를 풀면 취소가 풀리고 미처리로 돌아갑니다(제목 앞 ‘[취소]’ 는 떨어짐)':(w.x?'완료한 업무 — 체크를 풀면 미처리로 돌아갑니다(제목 앞 ‘[완료]’ 는 떨어짐)':'완료 표시 — 체크하면 제목 앞에 ‘[완료]’ 가 붙고 회색 글자가 됩니다'))+'">'
     +(prev?'<div class="dt">'+mdOf(w.d)+'<small>('+wd+')</small></div>':'')
     +'<div class="mn"><div class="ti" title="누르면 상세 내용이 펼쳐집니다">'+esc(w.s)+'</div><div class="wd">'+(w.m?esc(w.m):'(상세 내용 없음)')+'</div></div>'
-    +'<div class="ac"><button data-a="wkedit" title="수정">✏️</button><button data-a="wkdel" title="삭제">🗑</button></div></div>';
+    +'<div class="ac"><button data-a="wkedit" title="수정">✏️</button>'+wkCxBtn(w)+'<button data-a="wkdel" title="삭제">🗑</button></div></div>';
 }
 function renderWork(){
   const top=$('plnWkToday'); if(!top) return; wkLoad();
@@ -13053,12 +13070,17 @@ function wkSave(){   /* 위쪽 입력 양식 [＋ 업무 추가]/[💾 저장] *
   const s=(($('plnWkS')||{}).value||'').trim().slice(0,200), m=((($('plnWkM')||{}).value)||'').replace(/\r\n/g,'\n').trim().slice(0,4000);
   if(!s){ toast('업무 제목을 입력해 주세요.'); try{ $('plnWkS').focus(); }catch(_){} return; }
   const now=Date.now();
-  if(wkEditId){ const w=works.find(x=>x.id===wkEditId); if(w){ w.s=s; w.m=m; w.u=now; } wkEditId=''; }
+  if(wkEditId){ const w=works.find(x=>x.id===wkEditId); if(w){ w.s=s; w.m=m; w.u=now; if(w.x) wkMark(w); } wkEditId=''; }   /* v257: 완료·취소한 업무는 제목 앞의 [완료]/[취소] 를 늘 유지(저장하면서 지웠으면 다시 붙임) */
   else works.push({id:'w'+newId(),d:todayY(),s,m,x:0,c:now,u:now});
   wkFormFill(null); wkChanged(); try{ $('plnWkS').focus(); }catch(_){}
 }
 function wkCancel(){ wkEditId=''; wkFormFill(null); renderWork(); }
-function wkToggle(id,val){ load(); wkLoad(); const w=works.find(x=>x.id===id); if(!w) return; w.x=val?1:0; w.u=Date.now(); wkChanged(); }
+function wkToggle(id,val){ load(); wkLoad(); const w=works.find(x=>x.id===id); if(!w) return; w.x=val?1:0; w.cx=0; w.u=Date.now(); wkMark(w); wkChanged(); }   /* v257: 체크=완료(제목 앞 '[완료] ') · 풀면 미처리(표시 뗌 — 취소한 업무의 체크를 풀면 취소도 풀림) */
+function wkCx(id,val){   /* v257 업무 취소 — 완료(x=1)의 한 종류: cx=1 + 제목 앞 '[취소] ' + 취소선·회색. 풀면(val=false, ↩️) 미처리(x=0)로 */
+  load(); wkLoad(); const w=works.find(x=>x.id===id); if(!w) return;
+  const on=(val===undefined)?!w.cx:!!val;
+  w.x=on?1:0; w.cx=on?1:0; w.u=Date.now(); wkMark(w); wkChanged();
+}
 function wkEdit(id){ const w=works.find(x=>x.id===id); if(!w) return; wkEditId=id; wkFormFill(w); renderWork(); const s=$('plnWkS'); if(s){ try{ s.scrollIntoView({block:'nearest'}); s.focus(); }catch(_){} } }
 function wkDel(id){
   const w=works.find(x=>x.id===id); if(!w) return;
@@ -13066,12 +13088,12 @@ function wkDel(id){
   works=works.filter(x=>x!==w); wkOpenIds.delete(id); if(wkEditId===id){ wkEditId=''; wkFormFill(null); }
   wkChanged();
 }
-function wkClick(ev){   /* 위·아래 목록 공통: 체크박스 · ✏️ · 🗑 · 제목(상세 펼치기) */
+function wkClick(ev){   /* 위·아래 목록 공통: 체크박스 · ✏️ · 🚫/↩️ · 🗑 · 제목(상세 펼치기) */
   const t=ev.target; if(!t||!t.closest) return;
   const row=t.closest('.pln-wi'); if(!row) return; const id=row.getAttribute('data-id');
   const ck=t.closest('input[data-a="wkdone"]'); if(ck){ wkToggle(id,!!ck.checked); return; }
   const b=t.closest('button[data-a]');
-  if(b){ const a=b.getAttribute('data-a'); if(a==='wkedit') wkEdit(id); else if(a==='wkdel') wkDel(id); return; }
+  if(b){ const a=b.getAttribute('data-a'); if(a==='wkedit') wkEdit(id); else if(a==='wkcx') wkCx(id); else if(a==='wkdel') wkDel(id); return; }
   if(t.closest('.ti')){ if(wkOpenIds.has(id)) wkOpenIds.delete(id); else wkOpenIds.add(id); row.classList.toggle('open',wkOpenIds.has(id)); }
 }
 /* 구글 캘린더의 '오늘 업무' 일정 — 설명: 오늘 업무(☐/☑) + 이전 미처리 업무(☐ + 입력한 날짜). 보일 업무가 없으면 null */
@@ -13359,7 +13381,7 @@ window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,di
        get ui(){ return ui; }, get vm(){ return vm; }, set vm(v){ vm=v; }, get dragId(){ return dragId; }, get editId(){ return editId; }, get tkAsked(){ return tkAsked; }, set tkAsked(v){ tkAsked=!!v; },
        reset(){ clearTimeout(retryT); clearTimeout(timer); stopPoll(); retryN=0; lastFull=0; calReady=false; works=[]; wkName=''; wkLoaded=true; wkEditId=''; wkSent={id:'',desc:'',upd:''}; wkOpenIds.clear(); items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; tc=null; tcCid=''; tcSc=''; tokP=null; tokWait=null; st={k:'off',msg:''}; tst={k:'off',msg:'',n:0,at:0}; loaded=true; authDismissed=false; tkAsked=false; pendFull=false; editId=''; editBase=null; dlgTodo=false; dragId=''; pendingRender=false; vm=null; ui={view:'cal',sort:'desc',sp:DEF_SP,sf:DEF_SF,mx:'',mn:[],pc:{}}; try{ localStorage.removeItem(KEY); localStorage.removeItem(GKEY); localStorage.removeItem(UIKEY); localStorage.removeItem(WKEY); sessionStorage.removeItem(TKEY); }catch(_){} },
        reload(){ loaded=false; wkLoaded=false; works=[]; wkName=''; items=[]; tomb=[]; ttomb=[]; gcfg={cid:'',cal:'',last:0,on:false,tk:1,tl:'',cc:'',dc:'',ccs:''}; tok=null; load(); },
-       tMerge, cxTag, cxBtn, doneColor, cxTitle, doneSync, dispTitle, DONE_C, snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, wkTitle, wkNameClean, wkNameFill, get wkName(){ return wkName; }, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop, prColor, prRank, validP, prName, PRC_DEF, doneCmp, evCmp, priHtml, paintPri } };
+       tMerge, cxTag, cxBtn, doneColor, cxTitle, doneSync, dispTitle, DONE_C, snap, dirtyGroups, needsPush, needsTaskPush, tDirty, tkSnap, tkTitle, parseLead, mdToYmd, autoDate, palOf, colorOf, validC, syncCalColor, PAL, applyPanel, pollTick, scheduleRetry, wdOf, tSent, weekBars, isMulti, get works(){ return works; }, set works(v){ works=v; }, wkDesc, syncWork, isWorkEv, wkToday, wkPrev, wkPersist, wkLoad, wkMark, wkTitle, wkNameClean, wkNameFill, get wkName(){ return wkName; }, get lastFull(){ return lastFull; }, set lastFull(v){ lastFull=+v||0; }, get retryN(){ return retryN; }, tkLine, remoteSnap, evBody, norm, h2t, save, saveG, render, KEY, GKEY, TKEY, UIKEY, TL_NAME, TSCOPE, SCOPE, remLabel, fitCal, renderMain, calTop, prColor, prRank, validP, prName, PRC_DEF, doneCmp, evCmp, priHtml, paintPri } };
 })();
 /* ══ /v206 ══ */
 
