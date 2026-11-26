@@ -6334,7 +6334,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
     <div class="card" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin-bottom:0;overflow:hidden">
       <div class="card-header" style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
         <span id="investorStatusTitle" contenteditable="true" spellcheck="false" style="outline:none;cursor:text;border-bottom:1px solid transparent" onfocus="this.style.borderBottom='1px solid #6366f1'" onblur="this.style.borderBottom='1px solid transparent';saveData()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">■ Investor Status</span>
-        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button class="btn sm" id="isDetBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4f46e5;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.showDetail()" title="AI 평가 상세 보기">📋 평가 상세</button><button class="btn sm" id="isAiBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.run()" title="당일(D-0·지금 화면)·전일(D-1)·전전(D-2) 3일치 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 날마다 따로 평가한 뒤, 가중평균(기본 50·35·15% — [📋 평가 상세]에서 직접 설정)해 아래 항목의 점수와 메모를 자동으로 채웁니다 (전일·전전 = 이 report 날짜의 하루 전·이틀 전 Archive, 없는 날은 빼고 가중치를 다시 나눔)">🤖 업데이트</button></span>
+        <span class="pdf-export-hide" style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px"><button class="btn sm" id="isDetBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#4f46e5;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.showDetail()" title="AI 평가 상세 보기">📋 평가 상세</button><button class="btn sm" id="isAiBtn" type="button" style="font-size:9px;padding:0 8px;min-height:unset;height:20px;line-height:20px;background:#0f766e;border:none;border-radius:3px;font-weight:700" onclick="BTMIsAI.run()" title="당일(D-0·지금 화면)·전일(D-1)·전전(D-2) 3일치 report 의 성장 Routine(말씀·묵상·감사·나의 삶·독서·Snowball·Inbody)과 최근 기록 성실도를 AI 가 날마다 따로 평가한 뒤, 가중평균(기본 50·35·15% — [📋 평가 상세]에서 직접 설정)해 아래 항목의 점수와 메모를 자동으로 채웁니다 (전일·전전 = 이 report 날짜의 하루 전·이틀 전 Archive, 없는 날은 빼고 가중치를 다시 나눔). 이미 평가한 날은 점수·평가 내용을 재사용하고 AI 에는 평가 기록이 없거나 글이 바뀐 날만 보냅니다(토큰 절약)">🤖 업데이트</button></span>
       </div>
       <div class="card-body" style="padding:8px 10px;flex:1;overflow:hidden;display:flex;flex-direction:column">
         <!-- Charlie Status + Battery (2-col) -->
@@ -70273,7 +70273,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 .isai-hd button{flex:none;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0}
 .isai-hd button:hover{background:rgba(255,255,255,.35)}
 .isai-bd{flex:1 1 auto;min-height:0;overflow:auto;padding:14px 16px;font-size:12.5px;line-height:1.6}
-.isai-ft{flex:none;display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:10px 16px;border-top:1px solid #e2e8f0;background:#f8fafc}
+.isai-ft{flex:none;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center;padding:10px 16px;border-top:1px solid #e2e8f0;background:#f8fafc}
 .isai-ft button{height:30px;padding:0 14px;border-radius:7px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .isai-ft button:hover{background:#f1f5f9}
 .isai-ft button.pri{background:#6366f1;border-color:#6366f1;color:#fff}
@@ -70333,6 +70333,14 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 .isai-wt-n{margin-top:7px;color:#64748b;font-size:11px;line-height:1.5}
 .isai-by{display:block;margin-top:1px;color:#94a3b8;font-size:10.5px;font-variant-numeric:tabular-nums}
 #isAiModal input{pointer-events:auto!important}
+/* v250 — 날별 평가 상태·날짜별 평가 내용 */
+.isai-wc .t b.re{color:#0f766e;font-weight:700}
+.isai-wc .t b.nw{color:#4f46e5;font-weight:700}
+.isai-dd{margin:8px 0 0;padding:7px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;font-size:11.5px}
+.isai-dd summary{cursor:pointer;font-weight:800;color:#334155}
+.isai-dd summary small{font-weight:400;color:#64748b}
+.isai-dr{margin-top:7px;padding-top:6px;border-top:1px dashed #e2e8f0;color:#475569;line-height:1.55}
+.isai-dr small{color:#64748b}
 </style>
 <script>
 /* ═══ BTMISAI-JS-BEGIN ═══════════════════════════════════════════════════════════
@@ -70353,6 +70361,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
      앱이 가중평균해 최종 점수를 만듦. 가중치 기본 50·35·15% — [📋 평가 상세] 창에서 직접 바꿈(localStorage 'BTMIsWeights' = {v:1,w:[a,b,c]}, 합이 100 이 아니어도 비율로 환산). null 인 날은 평균에서 빼고 남은 날끼리 가중치를 다시 나눔.
      날별 점수(res.indices[k].by · res.items[i].by)·날짜(res.days)·쓴 가중치(res.wts)를 report 에 같이 저장하므로, 창에서 가중치를 바꾼 뒤 [↻ 이 가중치로 다시 계산해 반영]을 누르면 AI 를 다시 부르지 않고(비용 없음)
      점수·메모(data-idx)를 새로 평균해 Investor Status 에 반영(되돌리기 기준은 처음 평가 전 상태 그대로). 결과가 아직 없어도 [📋 평가 상세]가 열려 가중치를 미리 정해 둘 수 있음. 옛 형식(직전 report 한 장) 결과는 그대로 보이되 다시 계산은 못 함.
+   · v250(2026-11-26) 날별 평가 재사용(토큰 절약): 이미 평가한 날은 다시 AI 에 보내지 않음 — 그날 글의 지문(fp = grText 해시)이 평가 때와 같고 항목 구성(isig)·평가 형식(PV)도 같은 기존 평가(점수 by + 평가 내용 ctx)를
+     찾아(지금 화면의 결과 + 날짜 ±2일 Archive 의 isAiResult) 그 점수를 그대로 쓰고, 평가 기록이 없거나 글이 바뀐 날(·force)만 새로 평가해 3일 가중평균. 기록이 비어 있는 날(bl)은 평가 제외, 평가할 날이 없으면 총평만 쓰는 작은 호출,
+     바뀐 게 전혀 없으면(reuse) AI 를 아예 안 부르고 저장된 점수를 지금 가중치로 다시 평균해 반영. Inbody 이미지는 기존 평가 때와 같으면(imgFp) 다시 안 보내고, 기존 평가가 있으면 '이전 기록 발췌'도 뺌.
+     결과 창: 날별 '이번에 평가/기존 평가 재사용' 표시·전송 글자 수·절약량·날짜별 평가 내용, [다시 평가](바뀐 날만)·[3일 모두 새로 평가](force).
    수정 요령: 이 블록(BTMISAI-JS-BEGIN~END) + 머리글 #isAiBtn(Investor Status 카드 머리) + _BTM_AI_SECTIONS 의 investorStatusAi 한 줄.
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
@@ -70416,6 +70428,67 @@ function basisOf(res,g){   /* 점수의 기준 — 3일 가중평균이면 그 �
   return (g&&g.P&&g.P.date)?mdw(g.P.date)+' report 기준':'';
 }
 const hasBy=res=>!!(res&&Array.isArray(res.days)&&res.days.length&&res.indices&&IDX.every(d=>res.indices[d.k]&&res.indices[d.k].by&&typeof res.indices[d.k].by==='object'));   /* 날별 점수가 들어 있는(다시 계산할 수 있는) 결과인가 */
+
+/* ── v250 날별 평가 재사용(토큰 절약) — 그날 글의 지문(fp)이 평가 때와 같고 항목 구성(isig)·평가 형식(PV)도 같은 기존 평가(점수·평가 내용)가 있으면 그것을 쓰고, AI 에는 평가 기록이 없거나 글이 바뀐 날만 보냄 ── */
+const PV=1;   /* 평가 형식(프롬프트·JSON) 버전 — 바뀌면 옛 평가는 재사용하지 않음 */
+const FPRE=/^[0-9a-f]{16}$/;
+const nf=n=>Number(n||0).toLocaleString('ko-KR');
+function fpOf(s){   /* 문자열 지문(64비트, 16자리 16진수) */
+  s=String(s==null?'':s);
+  let h1=0xdeadbeef^s.length, h2=0x41c6ce57^s.length;
+  for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); h1=Math.imul(h1^c,2654435761); h2=Math.imul(h2^c,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (h2>>>0).toString(16).padStart(8,'0')+(h1>>>0).toString(16).padStart(8,'0');
+}
+const isigOf=items=>fpOf(items.filter(x=>!x.auto).map(x=>x.key+':'+x.label).join('|'));   /* 점수를 매기는 항목 구성(key·이름)의 지문 — 항목이 바뀌면 옛 평가는 못 씀 */
+function dayScores(res,dd){   /* 결과 res 에서 한 날(dd)의 점수만 뽑음 → {idx:{지수:점수|null}, it:{항목 key:점수|null}} */
+  const k=dd.k, idx={}, it={}, pick=b=>(b&&b[k]!=null&&isFinite(+b[k]))?+b[k]:null;
+  IDX.forEach(d=>{ idx[d.k]=pick(res.indices[d.k]&&res.indices[d.k].by); });
+  (res.items||[]).forEach(x=>{ if(x.basis!=='auto') it[x.key]=pick(x.by); });
+  return {idx,it};
+}
+function candidatesOf(arcs,curDate){   /* 기존 평가가 들어 있을 수 있는 결과들 — 지금 화면의 결과 + 날짜 ±2일 Archive 의 isAiResult(한 평가에는 그 날과 앞 이틀의 점수가 있음) */
+  const out=[], L=BTMIsAI._last;
+  if(L&&L.res) out.push({res:L.res,at:L.at||0});
+  const lo=addDays(curDate,-2), hi=addDays(curDate,2);
+  (arcs||[]).forEach(r=>{
+    if(!r||!r.date||r.date===curDate||r.date<lo||r.date>hi) return;
+    const sl=r.data&&r.data.isAiResult; if(!sl) return;
+    const x=inflate(sl); if(x&&x.res) out.push({res:x.res,at:x.at||0});
+  });
+  return out;
+}
+function findCache(day,cands,isig){   /* 그날 글 지문·항목 구성·평가 형식이 모두 같은 가장 최근 기존 평가 → {sc,ev,ctx,imgFp}, 없으면 null */
+  let best=null;
+  cands.forEach(c=>{
+    const r=c.res; if(!r||r.pv!==PV||r.isig!==isig||!hasBy(r)) return;
+    const dd=r.days.find(d=>d.date===day.date&&d.has&&!d.bl&&d.fp&&d.fp===day.fp); if(!dd) return;
+    const at=(dd.ev&&dd.ev.at)||c.at||0;
+    if(!best||at>best.at) best={at,dd,r};
+  });
+  return best?{sc:dayScores(best.r,best.dd),ev:best.dd.ev||{at:best.at,ai:''},ctx:best.dd.ctx||'',imgFp:best.r.imgFp||''}:null;
+}
+function rescore(res,w){   /* 저장된 날별 점수(by)를 가중치 w 로 다시 평균 → 지수·항목 점수 갱신(AI 를 부르지 않음) */
+  IDX.forEach(d=>{ const x=res.indices[d.k], av=wavg(x.by,w); x.score=av?clamp(Math.round(av.v),0,100):50; x.miss=!av; });
+  res.items.forEach(x=>{
+    if(x.basis==='auto') return;
+    const av=anyBy(x.by)?wavg(x.by,w):null;
+    if(av){ x.score=clamp(Math.round(av.v),0,100); x.basis='evidence'; } else { x.score=x.prev; x.basis='kept'; }
+  });
+  res.wts=w;
+}
+function ctxOf(res){   /* 이 평가의 총평·칭찬·건의 + 지수별 근거 한 줄 — 다음 평가 때 '이미 평가한 날'의 평가 내용으로 AI 에 보냄(≤800자) */
+  const w=IDX.map(d=>{ const x=res.indices[d.k]; return (x&&x.why)?d.s+'—'+x.why:''; }).filter(Boolean).join('; ');
+  const s=['총평: '+res.overall,res.praise?'칭찬: '+res.praise:'',res.advice?'건의: '+res.advice:'',w?'근거: '+w:''].filter(Boolean).join(' / ');
+  return s.length>800?s.slice(0,799)+'…':s;
+}
+function finishRes(res,g,out){   /* parseAi 결과에 다음 평가 때 재사용할 정보(날별 평가 시각·AI·평가 내용 요약, 형식·항목 구성·이미지 지문)를 붙임 */
+  const now=Date.now(), nm=(out&&out.name)||'', cx=ctxOf(res);
+  res.days.forEach(d=>{ if(d.src==='new'){ d.ev={at:now,ai:nm}; d.ctx=cx; } });
+  res.pv=PV; res.isig=g.isig||isigOf(g.items); res.imgFp=g.imgFp||'';
+  return res;
+}
 
 /* ── 글 뽑기 ── */
 function h2t(html){
@@ -70577,46 +70650,60 @@ async function toBlock(src){
 const SYS=`당신은 투자자 '찰리'(이 앱의 사용자 본인)의 기록을 읽고 현재 상태를 점수로 평가해 주는, 따뜻하지만 솔직한 코치입니다. 존댓말로, 간결하게 씁니다.
 
 [입력]
-① 최근 3일 report 의 [성장 Routine] 기록 — D-0 당일(지금 쓰고 있는 report), D-1 전일, D-2 전전. 날마다: 오늘의 말씀, 나의 묵상 노트, 감사와 간구, 나의 삶·나의 생각, Footprints in Books(독서), Key-Word, VISION, Snowball Effect(매일 지키려는 목표와 OK/NOT OK), Daily Inbody Check(글). 그날 report 를 저장하지 않았으면 '없음'으로 표시됩니다.
+① 최근 3일 report 의 [성장 Routine] 기록 — D-0 당일(지금 쓰고 있는 report), D-1 전일, D-2 전전. 날마다: 오늘의 말씀, 나의 묵상 노트, 감사와 간구, 나의 삶·나의 생각, Footprints in Books(독서), Key-Word, VISION, Snowball Effect(매일 지키려는 목표와 OK/NOT OK), Daily Inbody Check(글). 그날 report 를 저장하지 않았으면 '없음', 기록이 비어 있으면 '비어 있음'으로 표시되고, 이미 평가한 날은 글 대신 그때의 점수·평가 내용 요약으로 주어집니다.
 ② 최근 기록 성실도 — 앱이 Archive 에서 계산한 '사실'(작성한 날·빠진 날짜·연속 기록·늦게 몰아 저장한 횟수·작성 충실도·Snowball 달성·연간 목표)과 최근 기록표·이전 기록 발췌
 ③ 점수를 매길 Investor Status 항목 목록(key·이름·좌/우·prev 점수)
 ④ 첨부 이미지가 있으면 Inbody 결과지(최신 측정, 있으면 그 이전 측정) — 날짜를 가리지 않는 공통 근거
 
 [평가 방법 — 날마다 따로, 평균은 앱이]
-앱이 세 날의 점수를 사용자가 정한 가중치(입력의 기준일 줄에 적혀 있음)로 가중평균해 최종 점수를 만듭니다. 당신은 평균을 내지 말고, 날마다 '그날 report 의 기록'을 근거로 따로 평가해 d0·d1·d2 에 적습니다. 그날 report 가 없거나, 그 지수·항목을 판단할 근거가 그날 기록에 없으면 그 날의 값은 null 입니다(0 이 아님 — null 인 날은 평균에서 빠지고 남은 날끼리 가중치를 다시 나눕니다).
-1단계 — 아래 9개 지수를 날마다 0~100 정수로 매기고, 지수마다 근거를 한 줄(25자 안팎 — 세 날을 아울러 가장 중요한 근거)로 씁니다. 근거는 반드시 입력에 있는 기록(글·숫자·이미지·통계)에서 찾습니다.
+앱이 세 날의 점수를 사용자가 정한 가중치(입력의 기준일 줄에 적혀 있음)로 가중평균해 최종 점수를 만듭니다. 입력의 [이번 호출의 평가 범위]를 따르세요: '평가할 날'만 d0·d1·d2 중 그 날의 값을 적고, '이미 평가한 날'·'비어 있음'·'report 없음'인 날의 값은 null 입니다(앱이 기존 점수를 그대로 쓰거나 평균에서 뺍니다). 이미 평가한 날의 점수·평가 내용은 추세·연속성을 보는 참고일 뿐 다시 매기지 않습니다. 평가할 날은 '그날 report 의 기록'을 근거로 따로 평가합니다. 그 지수·항목을 판단할 근거가 그날 기록에 없으면 그 날의 값은 null 입니다(0 이 아님 — null 인 날은 평균에서 빠지고 남은 날끼리 가중치를 다시 나눕니다).
+1단계 — 아래 9개 지수를 평가할 날마다 0~100 정수로 매기고, 지수마다 근거를 한 줄(25자 안팎 — 평가한 날을 아울러 가장 중요한 근거)로 씁니다. 근거는 반드시 입력에 있는 기록(글·숫자·이미지·통계)에서 찾습니다.
 ${IDX.map(d=>' - '+d.k+' ('+d.n+'): '+d.d).join('\n')}
- · D-0 는 지금 쓰는 중일 수 있습니다. 거의 비어 있으면 글로 판단하는 지수는 null 로 두세요(오늘 아직 안 쓴 것을 낮은 점수로 매기지 마세요). report 가 없는 날(D-1·D-2)도 모든 지수·항목이 null — 그날의 빠짐은 이미 성실도 통계에 들어 있습니다.
- · Inbody 이미지는 숫자를 직접 읽어 판단하되(체중·골격근량·체지방량·체지방률·Inbody 점수·내장지방 등), 이전 측정 이미지가 있으면 변화(늘었는지·줄었는지)를 반영합니다. 이미지와 성실도 통계는 날짜를 가리지 않는 공통 근거이므로, 그것이 주된 근거인 지수(strength 등)는 세 날 모두 같은 값을 쓰고, 그날 글에 별도의 근거(운동·식단 언급 등)가 있을 때만 날마다 달리하세요. 읽을 수 없거나 이미지가 없으면 strength 는 근거 부족으로 보고 입력의 prev 에서 크게 벗어나지 않게 합니다.
+ · D-0 는 지금 쓰는 중일 수 있습니다. 거의 비어 있으면 글로 판단하는 지수는 null 로 두세요(오늘 아직 안 쓴 것을 낮은 점수로 매기지 마세요).
+ · Inbody 이미지는 숫자를 직접 읽어 판단하되(체중·골격근량·체지방량·체지방률·Inbody 점수·내장지방 등), 이전 측정 이미지가 있으면 변화(늘었는지·줄었는지)를 반영합니다. 이미지와 성실도 통계는 날짜를 가리지 않는 공통 근거이므로, 그것이 주된 근거인 지수(strength 등)는 평가할 날마다 같은 값을 쓰고, 그날 글에 별도의 근거(운동·식단 언급 등)가 있을 때만 달리하세요. 이미지가 없으면 strength 는 근거 부족으로 보고 입력의 prev 에서 크게 벗어나지 않게 합니다(이미지를 보내지 않았다고 안내돼 있으면 이미 평가한 날의 점수를 이어받으세요).
  · diligence 는 통계(빠진 날짜·연속 기록·늦게 몰아 저장·작성 충실도·Snowball 기록·연간 목표)를 그대로 반영합니다. 최근 기록이 비었거나 공백이 길면 낮추고, 최근 다시 꾸준해졌다면 그 회복도 반영합니다(날마다는 그날 report 의 작성 충실도·Snowball 기록을 함께 보세요). 쉬었을 수도 있는 날을 단정적으로 비난하지 마세요.
-2단계 — Investor Status 각 항목의 '이름의 뜻'에 맞는 지수들을 골라 종합해, 날마다 5점 단위(0·5·…·100) 점수를 매깁니다(그날의 지수들로). 항목 이름은 사용자가 바꿀 수 있으니 뜻을 스스로 해석하세요. 모든 항목은 '높을수록 좋은 상태'입니다(예: '스트레스'는 스트레스가 적고 잘 다스릴수록 높은 점수).
+2단계 — Investor Status 각 항목의 '이름의 뜻'에 맞는 지수들을 골라 종합해, 평가할 날마다 5점 단위(0·5·…·100) 점수를 매깁니다(그날의 지수들로). 항목 이름은 사용자가 바꿀 수 있으니 뜻을 스스로 해석하세요. 모든 항목은 '높을수록 좋은 상태'입니다(예: '스트레스'는 스트레스가 적고 잘 다스릴수록 높은 점수).
    참고 예 — 집중력: learning·mind·diligence / 절제력: selfControl·health / 실행력: diligence·exercise / 지속력: diligence(연속 기록)·exercise / 포용력: tolerance·faith / 멘탈: mind / 체력: strength·exercise / 영양: health(식단·Inbody) / 수면: health(수면 근거가 없으면 유지) / 신앙: faith / 학습: learning / 운동: exercise·strength / 스트레스: mind·selfControl / 에너지·회복력: health·exercise·mind / 이모션: mind·tolerance / 판단력: mind·learning·diligence
    'auto' 로 표시된 항목은 앱이 자동 계산하므로 items 에 넣지 마세요.
-3단계 — 근거가 거의 없는 항목은 억지로 점수를 만들지 말고 basis 를 "kept" 로 하고 d0·d1·d2 를 모두 null 로 둡니다(앱이 prev 를 그대로 유지). 근거가 있을 때만 "evidence" 로, 근거가 있는 날만 점수를 적고 나머지 날은 null. prev 는 사용자가 예전에 직접 매겨 둔 기준선일 뿐 정답이 아니니, 근거가 뚜렷하면 크게 바꿔도 됩니다.
+3단계 — 근거가 거의 없는 항목은 억지로 점수를 만들지 말고 basis 를 "kept" 로 하고 평가할 날의 값을 모두 null 로 둡니다(앱이 이미 평가한 날의 점수를 쓰고, 그것도 없으면 prev 를 그대로 유지). 근거가 있을 때만 "evidence" 로, 근거가 있는 날만 점수를 적고 나머지 날은 null. prev 는 사용자가 예전에 직접 매겨 둔 기준선일 뿐 정답이 아니니, 근거가 뚜렷하면 크게 바꿔도 됩니다.
 
 [점수 기준] 90+ 매우 탁월 / 80~89 우수·안정 / 60~79 양호 / 40~59 보통·점검 필요 / 20~39 부족 / 20 미만 위험. 후하게 70~80 으로 몰지 말고 근거에 따라 범위 전체를 쓰세요.
 
-[말투·안전] 총평·칭찬·건의는 세 날을 따로 나누지 말고 한 덩어리로, 흐름을 보되 가중치가 큰 날을 더 중요하게 씁니다. 칭찬은 구체적으로, 지적은 부드럽게, 건의는 이번 주에 실천할 수 있는 것 1~2개로. 의학적 진단·처방은 하지 말고 기록에서 보이는 '경향'으로만 말하세요. 심리적 위기 신호(자해·절망 등)가 글에서 보이면 advice 에 믿을 만한 사람이나 전문가와 상담하길 권하는 말을 넣으세요.
+[말투·안전] 총평·칭찬·건의는 세 날을 따로 나누지 말고 한 덩어리로, 흐름을 보되 가중치가 큰 날을 더 중요하게 씁니다. 이미 평가한 날의 '그때의 평가 내용'과 같은 말을 되풀이하지 말고 달라진 점·이어지는 점을 중심으로 쓰세요. 칭찬은 구체적으로, 지적은 부드럽게, 건의는 이번 주에 실천할 수 있는 것 1~2개로. 의학적 진단·처방은 하지 말고 기록에서 보이는 '경향'으로만 말하세요. 심리적 위기 신호(자해·절망 등)가 글에서 보이면 advice 에 믿을 만한 사람이나 전문가와 상담하길 권하는 말을 넣으세요.
 
-[출력] 설명 없이 아래 JSON 하나만 출력합니다(코드블록 금지). d0·d1·d2 는 정수 또는 null 입니다. 글자 수 제한을 지키세요.
+[출력] 설명 없이 아래 JSON 하나만 출력합니다(코드블록 금지). d0·d1·d2 는 정수 또는 null 입니다(평가하지 않는 날은 null). 글자 수 제한을 지키세요.
 {"indices":{${IDX.map(d=>'"'+d.k+'":{"d0":0,"d1":0,"d2":0,"why":"25자 안팎"}').join(',')}},
  "items":[{"key":"입력의 key","d0":0,"d1":0,"d2":0,"basis":"evidence 또는 kept","note":"40자 이내 근거"}],
  "overall":"한 줄 총평 40자 이내",
  "praise":"잘한 점·격려 50자 이내",
  "advice":"건의·권고 70자 이내"}`;
 
+function cacheBlock(x,g){   /* 이미 평가한 날 한 칸 — 글 대신 그때의 점수·평가 내용 요약만 보냄 */
+  const c=x.cache, sc=c.sc, ev=c.ev||{};
+  return '['+x.lab+' '+x.n+' '+mdw(x.date)+' report — 이미 평가함(이번엔 재평가하지 않음)'+(ev.at?' · '+whenOf(ev.at)+' 평가':'')+(ev.ai?' · '+ev.ai:'')+']\n'
+    +'지수 점수(0~100, —=근거 없음): '+IDX.map(d=>d.s+' '+(sc.idx[d.k]!=null?sc.idx[d.k]:'—')).join(' · ')+'\n'
+    +'항목 점수: '+g.items.filter(i=>!i.auto).map(i=>i.label+' '+(sc.it[i.key]!=null?sc.it[i.key]:'—')).join(' · ')
+    +(c.ctx?'\n그때의 평가 내용: '+c.ctx:'');
+}
 function buildUser(g){
-  const L=[], D=g.days||[], P=wPct(g.wts||getW());
+  const L=[], D=g.days||[], P=wPct(g.wts||getW()), E=D.filter(x=>x.has&&!x.bl&&!x.cache), C=D.filter(x=>x.cache);
   L.push('[기준일] '+D.map((x,i)=>x.n+' '+x.lab+' '+mdw(x.date)+' ('+x.date+')'+(x.k==='d0'?' = 지금 화면의 report':(x.has?' = report 있음':' = report 없음'))+' — 가중치 '+P[i]+'%').join('\n  ')+'\n  (날마다 따로 평가하면 앱이 이 가중치로 평균합니다)');
+  L.push('\n[이번 호출의 평가 범위] '+(E.length?'평가할 날: '+E.map(x=>x.lab).join('·')+' — d 값은 이 날만 적습니다.':'평가할 날이 없습니다 — 점수는 적지 말고 overall·praise·advice 만 쓰세요(indices 는 빈 객체, items 는 빈 배열).')
+    +(C.length?' 이미 평가한 날('+C.map(x=>x.lab).join('·')+')은 아래 요약의 점수를 앱이 그대로 쓰므로 d 값을 적지 말고(null) 맥락(추세·연속성)으로만 참고하세요.':'')
+    +(g.imgSkip&&E.length?' Inbody 이미지는 기존 평가 때와 같아 첨부하지 않았습니다 — strength·health 는 이미 평가한 날의 점수를 이어받아 같은 값으로 두고, 글에 새 근거가 있을 때만 조정하세요.':''));
   L.push('\n[Investor Status 항목] key | 이름 | 좌/우 | prev 점수 | 비고');
   g.items.forEach(it=>L.push(it.key+' | '+it.label+' | '+(it.side==='L'?'좌(Charlie\'s Status)':'우(Charlie\'s Battery)')+' | '+it.prev+' | '+(it.auto?'auto — 앱이 왼쪽 항목 평균으로 자동 계산, 점수 매기지 않음':'')));
   L.push('\n[성실도 통계 — 앱이 Archive 에서 계산한 사실]\n'+g.facts.lines.map(x=>'· '+x).join('\n'));
   L.push('\n[최근 기록표 — 오래된 것부터]\n'+g.facts.table.join('\n'));
   if(g.ex.length) L.push('\n[이전 기록 발췌 — 분위기 참고(최근 3일보다 앞선 날)]\n'+g.ex.join('\n'));
-  D.forEach(x=>L.push('\n['+x.lab+' '+x.n+' '+mdw(x.date)+' report 의 성장 Routine'+(x.k==='d0'?' — 지금 화면, 쓰는 중일 수 있음':'')+']\n'+(x.has?x.text:'(report 없음 — 그날은 기록을 저장하지 않았어요 → 이 날의 모든 지수·항목은 null)')));
+  D.forEach(x=>{
+    if(x.cache){ L.push('\n'+cacheBlock(x,g)); return; }
+    const head='\n['+x.lab+' '+x.n+' '+mdw(x.date)+' report 의 성장 Routine'+(x.k==='d0'?' — 지금 화면, 쓰는 중일 수 있음':'')+']\n';
+    L.push(head+(!x.has?'(report 없음 — 그날은 기록을 저장하지 않았어요 → 이 날의 모든 지수·항목은 null)':x.bl?'(기록이 비어 있음 — 평가하지 않아요 → 이 날의 모든 지수·항목은 null)':x.text));
+  });
   if(g.imgMeta.length) L.push('\n[첨부 이미지 — Inbody] '+g.imgMeta.map((m,i)=>(i+1)+'번째 이미지: '+m).join(' / '));
   else L.push('\n[첨부 이미지] 없음'+(g.imgNote?' — '+g.imgNote:''));
-  L.push('\n위 기록을 근거로 날마다(d0·d1·d2) 따로 평가해 JSON 으로만 답하세요.');
+  L.push('\n위 기록을 근거로 '+(E.length?'평가할 날('+E.map(x=>'d'+x.lab.slice(2)).join('·')+')만 따로 평가해':'총평만 써서')+' JSON 으로만 답하세요.');
   return L.join('\n');
 }
 
@@ -70631,31 +70718,45 @@ async function gather(o,onStep){
   const items=_isItems.map(it=>({key:it.key,label:normLabel(it.label)||it.label,side:it.side,prev:it.score,auto:false}));
   if(!items.length) throw userErr('점수를 매길 항목이 없어요','Investor Status 에 항목이 하나도 없어요.');
   const fr=items.find(x=>x.side==='R'); if(fr) fr.auto=true;
-  const T=tmplLens(), wts=getW();
+  const T=tmplLens(), wts=getW(), force=!!o.force;
   /* v249: 평가 대상 = 당일(D-0·지금 화면) + 전일(D-1) + 전전(D-2) — 날짜는 달력 기준이고 저장하지 않은 날은 '없음'(o.cur 로 시험용 화면 데이터를 줄 수 있음) */
   let cur=o.cur; if(cur===undefined){ try{ cur=(typeof collectData==='function')?collectData():null; }catch(_){ cur=null; } }
   const byDate=new Map(); arcs.forEach(r=>{ if(r&&r.date&&r.data&&!byDate.has(r.date)) byDate.set(r.date,r); });
   const hasSnow=d=>((d&&d.snowball&&d.snowball.statuses)||[]).some(s=>s==='OK');
   const days=DAYW.map(d=>{
     const date=addDays(curDate,-d.back), rec=byDate.get(date), data=d.back===0?cur:(rec&&rec.data);
-    const has=!!data&&typeof data==='object', fill=has?fillScore(written(data,T)):0;
-    return {k:d.k,lab:d.lab,n:d.n,date,has,data:has?data:null,fill,snow:has&&hasSnow(data),text:has?grText(data,T):''};
+    const has=!!data&&typeof data==='object', fill=has?fillScore(written(data,T)):0, snow=has&&hasSnow(data);
+    return {k:d.k,lab:d.lab,n:d.n,date,has,data:has?data:null,fill,snow,bl:has&&fill===0&&!snow,text:has?grText(data,T):''};   /* bl = 기록이 비어 있는 날(평가 제외) */
   });
-  if(!days.some(x=>x.has&&(x.fill>0||x.snow))) throw userErr('평가할 기록이 없어요','당일·전일·전전 report 모두 성장 Routine 이 비어 있거나 저장돼 있지 않아요 — 기록을 쓰거나, 이전 report 를 💾 Save 한 뒤 다시 눌러 주세요.');
-  if(onStep) onStep(1,'3일치 report 를 모았어요 — '+days.map(x=>x.lab+(x.has?' ✓':' 없음')).join(' · '));
+  if(!days.some(x=>x.has&&!x.bl)) throw userErr('평가할 기록이 없어요','당일·전일·전전 report 모두 성장 Routine 이 비어 있거나 저장돼 있지 않아요 — 기록을 쓰거나, 이전 report 를 💾 Save 한 뒤 다시 눌러 주세요.');
+  /* v250: 날별 평가 재사용 — 그날 글 지문(fp)·항목 구성(isig)·평가 형식(PV)이 같은 기존 평가가 있으면 그 점수·평가 내용을 쓰고 AI 에는 보내지 않음(force 면 전부 새로) */
+  const isig=isigOf(items);
+  days.forEach(x=>{ x.fp=(x.has&&!x.bl)?fpOf(x.text):''; x.cache=null; });
+  if(!force){ const cands=candidatesOf(arcs,curDate); days.forEach(x=>{ if(x.fp) x.cache=findCache(x,cands,isig); }); }
+  const evalDays=days.filter(x=>x.has&&!x.bl&&!x.cache), cachedDays=days.filter(x=>x.cache);
+  const L0=BTMIsAI._last, dsig=ds=>ds.filter(d=>d.has&&!d.bl&&d.fp).map(d=>d.date+':'+d.fp).join('|');
+  const reuse=!force&&!evalDays.length&&!!L0&&!!L0.res&&L0.res.pv===PV&&L0.res.isig===isig&&hasBy(L0.res)&&dsig(days)===dsig(L0.res.days);   /* 바뀐 기록이 전혀 없음 → AI 를 안 부름 */
+  if(onStep) onStep(1,'3일치 report 를 모았어요 — '+days.map(x=>x.lab+(!x.has?' 없음':x.bl?' 비어 있음':x.cache?' 기존 평가 재사용':' 새로 평가')).join(' · '));
   const facts=buildFacts(arcs,past,curDate,T);
-  facts.lines.unshift('평가 대상 3일(가중치 '+wText(wts)+'): '+days.map(x=>x.lab+' '+mdw(x.date)+(x.has?' 작성 충실도 '+x.fill+(x.k==='d0'?'(지금 화면·쓰는 중일 수 있음)':''):' report 없음')).join(' · '));
-  const ex=excerpts(past.filter(r=>r.date<addDays(curDate,-2)),T,0);
+  facts.lines.unshift('평가 대상 3일(가중치 '+wText(wts)+'): '+days.map(x=>x.lab+' '+mdw(x.date)+(!x.has?' report 없음':x.bl?' 기록 비어 있음(평가 제외)':' 작성 충실도 '+x.fill+(x.k==='d0'?'(지금 화면·쓰는 중일 수 있음)':'')+(x.cache?' · 기존 평가 재사용':' · 이번에 평가'))).join(' · '));
+  const exAll=excerpts(past.filter(r=>r.date<addDays(curDate,-2)),T,0);
+  const ex=cachedDays.length?[]:exAll;   /* 기존 평가가 있으면 그 평가 내용이 맥락이라 '이전 기록 발췌'는 뺌(토큰 절약) */
   const curHtml=(o.curDib!==undefined)?o.curDib:((typeof gv==='function')?gv('dibContent'):'');
   const found=collectInbody(past,curDate,curHtml);
+  const imgFp=found.length?fpOf(found.map(f=>f.src.length+':'+f.src.slice(-120)).join('|')):'';
+  const refImg=cachedDays.map(x=>x.cache).sort((a,b)=>((b.ev&&b.ev.at)||0)-((a.ev&&a.ev.at)||0))[0];
+  const imgSkip=!force&&found.length>0&&(!evalDays.length||(!!refImg&&!!imgFp&&imgFp===refImg.imgFp));   /* Inbody 이미지가 기존 평가 때와 같거나 평가할 날이 없으면 다시 보내지 않음 */
   const imgs=[], imgMeta=[]; let imgNote='';
-  for(const f of found){
+  if(imgSkip) imgNote=evalDays.length?'Inbody 이미지는 기존 평가 때와 같아 이번엔 보내지 않았어요(토큰 절약)':'평가할 날이 없어 Inbody 이미지는 보내지 않았어요';
+  else for(const f of found){
     const b=await toBlock(f.src);
     if(b){ imgs.push(b); imgMeta.push((imgs.length===1?'가장 최근 Inbody':'그 이전 측정 Inbody')+' — '+(f.oldest===curDate?'현재 화면 report('+md(curDate)+')에 새로 올린 이미지':md(f.oldest)+(f.newest!==f.oldest?'~'+md(f.newest):'')+' report 에 실린 이미지')); }
     else imgNote='일부 Inbody 이미지는 형식·크기 문제로 제외했어요';
   }
-  const g={P,curDate,days,wts,items,facts,ex,imgs,imgMeta,imgNote,T};
+  const g={P,curDate,days,wts,items,facts,ex,imgs,imgMeta,imgNote,imgSkip,imgFp,reuse,isig,T};
   g.user=buildUser(g);
+  const cachedRaw=cachedDays.reduce((s,x)=>s+x.text.length,0), cachedSum=cachedDays.reduce((s,x)=>s+cacheBlock(x,g).length,0);
+  g.chars={sent:g.user.length,saved:Math.max(0,cachedRaw-cachedSum+(cachedDays.length?exAll.join('\n').length:0)),imgSkip:imgSkip?found.length:0};   /* 전송한 글 글자 수·재사용으로 줄인 글자 수(3일 모두 보냈다면 보냈을 양과의 차) */
   return g;
 }
 
@@ -70670,18 +70771,23 @@ function parseAi(raw,items,days,wts){
   const cut=(s,n)=>{ s=String(s==null?'':s).replace(/\s+/g,' ').trim(); return s.length>n?s.slice(0,n-1)+'…':s; };
   const num=v=>{ if(v==null||v==='') return null; v=Math.round(+v); return isFinite(v)?clamp(v,0,100):null; };   /* null·빈 값 = 근거 없음(0 점이 아님) */
   wts=normW(wts)||getW();
-  /* 날별 점수 읽기: d0·d1·d2 (report 가 없는 날은 AI 가 적었어도 무시 — null). 옛 형식(score 하나)이면 당일 값으로. days 를 안 주면(옛 호출) 당일 한 장짜리 */
-  const has=k=>days?!!(days.find(d=>d.k===k)||{}).has:k==='d0';
-  const readBy=x=>{
-    const by={d0:null,d1:null,d2:null};
-    if(x&&typeof x==='object'){
-      DAYW.forEach(d=>{ if(has(d.k)) by[d.k]=num(x[d.k]); });
-      if(!anyBy(by)&&has('d0')) by.d0=num(x.score);
-    }else if(has('d0')) by.d0=num(x);
+  /* 날별 점수 읽기 — 이미 평가한 날(cache)은 기존 점수를 그대로, 이번에 평가한 날(report 있고 비어 있지 않음)만 AI 의 d0·d1·d2 를 읽음(그 밖의 날은 AI 가 적어도 무시).
+     옛 형식(score 하나·숫자만)이면 당일 값으로. days 를 안 주면(옛 호출) 당일 한 장짜리 */
+  const dayOf=k=>days?days.find(d=>d.k===k):null;
+  const live=k=>days?!!((dayOf(k)||{}).has&&!(dayOf(k)||{}).bl):k==='d0';
+  const cache=k=>(dayOf(k)||{}).cache||null;
+  const readBy=(x,get)=>{
+    const by={d0:null,d1:null,d2:null}; let ai=false;
+    DAYW.forEach(d=>{
+      const c=cache(d.k);
+      if(c){ const v=get(c.sc); by[d.k]=(v!=null&&isFinite(+v))?+v:null; }
+      else if(live(d.k)&&x&&typeof x==='object'){ by[d.k]=num(x[d.k]); if(by[d.k]!=null) ai=true; }
+    });
+    if(!ai&&live('d0')&&!cache('d0')){ const v=(x&&typeof x==='object')?num(x.score):num(x); if(v!=null) by.d0=v; }
     return by;
   };
   const indices={};
-  IDX.forEach(d=>{ const x=(o.indices&&o.indices[d.k])||{}; const by=readBy(x), av=wavg(by,wts); indices[d.k]={score:av?clamp(Math.round(av.v),0,100):50,by,why:cut(typeof x==='object'?x.why:'',60),miss:!av}; });
+  IDX.forEach(d=>{ const x=(o.indices&&o.indices[d.k])||{}; const by=readBy(x,sc=>sc.idx[d.k]), av=wavg(by,wts); indices[d.k]={score:av?clamp(Math.round(av.v),0,100):50,by,why:cut(typeof x==='object'?x.why:'',60),miss:!av}; });
   const arr=Array.isArray(o.items)?o.items:(o.items&&typeof o.items==='object'?Object.keys(o.items).map(k=>Object.assign({key:k},o.items[k])):[]);
   const byKey={}, byLab={};
   arr.forEach(x=>{ if(!x) return; if(x.key!=null) byKey[String(x.key)]=x; if(x.label!=null) byLab[normLabel(x.label)]=x; });
@@ -70689,13 +70795,15 @@ function parseAi(raw,items,days,wts){
   items.forEach(it=>{
     if(it.auto){ res.push({key:it.key,label:it.label,side:it.side,prev:it.prev,score:it.prev,basis:'auto',by:{d0:null,d1:null,d2:null},note:'왼쪽 항목 평균으로 자동 계산'}); return; }
     const x=byKey[it.key]||byLab[it.label];
-    const by=readBy(x), av=wavg(by,wts);
+    const by=readBy(x,sc=>sc.it[it.key]);
     let basis=(x&&String(x.basis).toLowerCase()==='kept')?'kept':'evidence', sc;
-    if(basis==='kept'||!av){ sc=it.prev; basis='kept'; } else sc=clamp(Math.round(av.v),0,100);   /* 근거 부족이면 이전 점수 그대로, 평가했으면 날별 점수의 가중평균(정수) */
+    if(basis==='kept') DAYW.forEach(d=>{ if(!cache(d.k)) by[d.k]=null; });   /* AI 가 '근거 부족'이라 하면 이번에 평가한 날의 값은 버림(이미 평가한 날의 점수는 유지) */
+    const av=wavg(by,wts);
+    if(av){ sc=clamp(Math.round(av.v),0,100); basis='evidence'; } else { sc=it.prev; basis='kept'; }   /* 평균낼 날이 없으면 이전 점수 그대로, 있으면 날별 점수의 가중평균(정수) */
     res.push({key:it.key,label:it.label,side:it.side,prev:it.prev,score:sc,basis,by,note:cut(x&&x.note,60)||(basis==='kept'?'근거 부족 — 점수 유지':'')});
   });
   return {indices,items:res,overall:cut(o.overall,60)||'(총평 없음)',praise:cut(o.praise,80),advice:cut(o.advice,110),
-          days:(days||[]).map(x=>({k:x.k,lab:x.lab,n:x.n,date:x.date,has:!!x.has,fill:x.fill||0})),wts};
+          days:(days||[]).map(x=>({k:x.k,lab:x.lab,n:x.n,date:x.date,has:!!x.has,bl:x.bl?1:0,fill:x.fill||0,fp:x.fp||'',src:x.cache?'cache':((x.has&&!x.bl)?'new':''),ev:x.cache?x.cache.ev:undefined,ctx:x.cache?(x.cache.ctx||''):''})),wts};
 }
 
 /* ── 반영 ── */
@@ -70804,14 +70912,14 @@ function close(){ const m=$('isAiModal'); if(m) m.classList.remove('on'); }
 const isOpen=()=>{ const m=$('isAiModal'); return !!(m&&m.classList.contains('on')); };
 function foot(btns){
   const f=$('isAiFoot'); if(!f) return; f.innerHTML='';
-  btns.forEach(b=>{ const x=document.createElement('button'); x.type='button'; x.className='mobile-keep'+(b.pri?' pri':''); x.textContent=b.t; if(b.dis) x.disabled=true; x.addEventListener('click',b.fn); f.appendChild(x); });
+  btns.forEach(b=>{ const x=document.createElement('button'); x.type='button'; x.className='mobile-keep'+(b.pri?' pri':''); x.textContent=b.t; if(b.title) x.title=b.title; if(b.dis) x.disabled=true; x.addEventListener('click',b.fn); f.appendChild(x); });
 }
-const STEPS=['3일치 report·기록 모으기','성실도 계산·이미지 준비','AI 평가(날마다)','가중평균·점수·메모 반영'];
+const STEPS=['3일치 report·기록 모으기(기존 평가 찾기)','성실도 계산·이미지 준비','AI 평가(새로 평가할 날만)','가중평균·점수·메모 반영'];
 function progress(i,msg){
   state={mode:'run',i,msg};
   const b=$('isAiBody'); if(!b) return;
   b.innerHTML='<ol class="isai-st">'+STEPS.map((s,k)=>'<li class="'+(k<i?'ok':k===i?'on':'')+'">'+(k<i?'✓':k===i?'<i class="isai-sp"></i>':'○')+' '+esc(s)+(k===i&&msg?' <small>— '+esc(msg)+'</small>':'')+'</li>').join('')+'</ol>'
-    +'<div class="isai-hint">당일·전일·전전 3일치 report 의 성장 Routine 글과 Inbody 이미지가 <b>선택한 AI 공급자</b>로 전송됩니다. 글이 많거나 AI 가 깊이 생각하면 2~3분 걸릴 수 있어요. 끝나면 날마다의 점수를 [📋 평가 상세]에서 정한 가중치로 평균해 점수와 Investor Status 메모가 자동으로 채워지고, [↩ 되돌리기]로 원래대로 돌릴 수 있어요.</div>';
+    +'<div class="isai-hint">이미 평가한 날(바뀐 기록이 없는 날)은 기존 점수·평가 내용을 재사용하고, <b>선택한 AI 공급자</b>에는 평가 기록이 없거나 글이 바뀐 날의 성장 Routine 글(과 달라진 Inbody 이미지)만 전송됩니다. 글이 많거나 AI 가 깊이 생각하면 2~3분 걸릴 수 있어요. 끝나면 날마다의 점수를 [📋 평가 상세]에서 정한 가중치로 평균해 점수와 Investor Status 메모가 자동으로 채워지고, [↩ 되돌리기]로 원래대로 돌릴 수 있어요.</div>';
   foot([{t:'중단',fn:()=>{ if(ctrl) ctrl.abort(); }}]);
 }
 function errView(e){
@@ -70828,12 +70936,18 @@ function wtNote(ds,L){
   const miss=(ds||[]).filter(x=>!x.has).map(x=>x.lab);
   return '새 가중치는 바로 저장돼 다음 [🤖 업데이트]에도 쓰여요. [다시 계산]은 AI 를 다시 부르지 않고 이미 받은 날별 점수만 새 비율로 평균해요(비용 없음). report 가 없거나 근거가 없는 날(—)은 평균에서 빼고 남은 날끼리 가중치를 다시 나눠요'+(miss.length?' — 이번엔 '+miss.join('·')+' report 가 없어요':'')+'.';
 }
+function evSummary(ds){   /* v250 날짜별 평가 내용(이번에 평가한 날 + 재사용하는 기존 평가) — 접어서 보여 줌 */
+  if(!ds||!ds.some(x=>x.has&&!x.bl&&x.ctx)) return '';
+  return '<details class="isai-dd"><summary>날짜별 평가 내용 보기 <small>— 재사용하는 기존 평가도 여기서 볼 수 있어요</small></summary>'
+    +ds.filter(x=>x.has&&!x.bl).map(x=>'<div class="isai-dr"><b>'+esc(x.lab)+' '+esc(mdw(x.date))+'</b> <small>'+(x.src==='cache'?'기존 평가 재사용':'이번에 평가')+(x.ev&&x.ev.at?' · '+esc(whenOf(x.ev.at))+' 평가':'')+(x.ev&&x.ev.ai?' · '+esc(x.ev.ai):'')+'</small><div>'+esc(x.ctx||'(평가 내용 없음)')+'</div></div>').join('')+'</details>';
+}
 function wtPanel(ds,L){
   const w=getW(), can=canEdit();
   const cell=(d,i)=>{
     const x=ds&&ds[i];
-    const sub=x?esc(mdw(x.date))+(x.k==='d0'?' · 지금 화면':'')+(x.has?'':' · <b class="no">report 없음</b>'):(i===0?'평가하는 report':(i===1?'하루 전':'이틀 전'));
-    return '<div class="isai-wc'+(x&&!x.has?' no':'')+'"><div class="t">'+d.lab+' '+d.n+' <em>'+sub+'</em></div><div class="i"><input type="number" id="isW'+i+'" min="0" max="100" step="1" value="'+w[i]+'"'+(can?'':' disabled')+' aria-label="'+d.lab+' '+d.n+' 가중치(%)"><span>%</span></div></div>';
+    const sub=!x?(i===0?'평가하는 report':(i===1?'하루 전':'이틀 전'))
+      :esc(mdw(x.date))+(x.k==='d0'?' · 지금 화면':'')+(!x.has?' · <b class="no">report 없음</b>':x.bl?' · <b class="no">비어 있음 · 평가 제외</b>':x.src==='cache'?' · <b class="re">기존 평가 재사용</b>':x.src==='new'?' · <b class="nw">이번에 평가</b>':'');
+    return '<div class="isai-wc'+(x&&(!x.has||x.bl)?' no':'')+'"><div class="t">'+d.lab+' '+d.n+' <em>'+sub+'</em></div><div class="i"><input type="number" id="isW'+i+'" min="0" max="100" step="1" value="'+w[i]+'"'+(can?'':' disabled')+' aria-label="'+d.lab+' '+d.n+' 가중치(%)"><span>%</span></div></div>';
   };
   return '<div class="isai-wt" id="isWt"><div class="isai-wt-h">⚖ 일별 가중치 <small>— 날마다 따로 평가한 점수를 이 비율로 평균해요</small></div>'
     +'<div class="isai-wt-r">'+DAYW.map(cell).join('')+'</div>'
@@ -70872,14 +70986,8 @@ function recalc(){
   if(!canEdit()){ say('보기 전용 화면에서는 다시 계산할 수 없어요 — 한국어 화면·잠금 해제 상태에서 눌러 주세요'); return false; }
   const els=[0,1,2].map(i=>$('isW'+i)), typed=els[0]?normW(els.map(e=>e.value===''?NaN:Math.round(+e.value))):null;
   const w=typed||getW(); setW(w);
-  const res=L.res;
-  IDX.forEach(d=>{ const x=res.indices[d.k], av=wavg(x.by,w); x.score=av?clamp(Math.round(av.v),0,100):50; x.miss=!av; });
-  res.items.forEach(x=>{
-    if(x.basis==='auto') return;
-    const av=anyBy(x.by)?wavg(x.by,w):null;
-    if(av){ x.score=clamp(Math.round(av.v),0,100); x.basis='evidence'; } else { x.score=x.prev; x.basis='kept'; }
-  });
-  res.wts=w; L.rcAt=Date.now(); L.sl=null;
+  const res=L.res; rescore(res,w);
+  L.rcAt=Date.now(); L.sl=null;
   let applied=false;
   if(!L.undone){
     const map={}; res.items.forEach(x=>{ if(x.basis!=='auto') map[x.key]=x.score; });
@@ -70909,14 +71017,18 @@ function render(){
     const dlt=x.score-x.prev, cls=dlt>0?'up':dlt<0?'dn':'eq';
     return '<tr><td class="l">'+esc(x.label)+'<span class="isai-tag">'+(x.side==='L'?'좌':'우')+'</span></td><td class="s">'+x.prev+' → <span style="color:'+colorOf(x.score)+'">'+x.score+'</span> <small class="'+cls+'">'+(x.basis==='auto'?'자동':dlt>0?'▲'+dlt:dlt<0?'▼'+(-dlt):'―')+'</small></td><td class="m">'+(x.basis==='kept'?'<span class="isai-tag">유지</span> ':'')+esc(x.note||'')+(ds&&x.by&&x.basis==='evidence'?'<span class="isai-by">'+esc(byText(x.by))+'</span>':'')+'</td></tr>';
   }).join('');
+  const tk=L.tk, tkTxt=tk?(' · 전송한 글 '+nf(tk.sent)+'자'+(tk.saved>0?' (기존 평가 재사용으로 약 '+nf(tk.saved)+'자 절약)':'')):'';
   b.innerHTML='<div class="isai-sum"><b>🤖 '+esc(res.overall)+'</b>'+(res.praise?'<br>👍 '+esc(res.praise):'')+(res.advice?'<br>💡 '+esc(res.advice):'')+'</div>'
-    +wtPanel(ds,L)
+    +wtPanel(ds,L)+evSummary(ds)
     +'<h4>'+(ds?'지수 — 3일 가중평균 ('+esc(wText(W))+')':'지수 ('+(g.P.date?'직전 report '+esc(mdw(g.P.date))+' 기준':'직전 report 기준')+')')+'</h4><div class="isai-idx">'+idxRows+'</div>'
     +'<h4>Investor Status 항목 점수 — 이전 → 새 점수</h4><table class="isai-tb">'+itemRows+'</table>'
     +'<h4>근거가 된 성실도 통계 (앱이 Archive 에서 계산)</h4><ul class="isai-fx">'+g.facts.lines.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
-    +'<div class="isai-meta">AI: '+esc(name)+' · Inbody 이미지 '+sent+'장 전송'+(note?' · '+esc(note):'')+(g.imgNote?' · '+esc(g.imgNote):'')+' · '+secs+'초'+(L.at?' · '+whenOf(L.at)+' 평가':'')+(L.rcAt?' · '+whenOf(L.rcAt)+' 가중치 '+esc(wText(W))+' 로 다시 계산':'')+' · '+(L.undone?'<b style="color:#dc2626">되돌린 상태</b>':'점수와 메모는 이미 반영됨')+(canEdit()?'':' · <span style="color:#64748b">보기 전용(되돌리기·다시 평가·다시 계산은 한국어 화면·잠금 해제 상태에서만)</span>')+'</div>';
+    +'<div class="isai-meta">AI: '+esc(name)+' · Inbody 이미지 '+sent+'장 전송'+(note?' · '+esc(note):'')+(g.imgNote?' · '+esc(g.imgNote):'')+tkTxt+' · '+secs+'초'+(L.at?' · '+whenOf(L.at)+' 평가':'')+(L.reuseAt?' · '+whenOf(L.reuseAt)+' 바뀐 기록이 없어 AI 를 부르지 않고 저장된 평가를 다시 반영':'')+(L.rcAt?' · '+whenOf(L.rcAt)+' 가중치 '+esc(wText(W))+' 로 다시 계산':'')+' · '+(L.undone?'<b style="color:#dc2626">되돌린 상태</b>':'점수와 메모는 이미 반영됨')+(canEdit()?'':' · <span style="color:#64748b">보기 전용(되돌리기·다시 평가·다시 계산은 한국어 화면·잠금 해제 상태에서만)</span>')+'</div>';
   const can=canEdit();
-  foot([{t:'↩ 되돌리기',dis:!!L.undone||!can||!L.snap,fn:()=>undo()},{t:'다시 평가',dis:!can,fn:()=>run()},{t:'닫기',pri:true,fn:close}]);
+  foot([{t:'↩ 되돌리기',dis:!!L.undone||!can||!L.snap,fn:()=>undo()},
+        {t:'다시 평가',title:'바뀐 날만 새로 평가해요(바뀐 기록이 없으면 AI 를 부르지 않아요)',dis:!can,fn:()=>run()},
+        {t:'3일 모두 새로 평가',title:'기존 평가를 쓰지 않고 3일 모두 다시 평가해요(토큰이 가장 많이 들어요)',dis:!can,fn:()=>run({force:true})},
+        {t:'닫기',pri:true,fn:close}]);
   wireWt();
 }
 function setBtn(on){ const b=$('isAiBtn'); if(!b) return; b.disabled=!!on; b.textContent=on?'⏳ 분석 중…':'🤖 업데이트'; }
@@ -70932,8 +71044,20 @@ async function run(opt){
   const myCtrl=ctrl, tm=setTimeout(()=>{ myCtrl.__timeout=true; try{ myCtrl.abort(); }catch(_){} },opt.timeoutMs||420000);
   try{
     progress(0,'');
-    const g=await gather(opt.gather,progress);
-    progress(2,'AI 가 읽는 중… 0초');
+    const g=await gather(Object.assign({},opt.gather||{},{force:!!opt.force}),progress);
+    if(g.reuse){   /* v250: 바뀐 기록이 없음 — AI 를 부르지 않고 저장된 날별 점수를 지금 가중치로 다시 평균해 Investor Status 에 다시 반영 */
+      progress(3,'');
+      const L0=BTMIsAI._last, res0=L0.res; rescore(res0,getW());
+      const snap0=await apply(res0,L0.g,L0.name);
+      Object.assign(L0,{snap:snap0,undone:false,reuseAt:Date.now(),sl:null});
+      refreshDetBtn(); try{ saveData(); }catch(_){}
+      if(isOpen()) render();
+      else say('♻ 바뀐 기록이 없어 AI 를 부르지 않고(토큰 0) 저장된 평가를 다시 반영했어요',[['상세 보기',()=>{ open(); render(); }],['되돌리기',()=>undo()]]);
+      return;
+    }
+    const evl=g.days.filter(x=>x.has&&!x.bl&&!x.cache).map(x=>x.lab), cl=g.days.filter(x=>x.cache).map(x=>x.lab);
+    stepMsg=(evl.length?evl.join('·')+' 평가':'총평 작성')+(cl.length?' — 기존 평가 재사용: '+cl.join('·'):'')+' 중…';
+    progress(2,stepMsg+' 0초');
     tick=setInterval(()=>{ if(state.mode==='run'&&state.i===2) progress(2,(stepMsg||'AI 가 읽고 평가하는 중…')+' '+Math.round((Date.now()-t0)/1000)+'초'); },1000);
     let out, res, g2=g;
     for(let attempt=1;;attempt++){   /* 응답 형식(JSON)이 어긋나면 한 번만 더 요청 */
@@ -70946,12 +71070,13 @@ async function run(opt){
       }
     }
     clearInterval(tick); tick=null;
+    finishRes(res,g,out);
     progress(3,'');
     const snap=await apply(res,g,out.name);
-    BTMIsAI._last={res,g,name:out.name,snap,at:Date.now(),secs:Math.round((Date.now()-t0)/1000),sent:out.sent,note:out.note,undone:false};
+    BTMIsAI._last={res,g,name:out.name,snap,at:Date.now(),secs:Math.round((Date.now()-t0)/1000),sent:out.sent,note:out.note,undone:false,tk:g.chars};
     refreshDetBtn(); try{ saveData(); }catch(_){}   /* v241: 결과를 이 report 에 함께 저장(snapshot) — 나중에 [📋 평가 상세]로 다시 볼 수 있게 */
     if(isOpen()) render();
-    else say('🤖 Investor Status 를 '+basisOf(res,g)+' 로 업데이트했어요',[['상세 보기',()=>{ open(); render(); }],['되돌리기',()=>undo()]]);
+    else say('🤖 Investor Status 를 '+basisOf(res,g)+' 로 업데이트했어요'+(g.chars&&g.chars.saved>0?' (기존 평가 재사용으로 글 약 '+nf(g.chars.saved)+'자 절약)':''),[['상세 보기',()=>{ open(); render(); }],['되돌리기',()=>undo()]]);
   }catch(e){
     if(e&&e.name==='AbortError') e=userErr(myCtrl.__timeout?'시간이 너무 오래 걸려 중단했어요':'중단했어요',myCtrl.__timeout?'AI 서버가 느리거나 응답이 길었어요. 다시 눌러 보세요.':'');
     else if(!(e&&e.user)){ console.error('[BTMIsAI]',e); e=userErr('평가에 실패했어요: '+((e&&e.message)||e),'관리 메뉴 > 🧩 AI 공급자 설정(키·공급자)을 확인한 뒤 다시 눌러 보세요.'); }
@@ -70984,14 +71109,15 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
    · 한국어 화면·잠금 해제 상태에서만 [↩ 되돌리기]·[다시 평가](번역 화면에서 되돌리면 한국어 메모가 번역 화면을 덮어쓸 수 있고, 잠금 화면은 수정 불가). 그 밖엔 보기 전용. */
 const canEdit=()=>!((typeof _btmLang!=='undefined'&&_btmLang!=='ko')||document.body.classList.contains('guest-mode')||document.querySelector('#report-root.published-mode'));
 function whenOf(ms){ const d=new Date(ms); if(isNaN(d)) return ''; return (d.getMonth()+1)+'/'+d.getDate()+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
-function slimOf(L){   /* 결과 창에 필요한 가벼운 사본(캐시: 되돌린 상태·다시 계산이 바뀌면 다시 만듦) — v249: 날별 점수(by)·날짜(days)·쓴 가중치(wts)·다시 계산한 시각(rc) 포함 */
+function slimOf(L){   /* 결과 창에 필요한 가벼운 사본(캐시: 되돌린 상태·다시 계산이 바뀌면 다시 만듦) — v249: 날별 점수(by)·날짜(days)·쓴 가중치(wts)·다시 계산한 시각(rc), v250: 날별 지문(fp)·평가 시각·평가 내용(ctx)·형식(pv)·항목 구성(isig)·이미지 지문(imgFp)·전송 글자 수(tk) */
   if(!L) return undefined;
   if(L.sl&&L.slU===!!L.undone) return L.sl;
   const r=L.res||{}, g=L.g||{}, sn=L.snap;
-  const sl={v:2,at:L.at||0,rc:L.rcAt||0,name:L.name||'',secs:L.secs||0,sent:L.sent||0,note:L.note||'',imgNote:g.imgNote||'',undone:!!L.undone,
+  const sl={v:2,at:L.at||0,rc:L.rcAt||0,ru:L.reuseAt||0,name:L.name||'',secs:L.secs||0,sent:L.sent||0,note:L.note||'',imgNote:g.imgNote||'',undone:!!L.undone,tk:L.tk||undefined,
     pdate:(g.P&&g.P.date)||'',lines:(g.facts&&Array.isArray(g.facts.lines))?g.facts.lines.slice():[],
     res:{overall:r.overall||'',praise:r.praise||'',advice:r.advice||'',indices:r.indices||{},
-         days:Array.isArray(r.days)?r.days.map(x=>({k:x.k,lab:x.lab,n:x.n,date:x.date,has:!!x.has,fill:x.fill||0})):[],wts:normW(r.wts)||undefined,
+         days:Array.isArray(r.days)?r.days.map(x=>({k:x.k,lab:x.lab,n:x.n,date:x.date,has:!!x.has,bl:x.bl?1:0,fill:x.fill||0,fp:x.fp||'',src:x.src||'',ev:x.ev||undefined,ctx:x.ctx||''})):[],wts:normW(r.wts)||undefined,
+         pv:r.pv||0,isig:r.isig||'',imgFp:r.imgFp||'',
          items:(r.items||[]).map(x=>({key:x.key,label:x.label,side:x.side,score:x.score,prev:x.prev,basis:x.basis,note:x.note||'',by:x.by||undefined}))},
     snap:sn?{scores:sn.scores,noteHtml:sn.noteHtml,noteH:sn.noteH,secH:sn.secH,lsH:sn.lsH,grew:sn.grew}:null};
   L.sl=sl; L.slU=!!L.undone; return sl;
@@ -71000,10 +71126,14 @@ function inflate(sl){   /* 저장된 사본 → render()·undo() 가 쓰는 모�
   try{
     if(!sl||typeof sl!=='object'||!sl.res||typeof sl.res.indices!=='object'||!Array.isArray(sl.res.items)) return null;
     if(!IDX.every(d=>sl.res.indices[d.k]&&isFinite(+sl.res.indices[d.k].score))) return null;
+    const clean=x=>({k:x.k,lab:x.lab,n:x.n,date:x.date,has:!!x.has,bl:x.bl?1:0,fill:+x.fill||0,fp:(typeof x.fp==='string'&&FPRE.test(x.fp))?x.fp:'',src:(x.src==='new'||x.src==='cache')?x.src:'',
+      ev:(x.ev&&typeof x.ev==='object'&&isFinite(+x.ev.at))?{at:+x.ev.at,ai:String(x.ev.ai||'').slice(0,40)}:undefined,ctx:typeof x.ctx==='string'?x.ctx.slice(0,900):''});
     const ds=Array.isArray(sl.res.days)?DAYW.map(d=>sl.res.days.find(x=>x&&x.k===d.k&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date))):[];
-    const res=Object.assign({},sl.res,{days:(ds.length===DAYW.length&&ds.every(Boolean))?ds:[],wts:normW(sl.res.wts)||undefined});
+    const okd=ds.length===DAYW.length&&ds.every(Boolean);
+    const res=Object.assign({},sl.res,{days:okd?ds.map(clean):[],wts:normW(sl.res.wts)||undefined,pv:+sl.res.pv||0,isig:typeof sl.res.isig==='string'?sl.res.isig:'',imgFp:typeof sl.res.imgFp==='string'?sl.res.imgFp:''});
+    const tk=(sl.tk&&typeof sl.tk==='object')?{sent:+sl.tk.sent||0,saved:+sl.tk.saved||0,imgSkip:+sl.tk.imgSkip||0}:undefined;
     return {res,g:{P:{date:sl.pdate||''},facts:{lines:Array.isArray(sl.lines)?sl.lines:[]},imgNote:sl.imgNote||''},name:sl.name||'AI',snap:sl.snap&&Array.isArray(sl.snap.scores)?sl.snap:null,
-            at:sl.at||0,rcAt:sl.rc||0,secs:sl.secs||0,sent:sl.sent||0,note:sl.note||'',undone:!!sl.undone,restored:true};
+            at:sl.at||0,rcAt:sl.rc||0,reuseAt:sl.ru||0,tk,secs:sl.secs||0,sent:sl.sent||0,note:sl.note||'',undone:!!sl.undone,restored:true};
   }catch(_){ return null; }
 }
 function snapshot(){ try{ return slimOf(BTMIsAI._last); }catch(_){ return undefined; } }   /* collectData() 가 report 에 같이 저장 */
@@ -71026,7 +71156,7 @@ function showDetail(){   /* [📋 평가 상세] — 진행 중이면 진행 창
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refreshDetBtn); else refreshDetBtn();
 
 window.BTMIsAI={run,undo,close,show:()=>showDetail(),showDetail,snapshot,restore,IDX,_last:null,
-  _t:{slimOf,inflate,refreshDetBtn,canEdit,whenOf,h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,stripLegacy,wavg,normW,getW,setW,wPct,wText,byText,basisOf,hasBy,recalc,renderEmpty,markMemo,DAYW,
+  _t:{slimOf,inflate,refreshDetBtn,canEdit,whenOf,h2t,tmplLens,written,fillScore,buildFacts,grText,excerpts,collectInbody,imgsOf,toBlock,reencode,gather,buildUser,parseAi,apply,memoBlock,writeMemo,setScores,leftAvg,SYS,callAi,stripLegacy,fpOf,isigOf,candidatesOf,findCache,rescore,ctxOf,finishRes,cacheBlock,evSummary,PV,wavg,normW,getW,setW,wPct,wText,byText,basisOf,hasBy,recalc,renderEmpty,markMemo,DAYW,
       isBusy:()=>busy}};
 })();
 /* ═══ BTMISAI-JS-END ═══ */
