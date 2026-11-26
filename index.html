@@ -5412,8 +5412,8 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
 #plnModal .pln-mi:hover{background:#e2e8f0;color:#475569}
 #plnModal .pln-mi.on{background:#0f766e;border-color:#0f766e;color:#fff}
 #plnModal .pln-mi svg{width:12px;height:12px;display:block;pointer-events:none}
-/* v251: 월간 달력 — 완료한 일정 = 비활성(회색) 글자 + 그보다 더 옅은 회색 배경(취소선 없음 · 색을 지정한 일정의 인라인 색도 덮음) · 취소한 일정 = 같은 회색에 취소선 */
-#plnModal .pln-ch.dn{background:#e9edf2!important;color:#94a3b8!important;border-left-color:#cfd6df!important;opacity:1;text-decoration:none}
+/* v253: 월간 달력 — 완료·취소한 일정 = 배경 '흑연'(#616161 — 일정 창 색상 줄의 흑연과 같은 값, 구글 캘린더에서 보이는 색) + 글자 흰색(색을 지정한 일정·시간 일정의 인라인 색도 덮음). 완료는 취소선 없음 · 취소는 취소선을 더함(아래). v251 은 옅은 회색 배경(#e9edf2)+회색 글자였음 */
+#plnModal .pln-ch.dn{background:#616161!important;color:#fff!important;border-left-color:#616161!important;opacity:1;text-decoration:none}
 #plnModal .pln-ch.dn.cx{text-decoration:line-through}
 #plnModal .pln-em{padding:26px 14px;text-align:center;font-size:12px;line-height:1.7;color:#94a3b8}
 #plnModal .pln-cal{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
@@ -11493,6 +11493,9 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v253 요청: "'완료' 또는 '취소' 시 배경색을 [일정 창 색상 줄의 흑연 — 선택한 색]으로 해주고, 글자색은 흰색으로"
+     · 월간 달력의 완료·취소 칩·막대(.pln-ch.dn)는 배경 #616161(흑연)+글자 흰색(색 지정·시간 일정의 인라인 색도 !important 로 덮음 — 이미 완료돼 있던 옛 일정도 앱에서는 똑같이 보임). 취소는 같은 모양에 취소선. v251 의 옅은 회색 배경(#e9edf2)은 이걸로 바뀜 — 구글 캘린더에서 보이는 흑연(v252)과 같은 색으로 맞춤.
+     · 목록 줄(왼쪽 3목록·월간 목록)은 흰 바탕이라 글자를 흰색으로 할 수 없어 그대로(회색 글자, 줄 왼쪽 막대·점 색만 흑연).
    v252 요청: "'완료' 이거나 '취소' 일때 배경색을 [일정 창의 ‘색상’] 기능을 적용해서 연한 회색으로 — 그래야 구글 캘린더에도 회색 색상이 적용되니까" + "'취소' 시에 날짜와 제목 사이에 보이는 [취소] 를 실제 제목으로도 적용 — 그래야 구글 캘린더에서도 제목 앞에 [취소]"
      · 완료(x)·취소(cx)한 일정은 색(c)을 '흑연'(DONE_C='8' — 구글 일정 색 11가지 중 유일한 회색)으로 자동 변경 → 병합 단위 C 가 달라져 구글 캘린더 colorId 로 올라감. 원래 색은 it.cpre 에 보관(앱 전용, ''=기본 포함 — pr·cx 처럼 GRP·snap 밖) → 완료·취소를 풀면 되돌림(풀 때 색이 흑연이 아니면 그 사이 직접 바꾼 색이므로 그대로 두고 cpre 만 버림, 이미 흑연이면 건드리지 않음).
        구글 일정 색은 11가지뿐이라 ‘연한’ 회색은 없음(흑연은 구글 앱에서 진한 회색) — 이 앱 달력의 옅은 회색 배경(.pln-ch.dn, CSS)은 그대로 둠.
