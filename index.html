@@ -70874,6 +70874,10 @@ window.BTMIsAI={run,undo,close,show:()=>showDetail(),showDetail,snapshot,restore
    지정하면 제목 줄은 그대로 두고 본문(.bm-w)이 남는 칸을 차지하며, 넘치면 본문 안에서 스크롤(스크롤바는 숨김). 접힘·본문 없음(.bm-fold)이면 지정 높이를 무시하고 손잡이도 숨김 */
 #bmSection .bm-w{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
 #bmSection .bm-w::-webkit-scrollbar{display:none}
+/* v248 — 박스를 세로로 키웠을 때 구절(.bm-tx, 아래 안내 .bm-nx 가 있으면 함께 한 덩어리)을 남는 칸의 세로 가운데에. 주제 줄(.bm-tp)은 제목 줄 바로 밑에 그대로.
+   위 여백(.bm-tx)·아래 여백(맨 아래 자식)이 둘 다 auto 라 남는 칸을 반반 — 남는 칸이 없으면(자동 높이·내용이 넘쳐 스크롤) 0 이라 예전과 같고, justify-content:center 와 달리 넘칠 때 윗줄이 잘리지도 않음 */
+#bmSection .bm-w:not(:empty){display:flex;flex-direction:column}
+#bmSection .bm-w>:last-child{margin-bottom:auto}
 #bmSection.bm-fold{height:auto!important}
 #bmSection.bm-fold #bmGrip{display:none}
 body.guest-mode #bmGrip,#report-root.published-mode #bmGrip{display:none!important}
@@ -70895,7 +70899,7 @@ body.guest-mode #bmGrip,#report-root.published-mode #bmGrip{display:none!importa
 .bm-bt:disabled:hover{background:#fff}
 .bm-bt.bm-due{background:#fff7ed;border-color:#fdba74;color:#c2410c}
 .bm-tp{margin-top:3px;font-size:10.5px;line-height:1.5;color:#64748b;font-weight:400}
-.bm-tx{margin-top:2px;font-size:13px;line-height:inherit;color:#0f172a;font-weight:400;word-break:keep-all;overflow-wrap:break-word}
+.bm-tx{margin-top:auto;padding-top:2px;font-size:13px;line-height:inherit;color:#0f172a;font-weight:400;word-break:keep-all;overflow-wrap:break-word}
 .bm-tx.hid{color:#475569;cursor:pointer}
 .bm-hide{color:#94a3b8;font-size:11.5px}
 .bm-nx{margin-top:3px;font-size:11px;line-height:1.5;color:#166534;font-weight:400}
@@ -74030,6 +74034,7 @@ html.bm-lock{overflow:hidden}
      _BOX_HEIGHT_IDS 'bmSection' 으로 저장·복원) · 알약 ⇕ = BTMBoxTools.fit('bmWidget') 이 그 지정 높이를 풂 · 본문이 비면(접힘·배정 없음) render() 가 #bmSection.bm-fold 를 달아 지정 높이 무시.
    · v247(2026-11-26): 제목 줄 ⏮(이전 순서의 구절로 돌아가기) — ⏭ 의 반대. prevKey(k) = 지금 순서(고른 주제에 k 가 있으면 그 목록, 아니면 과정)에서 k 바로 앞 구절, prevToday() = 오늘의 구절을 그 구절로
      (미뤘던 구절이면 G.skip 해제, 이미 외운 구절이면 N+1회차 도전). 맨 처음 구절이면 단추 비활성. ⏭(skipToday)도 이미 외운 구절에서 동작하도록 고침(미루기 표시 없이 nextKey 로) — ⏮ 로 돌아온 뒤 ⏭ 로 되돌아갈 수 있게.
+   · v248(2026-11-26): 박스를 세로로 키우면(#bmGrip) 구절 본문(.bm-tx + 아래 안내 .bm-nx)이 남는 칸의 세로 가운데 — #bmWidget 이 세로 flex, .bm-tx 위 여백·맨 아래 자식 아래 여백이 auto. 주제 줄(.bm-tp)은 제목 줄 밑에 고정. 자동 높이일 땐 모양 그대로(.bm-tx 의 위 2px 은 padding 으로).
 ════════════════════════════════════════════════════════════════════════════ */
 (function(){
 'use strict';
