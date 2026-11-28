@@ -6642,7 +6642,7 @@ body.pln-resizing,body.pln-resizing *{user-select:none!important}
         </div>
         <!-- Chart Note 팝업 — .ma-right-theme(position:relative) 기준 절대좌표로 왼쪽 칼럼(.ma-left-col) 자리에 겹쳐 보이게 함.
              두 칼럼이 1fr 1fr(동일 폭)이라 width:100%+right:100%+gap 만으로 정확히 왼쪽 칼럼 자리에 위치함 -->
-        <div id="tsChartNotePopup" style="display:none;position:absolute;top:0;right:calc(100% + 8px);width:100%;height:100%;background:#fff;border:1px solid #93c5fd;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.22);z-index:500;flex-direction:column;overflow:hidden">
+        <div id="tsChartNotePopup" data-btm-min style="display:none;position:absolute;top:0;right:calc(100% + 8px);width:100%;height:100%;background:#fff;border:1px solid #93c5fd;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.22);z-index:500;flex-direction:column;overflow:hidden">
           <div style="background:#2563eb;color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px">
             <span style="font-weight:700;font-size:14px;white-space:nowrap">📝 Chart Note</span>
             <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
@@ -13401,7 +13401,7 @@ window.addEventListener('storage',e=>{
     else if(e.key===GKEY){ const c=JSON.parse(e.newValue||'null'); if(c&&typeof c==='object'){ gcfg=parseG(c); paintChip(); paintSet(); render(); } }
   }catch(_){}
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const w=$('plnDlg'); if(wkIsOpen()) wkClose(); else if(w&&w.classList.contains('on')) closeDlg(); else close(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&opened){ const M=(window.BTMMin&&BTMMin.isMin)?BTMMin.isMin:null, w=$('plnDlg'); if(M&&M('plnModal')) return;   /* v260: 최소화한 창은 Esc 로 닫지 않음 */ if(wkIsOpen()&&!(M&&M('plnWk'))) wkClose(); else if(w&&w.classList.contains('on')&&!(M&&M('plnDlg'))) closeDlg(); else close(); } });
 
 window.BTMPlanner={open,close,sync:o=>sync(o||{}),syncClick,chipClick,connect,disconnect,saveCid,applyCal,newCal,copyCal,toggleSet,toggleClr,pickColor,pickPri,pickPrColor,setPrColor,panel,panelClick,splitDown,splitKey,splitReset,wkOpen,wkClose,wkSave,wkCancel,wkClick,wkNameEv,
   month,today,setView,monthPick,onMonthPick,openNew,openDlg,closeDlg,edit:id=>openDlg({id}),cancelEdit:closeDlg,submit,dlgDelete,dlgDone,dlgCancel,del,addTodo,enter,assign,pickDate,onPick,calClick,todoClick,listClick,toggleMemo,timeInput,showDay,goDay,sortToggle,toggleDone,toggleCancel,tkToggle,unassign,onLogout,
@@ -15986,7 +15986,7 @@ async function openFpSearch(){
   try{ _fpBooksCache=await _fpCollectBooks(); }catch(e){ _fpBooksCache=[]; }
   _fpRenderBooks();
 }
-function _fpSearchKey(e){ if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); closeFpSearch(); } }
+function _fpSearchKey(e){ if(e.key==='Escape'&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin('fpSearchModal'))){ e.preventDefault(); e.stopPropagation(); closeFpSearch(); } }
 function closeFpSearch(){ const m=g('fpSearchModal'); if(m) m.style.display='none'; document.removeEventListener('keydown',_fpSearchKey,true); }
 /* 그 책의 마지막 진도율(Archive 기록 중 가장 최근, 값이 있는 것) */
 function _fpLastProgress(title){
@@ -22404,7 +22404,7 @@ function _refreshISMemoBadges(){
       return `<option value="${i}">${label}</option>`;
     }).join('');
     const modal=document.createElement('div');
-    modal.id='_memoStkModal';
+    modal.id='_memoStkModal'; modal.setAttribute('data-btm-min','📷 차트 메모 저장');   /* v260: 머리줄 없는 제목형 창 — 최소화 버튼 대상 */
     modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000001;display:flex;align-items:center;justify-content:center';
     modal.innerHTML=`<div style="background:#1e293b;border-radius:12px;padding:24px 24px 20px;width:340px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.6)">
       <div style="font-size:15px;font-weight:700;color:#f8fafc;margin-bottom:6px">📷 차트 메모 저장</div>
@@ -30074,7 +30074,7 @@ async function _doExportImage(){
 
 /* ─────────── INIT ─────────── */
 /* ESC로 새 리포트 모달 닫기, 배경 클릭으로도 닫기 */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeNewReportModal(); closeAddEcoModal(); } });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ const M=(window.BTMMin&&BTMMin.isMin)?BTMMin.isMin:null; if(!(M&&M('newReportModal'))) closeNewReportModal(); if(!(M&&M('addEcoModal'))) closeAddEcoModal(); } });   /* v260: 최소화한 창은 Esc 로 닫지 않음 */
 document.getElementById('newReportModal')?.addEventListener('click', e=>{
   if(e.target===document.getElementById('newReportModal')) closeNewReportModal();
 });
@@ -32187,7 +32187,7 @@ function _idxMemoScrollUpdate(){
   thumb.style.height=thH+'px';
   thumb.style.top=Math.round(scrollRatio*Math.max(0,tH-thH))+'px';
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&g('idxMemoModal')?.style.display==='flex')closeIdxMemo();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&g('idxMemoModal')?.style.display==='flex'&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin('idxMemoModal')))closeIdxMemo();});
 
 /* 섹션 제목 편집 시 plain-text paste 강제 */
 document.addEventListener('paste',function(e){
@@ -44610,7 +44610,7 @@ function dialog(title,body,buttons,opt){
   const w=document.createElement('div'); w.className='mm-dlg-wrap';
   w.innerHTML='<div class="mm-dlg" role="dialog" style="'+(opt.w?'width:min('+opt.w+'px,100%)':'')+'"><h4><b>'+esc(title)+'</b><span data-x title="닫기">✕</span></h4><div class="mm-db">'+body+'</div><div class="mm-df"></div></div>';
   const df=w.querySelector('.mm-df');
-  const kh=e=>{ if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); close(); } };
+  const kh=e=>{ if(e.key==='Escape'&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(w))){ e.stopPropagation(); e.preventDefault(); close(); } };
   const close=()=>{ w.remove(); document.removeEventListener('keydown',kh,true); if(stage) stage.focus({preventScroll:true}); };
   buttons.forEach(b=>{
     const bt=document.createElement('button'); bt.type='button'; bt.className='mm-btn mobile-keep'+(b.pri?' pri':'')+(b.dng?' dng':''); bt.textContent=b.t;
@@ -49658,11 +49658,11 @@ async function edRetime(){
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
   if(window.BTMVideo&&BTMVideo.isOpen&&BTMVideo.isOpen()) return;   /* 영상 스튜디오가 위에 열려 있으면 그쪽이 처리 */
-  if(_vsm&&_vsm.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); vsEdClose(); return; }   /* v199: 영상 스타일 설정 창이 맨 위 */
-  if(_hs&&_hs.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); if(_histView) renderHistList(); else closeHistory(); return; }
-  if(_mk&&_mk.classList.contains('open')&&PICK.on){ e.stopPropagation(); e.preventDefault(); pickCancel(); return; }   /* v193 — 반영할 내용을 고르는 중이면 Esc 는 그것만 취소 */
-  if(_mk&&_mk.classList.contains('open')&&edAny()){ e.stopPropagation(); e.preventDefault(); edCancel(ED.stack[ED.stack.length-1]); return; }   /* v119 — 수정 중이면 Esc 는 수정만 닫음(만들기 창은 그대로) */
-  if(_mk&&_mk.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); closeMaker(); }
+  if(_vsm&&_vsm.classList.contains('open')&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_vsm))){ e.stopPropagation(); e.preventDefault(); vsEdClose(); return; }   /* v199: 영상 스타일 설정 창이 맨 위 */
+  if(_hs&&_hs.classList.contains('open')&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_hs))){ e.stopPropagation(); e.preventDefault(); if(_histView) renderHistList(); else closeHistory(); return; }
+  if(_mk&&_mk.classList.contains('open')&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_mk))&&PICK.on){ e.stopPropagation(); e.preventDefault(); pickCancel(); return; }   /* v193 — 반영할 내용을 고르는 중이면 Esc 는 그것만 취소 */
+  if(_mk&&_mk.classList.contains('open')&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_mk))&&edAny()){ e.stopPropagation(); e.preventDefault(); edCancel(ED.stack[ED.stack.length-1]); return; }   /* v119 — 수정 중이면 Esc 는 수정만 닫음(만들기 창은 그대로) */
+  if(_mk&&_mk.classList.contains('open')&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_mk))){ e.stopPropagation(); e.preventDefault(); closeMaker(); }
 },true);
 
 window.openScriptMaker=()=>openMaker();
@@ -66309,7 +66309,7 @@ async function bgAct(a,id,btn){
    배경 고르기가 이미지를 받을 수 있는 상태(bgPasteTarget)면 cbKey 가 비켜서고(UI.bgDefer 표시), 이 paste 이벤트에서 이미지면 배경으로, 이미지가 아니면 원래대로 cbPaste() 를 부름 */
 document.addEventListener('paste',e=>{
   try{
-    if(!P||!_ov||!_ov.classList.contains('open')) return; const defer=!!UI.bgDefer&&Date.now()-UI.bgDefer<2500; UI.bgDefer=0;
+    if(!P||!_ov||!_ov.classList.contains('open')||(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_ov))) return; const defer=!!UI.bgDefer&&Date.now()-UI.bgDefer<2500; UI.bgDefer=0;
     const dl=$('vsDlg'); if((dl&&dl.classList.contains('on'))||UI.le||UI.pe) return;
     const tg=e.target; if(tg&&tg.closest&&tg.closest('input:not([type=checkbox]):not([type=range]):not([type=color]):not([type=file]),textarea,select,[contenteditable="true"]')) return;
     const cd=e.clipboardData; let f=null; if(cd){ [...(cd.files||[])].forEach(x=>{ if(!f&&/^image\//.test(x.type)) f=x; }); if(!f) [...(cd.items||[])].forEach(i=>{ if(!f&&i.kind==='file'&&/^image\//.test(i.type)) f=i.getAsFile(); }); }
@@ -69743,7 +69743,7 @@ function nlKey(e){   /* v116: 글 칸에서 Shift+Enter — 커서 자리에 줄
   onField({target:el},false); return true;
 }
 document.addEventListener('keydown',e=>{
-  if(!_ov||!_ov.classList.contains('open')) return;
+  if(!_ov||!_ov.classList.contains('open')||(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(_ov))) return;   /* v260: 최소화한 스튜디오는 메인 화면의 키를 가로채지 않음 */
   const tg=e.target, tag=(tg.tagName||'').toLowerCase(), typing=tag==='input'||tag==='textarea'||tag==='select'||tg.isContentEditable;
   if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); if(MQ){ mqCancel(); return; } if(DRAG&&tlDragCancel()) return;   /* v150: 끌던 것 취소 */ if($('vsCm')){ tlMenuClose(); return; } const d=$('vsDlg'); if(d&&d.classList.contains('on')){ dlgClose(); return; } if(UI.le){ leKey(e); return; } if(UI.pe){ peKey(e); return; } closeStudio(); return; }
   if(!P) return;
@@ -71095,7 +71095,7 @@ function ensureModal(){
   document.body.appendChild(m);
   m.addEventListener('mousedown',e=>{ if(e.target===m) close(); });
   m.querySelector('#isAiX').addEventListener('click',close);
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&m.classList.contains('on')) close(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&m.classList.contains('on')&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(m))) close(); });
   return m;
 }
 const open=()=>{ ensureModal().classList.add('on'); };
@@ -75840,7 +75840,7 @@ function onPopupKey(e){
   }
   if(P.tab==='learn'&&P.stage===3&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); doGrade(); }
 }
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&OV&&OV.classList.contains('on')&&!e.defaultPrevented) close(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&OV&&OV.classList.contains('on')&&!e.defaultPrevented&&!(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(OV))) close(); });
 
 /* ───────────────────────── 16. 시작·연결 ───────────────────────── */
 function init(){
@@ -78177,7 +78177,7 @@ function releaseTools(){   /* Esc — 입력 중인 글·그리던 다각형·�
 }
 function dlgKey(k){ if(!S.dlg) return; const b=S.dlg.box.querySelector('.ie-dbtn[data-k="'+k+'"]'); if(b) b.click(); }
 function onKey(e){
-  if(!S.open) return;
+  if(!S.open||(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(R.modal))) return;   /* v260: 최소화한 편집기는 메인 화면의 키를 가로채지 않음 */
   const tg=e.target, tag=tg&&tg.tagName;
   const typing=(tag==='INPUT'&&tg.type!=='range'&&tg.type!=='checkbox'&&tg.type!=='radio'&&tg.type!=='color')||tag==='TEXTAREA'||tag==='SELECT';
   const ctrl=e.ctrlKey||e.metaKey, key=e.key;
@@ -78228,7 +78228,7 @@ function onKey(e){
 }
 function onKeyUp(e){ if(e.key===' '||e.key==='Spacebar'){ S.space=false; if(!DRAG) R.stage.classList.remove('pan'); } }
 function onPaste(e){
-  if(!S.open||S.dlg) return;
+  if(!S.open||S.dlg||(window.BTMMin&&BTMMin.isMin&&BTMMin.isMin(R.modal))) return;
   const tg=e.target; if(tg&&(tg.tagName==='TEXTAREA'||tg.tagName==='INPUT')) return;     /* 글상자·숫자 입력 중이면 그대로 텍스트 붙여넣기 */
   let file=null; const items=e.clipboardData&&e.clipboardData.items;
   if(items) for(const it of items){ if(it.type&&it.type.indexOf('image/')===0){ file=it.getAsFile(); break; } }
@@ -78938,6 +78938,476 @@ setTimeout(updateBadge,0);
 })();
 </script>
 <!-- BTMCMP-JS-END -->
+<!-- BTMMIN-START (v260) — 팝업창 최소화 · 하단 바. 모든 팝업창(메뉴·도구줄·알림 제외)의 머리줄 ✕ 옆에 [─] 를 넣고, 누르면 창을 숨기고 맨 아래 바에 제목만 남김 -->
+<style id="btmMinStyle">
+/* ═══ 팝업창 최소화 · 하단 바 (v260) ═══
+   · 팝업 머리줄 ✕ 옆의 [─] 버튼 → 누르면 창은 닫히지 않고 숨고(.btm-min-hide), 화면 맨 아래 바(#btmMinDock)에 제목만 남음
+   · 바에는 [최대화(복원)] [닫기] 단추 — 여러 창을 동시에 최소화 가능
+   · 최소화 버튼·바는 <button> 이 아니라 <span role=button> — 전역 CSS(button:not(.mobile-keep){display:none}, 모달별 button{…!important})에 안 걸리게 */
+.btm-min-hide{visibility:hidden!important;pointer-events:none!important}
+.btm-min-btn{box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:none!important;position:relative;
+  width:26px!important;height:26px!important;min-width:0!important;margin:0 2px!important;padding:0!important;border:0!important;border-radius:50%!important;
+  background:rgba(255,255,255,.18)!important;color:inherit!important;cursor:pointer!important;font-size:0!important;line-height:0!important;opacity:.95;
+  vertical-align:middle!important;user-select:none!important;-webkit-user-select:none!important;outline:none;text-decoration:none!important}
+.btm-min-btn:hover{background:rgba(255,255,255,.36)!important;opacity:1}
+.btm-min-btn:focus-visible{box-shadow:0 0 0 2px rgba(147,197,253,.95)!important}
+.btm-min-btn.btm-lt{background:rgba(15,23,42,.09)!important}
+.btm-min-btn.btm-lt:hover{background:rgba(15,23,42,.2)!important}
+.btm-min-btn.btm-sq{border-radius:6px!important}
+.btm-min-btn svg{display:block;width:12px;height:12px;pointer-events:none;overflow:visible}
+
+#btmMinDock{position:fixed;left:10px;right:10px;bottom:8px;z-index:1000100;display:none;flex-wrap:wrap-reverse;align-items:flex-end;gap:6px;pointer-events:none;
+  font-family:'Malgun Gothic','Noto Sans KR','Apple SD Gothic Neo','Segoe UI',sans-serif;box-sizing:border-box}
+#btmMinDock *{box-sizing:border-box}
+.btm-min-bar{pointer-events:auto;display:flex;align-items:center;gap:2px;height:34px;flex:0 1 236px;min-width:150px;max-width:300px;padding:0 5px 0 12px;
+  border-radius:9px;background:#1e293b;color:#f8fafc;border:1px solid rgba(255,255,255,.22);box-shadow:0 5px 16px rgba(0,0,0,.38);
+  font-size:12px;font-weight:700;line-height:1;user-select:none;-webkit-user-select:none;animation:btmMinIn .16s ease-out}
+.btm-min-bar .btm-bt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;line-height:34px;height:34px;outline:none}
+.btm-min-bar .btm-bb{flex:none;width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:inherit;opacity:.88;cursor:pointer;outline:none}
+.btm-min-bar .btm-bb:hover,.btm-min-bar .btm-bb:focus-visible{background:rgba(255,255,255,.26);opacity:1}
+.btm-min-bar .btm-bb.btm-bc:hover,.btm-min-bar .btm-bb.btm-bc:focus-visible{background:#dc2626;color:#fff}
+.btm-min-bar.btm-lt{border-color:rgba(15,23,42,.3)}
+.btm-min-bar.btm-lt .btm-bb:hover,.btm-min-bar.btm-lt .btm-bb:focus-visible{background:rgba(15,23,42,.16)}
+.btm-min-bar .btm-bt:focus-visible{text-decoration:underline}
+.btm-min-bar svg{display:block;width:12px;height:12px;pointer-events:none;overflow:visible}
+@keyframes btmMinIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:520px){#btmMinDock{left:6px;right:6px}.btm-min-bar{flex:1 1 140px;min-width:120px;max-width:none}}
+@media print{#btmMinDock,.btm-min-btn{display:none!important}}
+</style>
+<script>
+/* ═══ 팝업창 최소화 · 하단 바 (v260) — 모든 팝업창(메뉴·도구줄·알림 제외)에 [─] 최소화 버튼 ═══
+   동작
+   · 팝업 후보(#…Modal·role=dialog·body 직계 등)를 감시하다가 '머리줄 + ✕' 가 있는 창이 화면에 뜨면 ✕ 바로 왼쪽에 [─] 를 넣음(머리줄이 다시 그려져도 다시 넣음)
+   · [─] → 창을 숨기되(visibility:hidden — 앱이 보는 display·클래스·스크롤·입력값·진행 중인 작업은 그대로) 화면 맨 아래 바(#btmMinDock)에 제목만 표시
+   · 바: [제목 — 누르면 복원] [▢ 최대화(복원)] [✕ 닫기]   · 여러 창 동시 최소화 가능(왼쪽부터 쌓이고 모자라면 위 줄로)
+   · 바의 [닫기] = 창을 다시 보이게 한 뒤 그 창의 자기 닫기 단추를 눌러줌(= 앱의 원래 닫기 동작·확인창 그대로)
+   · 최소화된 창을 앱이 스스로 닫으면(display:none·DOM 제거) 바도 사라짐 / 안쪽 창(예: 일정 입력창)도 대상 / 안쪽 창의 바를 누르면 바깥 창도 같이 복원
+   · 숨겨진 창이 '열려 있다'고 믿고 전역 키·붙여넣기를 가로채지 않도록, 전역 핸들러는 BTMMin.isMin(창) 을 확인해 건너뜀(이미지 편집기·영상 스튜디오·각 창의 Esc)
+   · 최소화한 창의 열기 함수를 다시 부르면(예: 툴바의 [일정] 누름) 자동으로 복원
+   · 대상 제외: 확인창(머리줄 없는 예/아니오)·토스트·메뉴/드롭다운/색 고르개·도구줄·로그인 문·이미지 확대. 머리줄 없는 제목형 창은 요소에 data-btm-min="제목" 을 달면 모서리 버튼으로 대상이 됨 */
+(function(){
+'use strict';
+if(window.BTMMin&&window.BTMMin.destroy){ try{ window.BTMMin.destroy(); }catch(_){} }
+
+const SVG_MIN='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 8.8h7.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
+const SVG_MAX='<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.3" y="2.3" width="7.4" height="7.4" rx="1.3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>';
+const SVG_X='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.6 2.6l6.8 6.8M9.4 2.6L2.6 9.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+/* 팝업 후보를 찾는 선택자 — 이름 규칙(…Modal·…Dlg·…Pop·role=dialog)과 앱이 쓰는 오버레이 클래스. 실제로 창인지는 analyze() 가 판정 */
+const CAND_SEL=['[role="dialog"]','[aria-modal="true"]','[data-btm-min]','[id$="Modal"]','[id$="Dlg"]','[id$="Dialog"]','[id$="Popup"]','[id$="Pop"]','[id$="Overlay"]',
+  '.pln-dw','.vs-dg','.ie-dlgwrap','.mm-dlg-wrap','.sc-ov','.vs-ov','.bm-ov','.isai-ov','[class*="modal"]','[class*="popup"]','[class$="-ov"]','[class*="-ov "]'].join(',');
+/* 최소화 대상이 아닌 것 — 메뉴·드롭다운·색 고르개·도구줄·알림·로그인 문·이미지 확대 */
+const NO_MIN='#authModal,#memoImgLightbox,#formatToolbar,.format-toolbar,.main-btn-bar,#colorPickerPopup,#ftSizeDropdown,#tsLineWidthDropdown,#cmpPop,#vsDatePickerPop,#lhPill,#srvNotif,#sdToast,#sdGhost,#_updateSpinner,#tsTextOverlay,'
+  +'#lsQuotaBanner,#btmIncompleteBanner,#_expProgBar,[role="alert"],[role="status"],.mm-menu,.mm-pop,.vs-cm,[role="menu"],[role="menuitem"],[role="listbox"],[role="tooltip"],[data-btm-nomin],#btmMinDock';
+/* 배경막(#tsMgOverlay)이 따로 있는 창 — 같이 숨기고 보임 */
+const COMP={tsMgPopup:['tsMgOverlay']};
+/* 다시 열면(툴바 단추 등) 자동으로 복원할 열기 함수 → 창 id.  window 함수 / 객체 메서드 */
+const OPEN_FN=[['openAIChat','aiChatModal'],['openMemoModal','memoModal'],['openAdminPanel','adminModal'],['openArchiveViewer','archiveModal'],['openBooksModal','booksModal'],
+  ['openBookBodyModal','bookBodyModal'],['openQtMeditationModal','qtMeditationModal'],['openReportQuery','reportQueryModal'],['createNewReport','newReportModal'],['openBtmLangGenModal','btmLangGenModal'],
+  ['openScriptMaker','scMakerModal'],['openScriptHistory','scHistModal'],['openVideoStudio','vsModal'],['openFpSearch','fpSearchModal'],['searchArchivesUI','archiveSearchModal'],
+  ['openSecTitleMgr','secTitleMgrModal'],['openAiRadarTargetModal','aiRadarTargetModal'],['openAiRadarHistory','aiRadarHistModal'],['openNewsFlash','newsFlashModal'],['openAddEcoModal','addEcoModal'],
+  ['openCatManager','catManagerModal'],['openAutoCheck','acModal'],['openMscModal','mscModal'],['openPdfQualityModal','pdfQualityModal'],['openQuoteEditor','qeModal'],['showArchiveChart','archiveChartModal'],['_tsChartNoteOpen','tsChartNotePopup']];
+const OPEN_OBJ=[['BTMPlanner','open','plnModal'],['BTMPlanner','openNew','plnDlg'],['BTMPlanner','openDlg','plnDlg'],['BTMPlanner','edit','plnDlg'],['BTMPlanner','wkOpen','plnWk'],['BTMBible','open','bmOv'],['BTMMmHist','open','mmHistModal'],
+  ['BTMIsAI','showDetail','isAiModal'],['BTMIsAI','show','isAiModal'],['BTMImgEd','open','imgEdModal'],['BTMVideo','open','vsModal'],['BTMScript','openMaker','scMakerModal'],['BTMScript','openHistory','scHistModal']];
+
+const TOGGLE_FN=[['_tsChartNoteToggle','tsChartNotePopup']];
+const cands=new Set();            /* 팝업 후보 요소 */
+const recs=new Map();             /* 최소화 버튼을 넣은 팝업 ov → rec */
+const mins=[];                    /* 최소화된 rec (최소화한 순서) */
+const neg=new WeakMap();          /* 팝업이 아니라고 본 요소 → {t:다시 볼 시각, n:시도 횟수} */
+const watched=new WeakSet();      /* 속성 감시를 붙인 후보 */
+const wrapped=[];                 /* 감싼 열기 함수(복구용) */
+let dock=null, mo=null, amo=null, timer=0, ticker=0, lastMut=0, destroyed=false;
+
+const now=()=>Date.now();
+const $=id=>document.getElementById(id);
+const shown=el=>{ if(!el||!el.isConnected) return false; return el.checkVisibility?el.checkVisibility():el.getClientRects().length>0; };   /* 레이아웃 상자가 있나 — visibility 는 무시(= 앱이 '열려 있다'고 보는 상태) */
+
+/* ───── 색 ───── */
+function parseRGB(s){ const m=/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+%?))?\s*\)/.exec(s||''); if(!m) return null; const a=m[4]==null?1:(/%$/.test(m[4])?parseFloat(m[4])/100:parseFloat(m[4])); return {r:+m[1],g:+m[2],b:+m[3],a}; }
+const lum=c=>c?(0.299*c.r+0.587*c.g+0.114*c.b):0;
+function bgOf(el,stop){   /* el 에서 위로 올라가며 처음 만나는 '불투명 배경'(단색 또는 그라데이션의 첫 색) */
+  for(let n=el;n&&n.nodeType===1;n=n.parentElement){
+    const cs=getComputedStyle(n);
+    const c=parseRGB(cs.backgroundColor); if(c&&c.a>=0.9) return c;
+    if(/gradient/.test(cs.backgroundImage)){ const m=cs.backgroundImage.match(/rgba?\([^)]*\)/); const g=m&&parseRGB(m[0]); if(g&&g.a>=0.9) return g; }
+    if(n===stop) break;
+  }
+  return null;
+}
+const rgbStr=c=>'rgb('+Math.round(c.r)+','+Math.round(c.g)+','+Math.round(c.b)+')';
+
+/* ───── 닫기 단추 판별 ───── */
+function closeScore(el){
+  const t=(el.textContent||'').replace(/\s+/g,'');
+  const lab=((el.getAttribute('title')||'')+' '+(el.getAttribute('aria-label')||''));
+  if(/^[✕✖✗✘×xX╳❌]$/.test(t)) return 3;
+  if(/^[✕✖✗✘×xX╳❌]?(닫기|닫음|close)$/i.test(t)) return 3;
+  if(t.length<=2&&/닫기|close/i.test(lab)) return 2;
+  if(!t&&el.querySelector&&el.querySelector('svg')&&/닫기|close/i.test(lab)) return 2;
+  return 0;
+}
+const cancelLike=el=>/^(취소|cancel|아니오|아니요|닫기|close)$/i.test((el.textContent||'').replace(/\s+/g,''));
+
+/* ───── 팝업 해석: 이 요소가 '머리줄이 있는 창'인가 → {card, head, closeEl, ...} ───── */
+function cardOf(ov){
+  let best=null, ba=0;
+  for(const c of ov.children){
+    const cs=getComputedStyle(c); if(cs.display==='none'||cs.visibility==='hidden') continue;
+    const r=c.getBoundingClientRect(), a=r.width*r.height; if(a>ba){ ba=a; best=c; }
+  }
+  return best;
+}
+function inNested(el,ov,card){   /* el 이 ov 안의 '화면에 떠 있는 안쪽 창'(예: 일정 입력창) 안에 있나 — 카드 자신(role=dialog 상자)은 제외 */
+  for(let n=el.parentElement;n&&n!==ov;n=n.parentElement){
+    if(n===card||!cands.has(n)) continue;
+    const p=getComputedStyle(n).position; if(p!=='static'&&p!=='relative') return true;
+    if(recs.has(n)) return true;
+  }
+  return false;
+}
+function analyze(ov){
+  if(ov.matches(NO_MIN)||ov.closest(NO_MIN)) return null;
+  const cs=getComputedStyle(ov), pos=cs.position;
+  const optin=ov.hasAttribute('data-btm-min');
+  if(pos!=='fixed'&&pos!=='absolute') return null;
+  const r=ov.getBoundingClientRect();
+  if(r.width<180||r.height<90) return null;
+  let overlay;
+  if(pos==='fixed') overlay=r.width>=innerWidth*0.9&&r.height>=innerHeight*0.9;
+  else if(optin) overlay=false;   /* data-btm-min 를 단 떠 있는 패널(예: Chart Note) — 크기 조건 없이 그 요소가 곧 창 */
+  else{   /* absolute — 부모 카드를 거의 덮는 안쪽 대화창만 */
+    const op=ov.offsetParent; if(!op||op===document.body||op===document.documentElement) return null;
+    const pr=op.getBoundingClientRect(); if(r.width<pr.width*0.9||r.height<pr.height*0.9) return null;
+    overlay=true;
+  }
+  /* 배경이 불투명(또는 그라데이션)이면 그 요소 자체가 '창' — 반투명·투명이면 배경막이고 그 안의 가장 큰 자식이 창 */
+  if(overlay){ const bg=parseRGB(cs.backgroundColor); if((bg&&bg.a>=0.9)||/gradient/.test(cs.backgroundImage)) overlay=false; }
+  const card=overlay?cardOf(ov):ov; if(!card) return null;
+  const cr=card.getBoundingClientRect(); if(cr.width<150||cr.height<44) return null;
+
+  /* ① 머리줄 안의 ✕ 찾기 */
+  let closeEl=null, best=null;
+  /* 문서 순서로 앞쪽 800개 요소만 훑음 — 머리줄은 카드 맨 위라 충분하고, 스튜디오처럼 요소가 수만 개인 창에서도 비용이 일정 */
+  const tw=document.createTreeWalker(card,NodeFilter.SHOW_ELEMENT); let cnt=0;
+  for(let el=tw.nextNode();el&&cnt<800;el=tw.nextNode(),cnt++){
+    if(el.classList&&el.classList.contains('btm-min-btn')) continue;
+    if(!el.matches('button,a,[role="button"],[title],[aria-label],[data-x],[data-a],[data-act],span,i')) continue;
+    if((el.textContent||'').length>12&&!el.querySelector('svg')) continue;
+    const sc=closeScore(el); if(!sc) continue;
+    if(inNested(el,ov,card)) continue;
+    const er=el.getBoundingClientRect(); if(er.width<8||er.height<8||er.width>170||er.height>70) continue;
+    if(er.top-cr.top>110||er.top<cr.top-2) continue;
+    const key=[er.top,-er.left,-sc];
+    if(!best||key[0]<best[0]-3||(Math.abs(key[0]-best[0])<=3&&(key[1]<best[1]||(key[1]===best[1]&&key[2]<best[2])))){ best=key; closeEl=el; }
+  }
+  /* ② 머리줄 */
+  let head=null, corner=false;
+  if(closeEl){
+    head=closeEl.parentElement;
+    if(head&&head!==card&&head!==ov){
+      let hh=head.getBoundingClientRect().height;
+      for(;;){
+        const p=head.parentElement; if(!p||p===card||p===ov) break;
+        const ph=p.getBoundingClientRect().height; if(ph>hh+40) break;
+        head=p; hh=ph;
+      }
+    }
+  }
+  if(head&&head!==card&&head.getBoundingClientRect().top-cr.top>44) head=null;    /* 머리줄은 카드 맨 위에 있어야 함 — 아래쪽 단추 줄의 '닫기'(알림 띠·고르개 팝오버)는 창이 아님 */
+  if(!head||head===ov){   /* ✕ 가 없으면: 카드 맨 위에서 배경색이 다른 줄(머리줄)을 찾음 */
+    const f=card.firstElementChild; closeEl=null; head=null;
+    if(f){
+      const fr=f.getBoundingClientRect(), fcs=getComputedStyle(f), fc=parseRGB(fcs.backgroundColor), cc=bgOf(card,card)||{r:255,g:255,b:255,a:1};
+      const grad=/gradient/.test(fcs.backgroundImage);
+      if(fr.height>=26&&fr.height<=90&&fr.width>=cr.width*0.8&&(grad||(fc&&fc.a>=0.9&&(Math.abs(fc.r-cc.r)+Math.abs(fc.g-cc.g)+Math.abs(fc.b-cc.b))>40))&&labelText(f,null).length>0) head=f;
+    }
+    if(!head&&optin){ head=card; corner=true; }      /* data-btm-min: 머리줄 없는 제목형 창 → 카드 오른쪽 위 모서리에 버튼 */
+    if(!head) return null;
+  }
+  return {ov,card,head,closeEl,overlay,corner};
+}
+
+/* ───── 제목 ───── */
+const SKIP_TAG=/^(BUTTON|SELECT|OPTION|TEXTAREA|SCRIPT|STYLE|SVG|INPUT)$/i;
+function labelText(root,skip){   /* root 안의 글(버튼·선택칸 제외, 글 입력칸은 값 포함) */
+  let out='';
+  (function walk(n){
+    for(let c=n.firstChild;c;c=c.nextSibling){
+      if(c===skip) continue;
+      if(c.nodeType===3){ out+=c.nodeValue; continue; }
+      if(c.nodeType!==1) continue;
+      if(c.classList&&c.classList.contains('btm-min-btn')) continue;
+      const tg=c.tagName;
+      if(tg==='INPUT'){ if(c.type==='text'&&c.value) out+=' '+c.value+' '; continue; }
+      if(SKIP_TAG.test(tg)||(c.namespaceURI&&/svg/.test(c.namespaceURI))) continue;
+      if(c.hidden||getComputedStyle(c).display==='none') continue;
+      walk(c);
+    }
+  })(root);
+  return out.replace(/\s+/g,' ').trim();
+}
+function hasOwnText(el){ for(let c=el.firstChild;c;c=c.nextSibling){ if(c.nodeType===3&&c.nodeValue.trim()) return true; } return false; }
+function readTitle(rec){
+  const opt=rec.ov.getAttribute('data-btm-min'); if(opt&&!/^(1|true|)$/.test(opt)) return opt.length>80?opt.slice(0,79)+'…':opt;
+  const segs=[], head=rec.head, skip=rec.closeEl;
+  (function collect(n){
+    for(let c=n.firstChild;c&&segs.length<2;c=c.nextSibling){
+      if(c===skip) continue;
+      if(c.nodeType===3){ const t=c.nodeValue.replace(/\s+/g,' ').trim(); if(t) segs.push(t); continue; }
+      if(c.nodeType!==1) continue;
+      if(c.classList&&c.classList.contains('btm-min-btn')) continue;
+      const tg=c.tagName;
+      if(SKIP_TAG.test(tg)||(c.namespaceURI&&/svg/.test(c.namespaceURI))) continue;
+      if(c.hidden||getComputedStyle(c).display==='none') continue;
+      if(skip&&c.contains(skip)&&!hasOwnText(c)){ collect(c); continue; }
+      if(hasOwnText(c)){ const t=labelText(c,skip); if(t) segs.push(t); }
+      else collect(c);
+    }
+  })(head);
+  let t=segs[0]||'';
+  if(t&&[...t].length<=2&&segs[1]) t+=' '+segs[1];
+  if(!t){
+    const h=rec.card.querySelector('h1,h2,h3,h4,[class*="title" i],[id*="Title"]');
+    if(h) t=labelText(h,null);
+  }
+  if(!t){ const a=rec.ov.getAttribute('aria-label')||(rec.card.getAttribute&&rec.card.getAttribute('aria-label'))||(rec.ov.querySelector('[role="dialog"][aria-label]')||{getAttribute:()=>''}).getAttribute('aria-label'); t=a||''; }
+  if(!t) t=(rec.ov.id||'창').replace(/(Modal|Dlg|Pop|Popup|Dialog)$/,'');
+  return t.length>80?t.slice(0,79)+'…':t;
+}
+
+/* ───── 하단 바(독) ───── */
+function ensureDock(){
+  if(dock&&dock.isConnected) return dock;
+  dock=document.createElement('div'); dock.id='btmMinDock'; dock.className='no-print'; dock.setAttribute('role','toolbar'); dock.setAttribute('aria-label','최소화된 창');
+  document.body.appendChild(dock); return dock;
+}
+function layoutDock(){
+  const d=ensureDock(); const am=$('authModal');
+  const v=(mins.length&&!(am&&shown(am)))?'flex':'none';
+  if(d.style.display!==v) d.style.display=v;
+}
+function mkBar(rec){
+  const bar=document.createElement('div'); bar.className='btm-min-bar'; bar.setAttribute('role','group');
+  const bg=rec.hc&&rec.hc.bg;
+  if(bg){ const light=lum(bg)>150; bar.style.background=rgbStr(bg); bar.style.color=light?'#0f172a':'#f8fafc'; if(light) bar.classList.add('btm-lt'); }
+  bar.innerHTML='<span class="btm-bt" tabindex="0" role="button"></span>'
+    +'<span class="btm-bb btm-bx" tabindex="0" role="button" title="최대화 — 원래 창으로 되돌리기">'+SVG_MAX+'</span>'
+    +'<span class="btm-bb btm-bc" tabindex="0" role="button" title="닫기">'+SVG_X+'</span>';
+  const bt=bar.querySelector('.btm-bt'); bt.textContent=rec.title; bt.title=rec.title+' — 눌러서 원래 창으로 되돌리기'; bar.setAttribute('aria-label',rec.title);
+  const act=(el,fn)=>{ el.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); fn(); }); el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); fn(); } }); };
+  act(bt,()=>restore(rec)); act(bar.querySelector('.btm-bb.btm-bx'),()=>restore(rec)); act(bar.querySelector('.btm-bb.btm-bc'),()=>closeFromBar(rec));
+  return bar;
+}
+
+/* ───── 최소화 / 복원 / 닫기 ───── */
+function comps(rec){ return (COMP[rec.ov.id]||[]).map($).filter(Boolean); }
+function setHidden(rec,on){ [rec.ov].concat(comps(rec)).forEach(el=>el.classList.toggle('btm-min-hide',on)); }
+function ancestorRec(rec){ for(let p=rec.ov.parentElement;p;p=p.parentElement){ const r=recs.get(p); if(r) return r; } return null; }
+function zOf(el){ return parseInt(getComputedStyle(el).zIndex,10)||0; }
+function raise(rec){   /* 복원한 창이 다른 열린 창 뒤에 깔리지 않게 — 안쪽 창은 부모 안에서 쌓이므로 제외 */
+  if(ancestorRec(rec)) return;
+  let mz=-1; recs.forEach(r=>{ if(r!==rec&&!r.min&&!ancestorRec(r)&&shown(r.ov)) mz=Math.max(mz,zOf(r.ov)); });
+  if(mz>=0&&zOf(rec.ov)<=mz){ if(!rec.raised) rec.z0=rec.ov.style.zIndex; rec.ov.style.zIndex=String(mz+1); rec.raised=true; }
+}
+function unraise(rec){ if(rec.raised){ rec.ov.style.zIndex=rec.z0||''; rec.raised=false; rec.z0=''; } }
+
+function minimize(rec){
+  if(rec.min||!shown(rec.ov)) return;
+  rec.title=readTitle(rec);
+  try{ const hb=bgOf(rec.head,rec.ov)||bgOf(rec.card,rec.ov); rec.hc={bg:hb}; }catch(_){}     /* 바 색은 최소화하는 순간의 머리줄 색 */
+  const ae=document.activeElement;
+  rec.focusBack=(ae&&ae!==document.body&&rec.ov.contains(ae))?ae:null;
+  setHidden(rec,true); rec.min=true; mins.push(rec);
+  rec.bar=mkBar(rec); ensureDock().appendChild(rec.bar);
+  if(rec.focusBack){ try{ rec.focusBack.blur(); }catch(_){} }
+  unraise(rec); layoutDock();
+}
+function endMin(rec){   /* 최소화 상태 정리(바 제거·숨김 해제) */
+  if(!rec.min) return;
+  setHidden(rec,false); rec.min=false;
+  const i=mins.indexOf(rec); if(i>=0) mins.splice(i,1);
+  if(rec.bar){ rec.bar.remove(); rec.bar=null; }
+  layoutDock();
+}
+function restore(rec){
+  if(!rec||!rec.min) return;
+  const a=ancestorRec(rec); if(a&&a.min) restore(a);     /* 바깥 창이 최소화돼 있으면 먼저 */
+  endMin(rec); raise(rec);
+  const fb=rec.focusBack; rec.focusBack=null;
+  try{
+    if(fb&&fb.isConnected&&shown(fb)) fb.focus({preventScroll:true});
+    else if(rec.ov.hasAttribute('tabindex')) rec.ov.focus({preventScroll:true});
+  }catch(_){}
+}
+function findCancel(rec){ const bs=rec.ov.querySelectorAll('button,[role="button"]'); for(let i=bs.length-1;i>=0;i--){ if(cancelLike(bs[i])&&shown(bs[i])) return bs[i]; } return null; }
+function closeFromBar(rec){
+  if(!rec) return;
+  endMin(rec);                                           /* 보이게 한 다음 — 그 창의 닫기 동작을 앱이 직접 처리 */
+  const c=(rec.closeEl&&rec.closeEl.isConnected)?rec.closeEl:findCancel(rec);
+  if(c){ try{ c.click(); }catch(_){} }
+  else{ try{ rec.ov.style.display='none'; }catch(_){} }
+}
+function dropRec(rec){ endMin(rec); unraise(rec); if(rec.btn&&rec.btn.parentNode) rec.btn.remove(); }
+
+/* ───── 머리줄에 [─] 넣기 ───── */
+function mkBtn(rec){
+  const b=document.createElement('span'); b.className='btm-min-btn'; b.setAttribute('role','button'); b.setAttribute('tabindex','0'); b.setAttribute('data-btm-min-btn','1');
+  b.title='최소화 — 창을 닫지 않고 아래 바로 내려둡니다'; b.setAttribute('aria-label','최소화'); b.innerHTML=SVG_MIN;
+  ['mousedown','pointerdown','touchstart','dblclick'].forEach(ev=>b.addEventListener(ev,e=>{ e.stopPropagation(); }));
+  b.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); minimize(rec); });
+  b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); minimize(rec); } });
+  return b;
+}
+function style(rec){   /* 닫기 단추·머리줄 색에 맞춰 모양 맞추기 */
+  const b=rec.btn, c=rec.closeEl;
+  const hbg=bgOf(rec.head,rec.ov)||bgOf(rec.card,rec.ov);
+  rec.hc={bg:hbg};
+  const dark=hbg?lum(hbg)<150:true;
+  b.classList.toggle('btm-lt',!dark);
+  if(c){
+    const cs=getComputedStyle(c), r=c.getBoundingClientRect();
+    const sz=Math.max(22,Math.min(34,Math.round(Math.min(r.width,r.height)||26)));
+    b.style.setProperty('color',cs.color,'important'); b.style.setProperty('width',sz+'px','important'); b.style.setProperty('height',sz+'px','important');
+    const rad=parseFloat(cs.borderTopLeftRadius)||0; b.classList.toggle('btm-sq',rad>0&&rad<Math.min(r.width,r.height)/2-1);
+  }else{ b.style.setProperty('color',dark?'#fff':'#334155','important'); }
+}
+function place(rec){
+  const b=rec.btn, c=rec.closeEl, h=rec.head;
+  ['margin-left','position','right','top','transform','float'].forEach(p=>b.style.removeProperty(p));
+  if(rec.corner){   /* 머리줄이 없는 제목형 창 — 카드 오른쪽 위 모서리 */
+    if(getComputedStyle(h).position==='static') h.style.position='relative';
+    b.style.setProperty('position','absolute','important'); b.style.setProperty('right','8px','important'); b.style.setProperty('top','8px','important'); b.style.setProperty('z-index','2','important'); h.appendChild(b); return;
+  }
+  if(c&&c.parentNode){
+    const ccs=getComputedStyle(c);
+    if(ccs.position==='absolute'||ccs.position==='fixed'){   /* 떠 있는 ✕ — 그 왼쪽에 겹치지 않게 */
+      const pr=(c.offsetParent||document.body).getBoundingClientRect(), cr=c.getBoundingClientRect();
+      b.style.setProperty('position','absolute','important'); b.style.setProperty('top',(cr.top-pr.top+Math.max(0,(cr.height-26)/2))+'px','important'); b.style.setProperty('right',(pr.right-cr.left+4)+'px','important');
+      c.parentNode.insertBefore(b,c); return;
+    }
+    if(ccs.cssFloat&&ccs.cssFloat!=='none'){ b.style.setProperty('float',ccs.cssFloat,'important'); c.parentNode.insertBefore(b,c.nextSibling); return; }
+    c.parentNode.insertBefore(b,c);
+    /* justify-content:space-between 머리줄이면 [─] 가 가운데로 뜨므로 ✕ 와 붙게 auto 여백 — 간격이 벌어졌을 때만 */
+    const br=b.getBoundingClientRect(), cr2=c.getBoundingClientRect();
+    if(cr2.left-br.right>14) b.style.setProperty('margin-left','auto','important');
+  }else{
+    const hcs=getComputedStyle(h);
+    if(/flex/.test(hcs.display)){ b.style.setProperty('margin-left','auto','important'); h.appendChild(b); }
+    else{ if(hcs.position==='static') h.style.position='relative'; b.style.setProperty('position','absolute','important'); b.style.setProperty('right','10px','important'); b.style.setProperty('top','50%','important'); b.style.setProperty('transform','translateY(-50%)','important'); h.appendChild(b); }
+  }
+}
+function attach(rec){
+  if(!rec.btn) rec.btn=mkBtn(rec);
+  style(rec); place(rec);
+}
+
+/* ───── 훑어보기 ───── */
+function visit(el){
+  const rec=recs.get(el);
+  if(!shown(el)){ if(rec){ if(rec.min) endMin(rec); unraise(rec); } return; }   /* 앱이 닫음 → 최소화 상태·바 정리 */
+  if(rec){
+    if(rec.btn&&rec.btn.isConnected&&rec.head.contains(rec.btn)){ if(rec.min) refreshBar(rec); return; }
+    if(now()-(rec.rt||0)<300) return; rec.rt=now();       /* 머리줄이 자주 다시 그려져도 해석은 0.3초에 한 번만 */
+    const info=analyze(el);                               /* 머리줄이 다시 그려져 버튼이 사라짐 → 다시 넣기 */
+    if(info){ Object.assign(rec,info); attach(rec); }
+    return;
+  }
+  const g=neg.get(el); if(g&&g.t>now()) return;
+  const info=analyze(el);
+  if(!info){ const n=(g?g.n:0)+1; neg.set(el,{t:now()+(n<5?250:1500),n}); return; }
+  const nrec=Object.assign({min:false,bar:null,btn:null,title:'',hc:null},info);
+  recs.set(el,nrec); attach(nrec);
+}
+function refreshBar(rec){
+  if(!rec.bar) return;
+  const t=readTitle(rec); if(t&&t!==rec.title){ rec.title=t; const bt=rec.bar.querySelector('.btm-bt'); if(bt){ bt.textContent=t; bt.title=t+' — 눌러서 원래 창으로 되돌리기'; } rec.bar.setAttribute('aria-label',t); }
+}
+function scan(){
+  if(destroyed) return;
+  for(const el of cands){
+    if(!el.isConnected){ cands.delete(el); const r=recs.get(el); if(r){ dropRec(r); recs.delete(el); } continue; }
+    try{ visit(el); }catch(e){ neg.set(el,{t:now()+5000,n:9}); }
+  }
+  for(let i=mins.length-1;i>=0;i--){ const r=mins[i]; if(!r.ov.isConnected||!shown(r.ov)) endMin(r); }   /* 최소화된 창 중 DOM 에서 빠진 것 */
+  layoutDock();
+}
+function schedule(ms){ if(timer||destroyed) return; timer=setTimeout(()=>{ timer=0; try{ scan(); }catch(_){} },ms||30); }
+
+function watch(el){
+  if(watched.has(el)) return; watched.add(el);
+  try{ amo.observe(el,{attributes:true,attributeFilter:['style','class','hidden']}); }catch(_){}
+}
+function addCand(el){
+  if(el.nodeType!==1||el.id==='btmMinDock') return false; let any=false;
+  const direct=el.parentNode===document.body;
+  if(direct||el.matches(CAND_SEL)){ cands.add(el); watch(el); any=true; }
+  if(el.firstElementChild){ const q=el.querySelectorAll(CAND_SEL); for(let i=0;i<q.length;i++){ if(q[i].closest('#btmMinDock')) continue; cands.add(q[i]); watch(q[i]); any=true; } }
+  return any;
+}
+
+/* ───── 열기 함수를 다시 부르면 복원 ───── */
+function reopen(id){ const el=$(id); const r=el&&recs.get(el); if(r&&r.min) restore(r); }
+function wrapFn(holder,name,id){
+  try{
+    const orig=holder&&holder[name]; if(typeof orig!=='function'||orig.__btmMinW) return;
+    const w=function(){ const out=orig.apply(this,arguments); try{ if(mins.length) reopen(id); }catch(_){} return out; };
+    w.__btmMinW=true; w.__orig=orig; holder[name]=w; wrapped.push([holder,name,w,orig]);
+  }catch(_){}
+}
+/* 켜기/끄기 단추(toggle) — 최소화돼 있으면 '끄기'가 아니라 복원 */
+function wrapToggle(holder,name,id){
+  try{
+    const orig=holder&&holder[name]; if(typeof orig!=='function'||orig.__btmMinW) return;
+    const w=function(){ try{ const el=$(id), r=el&&recs.get(el); if(r&&r.min){ restore(r); return; } }catch(_){} return orig.apply(this,arguments); };
+    w.__btmMinW=true; w.__orig=orig; holder[name]=w; wrapped.push([holder,name,w,orig]);
+  }catch(_){}
+}
+function installOpeners(){
+  OPEN_FN.forEach(([n,id])=>wrapFn(window,n,id));
+  OPEN_OBJ.forEach(([o,n,id])=>wrapFn(window[o],n,id));
+  TOGGLE_FN.forEach(([n,id])=>wrapToggle(window,n,id));
+}
+
+function init(){
+  if(!document.body){ document.addEventListener('DOMContentLoaded',init,{once:true}); return; }
+  amo=new MutationObserver(()=>schedule(30));
+  mo=new MutationObserver(list=>{ try{ let t=false; for(const r of list){ for(const n of r.addedNodes){ if(addCand(n)) t=true; } } if(t) schedule(30); else if(now()-lastMut>200){ lastMut=now(); schedule(200); } }catch(_){} });
+  addCand(document.body); for(const c of document.body.children) addCand(c);
+  mo.observe(document.body,{childList:true,subtree:true});
+  ticker=setInterval(()=>{ if(!document.hidden){ try{ scan(); }catch(_){} } },400);
+  ['click','keyup','pointerup'].forEach(ev=>document.addEventListener(ev,onUi,true));
+  window.addEventListener('resize',onUi);
+  installOpeners();
+  scan();
+}
+function onUi(){ schedule(30); }
+
+/* ───── 공개 함수 ───── */
+const recOf=x=>{ const el=typeof x==='string'?$(x):x; return el?recs.get(el):null; };
+window.BTMMin={
+  version:'v260',
+  minimize:x=>{ const r=recOf(x); if(r) minimize(r); return !!r; },
+  restore:x=>{ const r=recOf(x); if(r) restore(r); return !!r; },
+  restoreAll:()=>{ mins.slice().forEach(restore); },
+  close:x=>{ const r=recOf(x); if(r) closeFromBar(r); return !!r; },
+  /* 이 창(또는 그 바깥 창)이 최소화돼 있나 — 숨겨진 창이 전역 키·붙여넣기를 가로채지 않게 각 창의 전역 핸들러가 확인 */
+  isMin:x=>{ let el=typeof x==='string'?$(x):x; for(;el;el=el.parentElement){ const r=recs.get(el); if(r&&r.min) return true; } return false; },
+  list:()=>mins.map(r=>({id:r.ov.id||r.ov.className,title:r.title})),
+  scan,
+  audit:()=>Array.from(cands).map(el=>{ const r=recs.get(el); const g=neg.get(el); return {el:(el.id?'#'+el.id:'')+(typeof el.className==='string'&&el.className?'.'+el.className.trim().split(/\s+/).join('.'):''),shown:shown(el),btn:!!(r&&r.btn&&r.btn.isConnected),title:r?r.title:null,neg:!!(g&&g.t>now()),min:!!(r&&r.min)}; }),
+  _recs:recs,_cands:cands,_analyze:analyze,_readTitle:readTitle,
+  destroy:()=>{
+    destroyed=true; try{ mo&&mo.disconnect(); amo&&amo.disconnect(); }catch(_){} clearInterval(ticker); clearTimeout(timer);
+    recs.forEach(r=>dropRec(r)); if(dock) dock.remove();
+    wrapped.forEach(([h,n,w,o])=>{ try{ if(h[n]===w) h[n]=o; }catch(_){} });
+    ['click','keyup','pointerup'].forEach(ev=>document.removeEventListener(ev,onUi,true)); window.removeEventListener('resize',onUi);
+  }
+};
+init();
+})();
+</script>
+<!-- BTMMIN-END -->
 <!-- 문서 맨 끝 '완료 표식'(v164) — 페이지가 끝까지 로드됐을 때만 실행됨. 일부만 받아진 화면에서는 이게 없어서 _btmIncomplete() 가 저장·불러오기·새 리포트·자동저장을 막음. 이 줄은 반드시 맨 마지막 스크립트로 둘 것 -->
 <script>window.__BTM_FULL=true;</script>
 </body>
