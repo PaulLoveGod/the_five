@@ -11509,6 +11509,10 @@ window.openAutoCheck=function(){
 window.closeAutoCheck=function(){ const m=g('acModal'); if(m) m.style.display='none'; };
 
 /* ══ v206 (2026-11-23) — [일정 / To Do List] 팝업: To Do 를 구글 Tasks 'BTM To Do' 목록(체크리스트)에도 양방향 동기화 (v205 왼쪽 위·아래 분리 + v202 구글 캘린더 동기화 위에 얹음) ══════════
+   v259 요청: "마우스를 월간 달력 위 어디든 올려두고 마우스패드에 두 손가락으로 좌/우로 스와이프하면 전월·다음월로 넘어가게"
+     · 달력 영역(.pln-cal — 월 이동 줄·요일 줄·날짜 칸·칩·막대, 📋 목록 보기까지)에 wheel 리스너 한 개(swipeBind → init() 에서 한 번 · swipeWheel · {passive:false}). 터치패드 두 손가락 가로 스와이프는 deltaX 가 있는 wheel 이벤트로 들어옴 — 한쪽으로 SWIPE_TH(80px) 쌓이면 month(±1) 한 번. 같은 동작의 나머지(손가락을 뗀 뒤 이어지는 관성 입력 포함)는 입력이 SWIPE_GAP(150ms) 끊길 때까지 무시 → 한 번 쓸면 한 달.
+     · 방향은 브라우저 '뒤로/앞으로 가기' 와 같은 기준: deltaX<0(왼쪽으로 스크롤)=전월 · deltaX>0=다음 달 — OS 터치패드 '스크롤 방향' 설정을 따름(반대로 느껴지면 SWIPE_DIR 을 -1 로).
+     · 가로 우세(|dx|≥|dy|) 입력은 preventDefault — 브라우저 뒤로/앞으로 가기·가로 스크롤로 넘어가지 않게(v258 의 CSS 와 함께. 연속 입력은 첫 이벤트를 막아야 이어지는 입력도 막히므로 문턱 전에도 막음). 세로 우세(칸 안 칩 목록·페이지 스크롤)·Ctrl/⌘+휠(확대)·일정을 끄는 중에는 손대지 않음.
    v257 요청: "오늘 업무 팝업창의 왼쪽·오른쪽 업무 리스트에 '취소' 아이콘 추가 · 체크하면 취소선 없이 비활성 회색 글자만 · '취소' 클릭 시 취소선+회색 글씨와 함께 제목 앞에 [취소] 가 제목 텍스트로" + "체크하면 제목 앞에 '[완료]' 텍스트도"
      · 업무(works) 한 줄(wkRow — 왼쪽 '오늘 발생한 업무'·오른쪽 '이전 업무' 공통)의 단추가 [✏️][🚫][🗑] (취소한 줄은 🚫 자리가 ↩️ = 취소 해제). 새 필드 cx(취소 — 완료 x 의 한 종류, cx ⇒ x): 완료처럼 목록 아래로 내려가고 '이전 미처리 업무'에서 빠짐.
      · 체크(x=1) → 제목 앞에 '[완료] ' + 회색 글자(취소선 없음) · 🚫 취소(x=1,cx=1) → 제목 앞에 '[취소] ' + 취소선+회색 · 풀면(체크 해제·↩️) 미처리(x=0)로 돌아가며 표시를 뗌 · 완료한 업무를 취소하면 [완료] → [취소] 로 바뀜.
@@ -12960,6 +12964,24 @@ function today(){ vm=mStart(new Date()); renderMain(); }
 function setView(v){ ui.view=(v==='list')?'list':'cal'; saveUi(); renderMain(); }
 function monthPick(){ ensureVm(); const i=$('plnMonthPick'); if(!i) return; i.value=vm.getFullYear()+'-'+pad(vm.getMonth()+1); try{ i.showPicker(); }catch(_){ try{ i.click(); }catch(__){} } }
 function onMonthPick(){ const i=$('plnMonthPick'), m=/^(\d{4})-(\d{2})$/.exec((i&&i.value)||''); if(m){ vm=new Date(+m[1],+m[2]-1,1); renderMain(); } }
+/* ── 월간 달력 위 두 손가락 좌/우 스와이프(터치패드 가로 스크롤) → 전월·다음 달 (v259) ──
+   달력 영역(.pln-cal — 월 이동 줄·요일 줄·날짜 칸·목록 보기) 어디서든 가로 휠(deltaX)이 한쪽으로 SWIPE_TH 쌓이면 한 번 넘김. 같은 동작의 나머지(손가락을 뗀 뒤 이어지는 관성 입력 포함)는 입력이 SWIPE_GAP 동안 끊길 때까지 무시 — 한 번 쓸면 한 달.
+   방향은 브라우저 '뒤로/앞으로 가기' 와 같음(deltaX<0=전월 · >0=다음 달 — OS 의 스크롤 방향 설정을 따름). 반대로 느껴지면 SWIPE_DIR 을 -1 로.
+   가로 우세 입력은 preventDefault(브라우저 뒤로/앞으로 가기·가로 스크롤로 넘어가지 않게). 세로 우세(칸 안 칩 목록·페이지 스크롤)·Ctrl/⌘+휠(확대)·일정을 끄는 중에는 손대지 않음 */
+const SWIPE_TH=80, SWIPE_GAP=150, SWIPE_DIR=1;
+let swipeSt={x:0,t:-1e9,lock:false};
+function swipeWheel(ev){
+  if(!opened||dragId||ev.ctrlKey||ev.metaKey) return;
+  const u=ev.deltaMode===1?40:ev.deltaMode===2?600:1, dx=ev.deltaX*u, dy=ev.deltaY*u;
+  if(ev.timeStamp-swipeSt.t>SWIPE_GAP){ swipeSt.x=0; swipeSt.lock=false; }   /* 입력이 잠시 끊겼다 = 새 동작 */
+  swipeSt.t=ev.timeStamp;
+  if(!dx||Math.abs(dx)<Math.abs(dy)) return;                                  /* 세로 우세 — 그대로(칸 안 목록·페이지 스크롤) */
+  if(ev.cancelable) ev.preventDefault();                                      /* 가로 동작 — 브라우저가 뒤로/앞으로 가기로 받아 가지 못하게 */
+  swipeSt.x+=dx;
+  if(swipeSt.lock||Math.abs(swipeSt.x)<SWIPE_TH) return;
+  swipeSt.lock=true; month(swipeSt.x*SWIPE_DIR<0?-1:1);
+}
+function swipeBind(){ const c=document.querySelector('#plnModal .pln-cal'); if(c&&!c._swipe){ c._swipe=1; c.addEventListener('wheel',swipeWheel,{passive:false}); } }
 function timeInput(){ fillRem(null); }
 function toggleSet(force){ setOn=(force===undefined)?!setOn:!!force; paintSet(); if(setOn&&clrOn){ clrOn=false; paintClr(); } if(setOn&&gcfg.cid) loadGsi().catch(()=>{}); }
 /* Enter 로 저장 — 한글 입력기에서 조합 중에 Enter 를 누르면 마지막 글자가 중복되거나 사라지므로, 조합이 끝난 뒤(compositionend)에 실행 */
@@ -13365,7 +13387,7 @@ function open(){
 }
 function close(){ const m=$('plnModal'); if(m) m.style.display='none'; opened=false; closeDlg(); wkClose(); endDrag(); stopPoll(); updateBtn(); }
 function onLogout(){ tok=null; try{ sessionStorage.removeItem(TKEY); }catch(_){} stopPoll(); close(); }
-function init(){ try{ updateBtn(); }catch(_){} }
+function init(){ try{ updateBtn(); }catch(_){} try{ swipeBind(); }catch(_){} }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&opened&&gcfg.on&&tokOK()&&Date.now()-(gcfg.last||0)>20000) sync({}); });
 window.addEventListener('focus',()=>{ if(opened&&gcfg.on&&tokOK()&&Date.now()-(gcfg.last||0)>15000) sync({}); });   /* 다른 창에서 돌아오면 바로 확인(v214) */
