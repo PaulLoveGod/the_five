@@ -34,6 +34,12 @@ body{
   -webkit-text-size-adjust:100%;
   padding-top:46px; /* 버튼바만 (서식툴바는 floating) */
 }
+/* ── 로그인(Guest·Mentors) 후: 터치패드 두 손가락 좌/우 스와이프가 브라우저 '뒤로·앞으로 가기'로 넘어가지 않게 ──
+   가로 방향만 막음(세로 스크롤·표/지도 안쪽 가로 스크롤은 그대로). 로그인 화면은 그대로이고, 로그아웃하면 body 클래스가 빠져 원래대로 돌아옴.
+   html·body 둘 다 지정: 뷰포트 스크롤 설정을 어느 쪽이 정하는지가 html 의 overflow 에 따라 달라짐(모바일 폭 <680px 은 html{overflow-x:hidden}).
+   :has() 를 못 쓰는 브라우저에서도 body 규칙은 먹도록 규칙을 둘로 나눔 */
+body.member-mode,body.guest-mode{overscroll-behavior-x:none}
+html:has(body.member-mode),html:has(body.guest-mode){overscroll-behavior-x:none}
 .page{max-width:1400px;margin:0 auto;padding:12px}
 
 /* ═══════════════════════════════════════
